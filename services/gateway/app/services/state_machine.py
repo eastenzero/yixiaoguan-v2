@@ -48,7 +48,7 @@ async def transition(
         raise InvalidTransition(conv.status.value, action)
 
     new_status = TRANSITIONS[key]
-    now = datetime.utcnow()
+    now = datetime.now()
 
     # 更新会话状态
     update_values = {"status": new_status, "updated_at": now}

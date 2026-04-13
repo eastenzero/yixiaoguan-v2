@@ -134,7 +134,7 @@ async def add_message(
         await db.execute(
             update(Conversation)
             .where(Conversation.id == conv_id)
-            .values(updated_at=datetime.utcnow())
+            .values(updated_at=datetime.now())
         )
     await db.commit()
     await db.refresh(msg)
