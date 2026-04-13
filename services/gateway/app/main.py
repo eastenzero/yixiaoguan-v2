@@ -11,6 +11,7 @@ from app.routers.auth import router as auth_router
 from app.routers.conversations import router as conversation_router
 from app.routers.actions import router as actions_router
 from app.routers.ws import router as ws_router
+from app.routers.chat import router as chat_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -72,5 +73,5 @@ app.include_router(actions_router, prefix="/api/conversations", tags=["conversat
 app.include_router(ws_router, tags=["websocket"])
 
 # 路由挂载点（后续 spec 逐步添加）：
-# app.include_router(chat_router, prefix="/api/chat", tags=["chat"])
+app.include_router(chat_router, prefix="/api/chat", tags=["chat"])
 # app.include_router(knowledge_router, prefix="/api/knowledge", tags=["knowledge"])

@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     dify_api_url: str = "http://localhost:5001/v1"
     dify_api_key: str = ""
     dify_global_dataset_id: str = ""
+    dify_dataset_api_key: str = ""
 
     # -- 微信（P1 阶段） --
     wechat_mp_appid: str = ""
