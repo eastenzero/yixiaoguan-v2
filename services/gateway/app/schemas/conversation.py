@@ -11,6 +11,7 @@ class ConversationResponse(BaseModel):
     student_id: int
     teacher_id: int | None
     status: str
+    dify_conversation_id: str | None = None
     title: str
     created_at: datetime
     updated_at: datetime
