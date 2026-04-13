@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import update
 from app.models.conversation import Conversation, Message, ConversationStatus, SenderType
@@ -48,7 +48,7 @@ async def transition(
         raise InvalidTransition(conv.status.value, action)
 
     new_status = TRANSITIONS[key]
-    now = datetime.now(timezone.utc)
+    now = datetime.utcnow()
 
     # 更新会话状态
     update_values = {"status": new_status, "updated_at": now}

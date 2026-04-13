@@ -130,11 +130,11 @@ async def add_message(
     conv = await db.get(Conversation, conv_id)
     if conv:
         from sqlalchemy import update
-        from datetime import datetime, timezone
+        from datetime import datetime
         await db.execute(
             update(Conversation)
             .where(Conversation.id == conv_id)
-            .values(updated_at=datetime.now(timezone.utc))
+            .values(updated_at=datetime.utcnow())
         )
     await db.commit()
     await db.refresh(msg)
