@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  gateway:
+    build:
+      context: ../services/gateway
+      dockerfile: Dockerfile
+    container_name: v2_gateway
+    ports:
+      - "8100:8000"     # 用 8100 避免与 v1 ai-service 8000 冲突
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://yxg:yxg_v2_pass@host.docker.internal:5432/yixiaoguan_v2
+      - REDIS_URL=redis://host.docker.internal:6379/1
+      - DIFY_API_URL=http://host.docker.internal:5001/v1
+      - DIFY_API_KEY=${DIFY_API_KEY:-app-change-me}
+      - JWT_SECRET=${JWT_SECRET:-dev-secret-change-me}
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+# PG / Redis 不在此处定义，复用 v1 的 yx_postgres / yx_redis

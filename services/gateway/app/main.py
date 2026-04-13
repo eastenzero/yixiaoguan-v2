@@ -1,0 +1,76 @@
+import httpx
+from fastapi import FastAPI, Depends
+from contextlib import asynccontextmanager
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
+import redis.asyncio as aioredis
+from app.config import settings
+from app.database import get_db
+from app.utils.deps import get_redis
+from app.routers.auth import router as auth_router
+from app.routers.conversations import router as conversation_router
+from app.routers.actions import router as actions_router
+from app.routers.ws import router as ws_router
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.redis = aioredis.from_url(
+        settings.redis_url, decode_responses=True
+    )
+    yield
+    await app.state.redis.close()
+
+app = FastAPI(
+    title="医小管 v2 Gateway",
+    version="2.0.0",
+    lifespan=lifespan,
+)
+
+@app.get("/health")
+async def health(
+    db: AsyncSession = Depends(get_db),
+    redis: aioredis.Redis = Depends(get_redis),
+):
+    checks = {}
+
+    # PG check
+    try:
+        result = await db.execute(text("SELECT 1"))
+        checks["postgres"] = "ok"
+    except Exception as e:
+        checks["postgres"] = f"error: {e}"
+
+    # Redis check
+    try:
+        await redis.ping()
+        checks["redis"] = "ok"
+    except Exception as e:
+        checks["redis"] = f"error: {e}"
+
+    # Dify check
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(
+                f"{settings.dify_api_url}/parameters",
+                headers={"Authorization": f"Bearer {settings.dify_api_key}"},
+                timeout=5.0
+            )
+            checks["dify"] = "ok" if resp.status_code < 500 else f"error: {resp.status_code}"
+    except Exception as e:
+        checks["dify"] = f"error: {e}"
+
+    all_ok = all(v == "ok" for v in checks.values())
+    return {
+        "status": "ok" if all_ok else "degraded",
+        "version": "2.0.0",
+        "checks": checks
+    }
+
+app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
+app.include_router(conversation_router, prefix="/api/conversations", tags=["conversations"])
+app.include_router(actions_router, prefix="/api/conversations", tags=["conversation-actions"])
+app.include_router(ws_router, tags=["websocket"])
+
+# 路由挂载点（后续 spec 逐步添加）：
+# app.include_router(chat_router, prefix="/api/chat", tags=["chat"])
+# app.include_router(knowledge_router, prefix="/api/knowledge", tags=["knowledge"])
