@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from pydantic import Field, field_validator
 
 
 class CreateConversationRequest(BaseModel):
@@ -23,7 +24,15 @@ class ConversationResponse(BaseModel):
 
 
 class SendMessageRequest(BaseModel):
-    content: str
+    content: str = Field(min_length=1)
+
+    @field_validator("content")
+    @classmethod
+    def validate_content(cls, value: str) -> str:
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("content must not be empty")
+        return stripped
 
 
 class MessageResponse(BaseModel):

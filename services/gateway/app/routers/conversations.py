@@ -1,18 +1,28 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from typing import cast
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.utils.deps import get_current_user
 from app.models.user import User, UserRole
-from app.models.conversation import SenderType
+from app.models.conversation import ConversationStatus, SenderType
 from app.schemas.conversation import (
-    CreateConversationRequest, ConversationResponse,
-    ConversationListResponse, MessageListResponse,
-    MessageResponse, SendMessageRequest,
+    CreateConversationRequest,
+    ConversationListResponse,
+    ConversationResponse,
+    MessageListResponse,
+    MessageResponse,
+    SendMessageRequest,
 )
 from app.services.conversation_service import (
-    create_conversation, list_conversations,
-    get_conversation, list_messages, add_message,
+    add_message,
+    build_message_broadcast_event,
+    create_conversation,
+    get_conversation,
+    list_conversations,
+    list_messages,
 )
+from app.services.state_machine import transition
 from app.services.ws_manager import manager
 
 router = APIRouter()
@@ -35,11 +45,19 @@ async def create(
 async def list_convs(
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
+    status: str | None = Query(None),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    items, total = await list_conversations(db, current_user, page, size)
-    return ConversationListResponse(items=items, total=total)
+    from app.models.conversation import ConversationStatus
+    status_enum = None
+    if status:
+        try:
+            status_enum = ConversationStatus(status)
+        except ValueError:
+            pass
+    items, total = await list_conversations(db, current_user, page, size, status_enum)
+    return ConversationListResponse(items=cast(list[ConversationResponse], items), total=total)
 
 
 @router.get("/{conv_id}", response_model=ConversationResponse)
@@ -67,7 +85,7 @@ async def get_messages(
     if not conv:
         raise HTTPException(status_code=404, detail="会话不存在")
     items, total = await list_messages(db, conv_id, page, size)
-    return MessageListResponse(items=items, total=total)
+    return MessageListResponse(items=cast(list[MessageResponse], items), total=total)
 
 
 @router.post("/{conv_id}/messages", response_model=MessageResponse, status_code=201)
@@ -78,19 +96,48 @@ async def send_message(
     current_user: User = Depends(get_current_user),
 ):
     """
-    发送消息（S2 阶段只写库，不调 Dify）。
+    发送消息。
     - 学生发送: sender_type=student
     - 教师发送: sender_type=teacher
-    S3 阶段会在此基础上添加 Dify 调用。
+    教师接单后可通过该接口实时插入对话。
     """
     conv = await get_conversation(db, conv_id, current_user)
     if not conv:
         raise HTTPException(status_code=404, detail="会话不存在")
 
+    if current_user.role == UserRole.student:
+        if conv.status == ConversationStatus.closed:
+            raise HTTPException(status_code=403, detail="会话已关闭，无法发送消息")
+        if conv.status == ConversationStatus.resolved:
+            await transition(db, conv, "reactivate", actor=current_user)
+            await manager.broadcast_to_room(
+                f"conv:{conv_id}",
+                {
+                    "type": "status_changed",
+                    "data": {
+                        "conv_id": conv_id,
+                        "status": "ai_serving",
+                        "previous_status": "resolved",
+                    },
+                },
+            )
+        if conv.status not in (
+            ConversationStatus.ai_serving,
+            ConversationStatus.pending_teacher,
+            ConversationStatus.teacher_serving,
+        ):
+            raise HTTPException(status_code=403, detail=f"当前状态 {conv.status.value} 不可发送消息")
+
+    if current_user.role in {UserRole.teacher, UserRole.admin}:
+        if conv.status != ConversationStatus.teacher_serving:
+            raise HTTPException(status_code=403, detail="当前会话状态不允许教师回复")
+        if current_user.role == UserRole.teacher and conv.teacher_id != current_user.id:
+            raise HTTPException(status_code=403, detail="仅接单后可回复该会话")
+
     # 根据角色确定 sender_type
     if current_user.role == UserRole.student:
         sender_type = SenderType.student
-    elif current_user.role == UserRole.teacher:
+    elif current_user.role in {UserRole.teacher, UserRole.admin}:
         sender_type = SenderType.teacher
     else:
         sender_type = SenderType.system
@@ -101,16 +148,6 @@ async def send_message(
     # WS 广播新消息
     await manager.broadcast_to_room(
         f"conv:{conv_id}",
-        {
-            "type": "new_message",
-            "data": {
-                "id": msg.id,
-                "conv_id": conv_id,
-                "sender_type": sender_type.value,
-                "sender_id": current_user.id,
-                "content": body.content,
-                "created_at": msg.created_at.isoformat(),
-            }
-        }
+        build_message_broadcast_event(msg, conv_id=conv_id)
     )
     return msg
