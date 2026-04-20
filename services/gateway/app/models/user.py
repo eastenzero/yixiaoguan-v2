@@ -2,7 +2,7 @@ import enum
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import Column, Enum, String, Boolean, ForeignKey, UniqueConstraint, func
+from sqlalchemy import Enum, String, Boolean, ForeignKey, UniqueConstraint, func
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.database import Base
 
@@ -58,6 +58,10 @@ class User(Base):
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
 
     bindings: Mapped[List["UserBinding"]] = relationship(back_populates="user")
+    college: Mapped[Optional["College"]] = relationship(lazy="selectin")
+    class_: Mapped[Optional["Class"]] = relationship(
+        foreign_keys=[class_id], lazy="selectin"
+    )
 
 
 class UserBinding(Base):

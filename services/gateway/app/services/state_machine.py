@@ -1,8 +1,9 @@
 from datetime import datetime
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import update
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.conversation import Conversation, Message, ConversationStatus, SenderType
-from app.models.user import User, UserRole
+from app.models.user import User
 
 
 class InvalidTransition(Exception):

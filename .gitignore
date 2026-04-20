@@ -10,3 +10,19 @@ dist/
 .mypy_cache/
 .pytest_cache/
 alembic/versions/__pycache__/
+
+# 敏感凭据档案（含 API Keys、SSH、数据库密码等）
+docs/PROJECT-SECRETS.md
+bailian.txt
+
+# IDE/编辑器工作区配置
+.qoder/
+.vscode/
+.idea/
+
+# TEB 运行时日志与批次状态（仅本地运行时产物）
+.tasks/logs/
+.tasks/**/batch-*-state.json
+
+# Mutagen / 其他同步工具
+.mutagen.yml.lock

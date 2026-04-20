@@ -1,0 +1,26 @@
+sync:
+  defaults:
+    mode: two-way-resolved
+    ignore:
+      vcs: true
+      paths:
+        - ".vscode"
+        - ".idea"
+        - "node_modules"
+        - "__pycache__"
+        - ".pytest_cache"
+        - ".mypy_cache"
+        - ".ruff_cache"
+        - "dist"
+        - "build"
+        - "coverage"
+        - ".coverage"
+        - "venv"
+        - "services/gateway/venv"
+        - "services/gateway/.env"
+        - "deploy/.env"
+        - "gateway.log"
+        - "migrate_result.csv"
+  yixiaoguan-v2:
+    alpha: "."
+    beta: "easten@192.168.100.165:/home/easten/dev/yixiaoguan-v2"

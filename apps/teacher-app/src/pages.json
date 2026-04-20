@@ -1,0 +1,83 @@
+{
+  "pages": [
+    {
+      "path": "pages/login/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "登录"
+      }
+    },
+    {
+      "path": "pages/dashboard/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "工作台"
+      }
+    },
+    {
+      "path": "pages/questions/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "学生提问"
+      }
+    },
+    {
+      "path": "pages/knowledge/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "知识库"
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "我的"
+      }
+    },
+    {
+      "path": "pages/questions/detail",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "提问详情"
+      }
+    },
+    {
+      "path": "pages/knowledge/detail",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "知识详情"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "医小管教师端",
+    "navigationBarBackgroundColor": "#faf5fb",
+    "backgroundColor": "#faf5fb"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#5d5b5f",
+    "selectedColor": "#702ae1",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/dashboard/index",
+        "text": "工作台"
+      },
+      {
+        "pagePath": "pages/questions/index",
+        "text": "学生提问"
+      },
+      {
+        "pagePath": "pages/knowledge/index",
+        "text": "知识库"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
+      }
+    ]
+  }
+}

@@ -136,7 +136,18 @@ async def main():
             if md_file.name in done_files:
                 continue
 
-            meta, body = parse_frontmatter(md_file)
+            try:
+                meta, body = parse_frontmatter(md_file)
+            except Exception as yaml_err:
+                writer.writerow({"filename": md_file.name, "title": md_file.stem,
+                                 "category": "", "document_id": "",
+                                 "status": "error", "error": f"YAML parse error: {yaml_err}"})
+                fail += 1
+                logger.error(f"FAIL {md_file.name}: YAML parse error: {yaml_err}")
+                csv_file.flush()
+                time.sleep(RATE_LIMIT)
+                continue
+
             title = meta.get("title", md_file.stem)
             category = meta.get("category", "")
 
@@ -164,6 +175,10 @@ async def main():
                         await save_kb_entry(db_session, meta, doc_id, args.dataset_id, md_file.name)
                     except Exception as db_err:
                         logger.warning(f"DB write failed for {md_file.name}: {db_err}")
+                        try:
+                            await db_session.rollback()
+                        except Exception:
+                            pass
 
             except Exception as e:
                 writer.writerow({"filename": md_file.name, "title": title,

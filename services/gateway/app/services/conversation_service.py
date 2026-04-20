@@ -4,6 +4,49 @@ from app.models.conversation import Conversation, Message, ConversationStatus, S
 from app.models.user import User, UserRole
 
 
+def build_message_broadcast_event(
+    msg: Message,
+    *,
+    conv_id: int | None = None,
+    metadata: dict | None = None,
+) -> dict:
+    sender_type = msg.sender_type.value if isinstance(msg.sender_type, SenderType) else str(msg.sender_type)
+    data = {
+        "id": msg.id,
+        "conv_id": conv_id or msg.conversation_id,
+        "sender_type": sender_type,
+        "content": msg.content,
+        "created_at": msg.created_at.isoformat(),
+    }
+    if msg.sender_id is not None:
+        data["sender_id"] = msg.sender_id
+    if metadata is not None:
+        data["metadata"] = metadata
+    return {"type": "new_message", "data": data}
+
+
+async def can_access_conversation(
+    db: AsyncSession,
+    conv: Conversation,
+    user: User,
+) -> bool:
+    if user.role == UserRole.admin:
+        return True
+    if user.role == UserRole.student:
+        return conv.student_id == user.id
+    if user.role != UserRole.teacher:
+        return False
+    if conv.teacher_id == user.id:
+        return True
+    if conv.status != ConversationStatus.pending_teacher or user.college_id is None:
+        return False
+    from app.models.user import User as UserModel
+    stmt = select(UserModel.college_id).where(UserModel.id == conv.student_id)
+    result = await db.execute(stmt)
+    student_college_id = result.scalar_one_or_none()
+    return student_college_id == user.college_id
+
+
 async def create_conversation(
     db: AsyncSession,
     student: User,
@@ -34,6 +77,7 @@ async def list_conversations(
     user: User,
     page: int = 1,
     size: int = 20,
+    status: ConversationStatus | None = None,
 ) -> tuple[list[Conversation], int]:
     """
     学生: 查看自己的会话（所有状态）
@@ -45,19 +89,35 @@ async def list_conversations(
     if user.role == UserRole.student:
         base = base.where(Conversation.student_id == user.id)
     elif user.role == UserRole.teacher:
-        # 教师看到: 本学院待接单 + 自己已接的
-        # 需要 JOIN users 获取学生的 college_id
         from app.models.user import User as UserModel
-        base = base.join(UserModel, Conversation.student_id == UserModel.id).where(
-            or_(
-                # 本学院待接单
-                (UserModel.college_id == user.college_id) &
-                (Conversation.status == ConversationStatus.pending_teacher),
-                # 自己正在服务的
-                Conversation.teacher_id == user.id,
+        base = base.join(UserModel, Conversation.student_id == UserModel.id)
+        if status is not None:
+            # 教师 + 指定状态: 只看该状态下自己有权看到的
+            if status == ConversationStatus.pending_teacher:
+                base = base.where(
+                    (UserModel.college_id == user.college_id) &
+                    (Conversation.status == status)
+                )
+            else:
+                base = base.where(
+                    (Conversation.teacher_id == user.id) &
+                    (Conversation.status == status)
+                )
+        else:
+            # 教师无状态过滤: 本学院待接单 + 自己已接的
+            base = base.where(
+                or_(
+                    (UserModel.college_id == user.college_id) &
+                    (Conversation.status == ConversationStatus.pending_teacher),
+                    Conversation.teacher_id == user.id,
+                )
             )
-        )
+        status = None  # already applied
     # admin 不加过滤
+
+    # optional status filter (student / admin)
+    if status is not None:
+        base = base.where(Conversation.status == status)
 
     # count
     count_stmt = select(func.count()).select_from(base.subquery())
@@ -82,10 +142,8 @@ async def get_conversation(
     conv = result.scalar_one_or_none()
     if not conv:
         return None
-    # 权限校验
-    if user.role == UserRole.student and conv.student_id != user.id:
+    if not await can_access_conversation(db, conv, user):
         return None
-    # 教师权限校验放宽：已接单的 + 本学院的 pending 都可看
     return conv
 
 

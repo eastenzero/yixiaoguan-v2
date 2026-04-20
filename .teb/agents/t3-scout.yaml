@@ -1,0 +1,10 @@
+version: 1
+agent:
+  extend: default
+  name: t3-scout
+  system_prompt_path: ../prompts/t3-scout.md
+  exclude_tools:
+    - "kimi_cli.tools.file:WriteFile"
+    - "kimi_cli.tools.file:StrReplaceFile"
+    - "kimi_cli.tools.web:SearchWeb"
+    - "kimi_cli.tools.web:FetchURL"
