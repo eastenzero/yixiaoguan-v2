@@ -15,7 +15,10 @@ docs/
 │   ├── R02-师生对话与主动运营.md
 │   ├── R03-开发前确认事项.md
 │   ├── R04-v2-新增需求.md        ← 在 v2 开发过程中新产生的需求
-│   └── R05-KB-增强需求.md        ← 知识库相关的增强需求
+│   ├── R05-KB-增强需求.md        ← 知识库相关的增强需求
+│   ├── R06-P0-quick-wins.md          ← Dify / KB P0 快打批次
+│   ├── R07-师生对话核心闭环.md    ← 教师发消息 / AI 暂停恢复 / escalate 通知
+│   └── R08-教师-KB-运营闭环.md    ← 教师 KB 运营：高频统计 → 教师答复 → AI 润色 → 入库
 ├── design/                   ← 设计方案（架构、流程、方案选型）
 │   ├── dev-plan-v2.md            ← v2 总体开发计划
 │   └── dify-chatflow-design.md   ← Dify 对话流设计
@@ -37,7 +40,10 @@ docs/
 | R02　| [师生对话与主动运营](requirements/R02-师生对话与主动运营.md) | ✅ 基线　　 | 5 个核心需求：对话界面、教师插入、主动推送、学生画像、定制导员 |
 | R03　| [开发前确认事项](requirements/R03-开发前确认事项.md)　　　　 | ⚠️ 部分过时 | v1 技术确认，v2 已改为 FastAPI 单体，部分决策不再适用　　　　　|
 | R04　| [v2 新增需求](requirements/R04-v2-新增需求.md)　　　　　　　 | 🆕 活跃　　 | v2 开发中新发现的需求和功能改进　　　　　　　　　　　　　　　　|
-| R05　| [KB 增强需求](requirements/R05-KB-增强需求.md)　　　　　　　 | 🆕 活跃　　 | 知识库相关：Top10 图文教程、定制化消息、高频统计　　　　　　　 |
+| R05　| [KB 增强需求](requirements/R05-KB-增强需求.md)　　　　　　　 | ✅ 部分被 R08 承接 | 知识库：Top10 图文教程、定制化消息；**R05-2 高频统计已升级为 R08**　　　　　　 |
+| R06　| [P0 quick-wins](requirements/R06-P0-quick-wins.md)　　　　　 | ✅ 批次收尾 | Dify / KB / gateway P0 快打批次（40 多项微改进补齐）　　　　　　　　　　|
+| R07　| [师生对话核心闭环](requirements/R07-师生对话核心闭环.md) | ✅ 已关闭　 | 教师 HTTP 发消息 / AI 暂停恢复 / escalate 广播；e2e 38/38 PASS　　　　　　　　　 |
+| R08　| [教师 KB 运营闭环](requirements/R08-教师-KB-运营闭环.md) | 📝 规划中 | chat_analytics → 聚类 Top N → 教师工作台 → AI 润色 → 分作用域发布　　　 |
 
 ### 设计方案
 
