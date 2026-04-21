@@ -9,8 +9,9 @@ from app.models.user import User, UserRole
 from app.models.conversation import ConversationStatus, SenderType
 from app.schemas.chat import ChatSendRequest, ChatSendResponse
 from app.services.conversation_service import (
-    get_conversation, add_message,
+    get_conversation, add_message, build_message_broadcast_event,
 )
+from app.services.state_machine import transition
 from app.services.dify_client import dify_client
 from app.services.ws_manager import manager
 
@@ -27,7 +28,7 @@ async def chat_send(
     """
     学生发送消息。
     - ai_serving: 保存消息 → 调 Dify → 返回 SSE StreamingResponse
-    - teacher_serving: 保存消息 → WS 推送教师 → 返回 JSON
+    - pending_teacher / teacher_serving: 保存消息 → WS 广播 → 返回 JSON
     - 其他状态: 403
     """
     # 仅学生可使用此端点
@@ -39,9 +40,20 @@ async def chat_send(
     if not conv:
         raise HTTPException(404, "会话不存在")
 
+    if conv.status == ConversationStatus.resolved:
+        await transition(db, conv, "reactivate", actor=current_user)
+        await manager.broadcast_to_room(
+            f"conv:{conv.id}",
+            {
+                "type": "status_changed",
+                "data": {"conv_id": conv.id, "status": "ai_serving", "previous_status": "resolved"},
+            },
+        )
+
     # 状态检查
     if conv.status not in (
         ConversationStatus.ai_serving,
+        ConversationStatus.pending_teacher,
         ConversationStatus.teacher_serving,
     ):
         raise HTTPException(403, f"当前状态 {conv.status.value} 不可发送消息")
@@ -55,17 +67,7 @@ async def chat_send(
     # 2. WS 广播学生消息
     await manager.broadcast_to_room(
         f"conv:{conv.id}",
-        {
-            "type": "new_message",
-            "data": {
-                "id": student_msg.id,
-                "conv_id": conv.id,
-                "sender_type": "student",
-                "sender_id": current_user.id,
-                "content": body.content,
-                "created_at": student_msg.created_at.isoformat(),
-            },
-        },
+        build_message_broadcast_event(student_msg, conv_id=conv.id),
     )
 
     # 3. 根据状态路由
@@ -90,6 +92,15 @@ async def chat_send(
         )
 
 
+def build_dify_inputs(user: User) -> dict[str, str]:
+    """构造传给 Dify 的 inputs 字典（纯函数，便于单测）。"""
+    return {
+        "college_name": user.college.name if user.college else "",
+        "campus": "",  # TODO: campus 字段暂缺，待后续在 colleges 表加字段后回填
+        "class_id": user.class_.name if user.class_ else "",
+    }
+
+
 async def _stream_ai_response(db, conv, user, query: str):
     """
     内部生成器：调 Dify → 逐 token 发 SSE → 最后保存 AI 消息。
@@ -103,10 +114,7 @@ async def _stream_ai_response(db, conv, user, query: str):
             query=query,
             user_id=str(user.id),
             conversation_id=conv.dify_conversation_id,
-            inputs={
-                "college_id": str(user.college_id or ""),
-                "student_name": user.name or "",
-            },
+            inputs=build_dify_inputs(user),
         ):
             event_type = event.get("event", "")
 
@@ -160,19 +168,13 @@ async def _stream_ai_response(db, conv, user, query: str):
     # WS 广播 AI 消息
     await manager.broadcast_to_room(
         f"conv:{conv.id}",
-        {
-            "type": "new_message",
-            "data": {
-                "id": ai_msg.id,
-                "conv_id": conv.id,
-                "sender_type": "ai",
-                "content": full_answer,
-                "metadata": {"sources": sources},
-                "created_at": ai_msg.created_at.isoformat(),
-            },
-        },
+        build_message_broadcast_event(
+            ai_msg,
+            conv_id=conv.id,
+            metadata={"sources": sources},
+        ),
     )
 
     # 发送 message_end 和 done
     yield f"event: message_end\ndata: {json.dumps({'full_content': full_answer, 'sources': sources, 'message_id': ai_msg.id}, ensure_ascii=False)}\n\n"
-    yield f"event: done\ndata: {{}}\n\n"
+    yield "event: done\ndata: {}\n\n"
