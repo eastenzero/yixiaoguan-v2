@@ -20,6 +20,10 @@ from app.models.user import User, UserRole
 from app.services.dify_client import dify_client
 
 
+def _utcnow_naive() -> datetime:
+    return datetime.now(UTC).replace(tzinfo=None)
+
+
 async def list_unanswered_top(
     db: AsyncSession,
     current_user: User,
@@ -226,8 +230,8 @@ async def approve_pending_review(
         document_id = await _publish_suggestion_to_dify(db, entry)
         entry.status = SuggestionStatus.approved
         entry.reviewed_by = current_user.id
-        entry.reviewed_at = datetime.now(UTC)
-        entry.published_at = datetime.now(UTC)
+        entry.reviewed_at = _utcnow_naive()
+        entry.published_at = _utcnow_naive()
         entry.reject_reason = None
         entry.dify_document_id = document_id
         await db.commit()
@@ -259,7 +263,7 @@ async def reject_pending_review(
 
     entry.status = SuggestionStatus.rejected
     entry.reviewed_by = current_user.id
-    entry.reviewed_at = datetime.now(UTC)
+    entry.reviewed_at = _utcnow_naive()
     entry.reject_reason = reject_reason or "管理员驳回"
     await db.commit()
     await db.refresh(entry)
@@ -316,7 +320,7 @@ async def create_knowledge_draft(
         reject_reason=None,
         dify_document_id=None,
         published_at=None,
-        reviewed_at=datetime.now(UTC) if scope_enum != KnowledgeScope.global_ else None,
+        reviewed_at=_utcnow_naive() if scope_enum != KnowledgeScope.global_ else None,
     )
     db.add(suggestion)
     await db.flush()
@@ -355,7 +359,7 @@ async def create_knowledge_draft(
             )
             suggestion.dify_document_id = document_id
             suggestion.status = SuggestionStatus.approved
-            suggestion.published_at = datetime.now(UTC)
+            suggestion.published_at = _utcnow_naive()
             unanswered.is_resolved = True
             unanswered.kb_suggestion_id = suggestion.id
             publish_mode = "published"
