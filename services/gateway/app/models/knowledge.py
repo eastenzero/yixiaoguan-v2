@@ -36,7 +36,7 @@ class KbSuggestion(Base):
     source_url: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
     college_id: Mapped[Optional[int]] = mapped_column(ForeignKey("colleges.id"), nullable=True)
     scope: Mapped[KnowledgeScope] = mapped_column(
-        Enum(KnowledgeScope, name="knowledgescope"),
+        Enum(KnowledgeScope, name="knowledgescope", values_callable=lambda enum_cls: [item.value for item in enum_cls]),
         nullable=False,
         default=KnowledgeScope.college,
     )
