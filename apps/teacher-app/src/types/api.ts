@@ -48,3 +48,52 @@ export interface PageResult<T> {
   items: T[]
   total: number
 }
+
+export type KnowledgeScope = 'class' | 'college' | 'global'
+
+export type KnowledgePublishMode = 'published' | 'pending_review'
+
+export interface UnansweredTopItem {
+  id: number
+  question_text: string
+  hit_count: number
+  latest_at: string
+  college_id: number | null
+  class_id: number | null
+  sample_conv_ids: number[]
+}
+
+export interface UnansweredTopResponse {
+  items: UnansweredTopItem[]
+  total: number
+}
+
+export interface KnowledgeEntry {
+  id: number
+  title: string
+  content: string
+  raw_content: string | null
+  scope: KnowledgeScope
+  scope_value: number | null
+  representative_query: string
+  status: string
+  college_id: number | null
+  submitted_by: number
+  reject_reason: string | null
+  dify_document_id: string | null
+  created_at: string
+  published_at: string | null
+  reviewed_at: string | null
+}
+
+export interface CreateKnowledgeDraftPayload {
+  unanswered_question_id: number
+  raw_answer: string
+  scope: KnowledgeScope
+  scope_value?: number | null
+}
+
+export interface CreateKnowledgeDraftResponse {
+  entry: KnowledgeEntry
+  publish_mode: KnowledgePublishMode
+}

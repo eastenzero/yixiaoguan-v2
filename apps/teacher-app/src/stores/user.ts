@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { UserInfo } from '@/types/api'
+import type { KnowledgeScope, UserInfo } from '@/types/api'
 
 const TOKEN_KEY = 'teacher-token'
 const USER_INFO_KEY = 'teacher-user-info'
@@ -13,6 +13,14 @@ export const useUserStore = defineStore('user', () => {
   // ===== Getters =====
   const isLoggedIn = computed(() => !!token.value)
   const displayName = computed(() => userInfo.value?.name || '老师')
+  const role = computed(() => userInfo.value?.role || '')
+  const isAdmin = computed(() => role.value === 'admin')
+  const isTeacher = computed(() => role.value === 'teacher')
+  const preferredKnowledgeScope = computed<KnowledgeScope>(() => {
+    if (isAdmin.value) return 'global'
+    if (userInfo.value?.class_id) return 'class'
+    return 'college'
+  })
 
   // ===== Actions =====
 
@@ -53,6 +61,10 @@ export const useUserStore = defineStore('user', () => {
     userInfo,
     isLoggedIn,
     displayName,
+    role,
+    isAdmin,
+    isTeacher,
+    preferredKnowledgeScope,
     init,
     setToken,
     setUserInfo,

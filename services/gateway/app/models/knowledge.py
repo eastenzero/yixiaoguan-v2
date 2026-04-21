@@ -2,8 +2,8 @@ import enum
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Column, Enum, String, Text, ForeignKey, Integer, ARRAY, func
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy import Enum, String, Text, ForeignKey, Integer, ARRAY, func
+from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 
 
@@ -19,6 +19,12 @@ class SuggestionSource(enum.Enum):
     auto_scrape_wechat = "auto_scrape_wechat"
 
 
+class KnowledgeScope(enum.Enum):
+    class_ = "class"
+    college = "college"
+    global_ = "global"
+
+
 class KbSuggestion(Base):
     __tablename__ = "kb_suggestions"
 
@@ -29,11 +35,21 @@ class KbSuggestion(Base):
     source: Mapped[SuggestionSource] = mapped_column(Enum(SuggestionSource, name="suggestionsource"), nullable=False)
     source_url: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
     college_id: Mapped[Optional[int]] = mapped_column(ForeignKey("colleges.id"), nullable=True)
+    scope: Mapped[KnowledgeScope] = mapped_column(
+        Enum(KnowledgeScope, name="knowledgescope"),
+        nullable=False,
+        default=KnowledgeScope.college,
+    )
+    scope_value: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    representative_query: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    question_hash: Mapped[str] = mapped_column(String(64), nullable=False, default="")
     status: Mapped[SuggestionStatus] = mapped_column(Enum(SuggestionStatus, name="suggestionstatus"), nullable=False)
     submitted_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     reviewed_by: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"), nullable=True)
+    reject_reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     dify_document_id: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    published_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
     reviewed_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
 
 

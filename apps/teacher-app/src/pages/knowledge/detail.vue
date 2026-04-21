@@ -13,7 +13,7 @@
         <view class="hero-section">
           <view class="tags-row">
             <view class="category-tag">
-              <text class="tag-text">{{ entry.categoryName || getCategoryName(entry.categoryId) }}</text>
+              <text class="tag-text">{{ getCategoryName(entry.scope) }}</text>
             </view>
             <view class="status-tag">
               <view class="status-dot" :class="getStatusClass(entry.status)"></view>
@@ -26,10 +26,14 @@
               <IconUser :size="16" color="#612c90" />
             </view>
             <view class="author-info">
-              <text class="author-name">{{ entry.authorName || '未知作者' }}</text>
-              <text class="update-time">最后更新于 {{ formatTime(entry.updatedAt || entry.createdAt) }}</text>
+              <text class="author-name">{{ entry.representative_query || '知识条目' }}</text>
+              <text class="update-time">最后更新于 {{ formatTime(entry.reviewed_at || entry.published_at || entry.created_at) }}</text>
             </view>
           </view>
+        </view>
+
+        <view v-if="entry.reject_reason" class="reject-banner">
+          <text class="reject-banner-text">驳回原因：{{ entry.reject_reason }}</text>
         </view>
 
         <!-- Body Content -->
@@ -115,35 +119,37 @@ const handleEdit = () => {
 }
 
 // 获取分类名称
-const getCategoryName = (categoryId?: number) => {
-  const map: Record<number, string> = {
-    1: '教务管理',
-    2: '学生服务',
-    3: '生活指南'
+const getCategoryName = (scope?: string) => {
+  const map: Record<string, string> = {
+    class: '班级知识',
+    college: '学院知识',
+    global: '全校知识'
   }
-  return map[categoryId || 0] || '其他'
+  return map[scope || 'college'] || '知识条目'
 }
 
 // 获取状态样式
-const getStatusClass = (status?: number) => {
-  const map: Record<number, string> = {
-    0: 'status-dot--draft',
-    1: 'status-dot--published',
-    2: 'status-dot--pending',
-    3: 'status-dot--offline'
+const getStatusClass = (status?: string) => {
+  const map: Record<string, string> = {
+    draft: 'status-dot--draft',
+    approved: 'status-dot--published',
+    pending: 'status-dot--pending',
+    rejected: 'status-dot--offline',
+    offline: 'status-dot--offline'
   }
-  return map[status || 0] || 'status-dot--draft'
+  return map[status || 'draft'] || 'status-dot--draft'
 }
 
 // 获取状态文字
-const getStatusText = (status?: number) => {
-  const map: Record<number, string> = {
-    0: '草稿',
-    1: '已发布',
-    2: '审核中',
-    3: '已下线'
+const getStatusText = (status?: string) => {
+  const map: Record<string, string> = {
+    draft: '草稿',
+    approved: '已发布',
+    pending: '审核中',
+    rejected: '已驳回',
+    offline: '已下线'
   }
-  return map[status || 0] || '未知'
+  return map[status || 'draft'] || '未知'
 }
 
 // 格式化时间
@@ -300,6 +306,19 @@ const formatTime = (time?: string) => {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.reject-banner {
+  margin-bottom: 24px;
+  padding: 12px 16px;
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: 16px;
+}
+
+.reject-banner-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #b91c1c;
 }
 
 .content-text {

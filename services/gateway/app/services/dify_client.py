@@ -15,6 +15,7 @@ class DifyClient:
         self.base_url = settings.dify_api_url
         self.api_key = settings.dify_api_key
         self.dataset_api_key = settings.dify_dataset_api_key
+        self.polish_api_key = getattr(settings, "dify_polish_api_key", "")
 
     # ============================================================
     # Chat API — 流式调用 Chatflow
@@ -98,6 +99,44 @@ class DifyClient:
             )
             resp.raise_for_status()
             return resp.json()
+
+    async def polish_text(
+        self,
+        *,
+        question: str,
+        raw_answer: str,
+        scope_label: str,
+    ) -> str:
+        api_key = self.polish_api_key or self.api_key
+        if not api_key:
+            raise RuntimeError("dify polish api key is not configured")
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "inputs": {
+                "question": question,
+                "raw_answer": raw_answer,
+                "scope": scope_label,
+            },
+            "query": f"请将以下教师答复整理为知识库文风。问题：{question}\n答复：{raw_answer}",
+            "response_mode": "blocking",
+            "user": "knowledge-polisher",
+        }
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            resp = await client.post(
+                f"{self.base_url}/chat-messages",
+                headers=headers,
+                json=payload,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            answer = str(data.get("answer", "")).strip()
+            if not answer:
+                raise RuntimeError("empty polish result")
+            return answer
 
 
 # 单例
