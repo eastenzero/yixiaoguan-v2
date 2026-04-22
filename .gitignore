@@ -16,7 +16,6 @@ docs/PROJECT-SECRETS.md
 bailian.txt
 
 # IDE/编辑器工作区配置
-.qoder/
 .vscode/
 .idea/
 
