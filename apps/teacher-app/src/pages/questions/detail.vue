@@ -40,7 +40,7 @@
             <!-- AI 消息 -->
             <view v-else-if="msg.sender_type === 'ai'" class="message-wrapper ai-message">
               <view class="ai-avatar">
-                <IconBot :size="24" color="#702ae1" />
+                <text class="material-symbols-outlined ai-icon">smart_toy</text>
               </view>
               <view class="ai-content">
                 <view class="message-bubble ai-bubble">
@@ -53,7 +53,7 @@
             <!-- 教师消息 -->
             <view v-else-if="msg.sender_type === 'teacher'" class="message-wrapper teacher-message">
               <view class="ai-avatar">
-                <IconUserCheck :size="20" color="#702ae1" />
+                <text class="material-symbols-outlined ai-icon">support_agent</text>
               </view>
               <view class="ai-content">
                 <view class="message-bubble teacher-bubble">
@@ -66,7 +66,7 @@
             <!-- 系统消息 -->
             <view v-else class="system-message">
               <view class="system-badge">
-                <IconBell :size="16" color="#5d5b5f" />
+                <text class="material-symbols-outlined system-icon">notifications</text>
                 <text class="system-text">{{ msg.content }}</text>
               </view>
             </view>
@@ -83,7 +83,7 @@
           <!-- 工单系统提示 -->
           <view class="system-message">
             <view class="system-badge">
-              <IconBell :size="16" color="#5d5b5f" />
+              <text class="material-symbols-outlined system-icon">notifications</text>
               <text class="system-text">学生已呼叫老师 — {{ formatTime(escalation.created_at) }}</text>
             </view>
           </view>
@@ -103,7 +103,7 @@
     <view class="action-bar animate-fade-up delay-5">
       <!-- Status 0: 待处理 - 显示接单按钮 -->
       <view v-if="escalation && escalation.status === 'pending_teacher'" class="action-button" @click="handleAssign">
-        <IconUserCheck :size="24" color="#f8f0ff" />
+        <text class="material-symbols-outlined action-icon">support_agent</text>
         <text class="action-text">{{ submitting ? '接单中...' : '接单处理' }}</text>
       </view>
 
@@ -118,11 +118,11 @@
         />
         <view class="reply-buttons-row">
           <view class="reply-button reply-button--secondary" :class="{ 'reply-button--disabled': !replyText.trim() || submitting }" @click="handleReplyOnly">
-            <IconMessage :size="20" color="#702ae1" />
+            <text class="material-symbols-outlined reply-icon-secondary">chat_bubble</text>
             <text class="action-text-secondary">{{ submitting ? '发送中...' : '仅回复' }}</text>
           </view>
           <view class="reply-button" :class="{ 'reply-button--disabled': !replyText.trim() || submitting }" @click="handleResolve">
-            <IconCheck :size="20" color="#f8f0ff" />
+            <text class="material-symbols-outlined reply-icon">check_circle</text>
             <text class="action-text">{{ submitting ? '提交中...' : '回复并解决' }}</text>
           </view>
         </view>
@@ -130,7 +130,7 @@
 
       <!-- Status 2: 已解决 - 显示已解决状态 -->
       <view v-else-if="escalation && escalation.status === 'resolved'" class="action-button action-button--disabled">
-        <IconCheck :size="24" color="#f8f0ff" />
+        <text class="material-symbols-outlined action-icon">check_circle</text>
         <text class="action-text">已解决</text>
       </view>
 
@@ -146,7 +146,6 @@
 import { ref, onUnmounted, nextTick } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import TopAppBar from '../../components/TopAppBar.vue'
-import { IconBot, IconBell, IconUserCheck, IconMessage, IconCheck } from '../../components/icons'
 import { getConversation, listMessages, sendMessage, acceptConversation, resolveConversation } from '@/api/conversations'
 import { getStatusText } from '@/utils/status-map'
 import { wsManager } from '@/utils/websocket'
@@ -339,6 +338,22 @@ onUnmounted(() => {
   color: $on-surface-variant;
 }
 
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-flex;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
 // Student Card
 .student-card {
   background: $surface-container-lowest;
@@ -368,8 +383,8 @@ onUnmounted(() => {
   right: 0;
   width: 16px;
   height: 16px;
-  background: #22c55e;
-  border: 2px solid white;
+  background: $success;
+  border: 2px solid $surface-container-lowest;
   border-radius: 50%;
 }
 
@@ -413,8 +428,8 @@ onUnmounted(() => {
   }
 
   &.status-resolved {
-    background: rgba(#10b981, 0.1);
-    .status-text { color: #10b981; }
+    background: rgba($success, 0.1);
+    .status-text { color: $success; }
   }
 
   &.status-closed {
@@ -464,6 +479,11 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
+.ai-icon {
+  font-size: 24px;
+  color: $primary;
+}
+
 .ai-content {
   display: flex;
   flex-direction: column;
@@ -486,7 +506,7 @@ onUnmounted(() => {
 }
 
 .ai-bubble {
-  background: white;
+  background: $surface-container-lowest;
   border: 1px solid rgba($error, 0.2);
   border-radius: 16px 16px 16px 0;
   max-width: 90%;
@@ -574,6 +594,11 @@ onUnmounted(() => {
   color: $on-surface-variant;
 }
 
+.system-icon {
+  font-size: 16px;
+  color: $on-surface-variant;
+}
+
 // Bottom padding
 .bottom-padding {
   height: 40px;
@@ -586,9 +611,9 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba($surface-container-lowest, 0.95);
+  backdrop-filter: $backdrop-bar;
+  -webkit-backdrop-filter: $backdrop-bar;
   z-index: 50;
 }
 
@@ -608,10 +633,15 @@ onUnmounted(() => {
   }
 
   &--disabled {
-    background: linear-gradient(135deg, #9ca3af, #d1d5db);
+    background: linear-gradient(135deg, $text-muted, $border-strong);
     box-shadow: none;
     pointer-events: none;
   }
+}
+
+.action-icon {
+  font-size: 24px;
+  color: $on-primary;
 }
 
 .action-text {
@@ -661,21 +691,34 @@ onUnmounted(() => {
   }
 
   &--secondary {
-    background: white;
+    background: $surface-container-lowest;
     border: 2px solid $primary;
     box-shadow: none;
   }
 
   &--disabled {
-    background: linear-gradient(135deg, #9ca3af, #d1d5db);
+    background: linear-gradient(135deg, $text-muted, $border-strong);
     box-shadow: none;
     pointer-events: none;
 
     &.reply-button--secondary {
-      background: white;
-      border-color: #d1d5db;
+      background: $surface-container-lowest;
+      border-color: $border-strong;
     }
   }
+}
+
+.reply-icon,
+.reply-icon-secondary {
+  font-size: 20px;
+}
+
+.reply-icon {
+  color: $on-primary;
+}
+
+.reply-icon-secondary {
+  color: $primary;
 }
 
 .action-text-secondary {
