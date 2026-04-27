@@ -25,3 +25,10 @@ bailian.txt
 
 # Mutagen / 其他同步工具
 .mutagen.yml.lock
+
+# Cascade / Kimi temporary task scripts (not part of repo history)
+scripts/kimi-task-*.txt
+scripts/kimi-local-task-*.txt
+
+# Old smoke test scratchpads (kept locally only)
+/tmp_*.md
