@@ -7,3 +7,4 @@ from app.models.knowledge import (
     CollegeDataset as CollegeDataset,
 )
 from app.models.kb_entry import KbEntry as KbEntry
+from app.models.announcement import Announcement as Announcement, AnnouncementRead as AnnouncementRead, AnnouncementTargetType as AnnouncementTargetType

@@ -16,6 +16,10 @@ from app.services.conversation_service import (
 from app.services.state_machine import transition
 from app.services.dify_client import dify_client
 from app.services.ws_manager import manager
+from app.services.announcement_service import (
+    get_active_announcements_for_user,
+    mark_announcement_read,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -138,6 +142,24 @@ async def _stream_ai_response(db, conv, user, query: str):
     message_end_metadata: dict | None = None
 
     try:
+        # R05-4: deliver active unread announcements first
+        try:
+            announcements = await get_active_announcements_for_user(db, user)
+            for ann in announcements:
+                ann_event = {
+                    "id": ann.id,
+                    "title": ann.title,
+                    "content": ann.content,
+                    "created_by": ann.created_by,
+                    "created_at": ann.created_at.isoformat(),
+                    "expire_at": ann.expire_at.isoformat(),
+                }
+                yield f"event: announcement\ndata: {json.dumps(ann_event, ensure_ascii=False)}\n\n"
+                await mark_announcement_read(db, user_id=user.id, announcement_id=ann.id)
+        except Exception as exc:
+            logger.warning("announcement delivery failed for user=%s: %s", user.id, exc)
+            # do NOT block chat — announcement delivery is best-effort
+
         async for event in dify_client.chat_stream(
             query=query,
             user_id=str(user.id),
