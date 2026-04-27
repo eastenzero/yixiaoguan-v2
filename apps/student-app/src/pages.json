@@ -29,6 +29,13 @@
       }
     },
     {
+      "path": "pages/services/index",
+      "style": {
+        "navigationBarTitleText": "事务导办",
+        "navigationStyle": "custom"
+      }
+    },
+    {
       "path": "pages/profile/index",
       "style": {
         "navigationBarTitleText": "我的",
@@ -54,6 +61,10 @@
       {
         "pagePath": "pages/chat/index",
         "text": "智能问答"
+      },
+      {
+        "pagePath": "pages/services/index",
+        "text": "事务导办"
       },
       {
         "pagePath": "pages/profile/index",

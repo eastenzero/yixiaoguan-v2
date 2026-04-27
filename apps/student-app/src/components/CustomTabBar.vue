@@ -17,7 +17,8 @@ defineProps<{ current: string }>()
 
 const tabs = [
   { key: 'home', icon: 'home', label: '首页', path: '/pages/home/index' },
-  { key: 'assistant', icon: 'smart_toy', label: '智能问答', path: '/pages/chat/index' },
+  { key: 'assistant', icon: 'chat_bubble', label: '智能问答', path: '/pages/chat/index' },
+  { key: 'services', icon: 'business_center', label: '事务导办', path: '/pages/services/index' },
   { key: 'profile', icon: 'person', label: '我的', path: '/pages/profile/index' },
 ]
 
@@ -26,49 +27,57 @@ function switchTab(tab: { path: string; key: string }) {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '@/styles/tokens.scss';
+
 .tab-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 3.5rem;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
+  z-index: 100;
   display: flex;
-  align-items: center;
   justify-content: space-around;
-  border-top: 1px solid #E2E8F0;
-  padding-bottom: env(safe-area-inset-bottom);
-  z-index: 999;
+  align-items: center;
+  padding: $space-2 $space-3 calc(env(safe-area-inset-bottom, 0) + #{$space-2});
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: $radius-xl $radius-xl 0 0;
+  box-shadow: 0 -4px 12px rgba(91, 33, 182, 0.08);
 }
 
 .tab-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.125rem;
+  gap: 2px;
+  padding: $space-2 $space-3;
+  border-radius: $radius-lg;
+  transition: background 0.2s, color 0.2s;
   flex: 1;
-  padding: 0.375rem 0;
-  transition: all 0.2s;
-}
 
-.tab-icon {
-  font-size: 1.5rem;
-  color: #94A3B8;
-  transition: color 0.2s;
-}
-.tab-icon.active {
-  color: #7C3AED;
-}
+  .tab-icon {
+    font-size: 24px;
+    color: $text-secondary;
+    transition: color 0.2s;
+  }
 
-.tab-label {
-  font-size: 0.625rem;
-  font-weight: 600;
-  color: #94A3B8;
-  transition: color 0.2s;
-}
-.tab-label.active {
-  color: #7C3AED;
+  .tab-label {
+    font-size: $font-size-xs;
+    color: $text-secondary;
+    transition: color 0.2s;
+    font-weight: $font-weight-medium;
+  }
+
+  &.active {
+    background: $primary-soft;
+
+    .tab-icon,
+    .tab-label {
+      color: $primary;
+      font-weight: $font-weight-semibold;
+    }
+  }
 }
 </style>
