@@ -23,7 +23,7 @@
           <text class="hero-title">{{ entry.title }}</text>
           <view class="author-row">
             <view class="author-avatar">
-              <IconUser :size="16" color="#612c90" />
+              <text class="material-symbols-outlined author-icon">person</text>
             </view>
             <view class="author-info">
               <text class="author-name">{{ entry.representative_query || '知识条目' }}</text>
@@ -48,7 +48,7 @@
           <text class="btn-text">下线</text>
         </button>
         <button class="action-btn action-btn--primary" @click="handleEdit">
-          <IconEdit :size="20" color="#f8f0ff" />
+          <text class="material-symbols-outlined btn-icon">edit</text>
           <text class="btn-text">编辑</text>
         </button>
       </view>
@@ -65,8 +65,6 @@
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import TopAppBar from '../../components/TopAppBar.vue'
-import IconUser from '../../components/icons/IconUser.vue'
-import IconEdit from '../../components/icons/IconEdit.vue'
 import { getKnowledgeDetail, offlineEntry } from '@/api/knowledge'
 
 const entry = ref<any>(null)
@@ -194,6 +192,22 @@ const formatTime = (time?: string) => {
   padding-right: 20px;
 }
 
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-flex;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
 // Hero Section
 .hero-section {
   margin-bottom: 32px;
@@ -236,7 +250,7 @@ const formatTime = (time?: string) => {
   border-radius: 50%;
   
   &--published {
-    background: #22c55e;
+    background: $success;
   }
   
   &--draft {
@@ -244,11 +258,11 @@ const formatTime = (time?: string) => {
   }
   
   &--pending {
-    background: #f59e0b;
+    background: $warning;
   }
   
   &--offline {
-    background: #ef4444;
+    background: $error;
   }
 }
 
@@ -282,6 +296,11 @@ const formatTime = (time?: string) => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.author-icon {
+  font-size: 16px;
+  color: $primary;
 }
 
 .author-info {
@@ -318,7 +337,7 @@ const formatTime = (time?: string) => {
 .reject-banner-text {
   font-size: 13px;
   line-height: 1.6;
-  color: #b91c1c;
+  color: $error;
 }
 
 .content-text {
@@ -347,7 +366,7 @@ const formatTime = (time?: string) => {
   left: 0;
   right: 0;
   z-index: 50;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba($surface-container-lowest, 0.9);
   backdrop-filter: $backdrop-bar;
   -webkit-backdrop-filter: $backdrop-bar;
   padding: 16px 20px;
@@ -406,6 +425,11 @@ const formatTime = (time?: string) => {
       opacity: 0.9;
     }
   }
+}
+
+.btn-icon {
+  font-size: 20px;
+  color: $on-primary;
 }
 
 .btn-text {
