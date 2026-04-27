@@ -4,11 +4,11 @@
     <view class="custom-app-bar">
       <view class="app-bar-content">
         <view class="app-bar-left">
-          <IconDashboard :size="24" :color="primaryColor" />
+          <text class="material-symbols-outlined app-bar-icon app-bar-icon--primary">dashboard</text>
           <text class="app-bar-title">工作台</text>
         </view>
         <view class="app-bar-right" @click="handleNotification">
-          <IconBell :size="24" :color="onSurfaceColor" />
+          <text class="material-symbols-outlined app-bar-icon">notifications</text>
           <view class="notification-dot"></view>
         </view>
       </view>
@@ -33,19 +33,19 @@
         <scroll-view scroll-x class="quick-actions-scroll" show-scrollbar="false">
           <view class="quick-actions-content">
             <view class="quick-action-btn" @click="handleQuickAction('knowledge')">
-              <IconPlus :size="20" :color="primaryColor" />
+              <text class="material-symbols-outlined quick-action-icon">add_circle</text>
               <text class="quick-action-text">新建知识</text>
             </view>
             <view class="quick-action-btn" @click="handleQuickAction('notice')">
-              <IconMegaphone :size="20" :color="primaryColor" />
+              <text class="material-symbols-outlined quick-action-icon">campaign</text>
               <text class="quick-action-text">发布通知</text>
             </view>
             <view class="quick-action-btn" @click="handleQuickAction('report')">
-              <IconChart :size="20" :color="primaryColor" />
+              <text class="material-symbols-outlined quick-action-icon">analytics</text>
               <text class="quick-action-text">数据报告</text>
             </view>
             <view class="quick-action-btn" @click="handleQuickAction('settings')">
-              <IconSettings :size="20" :color="primaryColor" />
+              <text class="material-symbols-outlined quick-action-icon">settings</text>
               <text class="quick-action-text">系统设置</text>
             </view>
           </view>
@@ -56,28 +56,28 @@
       <view class="stats-grid animate-fade-up delay-2">
         <view class="stat-card stat-card-1">
           <view class="stat-header">
-            <IconDashboard :size="24" :color="primaryColor" />
+            <text class="material-symbols-outlined stat-icon stat-icon--primary">dashboard</text>
             <text class="stat-number">{{ stats.todayQuestions }}</text>
           </view>
           <text class="stat-label">今日提问</text>
         </view>
         <view class="stat-card stat-card-2">
           <view class="stat-header">
-            <IconAlert :size="24" :color="errorColor" />
+            <text class="material-symbols-outlined stat-icon stat-icon--danger">priority_high</text>
             <text class="stat-number">{{ pendingCount }}</text>
           </view>
           <text class="stat-label">待处理</text>
         </view>
         <view class="stat-card stat-card-3">
           <view class="stat-header">
-            <IconBook :size="24" :color="emeraldColor" />
+            <text class="material-symbols-outlined stat-icon stat-icon--success">menu_book</text>
             <text class="stat-number">{{ stats.knowledgeCount }}</text>
           </view>
           <text class="stat-label">知识条目</text>
         </view>
         <view class="stat-card stat-card-4">
           <view class="stat-header">
-            <IconCheck :size="24" :color="amberColor" />
+            <text class="material-symbols-outlined stat-icon stat-icon--warning">task_alt</text>
             <text class="stat-number">{{ stats.todayApprovals }}</text>
           </view>
           <text class="stat-label">今日审批</text>
@@ -123,7 +123,7 @@
                 <view class="status-dot" :class="question.status"></view>
                 <text class="status-text" :class="question.status">{{ getStatusText(question.status) }}</text>
               </view>
-              <IconArrowRight :size="16" :color="onSurfaceVariantColor" />
+              <text class="material-symbols-outlined card-arrow">arrow_forward</text>
             </view>
           </view>
         </view>
@@ -139,16 +139,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
-import IconDashboard from '../../components/icons/IconDashboard.vue'
-import IconBell from '../../components/icons/IconBell.vue'
-import IconPlus from '../../components/icons/IconPlus.vue'
-import IconMegaphone from '../../components/icons/IconMegaphone.vue'
-import IconChart from '../../components/icons/IconChart.vue'
-import IconSettings from '../../components/icons/IconSettings.vue'
-import IconAlert from '../../components/icons/IconAlert.vue'
-import IconBook from '../../components/icons/IconBook.vue'
-import IconCheck from '../../components/icons/IconCheck.vue'
-import IconArrowRight from '../../components/icons/IconArrowRight.vue'
 import BottomNavBar from '../../components/BottomNavBar.vue'
 import { listConversations } from '@/api/conversations'
 import { getStatusText } from '@/utils/status-map'
@@ -156,14 +146,6 @@ import { getStatusText } from '@/utils/status-map'
 // 用户状态
 const userStore = useUserStore()
 const displayName = computed(() => userStore.displayName)
-
-// 主题色
-const primaryColor = '#702ae1'
-const onSurfaceColor = '#2f2e32'
-const onSurfaceVariantColor = '#5d5b5f'
-const errorColor = '#b41340'
-const emeraldColor = '#059669'
-const amberColor = '#d97706'
 
 // 统计数据
 const stats = ref({
@@ -254,7 +236,7 @@ onShow(() => {
 <style lang="scss" scoped>
 .dashboard-page {
   min-height: 100vh;
-  background: $surface;
+  background: $background;
   padding-bottom: calc(80px + env(safe-area-inset-bottom));
 }
 
@@ -266,7 +248,7 @@ onShow(() => {
   right: 0;
   z-index: 50;
   height: 56px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba($surface-container-lowest, 0.8);
   backdrop-filter: $backdrop-bar;
   -webkit-backdrop-filter: $backdrop-bar;
 }
@@ -283,6 +265,31 @@ onShow(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-flex;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+.app-bar-icon {
+  font-size: 24px;
+  color: $on-surface;
+}
+
+.app-bar-icon--primary {
+  color: $primary;
 }
 
 .app-bar-title {
@@ -309,7 +316,7 @@ onShow(() => {
   height: 8px;
   background: $error;
   border-radius: 50%;
-  border: 2px solid white;
+  border: 2px solid $surface-container-lowest;
 }
 
 // 主内容区域
@@ -408,6 +415,11 @@ onShow(() => {
   }
 }
 
+.quick-action-icon {
+  font-size: 20px;
+  color: $primary;
+}
+
 .quick-action-text {
   font-family: $font-body;
   font-size: 12px;
@@ -442,17 +454,37 @@ onShow(() => {
 }
 
 .stat-card-3 {
-  background: #e2f5ec;
+  background: rgba($success, 0.1);
 }
 
 .stat-card-4 {
-  background: #fef3c7;
+  background: rgba($warning, 0.16);
 }
 
 .stat-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+}
+
+.stat-icon {
+  font-size: 24px;
+}
+
+.stat-icon--primary {
+  color: $primary;
+}
+
+.stat-icon--danger {
+  color: $error;
+}
+
+.stat-icon--success {
+  color: $success;
+}
+
+.stat-icon--warning {
+  color: $warning;
 }
 
 .stat-number {
@@ -604,11 +636,11 @@ onShow(() => {
 }
 
 .status-1 {
-  background: #f59e0b;
+  background: $warning;
 }
 
 .status-2 {
-  background: #10b981;
+  background: $success;
 }
 
 .status-3 {
@@ -626,14 +658,19 @@ onShow(() => {
 }
 
 .status-text-1 {
-  color: #d97706;
+  color: $warning;
 }
 
 .status-text-2 {
-  color: #10b981;
+  color: $success;
 }
 
 .status-text-3 {
+  color: $on-surface-variant;
+}
+
+.card-arrow {
+  font-size: 16px;
   color: $on-surface-variant;
 }
 
