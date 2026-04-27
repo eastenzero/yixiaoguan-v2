@@ -56,7 +56,7 @@
           <view class="setting-item">
             <view class="item-left">
               <view class="icon-circle">
-                <IconBell :size="20" color="#702ae1" />
+                <text class="material-symbols-outlined setting-icon">notifications</text>
               </view>
               <text class="item-label">通知提醒</text>
             </view>
@@ -73,7 +73,7 @@
           <view class="setting-item">
             <view class="item-left">
               <view class="icon-circle">
-                <IconVolume :size="20" color="#702ae1" />
+                <text class="material-symbols-outlined setting-icon">volume_up</text>
               </view>
               <text class="item-label">声音提示</text>
             </view>
@@ -90,7 +90,7 @@
           <view class="setting-item">
             <view class="item-left">
               <view class="icon-circle">
-                <IconBot :size="20" color="#702ae1" />
+                <text class="material-symbols-outlined setting-icon">smart_toy</text>
               </view>
               <text class="item-label">AI 自动回复</text>
             </view>
@@ -110,28 +110,28 @@
           <view class="setting-item setting-item--nav">
             <view class="item-left">
               <view class="icon-circle">
-                <IconLock :size="20" color="#702ae1" />
+                <text class="material-symbols-outlined setting-icon">lock</text>
               </view>
               <text class="item-label">修改密码</text>
             </view>
-            <IconChevronRight :size="20" color="#5d5b5f" />
+            <text class="material-symbols-outlined nav-chevron">chevron_right</text>
           </view>
           
           <!-- 关于我们 -->
           <view class="setting-item setting-item--nav">
             <view class="item-left">
               <view class="icon-circle">
-                <IconInfo :size="20" color="#702ae1" />
+                <text class="material-symbols-outlined setting-icon">info</text>
               </view>
               <text class="item-label">关于我们</text>
             </view>
-            <IconChevronRight :size="20" color="#5d5b5f" />
+            <text class="material-symbols-outlined nav-chevron">chevron_right</text>
           </view>
         </view>
 
         <!-- 退出登录按钮 -->
         <view class="logout-btn" @click="handleLogout">
-          <IconLogout :size="20" color="#b41340" />
+          <text class="material-symbols-outlined logout-icon">logout</text>
           <text class="logout-text">退出登录</text>
         </view>
       </view>
@@ -146,15 +146,17 @@ import { ref, computed } from 'vue'
 import { useUserStore } from '@/stores/user'
 import TopAppBar from '../../components/TopAppBar.vue'
 import BottomNavBar from '../../components/BottomNavBar.vue'
-import { IconBell, IconVolume, IconBot, IconLock, IconInfo, IconLogout, IconChevronRight } from '../../components/icons'
 
 // 用户状态
 const userStore = useUserStore()
 
 // 计算用户信息
-const userName = computed(() => userStore.userInfo?.nickName || userStore.userInfo?.realName || '教师')
-const department = computed(() => userStore.userInfo?.department || '未知院系')
-const userId = computed(() => userStore.userInfo?.username || 'N/A')
+const userName = computed(() => userStore.userInfo?.name || '教师')
+const department = computed(() => {
+  const collegeId = userStore.userInfo?.college_id
+  return collegeId ? `学院 ${collegeId}` : '未知院系'
+})
+const userId = computed(() => userStore.userInfo?.staff_id || 'N/A')
 
 // 开关状态
 const notificationOn = ref(true)
@@ -171,7 +173,7 @@ const handleLogout = () => {
 <style lang="scss" scoped>
 .profile-page {
   min-height: 100vh;
-  background: $surface;
+  background: $background;
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
 }
 
@@ -186,6 +188,22 @@ const handleLogout = () => {
 // 个人信息卡
 .hero-card {
   margin-bottom: 24px;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-flex;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
 }
 
 .hero-bg {
@@ -354,10 +372,20 @@ const handleLogout = () => {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: white;
+  background: $surface-container-lowest;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.setting-icon {
+  font-size: 20px;
+  color: $primary;
+}
+
+.nav-chevron {
+  font-size: 20px;
+  color: $on-surface-variant;
 }
 
 .item-label {
@@ -407,6 +435,11 @@ const handleLogout = () => {
 .logout-text {
   font-size: 16px;
   font-weight: 700;
+  color: $error;
+}
+
+.logout-icon {
+  font-size: 20px;
   color: $error;
 }
 
