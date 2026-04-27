@@ -322,6 +322,14 @@ function showToastSoon() {
   padding-left: $space-4;
   padding-right: $space-4;
   margin-bottom: $space-5;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar,
+  :deep(::-webkit-scrollbar) {
+    display: none;
+    width: 0;
+    height: 0;
+  }
 }
 
 .tag-list {

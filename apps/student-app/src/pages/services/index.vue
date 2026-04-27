@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import CustomTabBar from '@/components/CustomTabBar.vue'
 
 const upcoming = ref([
   { id: 's1', label: '空教室预约', icon: 'meeting_room' },
@@ -36,6 +37,8 @@ function comingSoon() {
         <text class="service-status">即将上线</text>
       </view>
     </view>
+
+    <CustomTabBar current="services" />
   </view>
 </template>
 
@@ -46,6 +49,7 @@ function comingSoon() {
   min-height: 100vh;
   padding: $space-4;
   padding-top: 64px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 6rem);
   background: $bg-page;
   font-family: $font-family-sans;
 }

@@ -29,6 +29,14 @@ page {
   font-family: 'Manrope', 'PingFang SC', system-ui, sans-serif;
   background: $bg-page;
   color: $text-primary;
+  --window-bottom: 0px;
+}
+
+uni-tabbar,
+.uni-tabbar {
+  display: none !important;
+  height: 0 !important;
+  overflow: hidden !important;
 }
 
 button {
