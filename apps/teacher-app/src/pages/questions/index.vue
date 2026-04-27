@@ -39,7 +39,7 @@
         >
           <view class="card-header">
             <view class="student-info">
-              <view class="avatar-circle" :style="{ background: avatarColors[index % avatarColors.length] }">
+              <view class="avatar-circle" :class="avatarClassNames[index % avatarClassNames.length]">
                 <text class="avatar-initial">{{ item.title?.charAt(0) || '?' }}</text>
               </view>
               <view class="student-meta">
@@ -61,7 +61,7 @@
           <view class="ai-confidence">
             <view class="confidence-header">
               <view class="confidence-label">
-                <IconBrain :size="12" color="#5d5b5f" />
+                <text class="material-symbols-outlined confidence-icon">psychology</text>
                 <text class="label-text">AI 匹配度</text>
               </view>
               <text class="confidence-value">{{ item.confidence || 80 }}%</text>
@@ -87,7 +87,6 @@ import { ref, onMounted, onUnmounted, onActivated } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopAppBar from '../../components/TopAppBar.vue'
 import BottomNavBar from '../../components/BottomNavBar.vue'
-import { IconBrain } from '../../components/icons'
 import { listConversations } from '@/api/conversations'
 import { getStatusText, getStatusClass } from '@/utils/status-map'
 import { wsManager } from '@/utils/websocket'
@@ -100,7 +99,7 @@ const filterTabs = [
   { label: '已解决', status: 'resolved' }
 ]
 
-const avatarColors = ['#702ae1', '#059669', '#d97706', '#0284c7', '#b41340']
+const avatarClassNames = ['avatar-primary', 'avatar-success', 'avatar-warning', 'avatar-info', 'avatar-danger']
 const activeTab = ref(0)
 const questions = ref<any[]>([])
 const loading = ref(false)
@@ -191,7 +190,7 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .questions-page {
   min-height: 100vh;
-  background: $surface;
+  background: $background;
   padding-bottom: 112px;
 }
 
@@ -232,6 +231,22 @@ onUnmounted(() => {
   :deep(.uni-scroll-view) {
     scrollbar-width: none;
   }
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-flex;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
 }
 
 .filter-tabs {
@@ -311,10 +326,30 @@ onUnmounted(() => {
   justify-content: center;
 }
 
+.avatar-primary {
+  background: $primary;
+}
+
+.avatar-success {
+  background: $success;
+}
+
+.avatar-warning {
+  background: $warning;
+}
+
+.avatar-info {
+  background: $info;
+}
+
+.avatar-danger {
+  background: $error;
+}
+
 .avatar-initial {
   font-size: 18px;
   font-weight: 700;
-  color: #ffffff;
+  color: $on-primary;
 }
 
 .student-meta {
@@ -369,10 +404,10 @@ onUnmounted(() => {
   }
 
   &.status-resolved {
-    background: rgba(#10b981, 0.1);
+    background: rgba($success, 0.1);
 
     .status-text {
-      color: #10b981;
+      color: $success;
     }
   }
 
@@ -421,6 +456,11 @@ onUnmounted(() => {
   }
 }
 
+.confidence-icon {
+  font-size: 12px;
+  color: $on-surface-variant;
+}
+
 .confidence-value {
   font-size: 10px;
   font-weight: 700;
@@ -441,11 +481,11 @@ onUnmounted(() => {
   transition: width 0.3s ease;
 
   &.progress-green {
-    background: #10b981;
+    background: $success;
   }
 
   &.progress-amber {
-    background: #f59e0b;
+    background: $warning;
   }
 
   &.progress-red {

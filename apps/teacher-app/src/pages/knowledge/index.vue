@@ -7,7 +7,7 @@
       <view class="section animate-fade-up delay-1">
         <view class="search-wrapper">
           <view class="search-icon">
-            <IconSearch :size="20" color="#5d5b5f" />
+            <text class="material-symbols-outlined search-symbol">search</text>
           </view>
           <input 
             v-model="searchText"
@@ -167,7 +167,6 @@ import { computed, ref, onMounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopAppBar from '../../components/TopAppBar.vue'
 import BottomNavBar from '../../components/BottomNavBar.vue'
-import IconSearch from '../../components/icons/IconSearch.vue'
 import { approveKnowledge, createKnowledgeDraft, getKnowledgeEntries, getPendingReviews, getUnansweredTop, rejectKnowledge } from '@/api/knowledge'
 import { useUserStore } from '@/stores/user'
 import type { KnowledgeEntry, KnowledgeScope, UnansweredTopItem } from '@/types/api'
@@ -493,6 +492,22 @@ onShow(() => loadData())
   margin-bottom: 24px;
 }
 
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-flex;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
 // Search Bar
 .search-wrapper {
   position: relative;
@@ -510,6 +525,11 @@ onShow(() => loadData())
   align-items: center;
   justify-content: center;
   opacity: 0.6;
+}
+
+.search-symbol {
+  font-size: 20px;
+  color: $on-surface-variant;
 }
 
 .search-input {
@@ -667,7 +687,7 @@ onShow(() => loadData())
   }
 
   &--pending {
-    background: #f59e0b;
+    background: $warning;
   }
   
   &--draft {
@@ -675,7 +695,7 @@ onShow(() => loadData())
   }
 
   &--offline {
-    background: #ef4444;
+    background: $error;
   }
 }
 
@@ -692,11 +712,11 @@ onShow(() => loadData())
   }
 
   &--pending {
-    color: #b45309;
+    color: $warning;
   }
 
   &--offline {
-    color: #dc2626;
+    color: $error;
   }
 }
 
@@ -777,11 +797,11 @@ onShow(() => loadData())
 }
 
 .mini-action-btn--approve {
-  background: #22c55e;
+  background: $success;
 }
 
 .mini-action-btn--reject {
-  background: #ef4444;
+  background: $error;
 }
 
 .mini-action-btn--ghost {
@@ -795,7 +815,7 @@ onShow(() => loadData())
 }
 
 .mini-action-text--light {
-  color: #ffffff;
+  color: $on-primary;
 }
 
 .composer-panel {
@@ -885,6 +905,6 @@ onShow(() => loadData())
 .reject-reason-text {
   font-size: 12px;
   line-height: 1.6;
-  color: #b91c1c;
+  color: $error;
 }
 </style>
