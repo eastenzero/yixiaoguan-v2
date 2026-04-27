@@ -14,6 +14,12 @@
             @click="switchTab(index)"
           >
             <text class="tab-text">{{ tab.label }}</text>
+            <view
+              v-if="tab.status === PENDING_STATUS && pendingCount > 0"
+              class="pending-badge"
+            >
+              <text class="pending-badge-text">{{ pendingCount > 99 ? '99+' : pendingCount }}</text>
+            </view>
           </view>
         </view>
       </scroll-view>
@@ -91,10 +97,12 @@ import { listConversations } from '@/api/conversations'
 import { getStatusText, getStatusClass } from '@/utils/status-map'
 import { wsManager } from '@/utils/websocket'
 
+const PENDING_STATUS = 'pending_teacher'
+
 // Filter tabs: 全部 / 待处理 / 处理中 / 已解决
 const filterTabs = [
   { label: '全部', status: undefined as string | undefined },
-  { label: '待处理', status: 'pending_teacher' },
+  { label: '待处理', status: PENDING_STATUS },
   { label: '处理中', status: 'teacher_serving' },
   { label: '已解决', status: 'resolved' }
 ]
@@ -104,6 +112,7 @@ const activeTab = ref(0)
 const questions = ref<any[]>([])
 const loading = ref(false)
 const total = ref(0)
+const pendingCount = ref(0)
 
 // 格式化时间
 const formatTime = (timeStr: string) => {
@@ -137,12 +146,17 @@ const loadData = async () => {
   try {
     const tab = filterTabs[activeTab.value]
     const res = await listConversations(1, 20, tab.status)
-    questions.value = res.items || []
+    const items = res.items || []
+    questions.value = items
     total.value = res.total || 0
+    pendingCount.value = tab.status === PENDING_STATUS
+      ? (res.total || items.length)
+      : items.filter((item) => item.status === PENDING_STATUS).length
   } catch (e) {
     console.error('加载工单失败', e)
     questions.value = []
     total.value = 0
+    pendingCount.value = 0
   } finally {
     loading.value = false
   }
@@ -256,6 +270,7 @@ onUnmounted(() => {
 }
 
 .filter-tab {
+  position: relative;
   flex-shrink: 0;
   padding: 10px 24px;
   border-radius: 9999px;
@@ -277,6 +292,29 @@ onUnmounted(() => {
       color: $on-primary;
     }
   }
+}
+
+.pending-badge {
+  position: absolute;
+  top: -4px;
+  right: 8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9999px;
+  background: $error;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  box-shadow: 0 0 0 2px $background;
+}
+
+.pending-badge-text {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  color: $on-primary;
 }
 
 // Question List
