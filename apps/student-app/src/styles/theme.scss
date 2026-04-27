@@ -1,34 +1,17 @@
 // 山东第一医科大学紫色主题 — v2
+// NOTE: unified tokens now live in tokens.scss. This file only keeps
+// student-specific variables not yet absorbed into the shared system.
+
+@import '@/styles/tokens.scss';
+
 $primary-10: #2E1065;
 $primary-20: #4C1D95;
 $primary-30: #5B21B6;
-$primary-40: #7C3AED;
 $primary-50: #8B5CF6;
 $primary-60: #A78BFA;
 $primary-70: #C4B5FD;
 $primary-80: #DDD6FE;
-$primary-90: #EDE9FE;
 $primary-95: #F5F3FF;
-
-$secondary: #475569;
-$tertiary: #059669;
-$error: #DC2626;
-$warning: #D97706;
-$success: #059669;
-
-$bg-page: #F8FAFC;
-$bg-card: #FFFFFF;
-$bg-secondary: #F1F5F9;
-$border-color: #E2E8F0;
-
-$text-primary: #0F172A;
-$text-secondary: #475569;
-$text-tertiary: #94A3B8;
-$text-inverse: #FFFFFF;
-
-$primary: $primary-40;
-
-$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
 $transition-base: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 

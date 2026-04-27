@@ -13,6 +13,7 @@ onHide(() => {
 </script>
 
 <style lang="scss">
+@import './styles/tokens.scss';
 @import './styles/global.scss';
 
 @font-face {

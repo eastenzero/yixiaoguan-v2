@@ -1,0 +1,157 @@
+// ============================================================
+// Design Tokens — yixiaoguan-v2 v2 launch
+// Source: docs/design/ui-references/ (stitch designs)
+// Decided: violet-800 primary, Manrope font, Material Symbols icons
+// ============================================================
+
+// ----- Color: Primary -----
+$primary:        #5b21b6;  // violet-800
+$primary-hover:  #4c1d95;  // violet-900
+$primary-soft:   #ede9fe;  // violet-100 — backgrounds, badges
+$primary-on:     #ffffff;  // text on primary
+
+// ----- Color: Surface / Background -----
+$bg-page:    #f9fafb;  // gray-50
+$bg-card:    #ffffff;
+$bg-elevated:#ffffff;
+$surface:    $bg-page;          // alias for legacy
+$on-surface: #111827;           // alias for legacy
+
+// ----- Color: Text -----
+$text-primary:   #111827;  // gray-900
+$text-secondary: #6b7280;  // gray-500
+$text-muted:     #9ca3af;  // gray-400
+$text-inverse:   #ffffff;
+
+// ----- Color: Border -----
+$border:       #e5e7eb;    // gray-200
+$border-strong:#d1d5db;    // gray-300
+$divider:      #f3f4f6;    // gray-100
+
+// ----- Color: Status -----
+$success: #059669;
+$warning: #d97706;
+$danger:  #dc2626;
+$info:    #3b82f6;
+
+// ----- Typography -----
+$font-family-sans: 'Manrope', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-base: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+$font-size-2xl: 24px;
+$font-size-3xl: 30px;
+
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+$line-height-tight: 1.25;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.75;
+
+// ----- Spacing (8pt grid) -----
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 20px;
+$space-6: 24px;
+$space-8: 32px;
+$space-10: 40px;
+$space-12: 48px;
+
+// ----- Radius -----
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;     // default for cards
+$radius-xl: 24px;     // hero cards / sheets
+$radius-full: 9999px;
+
+// ----- Shadow -----
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-md: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-lg: 0 4px 12px rgba(91, 33, 182, 0.10);  // primary-tinted
+
+// ----- Z-index -----
+$z-dropdown: 100;
+$z-modal: 1000;
+$z-toast: 1100;
+
+// ----- CSS variable bridge (for runtime theming) -----
+:root {
+  --color-primary: #{$primary};
+  --color-primary-hover: #{$primary-hover};
+  --color-primary-soft: #{$primary-soft};
+  --color-bg-page: #{$bg-page};
+  --color-bg-card: #{$bg-card};
+  --color-text-primary: #{$text-primary};
+  --color-text-secondary: #{$text-secondary};
+  --color-border: #{$border};
+  --radius-md: #{$radius-md};
+  --radius-lg: #{$radius-lg};
+}
+
+// ============================================================
+// Backward-compat aliases — student-app legacy
+// ============================================================
+$primary-40: $primary;
+$primary-90: $primary-soft;
+$on-primary: $primary-on;
+$error: $danger;
+$error-container: #fee2e2;
+$border-color: $border;
+$text-tertiary: $text-muted;
+$bg-secondary: $bg-page;
+$font-family: $font-family-sans;
+
+// ============================================================
+// Backward-compat aliases — teacher-app legacy
+// ============================================================
+$background: $bg-page;
+$on-surface-variant: $text-secondary;
+$font-body: $font-family-sans;
+$font-headline: $font-family-sans;
+$font-label: $font-family-sans;
+$primary-container: $primary-soft;
+$primary-dim: $primary-hover;
+$primary-fixed-dim: $primary-soft;
+$on-primary-container: $primary;
+$on-primary-fixed: $text-inverse;
+$on-primary-fixed-variant: $primary-hover;
+$on-secondary-container: #4c1d95;
+$on-tertiary-container: #701a36;
+$outline-variant: $border;
+$secondary-container: #ddd6fe;
+$tertiary-container: #fbcfe8;
+$surface-dim: #e5e7eb;
+$surface-bright: #ffffff;
+$surface-variant: #f3f4f6;
+$surface-tint: $primary;
+$surface-container-lowest: #ffffff;
+$surface-container-low: #f9fafb;
+$surface-container: #f3f4f6;
+$surface-container-high: #e5e7eb;
+$surface-container-highest: #d1d5db;
+$inverse-surface: #111827;
+$inverse-on-surface: #9ca3af;
+$outline: $border-strong;
+$on-background: $text-primary;
+$inverse-primary: $primary-soft;
+$secondary: #6d28d9;
+$secondary-dim: #5b21b6;
+$tertiary: #be185d;
+$tertiary-dim: #9d174d;
+$elevation-1: 0 1px 3px rgba(91, 33, 182, 0.06), 0 4px 8px -2px rgba(91, 33, 182, 0.08);
+$elevation-2: 0 2px 6px rgba(91, 33, 182, 0.08), 0 8px 24px -4px rgba(91, 33, 182, 0.12);
+$elevation-3: 0 4px 12px rgba(91, 33, 182, 0.10), 0 16px 40px -8px rgba(91, 33, 182, 0.16);
+$backdrop-bar: blur(20px) saturate(180%);
+
+// ----- Gradients (teacher-app legacy) -----
+$gradient-primary: linear-gradient(135deg, $primary 0%, $primary-container 50%, $tertiary-container 100%);
+$gradient-hero: linear-gradient(135deg, $primary 0%, $primary-container 60%, $tertiary-container 100%);
+$gradient-btn: linear-gradient(135deg, $primary 0%, $primary-container 100%);
