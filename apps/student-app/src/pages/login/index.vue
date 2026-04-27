@@ -97,10 +97,12 @@ async function handleLogin() {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import '@/styles/tokens.scss';
+
 .login-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #5b21b6, #8b5cf6);
+  background: linear-gradient(135deg, $primary, $secondary);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -115,29 +117,29 @@ async function handleLogin() {
 .decor-2 { top: 60%; right: -5%; width: 30%; height: 30%; background: rgba(124,58,237,0.1); filter: blur(40px); }
 
 .main-container { width: 100%; max-width: 25rem; z-index: 1; }
-.login-card { background: #fff; border-radius: 1.5rem; padding: 2.5rem 1.75rem; box-shadow: 0 1.25rem 3.125rem rgba(37,0,90,0.2); }
+.login-card { background: $bg-card; border-radius: 1.5rem; padding: 2.5rem 1.75rem; box-shadow: 0 1.25rem 3.125rem rgba(37,0,90,0.2); }
 .header { display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem; }
 .logo-box { width: 4rem; height: 4rem; background: rgba(124,58,237,0.1); border-radius: 1rem; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
-.logo-icon { font-size: 2.25rem; color: #7c3aed; }
-.app-title { font-size: 1.875rem; font-weight: 800; color: #191c1e; margin-bottom: 0.25rem; }
-.app-subtitle { font-size: 0.875rem; font-weight: 500; color: #4a4455; letter-spacing: 0.125rem; opacity: 0.7; }
+.logo-icon { font-size: 2.25rem; color: $secondary; }
+.app-title { font-size: 1.875rem; font-weight: 800; color: $text-primary; margin-bottom: 0.25rem; }
+.app-subtitle { font-size: 0.875rem; font-weight: 500; color: $text-secondary; letter-spacing: 0.125rem; opacity: 0.7; }
 
 .form .form-group { margin-bottom: 1.25rem; }
-.label { font-size: 0.75rem; font-weight: 700; color: #4a4455; margin-bottom: 0.5rem; margin-left: 0.25rem; display: block; }
-.input-wrapper { position: relative; display: flex; align-items: center; background: #e6e8ea; border-radius: 0.75rem; padding: 0 1rem; height: 3.25rem; }
-.input { flex: 1; height: 100%; background: transparent; border: none; padding-left: 1.75rem; font-size: 0.875rem; color: #191c1e; font-weight: 500; }
-.ph-color { color: #7b7487; }
-.input-icon { font-size: 1.25rem; color: #7b7487; position: absolute; left: 1rem; }
-.right-icon { font-size: 1.25rem; color: #7b7487; position: absolute; right: 1rem; }
+.label { font-size: 0.75rem; font-weight: 700; color: $text-secondary; margin-bottom: 0.5rem; margin-left: 0.25rem; display: block; }
+.input-wrapper { position: relative; display: flex; align-items: center; background: $border; border-radius: 0.75rem; padding: 0 1rem; height: 3.25rem; }
+.input { flex: 1; height: 100%; background: transparent; border: none; padding-left: 1.75rem; font-size: 0.875rem; color: $text-primary; font-weight: 500; }
+.ph-color { color: $text-muted; }
+.input-icon { font-size: 1.25rem; color: $text-muted; position: absolute; left: 1rem; }
+.right-icon { font-size: 1.25rem; color: $text-muted; position: absolute; right: 1rem; }
 
-.submit-btn { width: 100%; height: 3.5rem; background: linear-gradient(135deg, #5b21b6, #8b5cf6); border-radius: 1.75rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1.75rem; box-shadow: 0 0.5rem 1rem rgba(124,58,237,0.3); }
+.submit-btn { width: 100%; height: 3.5rem; background: linear-gradient(135deg, $primary, $secondary); border-radius: 1.75rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1.75rem; box-shadow: 0 0.5rem 1rem rgba(124,58,237,0.3); }
 .submit-btn:active { transform: scale(0.95); }
 .submit-btn[disabled] { opacity: 0.7; }
-.btn-text { color: #fff; font-size: 1rem; font-weight: 700; }
-.btn-icon { font-size: 1.125rem; color: #fff; }
+.btn-text { color: $text-inverse; font-size: 1rem; font-weight: 700; }
+.btn-icon { font-size: 1.125rem; color: $text-inverse; }
 
 .forgot-box { margin-top: 1.5rem; display: flex; justify-content: center; }
-.forgot-text { font-size: 0.75rem; color: #630ed4; font-weight: 600; text-decoration: underline; }
+.forgot-text { font-size: 0.75rem; color: $primary; font-weight: 600; text-decoration: underline; }
 
 .footer-box { margin-top: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
 .footer-hint { font-size: 0.875rem; color: rgba(255,255,255,0.6); font-weight: 500; }
