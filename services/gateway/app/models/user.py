@@ -25,6 +25,7 @@ class College(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
+    campus: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
     classes: Mapped[List["Class"]] = relationship(back_populates="college")

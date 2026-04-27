@@ -117,7 +117,7 @@ async def test_chat_send_ai_serving_streams_dify(monkeypatch):
         "query": student_msg.content,
         "user_id": str(student.id),
         "conversation_id": conv.dify_conversation_id,
-        "inputs": {"college_name": "", "campus": "", "class_id": ""},
+        "inputs": {"college_name": "", "campus": "", "class_name": ""},
     }]
     assert broadcast_events[0][1]["data"]["sender_type"] == "student"
     assert broadcast_events[1][1]["data"]["sender_type"] == "ai"
@@ -239,7 +239,7 @@ async def test_chat_send_resolved_reactivates_before_streaming_ai(monkeypatch):
         "query": student_msg.content,
         "user_id": str(student.id),
         "conversation_id": conv.dify_conversation_id,
-        "inputs": {"college_name": "", "campus": "", "class_id": ""},
+        "inputs": {"college_name": "", "campus": "", "class_name": ""},
     }]
     assert broadcast_events[0][0] == f"conv:{conv.id}"
     assert broadcast_events[0][1]["type"] == "status_changed"

@@ -1,0 +1,532 @@
+app:
+  description: 山东第一医科大学校园智能服务助手。支持意图分类（问候/闲聊/知识库问答/转人工）、RAG 知识检索、流式回答。
+  icon: 🏥
+  icon_background: '#E4FBCC'
+  mode: advanced-chat
+  name: 医小管-主对话流
+  use_icon_as_answer_icon: true
+kind: app
+version: 0.1.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      enabled: false
+      allowed_file_types:
+      - image
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      number_limits: 3
+      fileUploadConfig:
+        file_size_limit: 15
+        batch_count_limit: 5
+        file_upload_limit: 20
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        audio_file_size_limit: 50
+        workflow_file_upload_limit: 10
+        image_file_batch_limit: 10
+        single_chunk_attachment_limit: 10
+        attachment_image_file_size_limit: 2
+    opening_statement: '你好！我是医小管 🏥 山东第一医科大学校园智能服务助手。
+
+      有什么可以帮你的？'
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions:
+    - 怎么办理校园卡？
+    - 图书馆开放时间？
+    - 如何申请奖学金？
+    suggested_questions_after_answer:
+      enabled: true
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - variable: college_name
+          label: 学院
+          type: text-input
+          required: false
+          max_length: 48
+          default: ''
+        - variable: campus
+          label: 校区
+          type: text-input
+          required: false
+          max_length: 48
+          default: ''
+        - variable: class_name
+          label: 班级
+          type: text-input
+          required: false
+          max_length: 48
+          default: ''
+      height: 72
+      id: '1000000000001'
+      position:
+        x: 36.47247183519386
+        y: 264.5889887340775
+      positionAbsolute:
+        x: 36.47247183519386
+        y: 264.5889887340775
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        classes:
+        - id: cls-greeting
+          name: greeting (问候)
+        - id: cls-chitchat
+          name: chitchat (闲聊)
+        - id: cls-kb-query
+          name: kb_query (校园咨询)
+        - id: cls-transfer
+          name: transfer (转人工)
+        desc: ''
+        instruction: '你是一个意图分类器。根据用户的输入，判断其意图类别。
+
+
+          分类规则：
+
+          - greeting: 问候语（你好、嗨、早上好、在吗 等）
+
+          - chitchat: 闲聊（谢谢、再见、你是谁、你叫什么 等非校园事务）
+
+          - kb_query: 校园事务咨询（任何关于学校规则、流程、时间、地点的问题）
+
+          - transfer: 明确要求转人工（找老师、转人工、人工客服 等）'
+        instructions: ''
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: qwen-plus
+          provider: langgenius/tongyi/tongyi
+        query_variable_selector:
+        - sys
+        - query
+        selected: false
+        title: 意图分类
+        topics: []
+        type: question-classifier
+      height: 245
+      id: '1000000000002'
+      position:
+        x: 401.74110112659224
+        y: 184.33008986066977
+      positionAbsolute:
+        x: 401.74110112659224
+        y: 184.33008986066977
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        answer: '你好！我是医小管 🏥 山东第一医科大学校园智能服务助手。
+
+
+          有什么可以帮你的？你可以问我关于校园生活、学业办理、奖学金等各种问题哦～'
+        desc: ''
+        selected: false
+        title: 问候回复
+        type: answer
+      height: 147
+      id: '1000000000010'
+      position:
+        x: 780
+        y: -6.215619740035464
+      positionAbsolute:
+        x: 780
+        y: -6.215619740035464
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        memory:
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: true
+            size: 10
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: prompt-chitchat-sys
+          role: system
+          text: '你是「医小管」，山东第一医科大学校园智能服务助手。
+
+            用户在跟你闲聊，请友善自然地回复。
+
+            保持简短（1-2 句话），适时引导用户提出校园相关问题。
+
+            不要编造任何学校相关的具体信息。
+
+
+            【边界】
+
+            - 不讨论天气、外卖、娱乐、时政、医疗诊断
+
+            - 学生若问非校园事务，礼貌回复 1 句 + 引导"校园里有什么可以帮你？"
+
+            当前学生来自 {{#1000000000001.college_name#}} 学院，可适当关联校园场景并调整语气。'
+        - id: prompt-chitchat-user
+          role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: 闲聊LLM
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 87
+      id: '1000000000020'
+      position:
+        x: 780
+        y: 200
+      positionAbsolute:
+        x: 780
+        y: 200
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        answer: '{{#1000000000020.text#}}'
+        desc: ''
+        selected: false
+        title: 闲聊输出
+        type: answer
+      height: 102
+      id: '1000000000021'
+      position:
+        x: 1150
+        y: 190.0508507051872
+      positionAbsolute:
+        x: 1150
+        y: 190.0508507051872
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        dataset_ids:
+        - 4db0c819-7847-4a95-bf06-5b73a9d41d70
+        desc: ''
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        single_retrieval_config:
+          model:
+            completion_params: {}
+            mode: chat
+            name: qwen-plus
+            provider: tongyi
+        title: 知识检索
+        type: knowledge-retrieval
+        multiple_retrieval_config:
+          top_k: 4
+          reranking_mode: reranking_model
+          reranking_model:
+            provider: langgenius/tongyi/tongyi
+            model: qwen3-rerank
+          reranking_enable: true
+        query_attachment_selector: []
+      height: 89
+      id: '1000000000030'
+      position:
+        x: 780
+        y: 370
+      positionAbsolute:
+        x: 780
+        y: 370
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1000000000030'
+          - result
+        desc: ''
+        memory:
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: true
+            size: 10
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: prompt-rag-sys
+          role: system
+          text: '你是「医小管」，山东第一医科大学校园智能服务助手。
+
+
+            【身份与风格】
+
+            - 友善、专业、简洁；口语化但不失规范
+
+            - 可以在回答末尾适当鼓励或关心学生
+
+            - 不滥用 emoji；不装可爱；不卖萌
+
+            - 单次回复控制在 3-6 句话，长流程用编号步骤
+
+
+            【学生上下文】
+
+            当前学生：{{#1000000000001.college_name#}} {{#1000000000001.class_name#}} {{#1000000000001.campus#}}。
+
+            若上述字段为空，按"通用"处理；若与问题域无关，忽略。
+
+
+            【能力边界 — 我能做什么】
+
+            - 校园规则、流程、办事指南、时间、地点、联系方式
+
+            - 学业、奖助学金、图书馆、医疗、心理、国际交流等校园事务
+
+            - 不知道的事情诚实说"我暂时没有这方面资料"
+
+
+            【能力边界 — 我不能做什么】
+
+            - 医疗诊断 / 用药建议 → 引导至校医院或正规医院
+
+            - 心理危机干预 → 引导至心理中心 + 提醒 24 小时热线
+
+            - 法律咨询 / 案件判决 → 告知不提供，建议咨询专业律师
+
+            - 天气、外卖、导航、娱乐闲聊 → 礼貌说"这不是我的专长"
+
+            - 时政评论、宗教讨论、他人隐私 → 拒绝
+
+
+            【回答规范】
+
+            - 严格基于下方"参考资料"回答，不编造未出现的信息
+
+            - 严禁编造 URL、电话、地址、时间、政策条款、部门名称
+
+            - 参考资料信息不完整时，如实说明已知部分，建议"可以咨询辅导员或相应部门"
+
+            - 引用关键流程 / 表单 / 条款时，在该句末尾注明来源，如"（见《学生手册 第三章》）"
+
+            - 若学生追问详细流程但资料中仅有概述，主动建议转人工
+
+
+            参考资料：
+
+            {{#context#}}'
+          edition_type: basic
+        - id: prompt-rag-user
+          role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: RAG 回答
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+        prompt_config:
+          jinja2_variables: []
+      height: 87
+      id: '1000000000031'
+      position:
+        x: 1150
+        y: 370
+      positionAbsolute:
+        x: 1150
+        y: 370
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        answer: '{{#1000000000031.text#}}'
+        desc: ''
+        selected: false
+        title: 知识回答输出
+        type: answer
+      height: 102
+      id: '1000000000032'
+      position:
+        x: 1500
+        y: 370
+      positionAbsolute:
+        x: 1500
+        y: 370
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        answer: '我已收到你的转人工请求。正在为你转接人工客服，请稍候...
+
+
+          如果等待时间较长，你也可以继续向我提问，我会尽力帮助你。'
+        desc: ''
+        selected: false
+        title: 转人工回复
+        type: answer
+      height: 147
+      id: '1000000000040'
+      position:
+        x: 780
+        y: 541.4869835499704
+      positionAbsolute:
+        x: 780
+        y: 541.4869835499704
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    edges:
+    - data:
+        isInIteration: false
+        sourceType: start
+        targetType: question-classifier
+      id: edge-start-to-classifier
+      source: '1000000000001'
+      sourceHandle: source
+      target: '1000000000002'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: answer
+      id: edge-cls-greeting
+      source: '1000000000002'
+      sourceHandle: cls-greeting
+      target: '1000000000010'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: llm
+      id: edge-cls-chitchat
+      source: '1000000000002'
+      sourceHandle: cls-chitchat
+      target: '1000000000020'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: edge-chitchat-to-answer
+      source: '1000000000020'
+      sourceHandle: source
+      target: '1000000000021'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: knowledge-retrieval
+      id: edge-cls-kb
+      source: '1000000000002'
+      sourceHandle: cls-kb-query
+      target: '1000000000030'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: edge-kb-to-llm
+      source: '1000000000030'
+      sourceHandle: source
+      target: '1000000000031'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: edge-rag-to-answer
+      source: '1000000000031'
+      sourceHandle: source
+      target: '1000000000032'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: answer
+      id: edge-cls-transfer
+      source: '1000000000002'
+      sourceHandle: cls-transfer
+      target: '1000000000040'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    viewport:
+      x: -463.499995361585
+      y: -309.4869803822138
+      zoom: 0.9999999948490671

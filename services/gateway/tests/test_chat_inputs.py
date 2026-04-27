@@ -26,7 +26,7 @@ def test_build_dify_inputs_with_relations():
     assert inputs == {
         "college_name": "临床与基础医学院",
         "campus": "",
-        "class_id": "临床一班",
+        "class_name": "临床一班",
     }
 
 
@@ -47,7 +47,7 @@ def test_build_dify_inputs_with_null_relations():
     assert inputs == {
         "college_name": "",
         "campus": "",
-        "class_id": "",
+        "class_name": "",
     }
 
 
@@ -63,5 +63,5 @@ def test_build_dify_inputs_keys():
         password_hash="hashed",
     )
     inputs = build_dify_inputs(user)
-    assert set(inputs.keys()) == {"college_name", "campus", "class_id"}
+    assert set(inputs.keys()) == {"college_name", "campus", "class_name"}
     assert all(isinstance(v, str) for v in inputs.values())

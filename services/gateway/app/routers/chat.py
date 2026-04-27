@@ -123,8 +123,8 @@ def build_dify_inputs(user: User) -> dict[str, str]:
     """构造传给 Dify 的 inputs 字典（纯函数，便于单测）。"""
     return {
         "college_name": user.college.name if user.college else "",
-        "campus": "",  # TODO: campus 字段暂缺，待后续在 colleges 表加字段后回填
-        "class_id": user.class_.name if user.class_ else "",
+        "campus": user.college.campus or "" if user.college else "",
+        "class_name": user.class_.name if user.class_ else "",
     }
 
 
