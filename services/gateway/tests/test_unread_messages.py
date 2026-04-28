@@ -99,25 +99,43 @@ async def test_student_with_no_messages_has_zero_unread():
 
 
 @pytest.mark.asyncio
-async def test_teacher_and_system_messages_count_when_last_read_is_null():
+async def test_ai_and_system_only_messages_do_not_count_when_last_read_is_null():
     student = _user(102, UserRole.student)
     conv = _conv(2, student.id)
     base = datetime(2026, 4, 28, 9, 0, 0)
     messages = [
         _msg(1, conv.id, SenderType.student, base),
         _msg(2, conv.id, SenderType.ai, base + timedelta(minutes=1)),
-        _msg(3, conv.id, SenderType.ai, base + timedelta(minutes=2)),
-        _msg(4, conv.id, SenderType.teacher, base + timedelta(minutes=3)),
-        _msg(5, conv.id, SenderType.teacher, base + timedelta(minutes=4)),
-        _msg(6, conv.id, SenderType.teacher, base + timedelta(minutes=5)),
-        _msg(7, conv.id, SenderType.system, base + timedelta(minutes=6)),
+        _msg(3, conv.id, SenderType.system, base + timedelta(minutes=2)),
     ]
     db = _FakeDB([conv], sorted(messages, key=lambda msg: msg.created_at, reverse=True))
 
     result = await get_unread_summary(db, student)
 
-    assert result.total_unread == 4
-    assert result.items[0].unread_count == 4
+    assert result.total_unread == 0
+    assert result.items[0].unread_count == 0
+    assert result.items[0].last_message_sender_type == "system"
+
+
+@pytest.mark.asyncio
+async def test_teacher_messages_count_when_last_read_is_null():
+    student = _user(106, UserRole.student)
+    conv = _conv(6, student.id)
+    base = datetime(2026, 4, 28, 9, 0, 0)
+    messages = [
+        _msg(1, conv.id, SenderType.student, base),
+        _msg(2, conv.id, SenderType.ai, base + timedelta(minutes=1)),
+        _msg(3, conv.id, SenderType.teacher, base + timedelta(minutes=2)),
+        _msg(4, conv.id, SenderType.teacher, base + timedelta(minutes=3)),
+        _msg(5, conv.id, SenderType.teacher, base + timedelta(minutes=4)),
+        _msg(6, conv.id, SenderType.system, base + timedelta(minutes=5)),
+    ]
+    db = _FakeDB([conv], sorted(messages, key=lambda msg: msg.created_at, reverse=True))
+
+    result = await get_unread_summary(db, student)
+
+    assert result.total_unread == 3
+    assert result.items[0].unread_count == 3
     assert result.items[0].last_message_sender_type == "system"
 
 

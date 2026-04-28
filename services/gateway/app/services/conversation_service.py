@@ -154,6 +154,7 @@ async def get_conversation(
 async def get_unread_summary(db: AsyncSession, current_user: User) -> UnreadSummaryResponse:
     """Return all student conversations with unread counts.
 
+    unread_count is teacher messages newer than last_read_at.
     Conversations without messages are included with unread_count=0 so the
     response remains a complete conversation summary for the current student.
     """
@@ -178,13 +179,12 @@ async def get_unread_summary(db: AsyncSession, current_user: User) -> UnreadSumm
 
     items: list[UnreadSummaryItem] = []
     total_unread = 0
-    unread_sender_types = {SenderType.teacher, SenderType.system}
     for conv in conversations:
         conv_messages = messages_by_conv.get(conv.id, [])
         last_message = conv_messages[0] if conv_messages else None
         unread_count = 0
         for msg in conv_messages:
-            if msg.sender_type not in unread_sender_types:
+            if msg.sender_type != SenderType.teacher:
                 continue
             if conv.last_read_at is None or msg.created_at > conv.last_read_at:
                 unread_count += 1
