@@ -11,6 +11,7 @@ export interface Message {
   sources?: Source[]
   timestamp: number
   isStreaming?: boolean
+  refusal?: boolean
 }
 
 export interface ConversationResponse {

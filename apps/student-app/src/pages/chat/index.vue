@@ -158,6 +158,21 @@
             </view>
           </view>
         </view>
+        <view v-if="showRefusalCTA && conversationStatus === 'ai_serving'" class="refusal-cta">
+          <view class="refusal-cta-icon-wrap">
+            <text class="material-symbols-outlined refusal-cta-icon">support_agent</text>
+          </view>
+          <view class="refusal-cta-body">
+            <text class="refusal-cta-title">AI 似乎无法回答</text>
+            <text class="refusal-cta-desc">需要老师介入吗？</text>
+          </view>
+          <view class="refusal-cta-actions">
+            <text class="refusal-cta-dismiss" @click="showRefusalCTA = false">忽略</text>
+            <view class="refusal-cta-btn" @click="handleCallTeacher">
+              <text class="refusal-cta-btn-text">{{ escalateLoading ? '呼叫中...' : '呼叫老师' }}</text>
+            </view>
+          </view>
+        </view>
         <view class="input-wrapper">
           <input
             v-model="inputMessage"
@@ -226,6 +241,7 @@ const conversationId = ref<number | null>(null)
 const conversationStatus = ref<ConversationStatus>('ai_serving')
 const escalateLoading = ref(false)
 const showCallMenu = ref(false)
+const showRefusalCTA = ref(false)
 const sourcePopup = reactive({ visible: false, title: '', content: '' })
 
 // ============ 计算属性 ============
@@ -305,6 +321,7 @@ function onStatusChanged(data: any) {
   if (convId !== conversationId.value) return
   const newStatus = (data.newStatus || data.new_status || data.status) as ConversationStatus
   conversationStatus.value = newStatus
+  if (newStatus !== 'ai_serving') showRefusalCTA.value = false
 
   let systemMsg = ''
   if (newStatus === 'teacher_serving') systemMsg = '老师已接入，你可以直接向老师提问。'
@@ -346,6 +363,8 @@ async function loadHistory() {
   try {
     const res = await getMessages(conversationId.value)
     messages.value = res.items.map(mapServerMessage)
+    const lastAiMessage = [...messages.value].reverse().find(msg => msg.role === 'assistant')
+    showRefusalCTA.value = Boolean(lastAiMessage?.refusal)
     scrollToBottom()
   } catch (e) {
     console.error('加载消息失败:', e)
@@ -361,6 +380,7 @@ function mapServerMessage(m: MessageResponse): Message {
     role: roleMap[m.sender_type] || 'system',
     content: m.content || '',
     sources: m.metadata_?.sources || [],
+    refusal: m.metadata_?.refusal || false,
     timestamp: m.created_at ? new Date(m.created_at).getTime() : Date.now(),
   }
 }
@@ -373,6 +393,7 @@ function goToHistory() { uni.navigateTo({ url: '/pages/chat/history' }) }
 async function sendMessage() {
   const content = inputMessage.value.trim()
   if (!content || isStreaming.value) return
+  showRefusalCTA.value = false
 
   if (!conversationId.value) {
     try {
@@ -458,7 +479,9 @@ async function streamResponse(userContent: string) {
           const msg = getReactive()
           msg.content = data.full_content || msg.content
           msg.sources = data.sources || []
+          msg.refusal = data.refusal === true
           msg.isStreaming = false
+          showRefusalCTA.value = data.refusal === true && conversationStatus.value === 'ai_serving'
           scrollToBottom()
         },
         onError: (errMsg: string) => {
@@ -496,9 +519,12 @@ const REFUSAL_KEYWORDS = [
   '超出了我的知识范围', '建议您直接咨询', '暂时不可用', '请稍后重试',
   '无法为您提供', '没有找到相关', '不在我的服务范围',
   '转人工请求', '转接人工客服', '转人工服务', '转接人工',
+  '无法理解', '请联系', '建议您联系', '建议咨询',
+  '我没有相关信息', '我无法确认', '建议直接联系',
 ]
 function isRefusalMsg(msg: Message): boolean {
   if (msg.role !== 'assistant' || !msg.content) return false
+  if (msg.refusal === true) return true
   if (REFUSAL_KEYWORDS.some(kw => msg.content.includes(kw))) return true
   if (msg.content.includes('抱歉') && (!msg.sources || msg.sources.length === 0)) return true
   return false
@@ -520,6 +546,7 @@ async function handleCallTeacher() {
   try {
     await escalate(conversationId.value)
     conversationStatus.value = 'pending_teacher'
+    showRefusalCTA.value = false
     messages.value.push({
       id: `sys-escalate-${Date.now()}`,
       role: 'system',
@@ -610,6 +637,16 @@ function scrollToBottom() {
 .bottom-spacer { height: 10rem; }
 
 .bottom-area { position: fixed; bottom: 3.5rem; left: 0; right: 0; z-index: 40; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); padding: 0.75rem 1rem; padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)); }
+.refusal-cta { display: flex; align-items: center; gap: 0.625rem; padding: 0.75rem 1rem; margin: 0 0 0.5rem; background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(99,14,212,0.12)); border: 1px solid rgba(124,58,237,0.2); border-radius: 1rem; }
+.refusal-cta-icon-wrap { width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #7c3aed, #630ed4); border-radius: 0.625rem; flex-shrink: 0; }
+.refusal-cta-icon { font-size: 1.125rem; color: #fff; }
+.refusal-cta-body { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.refusal-cta-title { font-size: 0.875rem; font-weight: 700; color: #1a1a2e; }
+.refusal-cta-desc { font-size: 0.75rem; color: #64748b; margin-top: 0.125rem; }
+.refusal-cta-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+.refusal-cta-dismiss { font-size: 0.75rem; color: #94a3b8; padding: 0.375rem 0.5rem; }
+.refusal-cta-btn { padding: 0.5rem 0.875rem; background: linear-gradient(135deg, #7c3aed, #630ed4); border-radius: 0.625rem; }
+.refusal-cta-btn-text { font-size: 0.8125rem; font-weight: 700; color: #fff; }
 .call-menu-overlay { position: absolute; bottom: 100%; left: 0; right: 0; display: flex; justify-content: flex-end; padding: 0 1rem 0.5rem; z-index: 50; }
 .call-menu { background: #fff; border-radius: 0.75rem; box-shadow: 0 0.25rem 1.5rem rgba(0,0,0,0.12); overflow: hidden; min-width: 8rem; }
 .call-menu-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; }
