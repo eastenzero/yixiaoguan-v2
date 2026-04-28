@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>我的提问 - 医小管</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ba1a1a",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed": "#ffdcc6",
+                    "primary": "#630ed4",
+                    "on-secondary-fixed-variant": "#581db3",
+                    "on-surface": "#191c1e",
+                    "secondary-fixed": "#ebddff",
+                    "surface-dim": "#d8dadc",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#713700",
+                    "surface-tint": "#732ee4",
+                    "primary-fixed": "#eaddff",
+                    "tertiary": "#7d3d00",
+                    "on-secondary": "#ffffff",
+                    "background": "#f7f9fb",
+                    "on-primary-fixed": "#25005a",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e6e8ea",
+                    "on-tertiary-container": "#ffe0cd",
+                    "outline": "#7b7487",
+                    "surface": "#f7f9fb",
+                    "inverse-on-surface": "#eff1f3",
+                    "tertiary-fixed-dim": "#ffb784",
+                    "on-secondary-container": "#fffbff",
+                    "surface-bright": "#f7f9fb",
+                    "outline-variant": "#ccc3d8",
+                    "surface-container-highest": "#e0e3e5",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#d3bbff",
+                    "primary-container": "#7c3aed",
+                    "surface-container": "#eceef0",
+                    "inverse-surface": "#2d3133",
+                    "secondary-container": "#8856e5",
+                    "primary-fixed-dim": "#d2bbff",
+                    "on-surface-variant": "#4a4455",
+                    "on-primary-container": "#ede0ff",
+                    "surface-container-low": "#f2f4f6",
+                    "on-background": "#191c1e",
+                    "tertiary-container": "#a15100",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#250059",
+                    "on-primary-fixed-variant": "#5a00c6",
+                    "on-tertiary-fixed": "#301400",
+                    "inverse-primary": "#d2bbff",
+                    "surface-variant": "#e0e3e5",
+                    "secondary": "#6e3aca"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope", "PingFang SC", "sans-serif"],
+                    "body": ["Manrope", "PingFang SC", "sans-serif"],
+                    "label": ["Manrope", "PingFang SC", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .shadow-purple-glow {
+        box-shadow: 0 -10px 40px rgba(124, 58, 237, 0.08);
+      }
+      .glass-card {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body text-on-surface antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full px-6 py-4 flex justify-between items-center bg-[#f7f9fb]/80 dark:bg-slate-900/80 backdrop-blur-xl z-50">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-[#630ed4] hover:bg-purple-50 p-2 rounded-full transition-colors active:scale-95 duration-200">arrow_back</button>
+<h1 class="font-manrope text-xl font-bold tracking-tight text-[#630ed4]">我的提问</h1>
+</div>
+<div class="flex items-center">
+<button class="material-symbols-outlined text-[#630ed4] hover:bg-purple-50 p-2 rounded-full transition-colors active:scale-95 duration-200">notifications</button>
+</div>
+</header>
+<main class="pt-24 pb-12 px-6 max-w-2xl mx-auto">
+<!-- Filter Tabs -->
+<div class="flex overflow-x-auto no-scrollbar gap-2 mb-8 items-center bg-surface-container-low p-1.5 rounded-full">
+<button class="px-6 py-2.5 rounded-full text-sm font-bold bg-primary text-on-primary shadow-lg shadow-primary/20 transition-all">全部</button>
+<button class="px-6 py-2.5 rounded-full text-sm font-bold text-on-surface-variant hover:bg-surface-container-high transition-all">待处理</button>
+<button class="px-6 py-2.5 rounded-full text-sm font-bold text-on-surface-variant hover:bg-surface-container-high transition-all">处理中</button>
+<button class="px-6 py-2.5 rounded-full text-sm font-bold text-on-surface-variant hover:bg-surface-container-high transition-all">已解决</button>
+</div>
+<!-- Tickets List -->
+<div class="space-y-6">
+<!-- Ticket Card 1 (In Progress) -->
+<div class="group relative bg-surface-container-lowest rounded-lg p-6 transition-all hover:bg-surface-container-low cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-primary/10 text-primary">
+                        处理中
+                    </span>
+<span class="text-on-surface-variant text-xs opacity-60">2023.10.24 14:30</span>
+</div>
+<h3 class="text-on-surface font-bold text-lg leading-relaxed line-clamp-2 mb-4">
+                    关于医学影像学期末复习重点的咨询，特别是CT与MRI鉴别诊断部分的内容是否有变动？
+                </h3>
+<div class="flex items-center justify-between mt-6 pt-6 border-t border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-sm">person</span>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">负责老师</p>
+<p class="text-sm font-bold text-on-surface">张德培 教授</p>
+</div>
+</div>
+<button class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</button>
+</div>
+</div>
+<!-- Ticket Card 2 (Pending) -->
+<div class="group relative bg-surface-container-lowest rounded-lg p-6 transition-all hover:bg-surface-container-low cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-warning/10 text-warning">
+                        待处理
+                    </span>
+<span class="text-on-surface-variant text-xs opacity-60">2023.10.23 09:15</span>
+</div>
+<h3 class="text-on-surface font-bold text-lg leading-relaxed line-clamp-2 mb-4">
+                    申请实验室B402的使用权限，计划进行关于心血管病理模型的组胚观察实验。
+                </h3>
+<div class="flex items-center justify-between mt-6 pt-6 border-t border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-outline text-sm">help</span>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">负责老师</p>
+<p class="text-sm font-bold text-on-surface italic opacity-40">等待分配中</p>
+</div>
+</div>
+<button class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</button>
+</div>
+</div>
+<!-- Ticket Card 3 (Resolved) -->
+<div class="group relative bg-surface-container-lowest rounded-lg p-6 transition-all hover:bg-surface-container-low cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-success/10 text-success">
+                        已解决
+                    </span>
+<span class="text-on-surface-variant text-xs opacity-60">2023.10.21 16:45</span>
+</div>
+<h3 class="text-on-surface font-bold text-lg leading-relaxed line-clamp-2 mb-4">
+                    咨询医学生海外访学计划的学分转换细则，尤其是临床实习部分的认证。
+                </h3>
+<div class="flex items-center justify-between mt-6 pt-6 border-t border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-sm">person</span>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">负责老师</p>
+<p class="text-sm font-bold text-on-surface">林婉秋 老师</p>
+</div>
+</div>
+<button class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</button>
+</div>
+</div>
+<!-- Empty State Illustration Placeholder Section -->
+<div class="mt-16 text-center space-y-4">
+<div class="relative w-48 h-48 mx-auto flex items-center justify-center">
+<div class="absolute inset-0 bg-primary/5 rounded-full scale-110 blur-2xl"></div>
+<img alt="Empty state illustration" class="w-24 h-24 object-contain relative z-10 opacity-40 grayscale" data-alt="Minimalist academic illustration of a stack of journals and a stethoscope in soft purple and grey tones on a clean background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-Hg0rfGyG1B8ElMc7pl9YCMSocEB9UufPCdkcfWyD1x_rnkiL9JMZxnWKxUnsyNai4DJEvK6c-vMqvmYMah1jC4nL15HnA9QCIw5keAgNWK5As7WHPaNmBI1IU9a89lYN_O8d1UXjIp8Qjhay-9zoqJKNUgC2_V05KvKE3soCOj_qr5QJ_oyuaVs91O_TYodqpTuNgjOVtfbB_BBiWlCm_qqkZ3pUyvfmC2t9MlnFdxG-t11pI0ZtxDeoKw1hBX4Dq28N8S4mKhY"/>
+</div>
+<div class="max-w-xs mx-auto">
+<h4 class="text-on-surface font-bold text-base">已经到底啦</h4>
+<p class="text-on-surface-variant text-sm mt-2 opacity-60">
+                        如果你有任何学术或生活上的疑问，点击下方按钮随时提问。
+                    </p>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (FAB) -->
+<button class="fixed bottom-10 right-6 w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-xl shadow-primary/30 flex items-center justify-center active:scale-90 transition-transform z-40">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+</body></html>

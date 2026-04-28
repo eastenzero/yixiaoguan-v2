@@ -1,0 +1,82 @@
+P1-1 follow-up. Tighten unread-count semantics: only count teacher messages, and backfill historical conversations so existing data doesn't inflate badge.
+
+Strict rules:
+- Do NOT modify, rebase, squash, or amend any existing commits.
+- Make exactly TWO new commits on top of current HEAD (9c64ecd).
+- Do not push.
+- When invoking shell commands on Windows PowerShell, AVOID complex regex with pipes and double-quote escaping. Use simple commands or read files directly.
+
+============================================================
+COMMIT 1: only count teacher messages (exclude system / ai / student)
+Commit message: "fix(unread): count only teacher messages, exclude system/ai/student"
+============================================================
+
+1.1 Edit services/gateway/app/services/conversation_service.py:
+    In `get_unread_summary`, change the unread_count filter so that ONLY messages with
+    `sender_type = SenderType.teacher` count toward unread_count.
+    - Currently the prompt called for "teacher OR system". Drop system.
+    - Keep `last_message_sender_type` and `last_message_at` describing the actual latest
+      message of any sender_type (do NOT filter that to teacher only).
+    - Comments/docstring should reflect: "unread = teacher messages newer than last_read_at".
+
+1.2 Edit services/gateway/tests/test_unread_messages.py:
+    Update test cases to match the new semantics:
+    - A conversation with only AI/system replies should have unread_count = 0 even with
+      last_read_at NULL.
+    - A conversation with N teacher messages and last_read_at NULL should have unread_count = N.
+    - Mark-read still drops to 0; new teacher message after mark-read = unread_count 1.
+    - Add at least one new test verifying that system/ai messages do NOT count.
+    - Keep existing scoping tests (different student, non-student caller).
+
+1.3 Verify:
+    cd services/gateway
+    python -m pytest tests/test_unread_messages.py -q
+    -> all tests pass
+
+    ruff check app/services/conversation_service.py tests/test_unread_messages.py
+
+1.4 Commit message: "fix(unread): count only teacher messages, exclude system/ai/student"
+
+============================================================
+COMMIT 2: backfill historical conversations.last_read_at
+Commit message: "chore(unread): backfill last_read_at = updated_at for existing conversations"
+============================================================
+
+2.1 Create new alembic migration file:
+    services/gateway/alembic/versions/b2e7a91c4d80_backfill_conv_last_read_at.py
+
+    Content:
+    - revision = "b2e7a91c4d80"
+    - down_revision = "a1f8c4b9e203"
+    - upgrade(): execute SQL to set last_read_at = updated_at for every conversation row
+                 where last_read_at IS NULL. Use op.execute with parameterized SQL or a
+                 sa.text statement. Do NOT touch rows where last_read_at is already set.
+    - downgrade(): set last_read_at = NULL for all rows (best-effort reverse).
+
+    Style: follow the existing migration file pattern.
+
+    SQL hint:
+        UPDATE conversations
+        SET last_read_at = updated_at
+        WHERE last_read_at IS NULL;
+
+2.2 Verify locally:
+    cd services/gateway
+    alembic upgrade head 2>&1 | tail -5
+
+    Note: in your local dev DB this may or may not actually have rows; alembic will still
+    record the migration. The point is that the migration file is syntactically valid and
+    has correct revision chain.
+
+    Then alembic heads should still print only b2e7a91c4d80 (head) (single head, linear).
+
+2.3 Commit message: "chore(unread): backfill last_read_at = updated_at for existing conversations"
+
+============================================================
+Final state expected: HEAD has exactly 2 NEW commits on top of 9c64ecd:
+- Commit 1: service-layer change to only count teacher messages + updated tests (all pass)
+- Commit 2: new alembic migration file backfilling last_read_at
+- No existing commits modified
+- alembic heads -> single head (b2e7a91c4d80)
+- pytest tests/test_unread_messages.py -> all pass
+- No push

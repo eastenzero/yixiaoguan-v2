@@ -1,0 +1,79 @@
+You are working in a UniApp Vue3 monorepo at C:\Users\Administrator\Documents\code\yixiaoguan-v2 (you are already chdir'd here via -C).
+
+Repo structure:
+- apps/teacher-app — UniApp + Vite + TS, teacher portal
+- apps/student-app — UniApp + Vite + TS, student portal
+- backend/         — FastAPI (DO NOT TOUCH)
+- docs/design/ui-references/ — stitch design HTML+PNG, the ground truth
+
+Recent context (last 2 commits):
+- 9379d45  feat(ui): student home rewrite + 事务导办 tab + tabBar polish (Sprint 2.1)
+- 89a3ec1  feat(ui): unify design tokens (violet-800 primary #5b21b6, Manrope, Material Symbols)
+
+Design tokens live at apps/student-app/src/styles/tokens.scss (and identical at apps/teacher-app/src/styles/tokens.scss). Use these tokens — do NOT introduce new hardcoded hex colors in <style> blocks.
+
+==========================================================
+USER-REPORTED VISUAL BUGS (after running student-app H5 dev)
+==========================================================
+
+The user ran `npm run dev:h5` for student-app and observed:
+
+### Bug 1 (P0) — Bottom TabBar rendering is broken
+On every page (home, services, profile), the bottom CustomTabBar has visual artifacts:
+- A blank/white strip is visible ABOVE the tab labels — looks like UniApp's native tabBar AND the custom CustomTabBar are BOTH rendering, stacked.
+- On home page: the active-tab "purple pill" highlight is fragmented / mispositioned (a partial purple shape floats above the active tab label).
+- On services page (事务导办): active highlight doesn't render at all — only the text color changes to purple. The rounded-top + glow that was supposed to be added isn't visible.
+- pages.json has `"tabBar": { "custom": true, "list": [...4 items...] }` and a custom component CustomTabBar.vue — investigate whether both layers are actually rendering, or whether routing path matching is wrong (e.g. checking `/pages/services/index` vs `pages/services/index`).
+
+### Bug 2 (P1) — profile page is not styled at all
+apps/student-app/src/pages/profile/index.vue is the legacy minimal version: purple gradient banner with avatar+name+id, then 3 info rows (姓名/学号/角色), then a "退出登录" button. It does NOT use design tokens consistently and it doesn't match the stitch design at:
+docs/design/ui-references/student-app-stitch/stitch_yixiaoguan_campus_assistant/profile_page/code.html
+
+The stitch design has additional sections like settings list, about/help entries, version info, etc. Rewrite profile/index.vue to recover those sections. Preserve all current behavior:
+- userStore.userInfo binding (name, staff_id)
+- logout button calls userStore.logout() which clears state and navigates to /pages/login/index
+- Whatever lifecycle / nav / API logic is currently there
+
+For settings/about/help entries that don't exist as routes yet, use `uni.showToast({ title: '即将上线', icon: 'none' })` like the services page does.
+
+### Bug 3 (P2) — horizontal tags scrollbar visible on H5
+On home page, the horizontal tag scroll-view (`<scroll-view scroll-x>` containing 奖学金政策 / 选课指南 / 图书馆开放 / 校园卡充值) shows a visible scrollbar on H5. Hide it with:
+```scss
+::-webkit-scrollbar { display: none; }
+scrollbar-width: none;
+```
+on the appropriate selector.
+
+==========================================================
+WORKING CONSTRAINTS
+==========================================================
+
+- Treat docs/design/ui-references/ as authoritative for visual decisions. Read the relevant stitch HTML before designing.
+- Do NOT modify anything under C:\Users\Administrator\.windsurf\worktrees\
+- Do NOT modify anything under backend/ (Python FastAPI is out of scope)
+- Do NOT modify any teacher-app file unless absolutely necessary (this is student-app focused; teacher-app build runs only as smoke test)
+- Do NOT install npm packages
+- Do NOT git push (user controls push)
+- Use git for commits
+- Verify with `npm run build:h5` in apps/student-app/ before committing
+
+==========================================================
+DELIVERY
+==========================================================
+
+When done, produce a single commit with message like:
+"fix(ui): tabBar render artifacts + profile page rewrite + scrollbar (Sprint 2.1.1)"
+
+The commit should include:
+1. Whatever fix you make to CustomTabBar.vue / pages.json / App.vue / home/index.vue (whichever combination is needed for the tabBar bug)
+2. Rewritten apps/student-app/src/pages/profile/index.vue
+3. Scrollbar hide on the horizontal tags scroll-view in home/index.vue
+
+Then output a concise summary (under 50 lines) covering:
+- Root cause of the tabBar bug (in 1-2 sentences with evidence)
+- What you changed in each file
+- Build verification result
+- Git commit hash + log -3
+- Anything you couldn't fix or that needs user follow-up
+
+Investigate carefully, verify your understanding, and use your judgment freely on implementation details. The user explicitly said your intelligence allows for less prescriptive instructions — use that latitude.

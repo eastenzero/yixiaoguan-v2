@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffdcc6",
+                        "primary": "#630ed4",
+                        "on-secondary-fixed-variant": "#581db3",
+                        "on-surface": "#191c1e",
+                        "secondary-fixed": "#ebddff",
+                        "surface-dim": "#d8dadc",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "surface-tint": "#732ee4",
+                        "primary-fixed": "#eaddff",
+                        "tertiary": "#7d3d00",
+                        "on-secondary": "#ffffff",
+                        "background": "#f7f9fb",
+                        "on-primary-fixed": "#25005a",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary-container": "#ffe0cd",
+                        "outline": "#7b7487",
+                        "surface": "#f7f9fb",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-fixed-dim": "#ffb784",
+                        "on-secondary-container": "#fffbff",
+                        "surface-bright": "#f7f9fb",
+                        "outline-variant": "#ccc3d8",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#d3bbff",
+                        "primary-container": "#7c3aed",
+                        "surface-container": "#eceef0",
+                        "inverse-surface": "#2d3133",
+                        "secondary-container": "#8856e5",
+                        "primary-fixed-dim": "#d2bbff",
+                        "on-surface-variant": "#4a4455",
+                        "on-primary-container": "#ede0ff",
+                        "surface-container-low": "#f2f4f6",
+                        "on-background": "#191c1e",
+                        "tertiary-container": "#a15100",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#250059",
+                        "on-primary-fixed-variant": "#5a00c6",
+                        "on-tertiary-fixed": "#301400",
+                        "inverse-primary": "#d2bbff",
+                        "surface-variant": "#e0e3e5",
+                        "secondary": "#6e3aca"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .shadow-purple-glow {
+            box-shadow: 0 -10px 40px rgba(124, 58, 237, 0.08);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Manrope', sans-serif;
+            background-color: #f7f9fb;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen pb-32">
+<!-- Top Navigation Anchor (Shared Component: TopAppBar) -->
+<header class="fixed top-0 left-0 w-full px-6 py-4 flex justify-between items-center bg-[#f7f9fb]/80 dark:bg-slate-900/80 backdrop-blur-xl z-50">
+<div class="flex items-center gap-3">
+<span class="font-manrope font-black text-xl text-[#630ed4] dark:text-[#7c3aed]">医小管</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="relative p-2 text-slate-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-background"></span>
+</button>
+</div>
+</header>
+<main class="pt-24 px-6 space-y-8">
+<!-- Personalized Greeting -->
+<section class="space-y-1">
+<p class="text-on-surface-variant font-medium tracking-tight">下午好，林同学</p>
+<h1 class="text-3xl font-bold font-headline tracking-tight text-on-surface">智慧校园助理</h1>
+</section>
+<!-- AI Search Pill -->
+<section class="relative">
+<div class="bg-surface-container-lowest rounded-full p-1.5 flex items-center shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-outline-variant/10">
+<div class="bg-primary-container p-2.5 rounded-full flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[20px]" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-sm font-medium px-4 text-on-surface-variant placeholder-slate-400" placeholder="有什么可以帮你的？" type="text"/>
+<button class="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full text-xs font-bold active:scale-95 duration-200">
+                    提问
+                </button>
+</div>
+</section>
+<!-- Horizontal Scrollable Tags -->
+<section class="overflow-x-auto no-scrollbar -mx-6 px-6 flex gap-3">
+<span class="shrink-0 bg-surface-container-low px-5 py-2.5 rounded-full text-sm font-bold text-on-surface-variant hover:bg-primary-container hover:text-on-primary transition-all cursor-pointer">奖学金政策</span>
+<span class="shrink-0 bg-surface-container-low px-5 py-2.5 rounded-full text-sm font-bold text-on-surface-variant hover:bg-primary-container hover:text-on-primary transition-all cursor-pointer">选课指南</span>
+<span class="shrink-0 bg-surface-container-low px-5 py-2.5 rounded-full text-sm font-bold text-on-surface-variant hover:bg-primary-container hover:text-on-primary transition-all cursor-pointer">图书馆开放</span>
+<span class="shrink-0 bg-surface-container-low px-5 py-2.5 rounded-full text-sm font-bold text-on-surface-variant hover:bg-primary-container hover:text-on-primary transition-all cursor-pointer">校园卡充值</span>
+</section>
+<!-- Bento-style Feature Grid -->
+<section class="grid grid-cols-2 grid-rows-2 gap-4 h-[280px]">
+<!-- Large Card: AI Assistant -->
+<div class="col-span-1 row-span-2 bg-gradient-to-br from-primary to-secondary rounded-lg p-6 flex flex-col justify-between relative overflow-hidden group">
+<div class="z-10">
+<div class="bg-white/20 w-12 h-12 rounded-2xl flex items-center justify-center backdrop-blur-md mb-4">
+<span class="material-symbols-outlined text-white text-2xl" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<h3 class="text-white text-xl font-bold font-headline mb-2">AI 智能助手</h3>
+<p class="text-primary-fixed text-sm opacity-90 leading-relaxed">您的全天候校园百科全书</p>
+</div>
+<div class="z-10 flex items-center text-white text-xs font-bold gap-2">
+                    立即开启 
+                    <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<!-- Decorative background elements -->
+<div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-500"></div>
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary-container/20 rounded-full blur-3xl"></div>
+</div>
+<!-- Small Card: Room Booking -->
+<div class="col-span-1 row-span-1 bg-surface-container-lowest rounded-lg p-5 flex flex-col justify-between shadow-[0_4px_20px_rgba(124,58,237,0.04)] hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 bg-tertiary/10 rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" data-icon="calendar_month">calendar_month</span>
+</div>
+<span class="text-[10px] font-bold text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-full">HOT</span>
+</div>
+<div>
+<h4 class="text-on-surface font-bold text-sm">空教室预约</h4>
+<p class="text-on-surface-variant text-[11px] mt-0.5">可预约 12 间</p>
+</div>
+</div>
+<!-- Small Card: Applications -->
+<div class="col-span-1 row-span-1 bg-surface-container-lowest rounded-lg p-5 flex flex-col justify-between shadow-[0_4px_20px_rgba(124,58,237,0.04)] hover:bg-surface-container-high transition-colors">
+<div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="assignment">assignment</span>
+</div>
+<div>
+<h4 class="text-on-surface font-bold text-sm">我的申请</h4>
+<p class="text-primary text-[11px] font-bold mt-0.5">2 项进行中</p>
+</div>
+</div>
+</section>
+<!-- Quick Links List (Common Services) -->
+<section class="space-y-4">
+<div class="flex justify-between items-end">
+<h2 class="text-lg font-bold font-headline tracking-tight text-on-surface">常用服务</h2>
+<span class="text-xs text-primary font-bold">查看全部</span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-2 space-y-1">
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-md group hover:bg-primary-fixed/30 transition-colors">
+<div class="flex items-center gap-4">
+<div class="text-on-surface-variant group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+</div>
+<span class="text-sm font-bold text-on-surface">教务管理系统</span>
+</div>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary group-hover:translate-x-1 transition-all" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-md group hover:bg-primary-fixed/30 transition-colors">
+<div class="flex items-center gap-4">
+<div class="text-on-surface-variant group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="library_books">library_books</span>
+</div>
+<span class="text-sm font-bold text-on-surface">图书馆</span>
+</div>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary group-hover:translate-x-1 transition-all" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-md group hover:bg-primary-fixed/30 transition-colors">
+<div class="flex items-center gap-4">
+<div class="text-on-surface-variant group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+</div>
+<span class="text-sm font-bold text-on-surface">学生邮箱</span>
+</div>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary group-hover:translate-x-1 transition-all" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-md group hover:bg-primary-fixed/30 transition-colors">
+<div class="flex items-center gap-4">
+<div class="text-on-surface-variant group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="language">language</span>
+</div>
+<span class="text-sm font-bold text-on-surface">学校官网</span>
+</div>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary group-hover:translate-x-1 transition-all" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Notification Banner -->
+<section class="pb-4">
+<div class="bg-primary/5 rounded-lg p-4 flex items-center justify-between border border-primary/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="campaign">campaign</span>
+</div>
+<span class="text-sm font-bold text-primary">你有 3 条未读通知</span>
+</div>
+<span class="material-symbols-outlined text-primary text-sm" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</section>
+</main>
+<!-- Navigation Shell (Shared Component: BottomNavBar) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-[0_-10px_40px_rgba(124,58,237,0.08)] rounded-t-[2rem]">
+<!-- Destination 1: Home (Active) -->
+<div class="flex flex-col items-center justify-center bg-[#7c3aed]/10 text-[#630ed4] rounded-[24px] px-5 py-2 active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-manrope text-[10px] font-bold tracking-wide mt-1">首页</span>
+</div>
+<!-- Destination 2: AI Q&A -->
+<div class="flex flex-col items-center justify-center text-slate-400 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-manrope text-[10px] font-bold tracking-wide mt-1">智能问答</span>
+</div>
+<!-- Destination 3: Tasks -->
+<div class="flex flex-col items-center justify-center text-slate-400 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="business_center">business_center</span>
+<span class="font-manrope text-[10px] font-bold tracking-wide mt-1">事务导办</span>
+</div>
+<!-- Destination 4: Profile -->
+<div class="flex flex-col items-center justify-center text-slate-400 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-manrope text-[10px] font-bold tracking-wide mt-1">我的</span>
+</div>
+</nav>
+</body></html>

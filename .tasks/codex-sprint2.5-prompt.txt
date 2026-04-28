@@ -1,0 +1,27 @@
+STRICT RULES (read carefully before starting):
+- Do NOT modify, rebase, squash, or amend any existing commits.
+- Do NOT reorganize git history.
+- The current HEAD is 496551d. Add new commits ONLY ON TOP of HEAD.
+- Make exactly 3 NEW commits, one per task below.
+- Do not push.
+
+TASK 1: Refactor apps/teacher-app/src/pages/knowledge/detail.vue
+- Replace hardcoded hex colors with SCSS variables from apps/teacher-app/src/styles/tokens.scss (auto-loaded via uni.scss).
+- Use Material Symbols Outlined font icons (CDN already loaded in index.html) where reasonable.
+- Look for matching stitch reference under docs/design/ui-references/teacher-app-stitch/stitch_yixiaoguan_campus_assistant/ (e.g. knowledge_detail or similar) and align visual structure.
+- Preserve all current behavior: imports, store, API, navigation, lifecycle.
+- Verify with npm run build:h5 from apps/teacher-app/.
+- Commit message: "refactor teacher knowledge detail page"
+
+TASK 2: Same treatment for apps/teacher-app/src/pages/questions/detail.vue.
+- Commit message: "refactor teacher questions detail page"
+
+TASK 3: In apps/teacher-app/src/pages/questions/index.vue, add a red badge on the "待处理" tab label showing the count of pending (awaiting/unanswered) questions.
+- Show the badge with the number when count > 0.
+- Hide the badge when count is 0.
+- Style: small red circle (use a danger token from tokens.scss if available, otherwise #FF4D4F with a tracking comment), white text, ~16-18px, positioned at top-right of the "待处理" tab label.
+- The count should come from the existing pending/unanswered list data already fetched in this page.
+- Verify with npm run build:h5.
+- Commit message: "feat teacher questions pending badge"
+
+Final state expected: HEAD will be at a new commit (after TASK 3), with exactly 3 NEW commits on top of 496551d. No old commits should be altered.

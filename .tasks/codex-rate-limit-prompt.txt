@@ -1,0 +1,136 @@
+# Sprint: 登录接口 IP 级 rate limit
+
+## 背景
+
+Kimi 内测前安全审计 (.tasks/kimi-pilot-audit-report.md 第 5 项) 指出：`POST /api/auth/login` 当前没有任何限流，攻击者可对任意 staff_id 暴力破解密码。学生/辅导员账号的初始密码就是 staff_id（学号）或姓名拼音变体，被破解后果严重。
+
+## 目标
+
+为 `services/gateway/app/routers/auth.py` 的 `/api/auth/login` 端点加 IP 级 rate limit：
+- 同一 IP 在 60 秒滑动窗口内累计 **5 次失败登录**（密码错误或 staff_id 不存在）后，第 6 次起立即返回 429 Too Many Requests，无论真实凭据是否正确。
+- 锁定窗口：再过 60 秒不再失败，自动恢复。
+- 计数存储：复用 gateway 已有的 redis（`settings.redis_url`）。
+- 成功登录**不**重置计数（防止"先暴破再用对的密码探测有效账号"的探测攻击）。
+
+## 实现细节
+
+### 1. 选型
+
+不引入新依赖。直接用 redis-py（已在 `requirements.txt`）实现。算法：固定窗口 + INCR + EXPIRE，简单、足够、原子性强。
+
+```python
+key = f"login_fail:{client_ip}"
+count = await redis.incr(key)
+if count == 1:
+    await redis.expire(key, 60)   # 第一次失败，启动 60s 窗口
+if count > 5:
+    raise HTTPException(429, "Too many failed login attempts. Try again in 1 minute.")
+```
+
+### 2. 获取 client IP
+
+需正确处理 nginx 反代。已在 `deploy/nginx/gateway.conf` 设置 `X-Real-IP` 和 `X-Forwarded-For`。读取顺序：
+1. `request.headers.get("x-real-ip")` 优先
+2. fallback 到 `request.headers.get("x-forwarded-for", "").split(",")[0].strip()`
+3. 最后 fallback 到 `request.client.host`
+
+抽出为 helper 函数 `get_client_ip(request: Request) -> str`，放在 `services/gateway/app/utils/request_utils.py`（如不存在则新建）。
+
+### 3. 修改 `/api/auth/login`
+
+伪代码：
+
+```python
+@router.post("/login", response_model=TokenResponse)
+async def login(req: LoginRequest, request: Request, db: AsyncSession = Depends(get_db)):
+    client_ip = get_client_ip(request)
+    key = f"login_fail:{client_ip}"
+    redis = get_redis()  # 复用已有的 redis 单例（如有），否则用 redis.from_url(settings.redis_url)
+    
+    fail_count = await redis.get(key)
+    fail_count = int(fail_count) if fail_count else 0
+    if fail_count >= 5:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="登录失败次数过多，请 1 分钟后再试。",
+        )
+    
+    user = await find_user_by_staff_id(db, req.staff_id)
+    if not user or not pwd_context.verify(req.password, user.password_hash):
+        new_count = await redis.incr(key)
+        if new_count == 1:
+            await redis.expire(key, 60)
+        raise HTTPException(401, "学号或密码错误")
+    
+    # 成功也不删 key（探测攻击防护）
+    return TokenResponse(access_token=create_jwt(user), token_type="bearer")
+```
+
+> 如果 gateway 当前**还没有** redis 客户端单例（很可能没有），就在 `services/gateway/app/redis_client.py` 新建一个：
+>
+> ```python
+> import redis.asyncio as aioredis
+> from app.config import settings
+> _client: aioredis.Redis | None = None
+> async def get_redis() -> aioredis.Redis:
+>     global _client
+>     if _client is None:
+>         _client = aioredis.from_url(settings.redis_url, decode_responses=True)
+>     return _client
+> ```
+
+### 4. 单元测试
+
+新增 `services/gateway/tests/test_login_rate_limit.py`：
+
+1. **5 次失败后第 6 次得 429**（用 fakeredis 或 mock redis）
+2. **正确密码登录后计数不重置** — 第 5 次失败后用对的密码登录拿到 token；第 6 次再用错的密码（同 IP）依然 429
+3. **不同 IP 互不干扰** — IP_A 失败 5 次到达上限；IP_B 第一次失败仍正常返回 401
+4. **TTL 过期后计数重置** — 用 fakeredis 的 `time` 加速过期，或直接 `await redis.delete(key)` 模拟时间窗口结束
+
+可直接用 `fakeredis>=2.20`（pip install），它支持 `redis.asyncio` 接口。
+
+### 5. 跑测试
+
+```bash
+cd services/gateway
+source venv/bin/activate
+pytest tests/test_login_rate_limit.py -xvs
+```
+
+确认 4 个测试全 PASS。如果还有其他既有 auth/login 测试，确保**没破坏**它们（运行 `pytest tests/ -x` 整套不变）。
+
+### 6. Commit
+
+提交 1 个 commit，message:
+
+```
+feat(security): IP-level rate limit on /api/auth/login (5 fail/min, no reset on success)
+
+- Add app/utils/request_utils.py: get_client_ip() reading X-Real-IP / X-Forwarded-For / client.host
+- Add app/redis_client.py: aioredis singleton (lazy)
+- auth.py /login: pre-check fail count from redis; on auth fail INCR + EXPIRE 60s; on auth success DO NOT clear (probe-attack guard)
+- tests/test_login_rate_limit.py: 4 cases (limit hit, no reset on success, per-IP isolation, ttl expiry)
+
+Refs: Kimi pre-pilot audit Item 5
+```
+
+不要 push（Cascade 会复检后 push）。
+
+## 验收标准
+
+1. `pytest services/gateway/tests/ -x` 全部 PASS
+2. 6 次连续 wrong password from same IP, 第 6 次 status_code == 429 且 detail 含 "登录失败次数过多"
+3. Code review 视角：函数纯净，依赖注入清晰，没有引入硬编码常量（窗口大小 60 / 阈值 5 应有命名常量或 settings 字段，便于后续调整）
+
+## 不要做
+
+- 不要改 frontend（前端不需要做任何变更，server 返 429 时浏览器会显示对应错误）
+- 不要做 staff_id 级别限流（IP 级足够，且实现简单）
+- 不要碰其他 router
+- 不要 push 任何 commit（仅在 165 上不存在的本地 master 分支提交即可）
+
+## 工作目录
+
+主仓：`C:\Users\Administrator\Documents\code\yixiaoguan-v2`
+工作分支：master

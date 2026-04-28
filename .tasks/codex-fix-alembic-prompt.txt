@@ -1,0 +1,22 @@
+Create exactly ONE new commit on top of current HEAD. No rebase/squash/amend. Do not push.
+
+Goal: fix alembic head chain — currently there are TWO heads (39120275dc23 + a1f8c4b9e203) which breaks `alembic upgrade head`.
+
+Edit services/gateway/alembic/versions/a1f8c4b9e203_add_conv_last_read_at.py:
+  - Change `down_revision: Union[str, Sequence[str], None] = "c4a81b9d1e21"`
+    to    `down_revision: Union[str, Sequence[str], None] = "39120275dc23"`
+  - Update the docstring date / Revises comment header to reflect the new parent (Revises: 39120275dc23). Optionally add a one-line comment explaining the re-chain.
+
+Why this is correct:
+- 39120275dc23 (seed 21 colleges) chains: c4a81b9d1e21 -> b4592e64bdd6 -> 9e879653d552 -> 39120275dc23
+- After this fix, a1f8c4b9e203 chains after 39120275dc23, making the graph linear with one head.
+- The actual SQL effect of a1f8c4b9e203 (adding conversations.last_read_at column) doesn't depend on seed data, so re-chaining order is safe.
+
+Verify locally:
+  cd services/gateway
+  alembic heads
+  -> should print ONLY a1f8c4b9e203 (head)
+  python -m pytest tests/test_unread_messages.py -q
+  -> should still pass (6 passed)
+
+Commit message: "fix(alembic): chain unread mig after seed colleges to keep linear head"

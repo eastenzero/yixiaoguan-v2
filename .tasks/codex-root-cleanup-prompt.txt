@@ -1,0 +1,125 @@
+# Sprint: 主仓根目录清理
+
+## 背景
+
+主仓 `C:\Users\Administrator\Documents\code\yixiaoguan-v2\` 根目录积累了大量散乱文件（临时报告、试验脚本、缓存目录、PII 文件等），影响项目可维护性。Kimi 内测前审计建议清理（不在 Kimi 11 项中，是 user 加项 G）。
+
+## 当前根目录文件清单
+
+执行以下命令查看：
+
+```powershell
+cmd /c "cd /d C:\Users\Administrator\Documents\code\yixiaoguan-v2 && dir /B"
+```
+
+预期看到（根据现状）：
+
+| 类别 | 文件 | 处理方式 |
+|---|---|---|
+| **必须保留** | `README.md`, `.gitignore`, `.windsurfrules`, `mutagen.yml`, `mutagen.yml.lock` | 不动 |
+| **必须保留**（目录） | `apps/`, `services/`, `deploy/`, `docs/`, `scripts/`, `repowiki/`, `.tasks/`, `.teb/` | 不动 |
+| **临时报告 → .archive/2026-04/** | `s1-design-tokens-report.md`, `s2-e-smoke-test.md`, `s2-final.md`, `s2-retest.md`, `s3-deploy-test.md`, `s3-kb-migrate.md`, `bailian.txt` | `git mv` 到 `.archive/2026-04/` |
+| **试验脚本 → .archive/2026-04/** | `test_login.py`, `ws_test.py` | `git mv` 到 `.archive/2026-04/` |
+| **直接删除（已 .gitignore）** | `gateway.log`, `migrate_result.csv`, `__pycache__/`, `.mypy_cache/`, `.pytest_cache/`, `.qoder/`, `.ruff_cache/`, `.teb/`（如确为缓存）, `venv/` | `Remove-Item -Recurse -Force`（这些没被 git 追踪，删除不影响仓库） |
+| **PII 文件（不动）** | `工作簿.xlsx`, `填空.docx`, `文档/`, `358413294_1776662213Smn2fN.xlsx` | 已 .gitignore，**不要碰**（user 自己处理） |
+
+## 执行步骤
+
+### 1. 创建归档目录
+
+```powershell
+New-Item -ItemType Directory -Path "C:\Users\Administrator\Documents\code\yixiaoguan-v2\.archive\2026-04" -Force
+```
+
+并在 `.archive/2026-04/README.md` 写一段说明：
+
+```markdown
+# .archive/2026-04/
+
+本目录归档了 2026 年 4 月 sprint 期间的临时报告、试验脚本，避免污染主仓根目录。
+归档保留在 git 历史里以便追溯，但不再活跃维护。
+
+如需查看具体内容，请直接打开对应 `.md` / `.py` 文件。
+```
+
+### 2. 用 `git mv` 归档（保留 git 历史）
+
+逐个执行（不要批量 `git add` 然后 `git mv`，逐个保证 history 链不断）：
+
+```bash
+cd C:\Users\Administrator\Documents\code\yixiaoguan-v2
+git mv s1-design-tokens-report.md .archive/2026-04/
+git mv s2-e-smoke-test.md .archive/2026-04/
+git mv s2-final.md .archive/2026-04/
+git mv s2-retest.md .archive/2026-04/
+git mv s3-deploy-test.md .archive/2026-04/
+git mv s3-kb-migrate.md .archive/2026-04/
+git mv bailian.txt .archive/2026-04/
+git mv test_login.py .archive/2026-04/
+git mv ws_test.py .archive/2026-04/
+```
+
+> 注意：上面文件只在**主仓 master**有 tracked 副本时才能 `git mv`。如果某个文件实际是 untracked（git 没追踪过），跳过 `git mv`，改用 `Move-Item` 把物理文件挪过去。
+
+### 3. 删除缓存（不在 git 追踪范围）
+
+```powershell
+Remove-Item -Recurse -Force "C:\Users\Administrator\Documents\code\yixiaoguan-v2\__pycache__" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "C:\Users\Administrator\Documents\code\yixiaoguan-v2\.mypy_cache" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "C:\Users\Administrator\Documents\code\yixiaoguan-v2\.pytest_cache" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "C:\Users\Administrator\Documents\code\yixiaoguan-v2\.qoder" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "C:\Users\Administrator\Documents\code\yixiaoguan-v2\.ruff_cache" -ErrorAction SilentlyContinue
+Remove-Item -Force "C:\Users\Administrator\Documents\code\yixiaoguan-v2\gateway.log" -ErrorAction SilentlyContinue
+Remove-Item -Force "C:\Users\Administrator\Documents\code\yixiaoguan-v2\migrate_result.csv" -ErrorAction SilentlyContinue
+```
+
+> `venv/` 如果是 root 下的（`C:\Users\Administrator\Documents\code\yixiaoguan-v2\venv\`）也建议删（gateway venv 在 `services/gateway/venv/`，主仓 root 的 venv 是历史残留）。但**先确认**它不被 task runner 引用。
+
+### 4. 验收
+
+```powershell
+cmd /c "cd /d C:\Users\Administrator\Documents\code\yixiaoguan-v2 && dir /B"
+```
+
+预期看到的根目录只有：
+
+- `README.md`, `.gitignore`, `.windsurfrules`
+- `mutagen.yml`, `mutagen.yml.lock`
+- `apps/`, `services/`, `deploy/`, `docs/`, `scripts/`, `repowiki/`, `.tasks/`, `.teb/`, `.archive/`
+- 用户的 PII 文件（`工作簿.xlsx`, `填空.docx`, `文档/`, `358413294_..._Smn2fN.xlsx`）
+
+不再有任何 `s1-...md`, `s2-...md`, `s3-...md`, `test_login.py`, `ws_test.py`, `bailian.txt`, `gateway.log`, `migrate_result.csv`, `.mypy_cache/`, `.pytest_cache/`, `.qoder/`, `.ruff_cache/`, `__pycache__/` 在 root。
+
+### 5. Commit
+
+提交 1 个 commit，message:
+
+```
+chore(repo): archive 2026-04 sprint reports + remove root caches
+
+- Move 7 sprint scratchpads + 2 ad-hoc test scripts to .archive/2026-04/
+  (s1-design-tokens-report.md, s2-*.md, s3-*.md, bailian.txt,
+   test_login.py, ws_test.py)
+- Add .archive/2026-04/README.md describing archive policy
+- Delete root-level Python/IDE caches (.mypy_cache/.pytest_cache/.qoder/.ruff_cache/__pycache__)
+- Delete obsolete artefacts: gateway.log, migrate_result.csv
+
+Root directory now contains only README, configs, and source/deploy/docs/scripts directories.
+PII files (工作簿.xlsx, 填空.docx, 文档/, ...Smn2fN.xlsx) untouched (user-owned).
+
+Refs: pre-pilot user-requested item G
+```
+
+不要 push（Cascade 会复检后 push）。
+
+## 不要做
+
+- **千万不要碰 PII 文件**：`工作簿.xlsx`, `填空.docx`, `文档/`, `358413294_*Smn2fN.xlsx`
+- **不要删 venv/** 如果有 build 流程依赖（先 grep `Makefile`、`scripts/` 是否引用 root venv）
+- **不要批量 `git rm` 任何 `s*-*.md`** — 这些文件是 sprint 历史，要 archive，不删除
+- 不要碰 `apps/`, `services/`, `deploy/`, `docs/` 等业务目录的内容
+
+## 工作目录
+
+主仓：`C:\Users\Administrator\Documents\code\yixiaoguan-v2`
+分支：master

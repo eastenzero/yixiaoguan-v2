@@ -1,0 +1,13 @@
+已完成并提交，未 push。
+
+Commit: `75a2995 chore(repo): archive 2026-04 sprint reports + remove root caches`
+
+处理结果：
+- 8 个 tracked sprint/report/script 文件已用 `git mv` 归档到 `.archive/2026-04/`
+- `bailian.txt` 是 untracked/ignored，已移动并强制加入归档
+- 新增 `.archive/2026-04/README.md`
+- 删除 root 下 `.qoder/`、`gateway.log`、`migrate_result.csv` 以及 root 缓存目录
+- PII 文件未动
+- `venv/` 保留，因为 docs/scripts 中存在 root venv 引用
+
+验收后 root 仍有 `venv/`，这是按“先确认是否被引用”的约束保守处理。当前 `master` 已 ahead 1，工作区还保留了提交前已有的其它未提交改动。

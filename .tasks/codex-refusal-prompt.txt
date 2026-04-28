@@ -1,0 +1,167 @@
+P0-2 lite: improve AI refusal detection + auto-suggest escalate. Half-day scope.
+
+Strict rules:
+- Do NOT modify, rebase, squash, or amend any existing commits.
+- Make exactly TWO new commits on top of current HEAD (4d81965).
+- Do not push.
+- When invoking shell commands on Windows PowerShell, AVOID complex regex with pipes and double-quote escaping. Use simple commands or read files directly.
+
+Background:
+- Frontend already has `isRefusalMsg` at apps/student-app/src/pages/chat/index.vue (~lines 491-502) with 14 keywords, plus an inline "转人工服务" button (line 115-127).
+- Backend (services/gateway/app/routers/chat.py `_stream_ai_response`) saves AI message but does NO refusal detection. So if user reopens chat or scrolls back, refusal context is reconstructed only on render.
+- Goal: persist refusal as metadata on the AI message, AND optionally append a hint, AND share keyword list, AND make the frontend hint more prominent.
+
+============================================================
+COMMIT 1: backend — detect refusal + tag AI message metadata + add tests
+Commit message: "feat(refusal): detect AI refusal in gateway + tag message metadata"
+============================================================
+
+1.1 Create services/gateway/app/services/refusal.py:
+
+    REFUSAL_KEYWORDS = [
+        "尚未学习到", "请咨询您的辅导员", "无法回答", "暂时无法",
+        "超出了我的知识范围", "建议您直接咨询", "暂时不可用", "请稍后重试",
+        "无法为您提供", "没有找到相关", "不在我的服务范围",
+        "转人工请求", "转接人工客服", "转人工服务", "转接人工",
+        # additions for v2
+        "无法理解", "请联系", "建议您联系", "建议咨询",
+        "我没有相关信息", "我无法确认", "建议直接联系",
+    ]
+
+    def is_refusal(answer: str, sources: list | None = None) -> bool:
+        """Detect if Dify reply is a refusal / out-of-scope answer.
+        Conditions (any one of):
+        - Contains any keyword in REFUSAL_KEYWORDS
+        - Starts with 抱歉 AND has no sources (sources is None or empty list)
+        - Empty/very short answer (< 8 Chinese chars and no sources)
+        """
+        if not answer:
+            return True
+        for kw in REFUSAL_KEYWORDS:
+            if kw in answer:
+                return True
+        if answer.startswith("抱歉") and not sources:
+            return True
+        if len(answer.strip()) < 8 and not sources:
+            return True
+        return False
+
+1.2 Edit services/gateway/app/routers/chat.py:
+    In `_stream_ai_response`, after `full_answer` is built and BEFORE saving the AI message, compute:
+        refusal = is_refusal(full_answer, sources)
+    Then add `refusal` to the AI message metadata dict:
+        metadata={"sources": sources, "dify_conversation_id": new_dify_conv_id, "refusal": refusal}
+    
+    Also include `refusal` in the message_end SSE payload sent to the client:
+        yield f"event: message_end\ndata: {json.dumps({'full_content': full_answer, 'sources': sources, 'message_id': ai_msg.id, 'refusal': refusal}, ensure_ascii=False)}\n\n"
+    
+    And include `refusal` in the WS broadcast metadata:
+        build_message_broadcast_event(ai_msg, conv_id=conv.id, metadata={"sources": sources, "refusal": refusal})
+
+    Import is_refusal at the top of chat.py:
+        from app.services.refusal import is_refusal
+
+1.3 Add tests/test_refusal.py covering:
+    - Plain answer with sources -> not refusal
+    - Answer containing "我尚未学习到" -> refusal
+    - Answer starting with "抱歉" + no sources -> refusal
+    - Answer starting with "抱歉" + has sources -> not refusal
+    - Empty answer -> refusal
+    - Very short answer (< 8 chars) + no sources -> refusal
+    - Answer with new keyword "我无法确认" -> refusal
+
+1.4 Verify:
+    cd services/gateway
+    python -m pytest tests/test_refusal.py -q
+    -> all pass
+
+    ruff check app/services/refusal.py app/routers/chat.py tests/test_refusal.py
+
+1.5 Commit message: "feat(refusal): detect AI refusal in gateway + tag message metadata"
+
+============================================================
+COMMIT 2: frontend — share keyword list + sticky bottom CTA when refusal detected
+Commit message: "feat(student-refusal): sticky bottom CTA when AI refuses + use server flag"
+============================================================
+
+2.1 Edit apps/student-app/src/pages/chat/index.vue:
+
+    Update `isRefusalMsg` to ALSO consider server-tagged metadata:
+    - First check msg.refusal (if set true by backend), short-circuit return true
+    - Else fall back to existing keyword logic (so SSE message_end can populate it)
+
+    Add a new ref:
+        const showRefusalCTA = ref(false)
+    
+    In streamResponse onEnd handler, when data.refusal === true AND status is ai_serving, set showRefusalCTA.value = true.
+    Also expose msg.refusal = data.refusal so isRefusalMsg sees it.
+
+    In the Message type (apps/student-app/src/types/chat.ts), add optional `refusal?: boolean` field.
+
+    In mapServerMessage, copy m.metadata_?.refusal into the Message:
+        refusal: m.metadata_?.refusal || false,
+
+    Add a sticky bottom CTA to template (only when showRefusalCTA && conversationStatus === 'ai_serving'):
+
+        <view v-if="showRefusalCTA && conversationStatus === 'ai_serving'" class="refusal-cta">
+          <view class="refusal-cta-icon-wrap">
+            <text class="material-symbols-outlined refusal-cta-icon">support_agent</text>
+          </view>
+          <view class="refusal-cta-body">
+            <text class="refusal-cta-title">AI 似乎无法回答</text>
+            <text class="refusal-cta-desc">需要老师介入吗？</text>
+          </view>
+          <view class="refusal-cta-actions">
+            <text class="refusal-cta-dismiss" @click="showRefusalCTA = false">忽略</text>
+            <view class="refusal-cta-btn" @click="handleCallTeacher">
+              <text class="refusal-cta-btn-text">{{ escalateLoading ? '呼叫中...' : '呼叫老师' }}</text>
+            </view>
+          </view>
+        </view>
+
+    Position above the input box (so user always sees it). Use position: sticky or place it before .bottom-area / .input-bar.
+
+    Style (add to chat page <style> block, follow existing patterns/tokens):
+
+        .refusal-cta {
+          display: flex;
+          align-items: center;
+          gap: 0.625rem;
+          padding: 0.75rem 1rem;
+          margin: 0.5rem 1rem;
+          background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(99, 14, 212, 0.12));
+          border: 1px solid rgba(124, 58, 237, 0.2);
+          border-radius: 1rem;
+        }
+        .refusal-cta-icon-wrap {
+          width: 2rem; height: 2rem;
+          display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(135deg, #7c3aed, #630ed4);
+          border-radius: 0.625rem;
+        }
+        .refusal-cta-icon { font-size: 1.125rem; color: #fff; }
+        .refusal-cta-body { flex: 1; display: flex; flex-direction: column; }
+        .refusal-cta-title { font-size: 0.875rem; font-weight: 700; color: #1a1a2e; }
+        .refusal-cta-desc { font-size: 0.75rem; color: #64748b; margin-top: 0.125rem; }
+        .refusal-cta-actions { display: flex; align-items: center; gap: 0.5rem; }
+        .refusal-cta-dismiss { font-size: 0.75rem; color: #94a3b8; padding: 0.375rem 0.5rem; }
+        .refusal-cta-btn { padding: 0.5rem 0.875rem; background: linear-gradient(135deg, #7c3aed, #630ed4); border-radius: 0.625rem; }
+        .refusal-cta-btn-text { font-size: 0.8125rem; font-weight: 700; color: #fff; }
+
+    When status changes away from ai_serving (e.g., to pending_teacher), hide the CTA: in onStatusChanged, after setting conversationStatus, also do:
+        if (newStatus !== 'ai_serving') showRefusalCTA.value = false
+
+    When conversation is reloaded (loadConversation/loadHistory), if the LAST AI message has refusal flag, also set showRefusalCTA = true. (Look at the messages list after mapping.)
+
+2.2 Verify:
+    cd apps/student-app
+    npm run build:h5
+    -> succeeds (sass deprecation warnings OK)
+
+2.3 Commit message: "feat(student-refusal): sticky bottom CTA when AI refuses + use server flag"
+
+============================================================
+Final state: HEAD = 2 new commits on top of 4d81965.
+- backend tags refusal in metadata + tests pass
+- frontend uses server flag + sticky CTA
+- No push, no amend

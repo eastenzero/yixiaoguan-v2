@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>知识库详情 - 医小管</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffdcc6",
+                        "primary": "#630ed4",
+                        "on-secondary-fixed-variant": "#581db3",
+                        "on-surface": "#191c1e",
+                        "secondary-fixed": "#ebddff",
+                        "surface-dim": "#d8dadc",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "surface-tint": "#732ee4",
+                        "primary-fixed": "#eaddff",
+                        "tertiary": "#7d3d00",
+                        "on-secondary": "#ffffff",
+                        "background": "#f7f9fb",
+                        "on-primary-fixed": "#25005a",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary-container": "#ffe0cd",
+                        "outline": "#7b7487",
+                        "surface": "#f7f9fb",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-fixed-dim": "#ffb784",
+                        "on-secondary-container": "#fffbff",
+                        "surface-bright": "#f7f9fb",
+                        "outline-variant": "#ccc3d8",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#d3bbff",
+                        "primary-container": "#7c3aed",
+                        "surface-container": "#eceef0",
+                        "inverse-surface": "#2d3133",
+                        "secondary-container": "#8856e5",
+                        "primary-fixed-dim": "#d2bbff",
+                        "on-surface-variant": "#4a4455",
+                        "on-primary-container": "#ede0ff",
+                        "surface-container-low": "#f2f4f6",
+                        "on-background": "#191c1e",
+                        "tertiary-container": "#a15100",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#250059",
+                        "on-primary-fixed-variant": "#5a00c6",
+                        "on-tertiary-fixed": "#301400",
+                        "inverse-primary": "#d2bbff",
+                        "surface-variant": "#e0e3e5",
+                        "secondary": "#6e3aca"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .markdown-content h2 { font-size: 1.25rem; font-weight: 700; color: #191c1e; margin-top: 2rem; margin-bottom: 1rem; }
+        .markdown-content p { color: #4a4455; line-height: 1.8; margin-bottom: 1.25rem; font-size: 0.9375rem; }
+        .markdown-content ul { list-style-type: none; padding-left: 0.5rem; }
+        .markdown-content li { position: relative; padding-left: 1.5rem; margin-bottom: 0.75rem; color: #4a4455; font-size: 0.9375rem; }
+        .markdown-content li::before { content: '•'; position: absolute; left: 0; color: #630ed4; font-weight: bold; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full px-6 py-4 flex justify-between items-center bg-[#f7f9fb]/80 dark:bg-slate-900/80 backdrop-blur-xl z-50">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-[#630ed4] dark:text-[#7c3aed] hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full transition-colors p-2 active:scale-95 duration-200">
+                arrow_back
+            </button>
+<h1 class="text-[#630ed4] dark:text-[#7c3aed] font-manrope font-bold tracking-tight text-lg">医小管</h1>
+</div>
+<button class="material-symbols-outlined text-slate-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full transition-colors p-2 active:scale-95 duration-200">
+            notifications
+        </button>
+</header>
+<main class="pt-24 px-6 max-w-2xl mx-auto">
+<!-- Hero Card -->
+<section class="relative overflow-hidden bg-gradient-to-br from-[#630ed4] to-[#7c3aed] rounded-lg p-8 text-on-primary shadow-[0_20px_50px_rgba(99,14,212,0.15)]">
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-6">
+<span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold tracking-widest uppercase">
+                        临床诊疗规范
+                    </span>
+<div class="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs font-bold">匹配度 0.98</span>
+</div>
+</div>
+<h2 class="text-2xl md:text-3xl font-bold leading-tight mb-4 font-manrope">
+                    急性心肌梗死急诊处理流程与规范 (2024版)
+                </h2>
+<div class="flex flex-wrap items-center gap-4 text-white/80 text-xs">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">fingerprint</span>
+<span>ID: KB-MD-2024-0892</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">event_note</span>
+<span>更新于 2024.10.12</span>
+</div>
+</div>
+</div>
+<!-- Decorative Element -->
+<div class="absolute -right-12 -top-12 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+<div class="absolute -left-12 -bottom-12 w-32 h-32 bg-primary-container/30 rounded-full blur-2xl"></div>
+</section>
+<!-- Horizontal Pill Tags -->
+<section class="mt-8 flex gap-3 overflow-x-auto pb-4 no-scrollbar">
+<div class="flex-none px-5 py-2.5 bg-primary/10 text-primary rounded-full text-sm font-bold border border-primary/5 whitespace-nowrap">
+                # 急救医学
+            </div>
+<div class="flex-none px-5 py-2.5 bg-surface-container-low text-on-surface-variant rounded-full text-sm font-medium whitespace-nowrap">
+                # 心血管科
+            </div>
+<div class="flex-none px-5 py-2.5 bg-surface-container-low text-on-surface-variant rounded-full text-sm font-medium whitespace-nowrap">
+                # 标准路径
+            </div>
+<div class="flex-none px-5 py-2.5 bg-surface-container-low text-on-surface-variant rounded-full text-sm font-medium whitespace-nowrap">
+                # 核心知识点
+            </div>
+</section>
+<!-- Content Area: Markdown Rendered Style -->
+<article class="mt-8 bg-surface-container-lowest rounded-lg p-8 markdown-content">
+<h2 class="first:mt-0">1. 处理原则与初期评估</h2>
+<p>
+                一旦疑似急性心肌梗死（AMI），应立即启动紧急医疗服务（EMS）。院前处理的核心在于缩短总缺血时间。评估应在患者到达急诊科后的10分钟内完成，包括心电图检查。
+            </p>
+<ul>
+<li>持续心电监测，准备除颤。</li>
+<li>建立静脉通路，采集血液样本。</li>
+<li>吸氧治疗（若SaO2 &lt; 90%）。</li>
+<li>镇痛治疗：必要时使用吗啡或芬太尼。</li>
+</ul>
+<h2>2. 核心诊疗流程 (Pathways)</h2>
+<p>
+                根据心电图表现将患者分为STEMI和NSTE-ACS。STEMI患者应优先考虑直接经皮冠状动脉介入治疗（PCI）。若预计从首次医疗接触到PCI的时间超过120分钟，且无禁忌症，应考虑溶栓治疗。
+            </p>
+<div class="my-6 p-5 bg-surface-container-low rounded-lg flex items-start gap-4">
+<span class="material-symbols-outlined text-primary mt-1">info</span>
+<div class="text-sm leading-relaxed text-on-surface-variant">
+<strong class="text-on-surface block mb-1">关键时限 (D2B)</strong>
+                    门-球囊时间应控制在 90 分钟以内。院内转运及术前准备需并行执行以节省时间。
+                </div>
+</div>
+<h2>3. 药物治疗规范</h2>
+<p>
+                抗血小板治疗是治疗的基础。所有患者如无禁忌，应立即给予负荷剂量的阿司匹林（150-300mg）和P2Y12受体拮抗剂。
+            </p>
+<ul>
+<li>阿司匹林：长期维持剂量为 75-100mg/d。</li>
+<li>他汀类药物：无论胆固醇水平如何，均应在24小时内启动高强度他汀治疗。</li>
+<li>ACEI/ARB：对合并心衰或射血分数下降的患者具有明确获益。</li>
+</ul>
+<!-- Image Support -->
+<div class="my-8 rounded-lg overflow-hidden">
+<img alt="Medical Procedure" class="w-full h-48 object-cover" data-alt="Close up of professional medical heart monitor displaying cardiac wave patterns in a dark sterile hospital room with purple glow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmVmtCx-rQcjKCDNnMe3jwnvhoMMqRacr1FnKcbrlbn49CySLPtQ_-TVwk0qQT0jMAT7sx9VIYvEYq4MRhvo5pgsg8sNFkQzxogI9X7pnW8z78X2TeL-n3j6CbwtPCEgJ8YtgbvNNZ7md3ollCjkaDPknMM96XmVqCJP5zKnnVJOXzMmybSwzf6XKHJV24Fo6OcZO1T0303JoO89UmWnH0TGuXs316xIK704HsSAOHKlwqxGqxoA_Rzvik8ZDh_sEbyVBWaG4d2M0"/>
+</div>
+<h2>4. 排除标准与禁忌症</h2>
+<p>
+                在进行再灌注治疗前，必须严格筛查禁忌症，特别是对于溶栓治疗。既往脑出血史、近期大手术史或活动性出血均属于绝对禁忌。
+            </p>
+</article>
+<!-- Bottom Actions -->
+<div class="mt-12 mb-8">
+<button class="w-full py-4 bg-primary-fixed text-on-primary-fixed rounded-full font-bold flex items-center justify-center gap-2 hover:bg-primary-fixed-dim transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined">description</span>
+                查看原始文件 (PDF/Doc)
+            </button>
+<p class="text-center text-slate-400 text-xs mt-4 font-manrope">
+                文件大小: 2.4MB • 最后同步日期: 2024-10-15
+            </p>
+</div>
+</main>
+<!-- Navigation Suppressed as per Task Requirements for Task-Focused Screens -->
+</body></html>

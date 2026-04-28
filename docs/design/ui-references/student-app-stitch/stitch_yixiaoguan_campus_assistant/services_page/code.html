@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ba1a1a",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed": "#ffdcc6",
+                    "primary": "#630ed4",
+                    "on-secondary-fixed-variant": "#581db3",
+                    "on-surface": "#191c1e",
+                    "secondary-fixed": "#ebddff",
+                    "surface-dim": "#d8dadc",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#713700",
+                    "surface-tint": "#732ee4",
+                    "primary-fixed": "#eaddff",
+                    "tertiary": "#7d3d00",
+                    "on-secondary": "#ffffff",
+                    "background": "#f7f9fb",
+                    "on-primary-fixed": "#25005a",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e6e8ea",
+                    "on-tertiary-container": "#ffe0cd",
+                    "outline": "#7b7487",
+                    "surface": "#f7f9fb",
+                    "inverse-on-surface": "#eff1f3",
+                    "tertiary-fixed-dim": "#ffb784",
+                    "on-secondary-container": "#fffbff",
+                    "surface-bright": "#f7f9fb",
+                    "outline-variant": "#ccc3d8",
+                    "surface-container-highest": "#e0e3e5",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#d3bbff",
+                    "primary-container": "#7c3aed",
+                    "surface-container": "#eceef0",
+                    "inverse-surface": "#2d3133",
+                    "secondary-container": "#8856e5",
+                    "primary-fixed-dim": "#d2bbff",
+                    "on-surface-variant": "#4a4455",
+                    "on-primary-container": "#ede0ff",
+                    "surface-container-low": "#f2f4f6",
+                    "on-background": "#191c1e",
+                    "tertiary-container": "#a15100",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#250059",
+                    "on-primary-fixed-variant": "#5a00c6",
+                    "on-tertiary-fixed": "#301400",
+                    "inverse-primary": "#d2bbff",
+                    "surface-variant": "#e0e3e5",
+                    "secondary": "#6e3aca"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope", "PingFang SC", "sans-serif"],
+                    "body": ["Manrope", "PingFang SC", "sans-serif"],
+                    "label": ["Manrope", "PingFang SC", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        vertical-align: middle;
+      }
+      .shadow-purple-glow {
+        box-shadow: 0 -10px 40px rgba(124, 58, 237, 0.08);
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full px-6 py-4 flex justify-between items-center bg-[#f7f9fb]/80 dark:bg-slate-900/80 backdrop-blur-xl z-50">
+<div class="flex items-center gap-4">
+<button class="hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full transition-colors p-2 active:scale-95 duration-200 text-[#630ed4]">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-manrope headline-sm font-bold tracking-tight text-[#630ed4]">服务大厅</h1>
+</div>
+<button class="hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full transition-colors p-2 active:scale-95 duration-200 text-[#630ed4]">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</header>
+<main class="pt-24 pb-32 px-6">
+<!-- Hero Card -->
+<section class="relative mb-10 overflow-hidden rounded-lg bg-gradient-to-br from-[#630ed4] to-[#7c3aed] p-8 text-white">
+<div class="relative z-10">
+<span class="text-[0.6875rem] font-bold tracking-[0.2em] opacity-80 mb-2 block">CAMPUS SERVICES</span>
+<h2 class="text-3xl font-extrabold mb-2 tracking-tight">校园服务中心</h2>
+<p class="text-white/80 text-sm font-medium">一站式办理校园事务</p>
+</div>
+<div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+<div class="absolute right-8 top-1/2 -translate-y-1/2">
+<span class="material-symbols-outlined text-7xl opacity-20" data-icon="account_balance">account_balance</span>
+</div>
+</section>
+<!-- 快捷入口 (Bento Style) -->
+<section class="mb-10">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-bold text-on-surface tracking-tight">快捷入口</h3>
+<span class="text-xs font-bold text-primary px-3 py-1 bg-primary/10 rounded-full">QUICK LINKS</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest p-5 rounded-lg flex flex-col justify-between aspect-square active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="home">home</span>
+<span class="font-bold text-sm">校主页</span>
+</div>
+<div class="grid grid-rows-2 gap-4">
+<div class="bg-surface-container-lowest p-4 rounded-lg flex items-center gap-3 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-secondary" data-icon="portal">gate</span>
+<span class="font-bold text-sm">信息门户</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-lg flex items-center gap-3 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-tertiary-container" data-icon="cloud_done">cloud_done</span>
+<span class="font-bold text-sm">服务大厅</span>
+</div>
+</div>
+</div>
+<div class="mt-4 bg-surface-container-lowest p-5 rounded-lg flex items-center justify-between active:scale-[0.98] transition-transform">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="message">message</span>
+<span class="font-bold text-sm">统一消息平台</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" data-icon="chevron_right">chevron_right</span>
+</div>
+</section>
+<!-- 校园服务 (Grid Icons) -->
+<section class="mb-10">
+<h3 class="text-lg font-bold text-on-surface tracking-tight mb-6">校园服务</h3>
+<div class="bg-surface-container-low rounded-lg p-6 grid grid-cols-4 gap-y-8 gap-x-2">
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-primary group-active:scale-90 transition-all">
+<span class="material-symbols-outlined" data-icon="meeting_room">meeting_room</span>
+</div>
+<span class="text-[11px] font-bold text-on-surface-variant text-center leading-tight">空教室申请</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-primary group-active:scale-90 transition-all">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+</div>
+<span class="text-[11px] font-bold text-on-surface-variant text-center leading-tight">我的申请</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-primary group-active:scale-90 transition-all">
+<span class="material-symbols-outlined" data-icon="handyman">handyman</span>
+</div>
+<span class="text-[11px] font-bold text-on-surface-variant text-center leading-tight">网上报修</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-primary group-active:scale-90 transition-all">
+<span class="material-symbols-outlined" data-icon="feedback">feedback</span>
+</div>
+<span class="text-[11px] font-bold text-on-surface-variant text-center leading-tight">接诉即办</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-primary group-active:scale-90 transition-all">
+<span class="material-symbols-outlined" data-icon="wifi">wifi</span>
+</div>
+<span class="text-[11px] font-bold text-on-surface-variant text-center leading-tight">校园网</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-primary group-active:scale-90 transition-all">
+<span class="material-symbols-outlined" data-icon="local_hospital">local_hospital</span>
+</div>
+<span class="text-[11px] font-bold text-on-surface-variant text-center leading-tight">校医院</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-primary group-active:scale-90 transition-all">
+<span class="material-symbols-outlined" data-icon="directions_bus">directions_bus</span>
+</div>
+<span class="text-[11px] font-bold text-on-surface-variant text-center leading-tight">班车查询</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-primary group-active:scale-90 transition-all">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</div>
+<span class="text-[11px] font-bold text-on-surface-variant text-center leading-tight">更多</span>
+</div>
+</div>
+</section>
+<!-- 查询服务 (Grid Icons) -->
+<section class="mb-10">
+<h3 class="text-lg font-bold text-on-surface tracking-tight mb-6">查询服务</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest p-4 rounded-lg flex items-center gap-4 active:scale-95 transition-all">
+<div class="p-3 bg-secondary/10 text-secondary rounded-xl">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-sm">学生课表</span>
+<span class="text-[10px] text-on-surface-variant">第12周</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-lg flex items-center gap-4 active:scale-95 transition-all">
+<div class="p-3 bg-tertiary-container/10 text-tertiary-container rounded-xl">
+<span class="material-symbols-outlined" data-icon="grade">grade</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-sm">成绩查询</span>
+<span class="text-[10px] text-on-surface-variant">2023-24</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-lg flex items-center gap-4 active:scale-95 transition-all">
+<div class="p-3 bg-primary/10 text-primary rounded-xl">
+<span class="material-symbols-outlined" data-icon="library_books">library_books</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-sm">图书馆</span>
+<span class="text-[10px] text-on-surface-variant">借阅状态</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-lg flex items-center gap-4 active:scale-95 transition-all">
+<div class="p-3 bg-error-container/20 text-error rounded-xl">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-sm">学生邮箱</span>
+<span class="text-[10px] text-on-surface-variant">4封未读</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 个人 (Grid Icons) -->
+<section class="mb-4">
+<h3 class="text-lg font-bold text-on-surface tracking-tight mb-6">个人</h3>
+<div class="bg-surface-container-lowest rounded-lg divide-y divide-surface-container">
+<div class="p-5 flex items-center justify-between active:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="event_note">event_note</span>
+<span class="font-bold text-sm">个人日程</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="p-5 flex items-center justify-between active:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="help_center">help_center</span>
+<span class="font-bold text-sm">我的提问</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-error rounded-full"></span>
+<span class="material-symbols-outlined text-outline-variant" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-purple-glow rounded-t-[2rem]">
+<a class="flex flex-col items-center justify-center text-slate-400 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="home">home</span>
+<span class="font-manrope text-[10px] font-bold tracking-wide">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-manrope text-[10px] font-bold tracking-wide">智能问答</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#7c3aed]/10 text-[#630ed4] rounded-[24px] px-5 py-2 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="business_center">business_center</span>
+<span class="font-manrope text-[10px] font-bold tracking-wide">事务导办</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span class="font-manrope text-[10px] font-bold tracking-wide">我的</span>
+</a>
+</nav>
+</body></html>

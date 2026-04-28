@@ -9,22 +9,36 @@ dist/
 *.egg-info/
 .mypy_cache/
 .pytest_cache/
+.ruff_cache/
 alembic/versions/__pycache__/
 
 # 敏感凭据档案（含 API Keys、SSH、数据库密码等）
 docs/PROJECT-SECRETS.md
 bailian.txt
 
+# 学生/辅导员 PII 数据（roster、姓名表、问卷等，仅本地保留）
+/工作簿.xlsx
+/填空.docx
+/文档/
+/358413294_1776662213Smn2fN.xlsx
+
 # IDE/编辑器工作区配置
 .vscode/
 .idea/
+.qoder/
 
 # TEB 运行时日志与批次状态（仅本地运行时产物）
 .tasks/logs/
 .tasks/**/batch-*-state.json
 
+# Codex / Cascade 派单原始日志与中间文件（仅本地保留，summary/prompt 可单独追踪）
+.tasks/codex-*.log
+
 # Mutagen / 其他同步工具
-.mutagen.yml.lock
+mutagen.yml.lock
+
+# 部署期 .env 备份（update-env.sh 自动生成，含真 secret，永不入库）
+**/.env.bak*
 
 # Cascade / Kimi temporary task scripts (not part of repo history)
 scripts/kimi-task-*.txt
@@ -32,36 +46,3 @@ scripts/kimi-local-task-*.txt
 
 # Old smoke test scratchpads (kept locally only)
 /tmp_*.md
-
-# === Student PII / 内测前紧急隔离 ===
-# 这些文件含学生姓名+学号，不能 commit 到 GitHub
-/工作簿.xlsx
-/填空.docx
-/文档/
-/Smn2fN.xlsx
-/358413294_1776662213
-/migrate_result.csv
-/gateway.log
-/test_login.py
-/ws_test.py
-
-# === 临时 sprint 报告（保留本地）===
-/s1-design-tokens-report.md
-/s2-e-smoke-test.md
-/s2-final.md
-/s2-retest.md
-/s3-deploy-test.md
-/s3-kb-migrate.md
-
-# === Python / IDE 缓存 ===
-__pycache__/
-.qoder/
-.teb/
-.ruff_cache/ 
-/Smn2fN.xlsx 
-/358413294_1776662213
-/358413294_1776662213Smn2fN.xlsx
- 
-# .env backups must NEVER be committed 
-services/gateway/.env.bak.* 
-.env.bak.*

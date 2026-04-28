@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>空教室预约 - 医小管</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ba1a1a",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed": "#ffdcc6",
+                    "primary": "#630ed4",
+                    "on-secondary-fixed-variant": "#581db3",
+                    "on-surface": "#191c1e",
+                    "secondary-fixed": "#ebddff",
+                    "surface-dim": "#d8dadc",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#713700",
+                    "surface-tint": "#732ee4",
+                    "primary-fixed": "#eaddff",
+                    "tertiary": "#7d3d00",
+                    "on-secondary": "#ffffff",
+                    "background": "#f7f9fb",
+                    "on-primary-fixed": "#25005a",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e6e8ea",
+                    "on-tertiary-container": "#ffe0cd",
+                    "outline": "#7b7487",
+                    "surface": "#f7f9fb",
+                    "inverse-on-surface": "#eff1f3",
+                    "tertiary-fixed-dim": "#ffb784",
+                    "on-secondary-container": "#fffbff",
+                    "surface-bright": "#f7f9fb",
+                    "outline-variant": "#ccc3d8",
+                    "surface-container-highest": "#e0e3e5",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#d3bbff",
+                    "primary-container": "#7c3aed",
+                    "surface-container": "#eceef0",
+                    "inverse-surface": "#2d3133",
+                    "secondary-container": "#8856e5",
+                    "primary-fixed-dim": "#d2bbff",
+                    "on-surface-variant": "#4a4455",
+                    "on-primary-container": "#ede0ff",
+                    "surface-container-low": "#f2f4f6",
+                    "on-background": "#191c1e",
+                    "tertiary-container": "#a15100",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#250059",
+                    "on-primary-fixed-variant": "#5a00c6",
+                    "on-tertiary-fixed": "#301400",
+                    "inverse-primary": "#d2bbff",
+                    "surface-variant": "#e0e3e5",
+                    "secondary": "#6e3aca"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope", "PingFang SC", "sans-serif"],
+                    "body": ["Manrope", "PingFang SC", "sans-serif"],
+                    "label": ["Manrope", "PingFang SC", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .purple-gradient {
+            background: linear-gradient(135deg, #630ed4 0%, #7c3aed 100%);
+        }
+        .shadow-purple-glow {
+            box-shadow: 0 10px 40px rgba(124, 58, 237, 0.08);
+        }
+        body {
+            font-family: 'Manrope', 'PingFang SC', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Editorial spacing */
+        .editorial-padding {
+            padding-left: 2rem;
+            padding-right: 1.5rem;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased min-h-screen pb-32">
+<!-- TopAppBar Navigation Shell -->
+<header class="fixed top-0 left-0 w-full px-6 py-4 flex justify-between items-center bg-[#f7f9fb]/80 backdrop-blur-xl z-50 transition-colors">
+<div class="flex items-center gap-4">
+<button class="hover:bg-purple-50 rounded-full p-2 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[#630ed4]" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-bold tracking-tight text-xl text-[#630ed4]">空教室预约</h1>
+</div>
+<div class="flex items-center">
+<button class="hover:bg-purple-50 rounded-full p-2 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-slate-500" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<main class="pt-24 px-6 space-y-6">
+<!-- Hero Card -->
+<section class="purple-gradient rounded-lg p-8 relative overflow-hidden shadow-purple-glow">
+<div class="relative z-10 flex flex-col items-start gap-2">
+<span class="material-symbols-outlined text-white/90 text-4xl mb-2" data-icon="calendar_today" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<h2 class="text-white text-2xl font-extrabold tracking-tight">预约申请单</h2>
+<p class="text-white/80 text-sm font-medium tracking-wide">医学部 · 智能资源调度中心</p>
+</div>
+<!-- Decorative blur element -->
+<div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+</section>
+<!-- Form Section: 时间信息 -->
+<section class="bg-surface-container-low rounded-lg p-6 space-y-5">
+<div class="flex items-center gap-2 editorial-padding">
+<div class="w-1.5 h-6 bg-primary rounded-full"></div>
+<h3 class="text-on-surface font-bold text-lg">时间信息</h3>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-5 space-y-6 transition-colors">
+<!-- Date Picker Style -->
+<div class="group">
+<label class="block text-on-surface-variant text-[0.6875rem] font-bold uppercase tracking-wider mb-2">预约日期</label>
+<div class="flex items-center bg-surface-container-high rounded-md px-4 py-3 gap-3 focus-within:ring-2 ring-primary/20 transition-all">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="event">event</span>
+<input class="bg-transparent border-none p-0 text-sm font-semibold w-full focus:ring-0" readonly="" type="text" value="2024年5月24日 (周五)"/>
+</div>
+</div>
+<!-- Time Range -->
+<div class="grid grid-cols-2 gap-4">
+<div class="group">
+<label class="block text-on-surface-variant text-[0.6875rem] font-bold uppercase tracking-wider mb-2">开始时间</label>
+<div class="flex items-center bg-surface-container-high rounded-md px-4 py-3 gap-3">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="schedule">schedule</span>
+<input class="bg-transparent border-none p-0 text-sm font-semibold w-full focus:ring-0" readonly="" type="text" value="14:00"/>
+</div>
+</div>
+<div class="group">
+<label class="block text-on-surface-variant text-[0.6875rem] font-bold uppercase tracking-wider mb-2">结束时间</label>
+<div class="flex items-center bg-surface-container-high rounded-md px-4 py-3 gap-3">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="schedule">schedule</span>
+<input class="bg-transparent border-none p-0 text-sm font-semibold w-full focus:ring-0" readonly="" type="text" value="16:00"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Form Section: 教室信息 -->
+<section class="bg-surface-container-low rounded-lg p-6 space-y-5">
+<div class="flex items-center gap-2 editorial-padding">
+<div class="w-1.5 h-6 bg-primary rounded-full"></div>
+<h3 class="text-on-surface font-bold text-lg">教室信息</h3>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-5 space-y-6">
+<div class="group">
+<label class="block text-on-surface-variant text-[0.6875rem] font-bold uppercase tracking-wider mb-2">楼宇与房号</label>
+<div class="flex items-center bg-surface-container-high rounded-md px-4 py-3 gap-3">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="apartment">apartment</span>
+<select class="bg-transparent border-none p-0 text-sm font-semibold w-full focus:ring-0 appearance-none">
+<option>医学实验楼 302</option>
+<option>生命科学馆 105</option>
+<option>综合教学楼 401</option>
+</select>
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div class="group">
+<label class="block text-on-surface-variant text-[0.6875rem] font-bold uppercase tracking-wider mb-2">预计使用人数</label>
+<div class="flex items-center bg-surface-container-high rounded-md px-4 py-3 gap-3">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="groups">groups</span>
+<input class="bg-transparent border-none p-0 text-sm font-semibold w-full focus:ring-0" placeholder="请输入人数" type="number"/>
+<span class="text-xs font-bold text-on-surface-variant">人</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Form Section: 申请信息 -->
+<section class="bg-surface-container-low rounded-lg p-6 space-y-5">
+<div class="flex items-center gap-2 editorial-padding">
+<div class="w-1.5 h-6 bg-primary rounded-full"></div>
+<h3 class="text-on-surface font-bold text-lg">申请信息</h3>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-5 space-y-6">
+<div class="group">
+<label class="block text-on-surface-variant text-[0.6875rem] font-bold uppercase tracking-wider mb-2">联系电话</label>
+<div class="flex items-center bg-surface-container-high rounded-md px-4 py-3 gap-3">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="call">call</span>
+<input class="bg-transparent border-none p-0 text-sm font-semibold w-full focus:ring-0" placeholder="138 **** 5678" type="tel"/>
+</div>
+</div>
+<div class="group">
+<label class="block text-on-surface-variant text-[0.6875rem] font-bold uppercase tracking-wider mb-2">申请用途说明</label>
+<div class="bg-surface-container-high rounded-md px-4 py-3 focus-within:ring-2 ring-primary/20 transition-all">
+<textarea class="bg-transparent border-none p-0 text-sm font-medium w-full focus:ring-0 min-h-[100px] resize-none" placeholder="请详细描述预约用途，如：学术研讨、课题汇报等..."></textarea>
+</div>
+</div>
+</div>
+</section>
+<!-- Info Card: 申请规则 -->
+<section class="bg-purple-50/50 rounded-lg p-6 flex gap-4">
+<span class="material-symbols-outlined text-primary/60 shrink-0" data-icon="info">info</span>
+<div class="space-y-2">
+<h4 class="text-primary font-bold text-sm">申请规则</h4>
+<ul class="text-slate-500 text-xs leading-relaxed space-y-1">
+<li class="flex gap-2"><span>•</span> 预约需提前至少24小时提交申请；</li>
+<li class="flex gap-2"><span>•</span> 使用期间请务必爱护公共财物，保持环境卫生；</li>
+<li class="flex gap-2"><span>•</span> 申请通过后，请准时到场使用，超30分钟未到场视为放弃。</li>
+</ul>
+</div>
+</section>
+</main>
+<!-- Bottom Fixed Action -->
+<div class="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-xl p-6 shadow-[0_-10px_40px_rgba(124,58,237,0.08)] rounded-t-[2rem] z-50">
+<button class="w-full purple-gradient text-white font-bold py-4 rounded-full active:scale-95 duration-200 shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+<span>提交申请</span>
+<span class="material-symbols-outlined text-sm" data-icon="send">send</span>
+</button>
+</div>
+</body></html>

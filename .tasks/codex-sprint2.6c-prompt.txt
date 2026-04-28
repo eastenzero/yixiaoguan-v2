@@ -1,0 +1,14 @@
+One new commit, no rebase/squash/amend. Add on top of current HEAD.
+
+TASK: refactor apps/student-app/src/pages/login/index.vue
+- replace hardcoded hex colors with SCSS variables from apps/student-app/src/styles/tokens.scss (auto-loaded via uni.scss) when there is an exact or close match in tokens
+- if the file uses local custom SVG icon components, replace with Material Symbols Outlined font icons (assume CDN is loaded; if not, you may add the link to apps/student-app/index.html in this same commit) where reasonable
+- preserve all login behavior (form bindings, API calls, error handling, navigation on success, captcha handling, validation)
+- run npm run build:h5 in apps/student-app to verify
+- commit message: "refactor student login page"
+
+Important:
+- Do not push.
+- Do not modify any existing commits.
+- Exactly one new commit.
+- When invoking shell commands on Windows PowerShell, AVOID complex regex with pipes and double-quote escaping (those cause PS parser errors). Use simple commands or directly read files instead.

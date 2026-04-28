@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>我的申请 - 医小管</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ba1a1a",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed": "#ffdcc6",
+                    "primary": "#630ed4",
+                    "on-secondary-fixed-variant": "#581db3",
+                    "on-surface": "#191c1e",
+                    "secondary-fixed": "#ebddff",
+                    "surface-dim": "#d8dadc",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#713700",
+                    "surface-tint": "#732ee4",
+                    "primary-fixed": "#eaddff",
+                    "tertiary": "#7d3d00",
+                    "on-secondary": "#ffffff",
+                    "background": "#f7f9fb",
+                    "on-primary-fixed": "#25005a",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e6e8ea",
+                    "on-tertiary-container": "#ffe0cd",
+                    "outline": "#7b7487",
+                    "surface": "#f7f9fb",
+                    "inverse-on-surface": "#eff1f3",
+                    "tertiary-fixed-dim": "#ffb784",
+                    "on-secondary-container": "#fffbff",
+                    "surface-bright": "#f7f9fb",
+                    "outline-variant": "#ccc3d8",
+                    "surface-container-highest": "#e0e3e5",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#d3bbff",
+                    "primary-container": "#7c3aed",
+                    "surface-container": "#eceef0",
+                    "inverse-surface": "#2d3133",
+                    "secondary-container": "#8856e5",
+                    "primary-fixed-dim": "#d2bbff",
+                    "on-surface-variant": "#4a4455",
+                    "on-primary-container": "#ede0ff",
+                    "surface-container-low": "#f2f4f6",
+                    "on-background": "#191c1e",
+                    "tertiary-container": "#a15100",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#250059",
+                    "on-primary-fixed-variant": "#5a00c6",
+                    "on-tertiary-fixed": "#301400",
+                    "inverse-primary": "#d2bbff",
+                    "surface-variant": "#e0e3e5",
+                    "secondary": "#6e3aca"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .shadow-purple-glow {
+            box-shadow: 0 -10px 40px rgba(124, 58, 237, 0.08);
+        }
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Manrope', sans-serif;
+            background-color: #f7f9fb;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface">
+<!-- Top Navigation -->
+<header class="fixed top-0 left-0 w-full px-6 py-4 flex justify-between items-center bg-[#f7f9fb]/80 dark:bg-slate-900/80 backdrop-blur-xl z-50">
+<button class="hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full transition-colors p-2 active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[#630ed4]" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-manrope text-lg font-bold tracking-tight text-on-surface">我的申请</h1>
+<button class="hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full transition-colors p-2 active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[#630ed4]" data-icon="notifications">notifications</span>
+</button>
+</header>
+<main class="pt-20 pb-32 px-6">
+<!-- Hero Section: Statistical Editorial -->
+<section class="relative overflow-hidden rounded-lg mb-8 aspect-[16/9] flex flex-col justify-end p-8 bg-gradient-to-br from-[#630ed4] to-[#7c3aed]">
+<div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+<div class="z-10">
+<span class="text-on-primary/70 font-label text-[10px] tracking-widest uppercase block mb-2">Academic Records</span>
+<h2 class="text-white text-3xl font-bold tracking-tight mb-1">申请概览</h2>
+<div class="flex items-baseline gap-2">
+<span class="text-white text-5xl font-black">12</span>
+<span class="text-on-primary-container/80 text-sm font-medium">总申请数量</span>
+</div>
+</div>
+<img class="absolute top-0 right-0 h-full w-1/2 object-cover mix-blend-overlay opacity-40" data-alt="abstract architectural curves of a modern university building with soft violet lighting and glass textures" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7szN4qYL3z46567wyeIMc8bbFGpGqIHAVkrXlT5FGbubKiFesRvESQV9ywGxW-ikgxr46ZeTn-mVSP1T2o3BbFRqKUuwTM5aZh4OiWHqVOFI9j7qDGPCx0EAXtCns4izQR_jeFtJtxClXIa1Ms83rhPXffI5PwJLrDrxx-_15qZDWN87V8Kn9ENmylJAHxp9xW8aq-TPPsAtLd6Ywlc1YeCFRlYyEkDXsdLe2lEjBjHCuIhzwgxmquTtiRmregBNK1rHeFH6gbOE"/>
+</section>
+<!-- Filter Tabs -->
+<nav class="flex gap-2 overflow-x-auto pb-6 scrollbar-hide">
+<button class="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-bold whitespace-nowrap">全部</button>
+<button class="bg-surface-container-low text-on-surface-variant px-6 py-2.5 rounded-full text-sm font-medium whitespace-nowrap hover:bg-surface-container-high transition-colors">待审批</button>
+<button class="bg-surface-container-low text-on-surface-variant px-6 py-2.5 rounded-full text-sm font-medium whitespace-nowrap hover:bg-surface-container-high transition-colors">已通过</button>
+<button class="bg-surface-container-low text-on-surface-variant px-6 py-2.5 rounded-full text-sm font-medium whitespace-nowrap hover:bg-surface-container-high transition-colors">已拒绝</button>
+</nav>
+<!-- Applications List -->
+<div class="space-y-6">
+<!-- Card 1: Pending -->
+<div class="bg-surface-container-lowest rounded-lg p-6 flex flex-col gap-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/10">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="meeting_room">meeting_room</span>
+<h3 class="text-on-surface font-bold text-lg">第二实验大楼 402 室</h3>
+</div>
+<p class="text-on-surface-variant text-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+                            2024-11-24 14:00 ~ 16:00
+                        </p>
+</div>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-3 py-1 rounded-md text-[10px] font-bold">待审批</span>
+</div>
+<!-- Step Indicator -->
+<div class="relative flex justify-between items-center px-4">
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-surface-container-high -translate-y-1/2 z-0"></div>
+<div class="absolute top-1/2 left-0 w-1/2 h-[2px] bg-primary -translate-y-1/2 z-0"></div>
+<div class="relative z-10 flex flex-col items-center gap-1">
+<div class="w-4 h-4 rounded-full bg-primary flex items-center justify-center">
+<div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+</div>
+<span class="text-[10px] font-bold text-primary">已提交</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-1">
+<div class="w-4 h-4 rounded-full bg-primary ring-4 ring-primary/20 flex items-center justify-center">
+<div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+</div>
+<span class="text-[10px] font-bold text-primary">审批中</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-1">
+<div class="w-4 h-4 rounded-full bg-surface-container-high flex items-center justify-center">
+<div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+</div>
+<span class="text-[10px] font-bold text-slate-400">已完成</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 rounded-md">
+<span class="text-[10px] font-label text-primary/60 uppercase tracking-wider block mb-1">Purpose of use</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">临床医学系学生科研研讨会，预计 15 人参加，需投影设备支持。</p>
+</div>
+<div class="flex justify-end">
+<button class="text-error font-bold text-sm px-4 py-2 hover:bg-error/5 rounded-full transition-all active:scale-95">撤回申请</button>
+</div>
+</div>
+<!-- Card 2: Approved -->
+<div class="bg-surface-container-lowest rounded-lg p-6 flex flex-col gap-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/10">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="domain">domain</span>
+<h3 class="text-on-surface font-bold text-lg">行政楼 3 层 报告厅</h3>
+</div>
+<p class="text-on-surface-variant text-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+                            2024-11-20 09:00 ~ 11:30
+                        </p>
+</div>
+<span class="bg-green-100 text-green-700 px-3 py-1 rounded-md text-[10px] font-bold">已通过</span>
+</div>
+<div class="relative flex justify-between items-center px-4">
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-green-500 -translate-y-1/2 z-0"></div>
+<div class="relative z-10 flex flex-col items-center gap-1">
+<div class="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-white" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+<span class="text-[10px] font-bold text-green-600">已提交</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-1">
+<div class="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-white" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+<span class="text-[10px] font-bold text-green-600">审批中</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-1">
+<div class="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-white" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+<span class="text-[10px] font-bold text-green-600">已完成</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 rounded-md">
+<span class="text-[10px] font-label text-primary/60 uppercase tracking-wider block mb-1">Purpose of use</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">学期中医学术讲座 - 数字化医疗新趋势。</p>
+</div>
+</div>
+<!-- Card 3: Rejected -->
+<div class="bg-surface-container-lowest rounded-lg p-6 flex flex-col gap-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/10 opacity-70">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-slate-400 text-lg" data-icon="sports_basketball">sports_basketball</span>
+<h3 class="text-on-surface font-bold text-lg">室内体育馆 B 区</h3>
+</div>
+<p class="text-on-surface-variant text-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+                            2024-11-18 18:00 ~ 20:00
+                        </p>
+</div>
+<span class="bg-error-container text-on-error-container px-3 py-1 rounded-md text-[10px] font-bold">已拒绝</span>
+</div>
+<div class="bg-error/5 p-4 rounded-md border-l-4 border-error">
+<span class="text-[10px] font-label text-error/80 uppercase tracking-wider block mb-1">Rejection Reason</span>
+<p class="text-sm text-error/90 font-medium">该时间段场地已被校队预留用于专项训练，请尝试申请其他场地或时段。</p>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB: Create New -->
+<button class="fixed bottom-10 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-[#630ed4] to-[#7c3aed] text-white shadow-[0_10px_40px_rgba(124,58,237,0.3)] flex items-center justify-center active:scale-90 transition-all z-50">
+<span class="material-symbols-outlined text-3xl" data-icon="add">add</span>
+</button>
+</body></html>

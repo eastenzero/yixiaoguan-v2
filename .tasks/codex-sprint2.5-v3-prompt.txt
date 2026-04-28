@@ -1,0 +1,21 @@
+Three new commits, no rebase/squash/amend. Add on top of current HEAD.
+
+TASK 1: refactor apps/teacher-app/src/pages/knowledge/detail.vue
+- replace hardcoded hex colors with SCSS variables from apps/teacher-app/src/styles/tokens.scss (auto-loaded via uni.scss)
+- if the file uses local custom SVG icon components, replace with Material Symbols Outlined font icons (CDN already in index.html) where reasonable
+- preserve all current behavior (imports, store, API, navigation, lifecycle)
+- run npm run build:h5 in apps/teacher-app to verify
+- commit message: "refactor teacher knowledge detail page"
+
+TASK 2: same treatment for apps/teacher-app/src/pages/questions/detail.vue
+- commit message: "refactor teacher questions detail page"
+
+TASK 3: in apps/teacher-app/src/pages/questions/index.vue, add a red badge on the "待处理" tab label showing the count of pending (awaiting/unanswered) questions
+- show the badge with the number when count > 0
+- hide the badge when count is 0
+- style: small red circle (use a danger token from tokens.scss if available, otherwise #FF4D4F), white text, ~16-18px, top-right of the tab label
+- the count must come from the existing pending list data already fetched in this page (do not add new API calls)
+- run npm run build:h5 to verify
+- commit message: "feat teacher questions pending badge"
+
+Do not push. Do not modify existing commits. Three new commits only.

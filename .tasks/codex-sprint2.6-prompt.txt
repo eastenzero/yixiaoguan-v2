@@ -1,0 +1,20 @@
+Two new commits, no rebase/squash/amend. Add on top of current HEAD.
+
+TASK 1: refactor apps/student-app/src/pages/chat/index.vue
+- replace hardcoded hex colors with SCSS variables from apps/student-app/src/styles/tokens.scss (auto-loaded via uni.scss)
+- if the file uses local custom SVG icon components, replace with Material Symbols Outlined font icons (CDN already in apps/student-app/index.html if loaded; otherwise it's the dialog and chat related icons keep as is) where reasonable
+- preserve all current behavior (imports, store, API, navigation, lifecycle, websocket/SSE, message rendering)
+- run npm run build:h5 in apps/student-app to verify
+- commit message: "refactor student chat page"
+
+TASK 2: refactor apps/student-app/src/pages/login/index.vue
+- same treatment: replace hex with tokens, use Material Symbols icons where reasonable
+- preserve all login behavior (form bindings, API call, error handling, navigation on success)
+- run npm run build:h5 to verify
+- commit message: "refactor student login page"
+
+Notes:
+- Do not push.
+- Do not modify existing commits.
+- Two new commits only on top of HEAD.
+- If apps/student-app/index.html does not yet load Material Symbols Outlined CDN, you may add the link to it in TASK 1 commit.

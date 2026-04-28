@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ba1a1a",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed": "#ffdcc6",
+                    "primary": "#630ed4",
+                    "on-secondary-fixed-variant": "#581db3",
+                    "on-surface": "#191c1e",
+                    "secondary-fixed": "#ebddff",
+                    "surface-dim": "#d8dadc",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#713700",
+                    "surface-tint": "#732ee4",
+                    "primary-fixed": "#eaddff",
+                    "tertiary": "#7d3d00",
+                    "on-secondary": "#ffffff",
+                    "background": "#f7f9fb",
+                    "on-primary-fixed": "#25005a",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e6e8ea",
+                    "on-tertiary-container": "#ffe0cd",
+                    "outline": "#7b7487",
+                    "surface": "#f7f9fb",
+                    "inverse-on-surface": "#eff1f3",
+                    "tertiary-fixed-dim": "#ffb784",
+                    "on-secondary-container": "#fffbff",
+                    "surface-bright": "#f7f9fb",
+                    "outline-variant": "#ccc3d8",
+                    "surface-container-highest": "#e0e3e5",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#d3bbff",
+                    "primary-container": "#7c3aed",
+                    "surface-container": "#eceef0",
+                    "inverse-surface": "#2d3133",
+                    "secondary-container": "#8856e5",
+                    "primary-fixed-dim": "#d2bbff",
+                    "on-surface-variant": "#4a4455",
+                    "on-primary-container": "#ede0ff",
+                    "surface-container-low": "#f2f4f6",
+                    "on-background": "#191c1e",
+                    "tertiary-container": "#a15100",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#250059",
+                    "on-primary-fixed-variant": "#5a00c6",
+                    "on-tertiary-fixed": "#301400",
+                    "inverse-primary": "#d2bbff",
+                    "surface-variant": "#e0e3e5",
+                    "secondary": "#6e3aca"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope", "PingFang SC", "sans-serif"],
+                    "body": ["Manrope", "PingFang SC", "sans-serif"],
+                    "label": ["Manrope", "PingFang SC", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .shadow-purple-glow {
+            box-shadow: 0 -10px 40px rgba(124, 58, 237, 0.08);
+        }
+        .status-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body text-on-surface antialiased min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full px-6 py-4 flex justify-between items-center bg-[#f7f9fb]/80 backdrop-blur-xl z-50 tonal-shift-surface-container-low">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-slate-500 hover:bg-purple-50 rounded-full p-2 transition-colors active:scale-95 duration-200">arrow_back</button>
+<h1 class="font-headline text-xl font-bold tracking-tight text-[#630ed4]">医小管</h1>
+</div>
+<div class="flex items-center">
+<button class="material-symbols-outlined text-slate-500 hover:bg-purple-50 rounded-full p-2 transition-colors active:scale-95 duration-200">notifications</button>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-2xl mx-auto">
+<!-- Title & Status Section -->
+<section class="mb-10">
+<div class="flex flex-col gap-2">
+<span class="text-primary font-bold tracking-widest text-[10px] uppercase">Room Application</span>
+<div class="flex items-end justify-between">
+<h2 class="text-3xl font-extrabold text-on-surface tracking-tight">第二临床医学院 302 研讨室</h2>
+<div class="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-1">
+<span class="relative flex h-2 w-2">
+<span class="status-pulse absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+<span class="text-primary font-bold text-xs">审核中</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Progress Stepper -->
+<section class="mb-12">
+<div class="relative flex justify-between items-start">
+<!-- Progress Line Background -->
+<div class="absolute top-4 left-0 w-full h-[2px] bg-surface-container-high z-0"></div>
+<!-- Active Progress Line -->
+<div class="absolute top-4 left-0 w-1/3 h-[2px] bg-primary z-0"></div>
+<!-- Step 1 -->
+<div class="relative z-10 flex flex-col items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+<span class="text-[10px] font-bold text-on-surface">已提交</span>
+</div>
+<!-- Step 2 -->
+<div class="relative z-10 flex flex-col items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white ring-4 ring-background">
+<span class="text-xs font-bold">2</span>
+</div>
+<span class="text-[10px] font-bold text-primary">审核中</span>
+</div>
+<!-- Step 3 -->
+<div class="relative z-10 flex flex-col items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-slate-400">
+<span class="text-xs font-bold">3</span>
+</div>
+<span class="text-[10px] font-bold text-slate-400">补充资料</span>
+</div>
+<!-- Step 4 -->
+<div class="relative z-10 flex flex-col items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-slate-400">
+<span class="text-xs font-bold">4</span>
+</div>
+<span class="text-[10px] font-bold text-slate-400">通过</span>
+</div>
+</div>
+</section>
+<!-- Info Summary Bento Grid -->
+<section class="grid grid-cols-2 gap-4 mb-12">
+<!-- Large Main Info -->
+<div class="col-span-2 bg-surface-container-lowest p-6 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col gap-6">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-slate-400 text-xs font-medium mb-1">申请编号</p>
+<p class="font-headline font-bold text-on-surface">APP-2024-0512-009</p>
+</div>
+<div class="text-right">
+<p class="text-slate-400 text-xs font-medium mb-1">提交时间</p>
+<p class="font-headline font-bold text-on-surface">2024.05.12 14:30</p>
+</div>
+</div>
+<div class="h-px bg-surface-container-low"></div>
+<div class="grid grid-cols-2 gap-y-6">
+<div>
+<p class="text-slate-400 text-xs font-medium mb-1">使用日期</p>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">calendar_today</span>
+<p class="font-bold text-on-surface">2024年5月18日</p>
+</div>
+</div>
+<div>
+<p class="text-slate-400 text-xs font-medium mb-1">使用时段</p>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">schedule</span>
+<p class="font-bold text-on-surface">14:00 - 17:30</p>
+</div>
+</div>
+<div>
+<p class="text-slate-400 text-xs font-medium mb-1">预估人数</p>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">groups</span>
+<p class="font-bold text-on-surface">12 人</p>
+</div>
+</div>
+<div>
+<p class="text-slate-400 text-xs font-medium mb-1">申请用途</p>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">description</span>
+<p class="font-bold text-on-surface">学术沙龙研讨</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Approval Timeline -->
+<section class="mb-12 px-2">
+<h3 class="text-lg font-bold mb-8 flex items-center gap-2">
+<span class="w-1 h-5 bg-primary rounded-full"></span>
+                审批流程
+            </h3>
+<div class="space-y-0">
+<!-- Node 1 -->
+<div class="relative pl-10 pb-10">
+<div class="absolute left-0 top-0 h-full w-px bg-surface-container-high ml-4"></div>
+<div class="absolute left-0 top-1 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center ring-4 ring-background">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<h4 class="font-bold text-on-surface">提交申请</h4>
+<span class="text-[10px] text-slate-400 font-medium">05-12 14:30</span>
+</div>
+<p class="text-sm text-slate-500">申请人：林晓梅 (202109283)</p>
+</div>
+</div>
+<!-- Node 2 -->
+<div class="relative pl-10 pb-10">
+<div class="absolute left-0 top-0 h-full w-px bg-surface-container-high ml-4"></div>
+<div class="absolute left-0 top-1 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center ring-4 ring-background">
+<span class="material-symbols-outlined text-primary text-lg">hourglass_empty</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<h4 class="font-bold text-on-surface">院系初步审核</h4>
+<span class="text-[10px] text-slate-400 font-medium">进行中</span>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg mt-2">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="portrait of a professional female academic administrator with a warm and confident expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC91v0UMHRKJK6NiyktAAc7A7xheA5EGy3O-70eoTxfsV7bi5o9tyMVcn2caMlma8oVrdI6vVJZ0a2f6X2bGJVYvsq-soYtM47PmlytwCUTrc31P74reNX5YWlTwAUE00bP8Xd3q1mulgGb1B5fsVV1todRFjPrXGfECEe6VxcQCqnkMxb4uXwdlGqZ_acQGehANqOzu_sxJfwfaI5wmdiJXW3OruWFVeuxWfRnF4eSnV7HwbPD2vMGVIAFYZNPAHAS4M5nM1dDviU"/>
+<div>
+<p class="text-xs font-bold text-on-surface">张德华 教授</p>
+<p class="text-[10px] text-slate-500">待审批 · 预计24小时内反馈</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Node 3 -->
+<div class="relative pl-10">
+<div class="absolute left-0 top-1 w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center ring-4 ring-background">
+<span class="material-symbols-outlined text-slate-300 text-lg">circle</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<h4 class="font-bold text-slate-400">后勤资产备案</h4>
+</div>
+<p class="text-sm text-slate-300 italic">待上一环节完成后开启</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Actions -->
+<div class="fixed bottom-0 left-0 w-full z-50 p-6 bg-white/80 backdrop-blur-xl flex gap-4 items-center">
+<button class="flex-1 py-4 px-6 border-2 border-primary/20 text-primary font-bold rounded-lg hover:bg-primary/5 transition-all active:scale-95 duration-200">
+            联系审批人
+        </button>
+<button class="flex-[1.5] py-4 px-6 bg-gradient-to-br from-[#630ed4] to-[#7c3aed] text-white font-bold rounded-lg shadow-purple-glow hover:opacity-90 transition-all active:scale-95 duration-200">
+            修改申请
+        </button>
+</div>
+</body></html>

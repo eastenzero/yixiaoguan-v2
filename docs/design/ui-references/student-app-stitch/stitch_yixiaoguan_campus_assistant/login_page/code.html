@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>医小管 - 登录</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffdcc6",
+                        "primary": "#630ed4",
+                        "on-secondary-fixed-variant": "#581db3",
+                        "on-surface": "#191c1e",
+                        "secondary-fixed": "#ebddff",
+                        "surface-dim": "#d8dadc",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "surface-tint": "#732ee4",
+                        "primary-fixed": "#eaddff",
+                        "tertiary": "#7d3d00",
+                        "on-secondary": "#ffffff",
+                        "background": "#f7f9fb",
+                        "on-primary-fixed": "#25005a",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary-container": "#ffe0cd",
+                        "outline": "#7b7487",
+                        "surface": "#f7f9fb",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-fixed-dim": "#ffb784",
+                        "on-secondary-container": "#fffbff",
+                        "surface-bright": "#f7f9fb",
+                        "outline-variant": "#ccc3d8",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#d3bbff",
+                        "primary-container": "#7c3aed",
+                        "surface-container": "#eceef0",
+                        "inverse-surface": "#2d3133",
+                        "secondary-container": "#8856e5",
+                        "primary-fixed-dim": "#d2bbff",
+                        "on-surface-variant": "#4a4455",
+                        "on-primary-container": "#ede0ff",
+                        "surface-container-low": "#f2f4f6",
+                        "on-background": "#191c1e",
+                        "tertiary-container": "#a15100",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#250059",
+                        "on-primary-fixed-variant": "#5a00c6",
+                        "on-tertiary-fixed": "#301400",
+                        "inverse-primary": "#d2bbff",
+                        "surface-variant": "#e0e3e5",
+                        "secondary": "#6e3aca"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope", "PingFang SC", "sans-serif"],
+                        "body": ["Manrope", "PingFang SC", "sans-serif"],
+                        "label": ["Manrope", "PingFang SC", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', 'PingFang SC', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-login-gradient {
+            background: linear-gradient(135deg, #5B21B6 0%, #8B5CF6 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-login-gradient min-h-screen flex items-center justify-center p-6 selection:bg-primary-fixed selection:text-on-primary-fixed">
+<main class="w-full max-w-md">
+<!-- Login Card Container -->
+<div class="bg-surface-container-lowest rounded-[24px] px-8 py-12 shadow-[0_20px_50px_rgba(37,0,90,0.2)] relative overflow-hidden">
+<!-- Academic Logo & Header -->
+<div class="flex flex-col items-center mb-10">
+<div class="w-16 h-16 bg-primary-container/10 flex items-center justify-center rounded-2xl mb-4">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="school" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+<h1 class="text-on-surface font-headline font-extrabold text-3xl tracking-tight mb-1">医小管</h1>
+<p class="text-on-surface-variant font-label font-medium text-sm tracking-widest uppercase opacity-70">智慧校园服务平台</p>
+</div>
+<!-- Login Form -->
+<form class="space-y-6" onsubmit="return false;">
+<!-- Student ID Input -->
+<div class="space-y-2">
+<label class="text-on-surface-variant text-xs font-bold pl-1">学号</label>
+<div class="group relative flex items-center bg-surface-container-high rounded-lg focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+<span class="material-symbols-outlined absolute left-4 text-outline" data-icon="person">person</span>
+<input class="w-full bg-transparent border-none py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-0 text-sm font-medium" placeholder="请输入您的学号" type="text"/>
+</div>
+</div>
+<!-- Password Input -->
+<div class="space-y-2">
+<label class="text-on-surface-variant text-xs font-bold pl-1">密码</label>
+<div class="group relative flex items-center bg-surface-container-high rounded-lg focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+<span class="material-symbols-outlined absolute left-4 text-outline" data-icon="lock">lock</span>
+<input class="w-full bg-transparent border-none py-4 pl-12 pr-12 text-on-surface placeholder:text-outline focus:ring-0 text-sm font-medium" placeholder="请输入密码" type="password"/>
+<span class="material-symbols-outlined absolute right-4 text-outline cursor-pointer hover:text-primary transition-colors" data-icon="visibility_off">visibility_off</span>
+</div>
+</div>
+<!-- Captcha Input -->
+<div class="space-y-2">
+<label class="text-on-surface-variant text-xs font-bold pl-1">验证码</label>
+<div class="flex gap-3">
+<div class="flex-1 group relative flex items-center bg-surface-container-high rounded-lg focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+<span class="material-symbols-outlined absolute left-4 text-outline" data-icon="verified_user">verified_user</span>
+<input class="w-full bg-transparent border-none py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-0 text-sm font-medium" placeholder="验证码" type="text"/>
+</div>
+<div class="w-32 h-[52px] bg-surface-container-highest rounded-lg overflow-hidden flex items-center justify-center cursor-pointer active:opacity-80 transition-opacity">
+<img alt="Captcha" class="w-full h-full object-cover grayscale contrast-125" data-alt="abstract geometric captcha security code image with distorted alphanumeric characters on a textured grey background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCr8roR94KCCqDzv89WUflrPEmCdOfhNQP4XMTp5X8gPahQ-l6KF3qpJx2AEu9fJ1Lyft3LtwYXuuJ-unWqciDy6PKg0JZ3TNDySkadZ91kHQeFZ3_n9gqR3EzpfjBkYKWWNQUQxubU-zd4UZlhu2BfB4BEe1F4Hv5YLgEpMqtZ2K65B0Zyrb4NeCKkOMFKStyo-nO3GNFr4qeryQpixc8LvPuFPsvNSyZoTUsq3zWhMM7M2_O4PhJe5J68czkTxc0p4YniRz9efuc"/>
+</div>
+</div>
+</div>
+<!-- Login Button -->
+<button class="w-full bg-login-gradient text-white font-headline font-bold py-4 rounded-full shadow-lg shadow-primary/30 active:scale-95 transition-all duration-200 mt-4 flex items-center justify-center gap-2" type="submit">
+<span>登录</span>
+<span class="material-symbols-outlined text-lg" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</form>
+<!-- Forgot Password link (Subtle) -->
+<div class="mt-8 flex justify-center">
+<a class="text-primary font-body text-xs font-semibold hover:underline decoration-2 underline-offset-4" href="#">忘记密码？</a>
+</div>
+</div>
+<!-- Footer Information -->
+<div class="mt-8 text-center space-y-4">
+<p class="text-white/60 font-body text-sm font-medium">
+                初始密码与学号相同
+            </p>
+<div class="flex justify-center items-center gap-6 text-white/40 text-xs">
+<a class="hover:text-white transition-colors" href="#">隐私政策</a>
+<span class="w-1 h-1 bg-white/20 rounded-full"></span>
+<a class="hover:text-white transition-colors" href="#">服务协议</a>
+</div>
+</div>
+</main>
+<!-- Aesthetic Decorative Elements -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
+<div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-white/5 rounded-full blur-[100px]"></div>
+<div class="absolute top-[60%] -right-[5%] w-[30%] h-[30%] bg-primary-container/10 rounded-full blur-[80px]"></div>
+</div>
+</body></html>

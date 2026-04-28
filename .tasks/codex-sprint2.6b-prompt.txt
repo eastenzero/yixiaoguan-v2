@@ -1,0 +1,22 @@
+Two new commits, no rebase/squash/amend. Add on top of current HEAD.
+
+TASK 1: in apps/student-app/src/pages/chat/index.vue, ONLY do hex-to-token color migration. DO NOT change any logic, structure, icons, or imports.
+- Find every hardcoded hex color in the file's <style> block(s) (and any inline style strings)
+- Replace each with the corresponding SCSS variable from apps/student-app/src/styles/tokens.scss when an exact match exists
+- If a hex value has no exact token match, keep the hex (do not invent new tokens; do not approximate)
+- DO NOT modify the <template> markup, do not change icon usage, do not refactor any function
+- Run npm run build:h5 in apps/student-app to verify
+- Commit message: "refactor(student-chat): migrate hex colors to design tokens"
+
+TASK 2: refactor apps/student-app/src/pages/login/index.vue
+- replace hex colors with tokens.scss variables when matching
+- if uses local custom SVG icon components, replace with Material Symbols Outlined font icons where reasonable
+- preserve all login behavior (form bindings, API calls, error handling, navigation on success)
+- run npm run build:h5 to verify
+- Commit message: "refactor student login page"
+
+Notes:
+- Do not push.
+- Do not modify existing commits.
+- Two new commits only.
+- For TASK 1, be conservative: only do safe color substitutions, no other changes.

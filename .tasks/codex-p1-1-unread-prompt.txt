@@ -1,0 +1,212 @@
+P1-1 unread message tracking. Implement plan B (lightweight) for yixiaoguan-v2.
+
+Strict rules:
+- Do NOT modify, rebase, squash, or amend any existing commits.
+- Make exactly TWO new commits on top of current HEAD (7ce59ca).
+- Do not push.
+- When invoking shell commands on Windows PowerShell, AVOID complex regex with pipes and double-quote escaping. Use simple commands or read files directly.
+
+============================================================
+COMMIT 1: backend - last_read_at + unread-summary + mark-read API
+Commit message: "feat(unread): add last_read_at column + unread-summary/mark-read API"
+============================================================
+
+1.1 Create alembic migration file:
+    services/gateway/alembic/versions/a1f8c4b9e203_add_conv_last_read_at.py
+
+    Content:
+    - revision = "a1f8c4b9e203"
+    - down_revision = "c4a81b9d1e21"
+    - upgrade(): op.add_column("conversations", sa.Column("last_read_at", sa.DateTime(), nullable=True))
+    - downgrade(): op.drop_column("conversations", "last_read_at")
+    - Follow the style of services/gateway/alembic/versions/c4a81b9d1e21_r08_scope_publish.py
+
+1.2 Edit services/gateway/app/models/conversation.py:
+    Add to Conversation class (after closed_at field):
+        last_read_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+
+1.3 Edit services/gateway/app/schemas/conversation.py:
+    - Add `last_read_at: datetime | None = None` to ConversationResponse
+    - Add new schemas at the bottom:
+
+        class UnreadSummaryItem(BaseModel):
+            conv_id: int
+            title: str
+            status: str
+            unread_count: int
+            last_message_at: datetime | None = None
+            last_message_sender_type: str | None = None  # student | ai | teacher | system | None
+            last_read_at: datetime | None = None
+
+            class Config:
+                from_attributes = True
+
+
+        class UnreadSummaryResponse(BaseModel):
+            items: list[UnreadSummaryItem]
+            total_unread: int
+
+1.4 Edit services/gateway/app/services/conversation_service.py:
+    Add two new functions:
+
+    async def get_unread_summary(db, current_user):
+        """For a student, return one entry per conversation with unread_count.
+        unread_count = count of messages where:
+          - conversation.student_id == current_user.id
+          - sender_type IN (teacher, system)
+          - created_at > conversation.last_read_at  (if last_read_at IS NULL, all such messages count)
+        Also include last message timestamp + sender_type per conversation (for UI hint).
+        Returns UnreadSummaryResponse(items=[...], total_unread=sum(unread_count)).
+        Only return conversations belonging to current_user (student).
+        Sort items by last_message_at desc; conversations with no messages can be omitted or included with unread_count=0 (your call, document the choice).
+        """
+
+    async def mark_conversation_read(db, conv_id, current_user):
+        """Set conversations.last_read_at = func.now() for the given conv_id, only if owned by current_user.
+        Raises HTTPException 404 if not found / not owned.
+        Commits the change.
+        """
+
+    Implementation hints:
+    - Use SQLAlchemy async style consistent with existing functions in this file.
+    - For unread counts, you can use a subquery or load conversations + messages together.
+    - For "last message" info, prefer ORDER BY messages.created_at DESC LIMIT 1 per conversation; if you find this awkward, you may use a window function or two queries.
+    - Be defensive about None comparisons (last_read_at NULL means count all teacher/system messages).
+
+1.5 Edit services/gateway/app/routers/conversations.py:
+    Add TWO new routes BEFORE the route `@router.get("/{conv_id}", response_model=ConversationResponse)`
+    so they don't get matched as conv_id:
+
+        @router.get("/unread-summary", response_model=UnreadSummaryResponse)
+        async def unread_summary(
+            db: AsyncSession = Depends(get_db),
+            current_user: User = Depends(get_current_user),
+        ):
+            """Return per-conversation unread counts for current student.
+            For non-students, return empty items / total_unread=0 (or 403 if you prefer).
+            """
+            if current_user.role != UserRole.student:
+                return UnreadSummaryResponse(items=[], total_unread=0)
+            return await get_unread_summary(db, current_user)
+
+
+        @router.post("/{conv_id}/mark-read", status_code=204)
+        async def mark_read(
+            conv_id: int,
+            db: AsyncSession = Depends(get_db),
+            current_user: User = Depends(get_current_user),
+        ):
+            """Mark a conversation as read up to now (sets last_read_at = NOW)."""
+            await mark_conversation_read(db, conv_id, current_user)
+            return None
+
+    Update the import at top of this file to include the new schemas + service functions.
+
+1.6 Add tests file: services/gateway/tests/test_unread_messages.py
+
+    Cover at least these cases:
+
+    a) Student with no messages -> total_unread = 0
+    b) Student with conv containing 1 student msg + 2 ai msgs + 3 teacher msgs and last_read_at=NULL
+       -> unread_count = 3 + 0 (system) for that conv (teacher only counts; if you also count system=on, document it)
+       -> If you choose to count system too: same with system msgs added in
+    c) After calling mark-read, that conv's unread_count drops to 0
+    d) After mark-read, if a NEW teacher message is added with created_at > last_read_at, unread_count = 1
+    e) Different student cannot see other student's unread (auth scoping)
+    f) Non-student (teacher) calling /unread-summary -> empty items / total_unread=0 (or 403, document choice)
+
+    Use the existing test fixtures pattern (look at tests/test_escalate_notify.py and tests/test_knowledge_admin_review.py for patterns: conftest, async client, db session, user factory).
+
+1.7 Verify by running:
+    cd services/gateway
+    python -m pytest tests/test_unread_messages.py -q
+
+    Then a quick scope-related ruff check on the changed files:
+    ruff check app/models/conversation.py app/schemas/conversation.py app/services/conversation_service.py app/routers/conversations.py tests/test_unread_messages.py
+
+1.8 Commit with message: "feat(unread): add last_read_at column + unread-summary/mark-read API"
+
+============================================================
+COMMIT 2: frontend - student-app shows unread badge + marks read on chat open
+Commit message: "feat(student-unread): show unread badge on home + mark read on chat open"
+============================================================
+
+2.1 Create new file apps/student-app/src/api/notification.ts:
+
+    import request from '@/utils/request'
+
+    export interface UnreadSummaryItem {
+      conv_id: number
+      title: string
+      status: string
+      unread_count: number
+      last_message_at: string | null
+      last_message_sender_type: 'student' | 'ai' | 'teacher' | 'system' | null
+      last_read_at: string | null
+    }
+
+    export interface UnreadSummaryResponse {
+      items: UnreadSummaryItem[]
+      total_unread: number
+    }
+
+    export function getUnreadSummary(): Promise<UnreadSummaryResponse> {
+      return request.get('/api/conversations/unread-summary')
+    }
+
+    export function markRead(convId: number): Promise<void> {
+      return request.post(`/api/conversations/${convId}/mark-read`)
+    }
+
+    Adjust the import path of `request` to match how other files in apps/student-app/src/api/ import it (look at auth.ts and chat.ts for the exact path/style).
+
+2.2 Edit apps/student-app/src/pages/chat/index.vue:
+    In the page's onShow lifecycle (uniapp), call markRead(conversationId.value) when conversationId.value is set (truthy).
+    - If onShow does not exist yet, add one. In uniapp + Vue 3 setup, you can use `onShow` from '@dcloudio/uni-app':
+        import { onShow } from '@dcloudio/uni-app'
+        onShow(() => { if (conversationId.value) markRead(conversationId.value).catch(() => {}) })
+    - Failure should be silent (don't block the user).
+    - Also call markRead immediately after a successful conversation create / load if it makes sense (optional).
+
+2.3 Edit apps/student-app/src/pages/home/index.vue:
+    - Import getUnreadSummary from '@/api/notification'
+    - Add a `totalUnread` ref (number, default 0)
+    - In onShow (or onMounted) call getUnreadSummary() and set totalUnread = response.total_unread; ignore errors
+    - Update the existing template:
+
+        <view class="notif-btn" @click="goNotifications">
+          <text class="material-symbols-outlined notif-btn-icon">notifications</text>
+          <view class="notif-dot" />
+        </view>
+
+      Change `notif-dot` so it shows the totalUnread number when > 0, and is hidden when totalUnread == 0:
+
+        <view class="notif-btn" @click="goNotifications">
+          <text class="material-symbols-outlined notif-btn-icon">notifications</text>
+          <view v-if="totalUnread > 0" class="notif-badge">{{ totalUnread > 99 ? '99+' : totalUnread }}</view>
+        </view>
+
+      Add CSS for `.notif-badge` near the existing `.notif-dot` styles:
+      - background: red (use $danger from tokens.scss if imported here, otherwise #FF4D4F with a small comment)
+      - color: white
+      - small rounded pill, ~16-18px tall, font-size ~10-12px, padding 0 4-6px
+      - position: absolute top-right of the .notif-btn (matching the old notif-dot offset)
+
+      You can keep `.notif-dot` styles in the file (unused now) or remove them. Your call; prefer remove to keep code clean.
+
+2.4 Verify by running:
+    cd apps/student-app
+    npm run build:h5
+
+    Build should succeed. Sass deprecation warnings are OK.
+
+2.5 Commit with message: "feat(student-unread): show unread badge on home + mark read on chat open"
+
+============================================================
+Final state expected: HEAD will have exactly 2 NEW commits on top of 7ce59ca.
+- Commit 1: backend changes (mig + model + schema + service + router + tests)
+- Commit 2: frontend changes (notification.ts + chat onShow + home badge)
+- pytest passes for the new test file
+- npm run build:h5 passes
+- No existing commits modified
+- No push
