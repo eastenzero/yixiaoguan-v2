@@ -201,6 +201,7 @@ import { onShow, onHide } from '@dcloudio/uni-app'
 import MarkdownIt from 'markdown-it'
 import { useUserStore } from '@/stores/user'
 import { createConversation, getConversation, getMessages, escalate } from '@/api/chat'
+import { markRead } from '@/api/notification'
 import { fetchSSE } from '@/utils/sse'
 import { wsManager } from '@/utils/websocket'
 import CustomTabBar from '@/components/CustomTabBar.vue'
@@ -260,6 +261,7 @@ onShow(() => {
   }
   registerWsListeners()
   if (conversationId.value) {
+    markRead(conversationId.value).catch(() => {})
     wsManager.send({ type: 'join_room', data: { conv_id: conversationId.value } })
   }
 })
@@ -332,6 +334,7 @@ async function loadConversation() {
     const conv = await getConversation(conversationId.value)
     conversationStatus.value = (conv.status as ConversationStatus) || 'ai_serving'
     await loadHistory()
+    markRead(conversationId.value).catch(() => {})
     wsManager.send({ type: 'join_room', data: { conv_id: conversationId.value } })
   } catch (e) {
     console.error('加载会话失败:', e)

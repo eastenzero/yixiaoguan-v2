@@ -6,7 +6,7 @@
       <view class="brand-actions">
         <view class="notif-btn" @click="goNotifications">
           <text class="material-symbols-outlined notif-btn-icon">notifications</text>
-          <view class="notif-dot" />
+          <view v-if="totalUnread > 0" class="notif-badge">{{ totalUnread > 99 ? '99+' : totalUnread }}</view>
         </view>
       </view>
     </view>
@@ -113,12 +113,15 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
+import { getUnreadSummary } from '@/api/notification'
 import CustomTabBar from '@/components/CustomTabBar.vue'
 
 const userStore = useUserStore()
 
 const displayName = computed(() => userStore.userInfo?.name || userStore.userInfo?.staff_id || '同学')
+const totalUnread = ref(0)
 
 // Static placeholder data for new sections
 const tags = ref([
@@ -143,6 +146,19 @@ const services = ref([
 ])
 
 const notice = ref('你有 3 条未读通知')
+
+onShow(() => {
+  refreshUnreadSummary()
+})
+
+async function refreshUnreadSummary() {
+  try {
+    const response = await getUnreadSummary()
+    totalUnread.value = response.total_unread || 0
+  } catch {
+    totalUnread.value = 0
+  }
+}
 
 function goChat(query?: string) {
   if (query) {
@@ -228,14 +244,21 @@ function showToastSoon() {
   font-size: 20px;
 }
 
-.notif-dot {
+.notif-badge {
   position: absolute;
-  top: $space-2;
-  right: $space-2;
-  width: 8px;
-  height: 8px;
+  top: 4px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 5px;
+  box-sizing: border-box;
   border-radius: $radius-full;
   background: $danger;
+  color: #fff;
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  line-height: 16px;
+  text-align: center;
   box-shadow: 0 0 0 2px $bg-page;
 }
 
