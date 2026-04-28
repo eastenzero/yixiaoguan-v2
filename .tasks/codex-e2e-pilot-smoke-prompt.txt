@@ -1,0 +1,184 @@
+# Sprint: 内测前 Playwright e2e 冒烟测试
+
+## 背景
+
+医小管 v2 学生端 (http://192.168.100.165/) + 教师端 (http://192.168.100.165:81/) 已部署。需要在向 50 人班级群发内测通知前，跑一遍自动化 e2e 冒烟测试，证明核心主流程能走通。
+
+## 目标
+
+写 5 个核心 Playwright e2e 测试，跑完输出 HTML 报告 + 4 张关键截图。Pass 即可启动内测，Fail 立刻回溯定位问题。
+
+## 环境
+
+- **Playwright**：已装 (`C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Scripts\playwright.exe`)
+- **Python**：`C:\Users\Administrator\AppData\Local\Programs\Python\Python314\python.exe`
+- **测试目标 URL**：
+  - 学生 H5：http://192.168.100.165/  （nginx 静态 + /api 反代到 8100）
+  - 辅导员 H5：http://192.168.100.165:81/
+- **测试账号**：
+  - 学生：`4125150001` / `4125150001`（黄静，公共事业管理 2025-1 班）
+  - 辅导员：`anjing` / `Anjing@yxg2026`（安静，同班）
+
+## 工作目录
+
+`C:\Users\Administrator\Documents\code\yixiaoguan-v2`，新建子目录 `.tasks/e2e-pilot-smoke/`，所有产出放这里。
+
+## 实施步骤
+
+### 1. 准备依赖
+
+```bash
+# 在主仓根目录跑：
+python -m pip install --upgrade pytest-playwright pytest-html
+# 如果 chromium 没下过：
+python -m playwright install chromium
+```
+
+如果 chromium 已存在 (`%USERPROFILE%\AppData\Local\ms-playwright\chromium-*` 有目录)，跳过 install。
+
+### 2. 写测试文件
+
+新建 `.tasks/e2e-pilot-smoke/conftest.py`：
+
+```python
+import pytest
+
+STUDENT_BASE = "http://192.168.100.165/"
+TEACHER_BASE = "http://192.168.100.165:81/"
+
+@pytest.fixture(scope="session")
+def browser_context_args(browser_context_args):
+    return {
+        **browser_context_args,
+        "viewport": {"width": 390, "height": 844},  # iPhone 14 Pro
+        "ignore_https_errors": True,
+        "locale": "zh-CN",
+    }
+```
+
+新建 `.tasks/e2e-pilot-smoke/test_pilot_smoke.py`，5 个测试：
+
+#### Test 1: 学生登录成功
+- 打开 STUDENT_BASE
+- 看到登录页（含「学号」「密码」字样）
+- 填 `4125150001` / `4125150001`
+- 点登录按钮
+- **断言**：URL 跳转到主页（含 `/pages/home/` 或 `/index` 之类）+ 页面 body 出现底部 tabBar（4 个 tab）
+- **截图**：`student-home.png`
+
+#### Test 2: 学生与 AI 对话能拿到回复
+- 用 Test 1 的 storage_state（保持登录）
+- 进入 AI 对话页（点首页"AI 对话"或类似入口）
+- 输入问题：`奖学金怎么申请？`
+- 点发送
+- 等待 AI 回复出现（最多 90 秒，因为 Dify chatflow 需 LLM 调用）
+- **断言**：聊天容器内至少有 1 条 `role=assistant` 或 .ai-message 类的元素，且文字长度 > 50 字
+- **加分项**：检查回复文字是否含「医药管理学院」或「公共事业管理」等班级/学院关键词（验证 R04-N1 D1 user-context 集成生效）
+- **截图**：`student-ai-reply.png`
+
+#### Test 3: 学生提交问题给辅导员
+- 进入「我的问题」或 escalate 入口
+- 点「提交新问题」之类按钮
+- 填问题：`【e2e-smoke-test-{timestamp}】请帮我查一下学位证发放时间`（含独特标记便于后续 cleanup）
+- 提交
+- **断言**：跳转到「我的问题」列表，看到该问题，状态为 `pending` 或 `待回复`
+- 把这条问题的 `question_id`（如能从 URL 或 DOM 拿）保存到 `.tasks/e2e-pilot-smoke/state.json`，给 Test 5 cleanup 用
+
+#### Test 4: 辅导员登录并看到学生问题
+- **新 browser context**（清空登录态）
+- 打开 TEACHER_BASE
+- 填 `anjing` / `Anjing@yxg2026`
+- 登录后跳转到 dashboard / question_list
+- **断言**：question_list 页面能看到 Test 3 提交的那条 `【e2e-smoke-test-{timestamp}】...` 问题
+- **截图**：`teacher-question-list.png`
+
+#### Test 5: cleanup（不算入 pass/fail，best-effort）
+- 调 `DELETE /api/v1/admin/questions/{id}` 之类接口删除测试问题，或者调用 mark-as-resolved 把它清掉
+- 如果 API 不存在，**跳过**（在终端打印 `WARN: cleanup skipped, manually delete question id={id}`）
+- 不要让 cleanup 失败破坏整体测试结果
+
+### 3. 选择器策略
+
+学生/教师 H5 是 uniapp Vue 3 编译后产物。selector 优先级：
+
+1. **文本匹配**：`page.locator("text=登录")`、`page.get_by_role("button", name="发送")`
+2. **placeholder**：`page.get_by_placeholder("请输入学号")`
+3. **CSS class**：作为 fallback，避免依赖 uniapp 自动生成的随机 class
+4. **重要**：等待元素时用 `wait_for(state="visible", timeout=10000)`
+
+如果你不确定真实 DOM 结构，**第一步**先用 chromium headed mode 短暂打开学生登录页 + 用 `page.content()[:3000]` 打印一段 HTML 到日志，看到真实 markup 后再写 selector。这一步只在你不确定时做，且 timeout=15s。
+
+### 4. 跑测试
+
+```bash
+cd C:\Users\Administrator\Documents\code\yixiaoguan-v2
+$env:PYTHONUTF8=1   # 防止 Windows 中文输出乱码
+python -m pytest .tasks/e2e-pilot-smoke/ \
+    --html=.tasks/e2e-pilot-smoke/report.html \
+    --self-contained-html \
+    --tracing=retain-on-failure \
+    --screenshot=on \
+    -v
+```
+
+预期：5 测试全 PASS（或 Test 5 SKIP 也 OK）。任意一个 FAIL，把 trace + screenshot 路径打印到 stdout。
+
+### 5. 输出报告
+
+写 `.tasks/e2e-pilot-smoke/SUMMARY.md`：
+
+```markdown
+# Pilot Smoke E2E Report — <timestamp>
+
+| # | Test | Result | Notes |
+|---|---|---|---|
+| 1 | 学生登录成功 | ✅/❌ | |
+| 2 | 学生 AI 对话有效回复 | ✅/❌ | 含班级/学院关键词：是/否 |
+| 3 | 学生提交问题给辅导员 | ✅/❌ | question_id=... |
+| 4 | 辅导员看到该问题 | ✅/❌ | |
+| 5 | Cleanup | ✅/⏭️/❌ | |
+
+## 关键截图
+- student-home.png
+- student-ai-reply.png
+- teacher-question-list.png
+
+## 结论
+- 全 PASS → 可启动内测
+- 任意 FAIL → 见 trace zip：.tasks/e2e-pilot-smoke/trace-*.zip
+```
+
+### 6. Commit
+
+```
+test(e2e): add Playwright pilot smoke (5 cases: student login/chat/escalate + counselor list + cleanup)
+
+- .tasks/e2e-pilot-smoke/conftest.py: iPhone 14 Pro viewport, zh-CN locale
+- .tasks/e2e-pilot-smoke/test_pilot_smoke.py: 5 e2e cases hitting 165 deployment
+- .tasks/e2e-pilot-smoke/SUMMARY.md: result table + screenshots
+- .tasks/e2e-pilot-smoke/report.html: pytest-html self-contained
+- Tests use real production URL on 192.168.100.165:80/81
+
+Refs: pre-pilot smoke checklist .tasks/pre-pilot-smoke-checklist.md
+```
+
+不要 push（cascade 会复检后 push）。**不要把测试报告 HTML/zip 二进制 add 到 git**——先在 `.gitignore` 加 `.tasks/e2e-pilot-smoke/report.html` 和 `.tasks/e2e-pilot-smoke/trace-*.zip`，只 commit 源码 + SUMMARY.md。
+
+## 不要做
+
+- 不要写超过 5 个测试。本次只验证主流程闭环，不做 corner case
+- 不要碰 services/gateway 代码或 DB schema
+- 不要在测试里硬编码 wait time > 90s（AI 回复超过 90s 应当 fail，不应继续等）
+- 不要 push 任何 commit
+- 如果 chromium download 超过 5 分钟还没好，**中止**测试，输出 stderr 让 cascade 处理
+
+## 验收标准
+
+- `.tasks/e2e-pilot-smoke/SUMMARY.md` 生成
+- `.tasks/e2e-pilot-smoke/report.html` 生成 ≥ 100KB
+- 至少 4 张 screenshot 落盘
+- 1 个 commit 落地（不 push）
+
+## 时间限制
+
+整体跑完不应超过 15 分钟。如果 chromium 下载慢，提前在终端打印 `WARN: chromium download taking long, proceeding...`，但仍然要在 15 分钟内出报告。

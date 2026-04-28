@@ -34,6 +34,11 @@ bailian.txt
 # Codex / Cascade 派单原始日志与中间文件（仅本地保留，summary/prompt 可单独追踪）
 .tasks/codex-*.log
 
+# Playwright e2e 产物：报告 HTML / 浏览器存储态 / trace zip（含 JWT token，绝不入库）
+.tasks/e2e-pilot-smoke/report.html
+.tasks/e2e-pilot-smoke/*-storage-state.json
+.tasks/e2e-pilot-smoke/trace-*.zip
+
 # Mutagen / 其他同步工具
 mutagen.yml.lock
 

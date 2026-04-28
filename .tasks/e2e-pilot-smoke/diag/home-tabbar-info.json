@@ -1,0 +1,74 @@
+{
+  "found": true,
+  "position": "fixed",
+  "bottom": "0px",
+  "top": "770px",
+  "zIndex": "100",
+  "transform": "none",
+  "rect": {
+    "x": 0,
+    "y": 770,
+    "w": 390,
+    "h": 74
+  },
+  "viewportH": 844,
+  "documentH": 1168,
+  "parentChain": [
+    {
+      "tag": "uni-view",
+      "cls": "home-page",
+      "pos": "static",
+      "transform": "none",
+      "overflow": "visible"
+    },
+    {
+      "tag": "uni-page-body",
+      "cls": "",
+      "pos": "static",
+      "transform": "none",
+      "overflow": "visible"
+    },
+    {
+      "tag": "uni-page-wrapper",
+      "cls": "",
+      "pos": "relative",
+      "transform": "none",
+      "overflow": "visible"
+    },
+    {
+      "tag": "uni-page",
+      "cls": "",
+      "pos": "static",
+      "transform": "none",
+      "overflow": "visible"
+    },
+    {
+      "tag": "uni-app",
+      "cls": "uni-app--showtabbar",
+      "pos": "static",
+      "transform": "none",
+      "overflow": "visible"
+    },
+    {
+      "tag": "div",
+      "cls": "",
+      "pos": "static",
+      "transform": "none",
+      "overflow": "visible"
+    },
+    {
+      "tag": "body",
+      "cls": "",
+      "pos": "static",
+      "transform": "none",
+      "overflow": "hidden auto"
+    },
+    {
+      "tag": "html",
+      "cls": "",
+      "pos": "static",
+      "transform": "none",
+      "overflow": "visible"
+    }
+  ]
+}

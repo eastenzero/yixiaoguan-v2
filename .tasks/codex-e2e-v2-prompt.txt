@@ -1,0 +1,35 @@
+# Sprint: 内测前 e2e 冒烟测试
+
+医小管 v2 学生端 / 辅导员端已部署到 192.168.100.165。需要在向班级群发内测通知前，跑一遍 e2e 模拟人工点击的冒烟测试，证明核心主流程没坏。
+
+## 测试目标（5 个核心 case）
+
+1. **学生登录** — `4125150001` / `4125150001` 能登进 http://192.168.100.165/
+2. **学生与 AI 对话** — 发一条「奖学金怎么申请？」能拿到 AI 回复（90 秒内），加分项：回复含「医药管理」或「公共事业管理 2025-1」等 user-context 关键词
+3. **学生提交问题给辅导员** — 走 escalate 流程，提交一条带独特标记 `【e2e-{timestamp}】...` 的问题，跳到「我的问题」列表能看到，状态 pending
+4. **辅导员登录看到学生问题** — `anjing` / `Anjing@yxg2026` 登录 http://192.168.100.165:81/，question_list 里能看到刚才那条带 `【e2e-{timestamp}】` 标记的问题
+5. **cleanup（best-effort）** — 把 case 3 创建的测试问题删掉或标 resolved，失败也别 fail 整体
+
+## 验收
+
+- 工作目录 `.tasks/e2e-pilot-smoke/`，技术栈和工具你自己选（Playwright Python / Playwright Node / 别的都行，挑你最熟最稳的）。
+- 跑完输出 `.tasks/e2e-pilot-smoke/SUMMARY.md`，列 5 个 case 的 pass/fail 和关键截图路径。
+- 至少 4 张关键截图（学生主页、AI 对话、提交问题、辅导员问题列表）。
+- 整体跑完不超 15 分钟。
+
+## 工作目录
+
+`C:\Users\Administrator\Documents\code\yixiaoguan-v2`
+
+## 提交
+
+完成后做 1 个 commit，用 `test(e2e):` 前缀。**不要 push**，cascade 会复检后 push。
+
+把测试报告 HTML / trace zip / chromium 缓存等大二进制加到 `.gitignore`，只 commit 源码 + SUMMARY.md + 4 张关键截图。
+
+## 限制
+
+- 不要碰 services/gateway 后端代码或 DB schema。
+- 不要写 6 个以上 case，本次只验证主流程闭环。
+- 如果某个 case 因为 UI 元素找不到 fail，截图保留 + SUMMARY 标 fail，不要陷入 selector 调试黑洞。
+- 完成或放弃都要在 .tasks/e2e-pilot-smoke/SUMMARY.md 给出明确结论。
