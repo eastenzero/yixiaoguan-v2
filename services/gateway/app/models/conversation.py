@@ -40,6 +40,7 @@ class Conversation(Base):
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
     resolved_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
     closed_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+    last_read_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
 
     messages: Mapped[list["Message"]] = relationship(back_populates="conversation")
 

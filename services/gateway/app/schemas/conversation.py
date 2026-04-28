@@ -18,6 +18,7 @@ class ConversationResponse(BaseModel):
     updated_at: datetime
     resolved_at: datetime | None
     closed_at: datetime | None
+    last_read_at: datetime | None = None
 
     class Config:
         from_attributes = True
@@ -56,3 +57,21 @@ class ConversationListResponse(BaseModel):
 class MessageListResponse(BaseModel):
     items: list[MessageResponse]
     total: int
+
+
+class UnreadSummaryItem(BaseModel):
+    conv_id: int
+    title: str
+    status: str
+    unread_count: int
+    last_message_at: datetime | None = None
+    last_message_sender_type: str | None = None  # student | ai | teacher | system | None
+    last_read_at: datetime | None = None
+
+    class Config:
+        from_attributes = True
+
+
+class UnreadSummaryResponse(BaseModel):
+    items: list[UnreadSummaryItem]
+    total_unread: int

@@ -13,14 +13,17 @@ from app.schemas.conversation import (
     MessageListResponse,
     MessageResponse,
     SendMessageRequest,
+    UnreadSummaryResponse,
 )
 from app.services.conversation_service import (
     add_message,
     build_message_broadcast_event,
     create_conversation,
     get_conversation,
+    get_unread_summary,
     list_conversations,
     list_messages,
+    mark_conversation_read,
 )
 from app.services.state_machine import transition
 from app.services.ws_manager import manager
@@ -58,6 +61,28 @@ async def list_convs(
             pass
     items, total = await list_conversations(db, current_user, page, size, status_enum)
     return ConversationListResponse(items=cast(list[ConversationResponse], items), total=total)
+
+
+@router.get("/unread-summary", response_model=UnreadSummaryResponse)
+async def unread_summary(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Return per-conversation unread counts for current student."""
+    if current_user.role != UserRole.student:
+        return UnreadSummaryResponse(items=[], total_unread=0)
+    return await get_unread_summary(db, current_user)
+
+
+@router.post("/{conv_id}/mark-read", status_code=204)
+async def mark_read(
+    conv_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Mark a conversation as read up to now."""
+    await mark_conversation_read(db, conv_id, current_user)
+    return None
 
 
 @router.get("/{conv_id}", response_model=ConversationResponse)
