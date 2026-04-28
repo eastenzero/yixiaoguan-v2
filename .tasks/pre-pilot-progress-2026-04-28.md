@@ -32,14 +32,16 @@ d4fd3ef fix(security): require strong JWT_SECRET, reject weak placeholders, shor
 
 ### 阻塞项（必须）
 
-**A. xlsx 批量导入（用户已交付 `/工作簿.xlsx`）**
+**A. xlsx 批量导入（用户已交付 `/工作簿.xlsx`）— 信息全齐，可直接派单**
 - 名单：48 学生（row 1: 余文惠 4124150001 + row 2-48: 47 人 4125150001-4125150047）
 - ⚠️ Row 37 学号 `4125750036` 疑似 typo（应为 `4125150036`），已确认按 typo 处理
-- 学生：staff_id = 学号、初始密码 = bcrypt(学号)、role=student
-- ⚠️ 需要确认：这 48 人属于哪个学院？哪个班？是新建班级还是用现有的？余文惠（学号前缀不同）算同班吗？
-- 辅导员"安静"：staff_id=anjing、初始密码 bcrypt(`Anjing@yxg2026`)、role=teacher
+- **学院**：医药管理学院（如不存在则新建）
+- **专业**：公共事业管理
+- **班级**：48 人都算同班 → 命名 `公共事业管理 2025-1 班`（沿用现有 `XX 2024-1 班` 风格；user 说"随便填"）
+- 学生：staff_id = 学号、初始密码 = bcrypt(学号)、role=student、college_id = 医药管理学院、class_id = 公共事业管理 2025-1 班
+- 辅导员"安静"：staff_id=anjing、初始密码 bcrypt(`Anjing@yxg2026`)、role=teacher、college_id = 医药管理学院、class_id = 公共事业管理 2025-1 班
 - 同班同学互登风险：在班级通知里告知首次登录后立刻改密
-- 验收：`select count(*) from users where role='student'` = 51（3 + 48）；辅导员能登录 + 收到队列
+- 验收：`select count(*) from users where role='student'` = 51（3 + 48）；辅导员 anjing 用 `Anjing@yxg2026` 能登录 + 收到该班学生 escalate 队列
 
 **B. DB 备份 cron** (Kimi #3)
 - 写 `/home/easten/dev/yixiaoguan-v2/scripts/pg-backup.sh`：`pg_dump yixiaoguan_v2 | gzip > /home/easten/backups/yxgv2-$(date +%Y%m%d).sql.gz`，保留 7 天滚动
