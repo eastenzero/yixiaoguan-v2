@@ -1,0 +1,18 @@
+[Unit]
+Description=Yixiaoguan v2 Gateway (FastAPI)
+After=network.target postgresql.service redis-server.service
+
+[Service]
+Type=simple
+User=easten
+Group=easten
+WorkingDirectory=/home/easten/dev/yixiaoguan-v2/services/gateway
+EnvironmentFile=/home/easten/dev/yixiaoguan-v2/services/gateway/.env
+ExecStart=/home/easten/dev/yixiaoguan-v2/services/gateway/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8100
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/home/easten/logs/yxg-gateway.log
+StandardError=append:/home/easten/logs/yxg-gateway.err.log
+
+[Install]
+WantedBy=multi-user.target
