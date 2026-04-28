@@ -1,7 +1,7 @@
 """add conv last read at
 
 Revision ID: a1f8c4b9e203
-Revises: c4a81b9d1e21
+Revises: 39120275dc23
 Create Date: 2026-04-28 00:00:00.000000
 
 """
@@ -12,7 +12,8 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = "a1f8c4b9e203"
-down_revision: Union[str, Sequence[str], None] = "c4a81b9d1e21"
+# Re-chain after seed colleges migration to keep the Alembic graph linear.
+down_revision: Union[str, Sequence[str], None] = "39120275dc23"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
