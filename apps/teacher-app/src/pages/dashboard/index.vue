@@ -358,10 +358,10 @@ onShow(() => {
 .welcome-banner {
   position: relative;
   overflow: hidden;
-  background: $gradient-hero;
-  border-radius: 24px;
-  padding: 24px;
-  box-shadow: $elevation-3;
+  background: $gradient-hero;                   // pastel primary-container → tertiary-container
+  border-radius: $radius-lg;                    // 2rem per DESIGN.md 大半径
+  padding: $space-6;
+  box-shadow: $shadow-fab;                      // 紫色折射 hero 允许
 }
 
 .welcome-content {
@@ -406,9 +406,9 @@ onShow(() => {
   bottom: -16px;
   width: 128px;
   height: 128px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  filter: blur(30px);
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: $radius-full;
+  filter: blur(48px);
 }
 
 // 快捷操作
@@ -463,12 +463,12 @@ onShow(() => {
 }
 
 .stat-card {
-  padding: 16px;
-  border-radius: 16px;
+  padding: $space-4;
+  border-radius: $radius-md;                    // 1rem — MD3 DEFAULT
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  box-shadow: $elevation-1;
+  gap: $space-2;
+  // No-Shadow-as-default: 层次由 container tint 的 alpha 差异承担
 }
 
 .stat-card-1 {
@@ -580,13 +580,14 @@ onShow(() => {
 
 .question-card {
   background: $surface-container-low;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: $elevation-1;
-  
+  border-radius: $radius-md;                    // 1rem — MD3 DEFAULT
+  padding: $space-4;
+  transition: background 0.2s ease, transform 0.2s ease;
+  // No-Shadow-as-default: hover 靠 container tint 往上抬一层
+
   &:active {
     background: $surface-container;
-    box-shadow: $elevation-2;
+    transform: scale(0.99);
   }
 }
 
@@ -734,16 +735,15 @@ onShow(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1.25rem 0.5rem;
-  background: linear-gradient(135deg, rgba(112, 42, 225, 0.06), rgba(147, 51, 234, 0.04));
-  border: 1px solid rgba(112, 42, 225, 0.12);
-  border-radius: 1rem;
-  transition: all 0.2s;
+  gap: $space-2;
+  padding: $space-5 $space-2;
+  background: $surface-container-low;           // No-Line: 用 L1 tonal container 替代渐变+边框
+  border-radius: $radius-md;                    // 1rem
+  transition: background 0.2s ease, transform 0.2s ease;
 
   &:active {
     transform: scale(0.97);
-    background: rgba(112, 42, 225, 0.1);
+    background: rgba($primary, 0.10);
   }
 }
 

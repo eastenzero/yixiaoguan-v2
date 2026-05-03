@@ -11,7 +11,7 @@
         <component 
           :is="tab.icon" 
           :size="24" 
-          :color="current === index ? '#702ae1' : '#5d5b5f'"
+          :color="current === index ? '#5b21b6' : '#5d5b5f'"
           :stroke-width="current === index ? 2.5 : 2"
         />
         <view 
@@ -72,11 +72,11 @@ const handleTabClick = (index: number) => {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  background: rgba(255, 255, 255, 0.98);
+  background: $glass-bg;                     // white/80
   backdrop-filter: $backdrop-bar;
   -webkit-backdrop-filter: $backdrop-bar;
-  border-radius: 16px 16px 0 0;
-  box-shadow: 0 -4px 20px rgba(99, 14, 212, 0.05);
+  border-radius: $radius-lg $radius-lg 0 0;  // 2rem 上圆 per DESIGN.md
+  box-shadow: $shadow-nav;                   // 紫色折射 nav lift
   isolation: isolate;
 }
 
