@@ -165,6 +165,12 @@ const handleLogin = async () => {
     
     // 获取用户信息
     const userInfo = await getUserInfo()
+    // 二次校验：确认返回角色为 teacher 或 admin
+    if (userInfo.role !== 'teacher' && userInfo.role !== 'admin') {
+      userStore.clearAuth()
+      uni.showToast({ title: '该账号不属于教师端，请使用正确的客户端登录', icon: 'none' })
+      return
+    }
     userStore.setUserInfo(userInfo as any)
     
     // 建立 WebSocket 连接

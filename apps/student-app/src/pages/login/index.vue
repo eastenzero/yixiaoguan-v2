@@ -81,6 +81,12 @@ async function handleLogin() {
     userStore.setToken(res.access_token)
 
     const me = await getMe()
+    // 二次校验：确认返回角色为 student
+    if (me.role !== 'student') {
+      userStore.logout()
+      uni.showToast({ title: '该账号不属于学生端，请使用正确的客户端登录', icon: 'none' })
+      return
+    }
     userStore.setUserInfo(me)
 
     wsManager.connect(res.access_token)

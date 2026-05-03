@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.schemas.auth import LoginRequest, TokenResponse, UserInfo
-from app.services.auth_service import authenticate_user, issue_token
+from app.services.auth_service import authenticate_user, issue_token, RoleMismatchError
 from app.utils.deps import get_current_user
 from app.models.user import User
 
@@ -11,7 +11,13 @@ router = APIRouter()
 
 @router.post("/login", response_model=TokenResponse)
 async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
-    user = await authenticate_user(db, body.staff_id, body.password)
+    try:
+        user = await authenticate_user(db, body.staff_id, body.password, body.expected_role)
+    except RoleMismatchError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="该账号不属于此客户端，请使用正确的客户端登录",
+        )
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
