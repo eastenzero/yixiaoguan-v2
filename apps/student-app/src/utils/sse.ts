@@ -8,6 +8,7 @@ export interface SSECallbacks {
   onToken: (token: string) => void
   onEnd: (data: { full_content: string; sources: Source[]; message_id: number }) => void
   onError: (msg: string) => void
+  onSuggestions?: (questions: string[]) => void
 }
 
 export async function fetchSSE(
@@ -57,6 +58,8 @@ export async function fetchSSE(
               sources: data.sources || [],
               message_id: data.message_id || 0,
             })
+          } else if (currentEvent === 'suggestions') {
+            callbacks.onSuggestions?.(data.questions || [])
           } else if (currentEvent === 'error') {
             callbacks.onError(data.message || 'AI 服务异常')
           }

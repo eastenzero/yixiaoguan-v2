@@ -1,0 +1,68 @@
+深度探查 ub（192.168.100.165）这台机器上所有可能藏「医小管 KB 知识条目」的地方。用户怀疑实际有 800-900 条独立条目，但我之前的盘点 entries/ 只有 433 条，怀疑还有别的源没看到。只读探查不修改任何东西。
+
+## 必查的 5 个层面
+
+### 层面 1：yixiaoguan 仓库的 git 历史（看历史上是否有过更多 KB）
+```bash
+ssh ub "cd /home/easten/dev/yixiaoguan && git log --all --oneline -n 50 2>&1 | head -30"
+ssh ub "cd /home/easten/dev/yixiaoguan && git branch -a 2>&1 | head -20"
+ssh ub "cd /home/easten/dev/yixiaoguan && git stash list 2>&1"
+# 看是否曾经有大批 KB 文件被删除
+ssh ub "cd /home/easten/dev/yixiaoguan && git log --all --diff-filter=D --summary 2>/dev/null | grep -E 'KB-.*\\.md' | head -30"
+ssh ub "cd /home/easten/dev/yixiaoguan && git log --all --diff-filter=A --summary 2>/dev/null | grep -E 'KB-.*\\.md' | wc -l"
+```
+
+### 层面 2：~/dev 下是否有其他 yixiaoguan 兄弟项目
+```bash
+ssh ub "find /home/easten/dev -maxdepth 2 -type d -iname '*yixiao*' -o -iname '*yixiaoguan*' -o -iname '*xiaoguan*' -o -iname '*kb*' -o -iname '*knowledge*' 2>/dev/null | head -30"
+ssh ub "ls -la /home/easten/dev/ 2>/dev/null"
+ssh ub "ls -la /home/easten/ 2>/dev/null | grep -v '^d.*\\.[a-z]'"
+# 看 yixiaoguan-v2 是否在 ub 上也有副本
+ssh ub "find /home/easten -maxdepth 3 -type d -name 'yixiaoguan*' 2>/dev/null"
+```
+
+### 层面 3：yixiaoguan 项目里 knowledge-base 之外的 KB 来源
+```bash
+# 全仓库 .md 总数（不限 KB- 前缀）
+ssh ub "find /home/easten/dev/yixiaoguan -type f -name '*.md' | wc -l"
+# 按目录分布
+ssh ub "find /home/easten/dev/yixiaoguan -type f -name '*.md' | xargs -n1 dirname | sort | uniq -c | sort -rn | head -25"
+# 看是否有 docs/ guides/ faq/ corpus/ 目录里的内容也算 KB 候选
+ssh ub "find /home/easten/dev/yixiaoguan -type d \\( -iname 'docs' -o -iname 'guides' -o -iname 'faq' -o -iname 'corpus' -o -iname 'rag' -o -iname 'data' -o -iname 'qa' \\) 2>/dev/null"
+# 微信公众号爬虫产出
+ssh ub "find /home/easten/dev/yixiaoguan -type d -iname '*wechat*' -o -iname '*spider*' -o -iname '*crawl*' 2>/dev/null"
+```
+
+### 层面 4：ub 上 Dify postgres 里 documents 表是否已经导过大批 KB
+```bash
+# 找 dify postgres 容器
+ssh ub "docker ps --format '{{.Names}}' | grep -i dify | grep -i db"
+# 进容器查 documents 表
+ssh ub "docker exec docker-db-1 psql -U postgres -d dify -c \"SELECT COUNT(*) FROM documents;\" 2>&1 || docker exec docker-db-1 psql -U postgres -lqt 2>&1 | head"
+# 列所有 dataset 和 each 文档数
+ssh ub "docker exec docker-db-1 psql -U postgres -d dify -c \"SELECT d.id, d.name, d.created_at, COUNT(doc.id) AS doc_count FROM datasets d LEFT JOIN documents doc ON doc.dataset_id=d.id GROUP BY d.id, d.name, d.created_at ORDER BY d.created_at DESC LIMIT 10;\" 2>&1 | head -30"
+# documents 总数 + 按 dataset 分布
+ssh ub "docker exec docker-db-1 psql -U postgres -d dify -c \"SELECT dataset_id, COUNT(*) FROM documents GROUP BY dataset_id ORDER BY 2 DESC LIMIT 10;\" 2>&1 | head"
+```
+
+### 层面 5：ub 上其他 yixiaoguan 数据存档（备份 / dump / 导出）
+```bash
+ssh ub "find /home/easten -type f \\( -name '*.sql' -o -name '*.dump' -o -name '*.tar.gz' -o -name '*.zip' \\) 2>/dev/null | grep -iE 'yixiao|kb|knowledge|dify' | head -20"
+ssh ub "find /home/easten -type d -iname '*backup*' -o -iname '*archive*' -o -iname '*old*' 2>/dev/null | head -10"
+# 看 yixiaoguan/knowledge-base/raw 下的原始材料数量
+ssh ub "find /home/easten/dev/yixiaoguan/knowledge-base/raw -type f -name '*.md' | wc -l"
+ssh ub "find /home/easten/dev/yixiaoguan/knowledge-base/raw -type d | head -10"
+ssh ub "ls -la /home/easten/dev/yixiaoguan/knowledge-base/raw/ 2>/dev/null"
+```
+
+## 输出要求
+
+紧凑 markdown 报告，回答：
+
+A. **历史上是否有过比当前 433 条更多的 KB**？（git log 删除/新增统计）
+B. **是否有兄弟仓库藏 KB**（如 yixiaoguan-corpus / yixiaoguan-data）
+C. **ub 上 Dify postgres 里实际有几条已索引文档？是否远多于 433？是否能 export 成 markdown？**
+D. **knowledge-base/raw 下的原始材料文件数 + 是否每个都能转成一条 KB**
+E. **是否有任何备份压缩包包含更多 KB**
+
+每条结论附 1-2 行命令证据。**最终目的：判断是否还有 400-500 条隐藏知识条目能挖出来导入 HK Dify**。

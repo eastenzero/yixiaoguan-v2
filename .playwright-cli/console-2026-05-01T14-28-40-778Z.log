@@ -1,0 +1,12 @@
+[   12689ms] [LOG] Teacher App Launch @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:31
+[   12690ms] [LOG] Teacher App Show @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:31
+[   13942ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ https://teacher.130814.xyz/#/:0
+[   14300ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://fonts.gstatic.com/s/manrope/v15/xn7_YHE41ni1AdIRqAuZuw1Bx9mbZk59FO_F87jxeN7B.woff2:0
+[   14561ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teacher.130814.xyz/favicon.ico:0
+[   46896ms] [INFO] Slow network is detected. See https://www.chromestatus.com/feature/5636954674692096 for more details. Fallback font will be used while loading: https://fonts.gstatic.com/s/materialsymbolsoutlined/v332/kJEhBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oFsI.woff2 @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:24
+[   48177ms] [LOG] [WS] connected @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[  119283ms] [LOG] Teacher App Hide @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:31
+[  119300ms] [LOG] Teacher App Launch @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:31
+[  119301ms] [LOG] Teacher App Show @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:31
+[  119855ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://fonts.gstatic.com/s/manrope/v15/xn7_YHE41ni1AdIRqAuZuw1Bx9mbZk59FO_F87jxeN7B.woff2:0
+[  120124ms] [LOG] [WS] connected @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0

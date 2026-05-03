@@ -1,0 +1,31 @@
+- generic [ref=e8]:
+  - generic [ref=e9]:
+    - generic [ref=e10]:
+      - generic [ref=e12]: school
+      - generic [ref=e13]: 医小管
+      - generic [ref=e14]: 智慧校园服务平台
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - generic [ref=e17]: 学号
+        - generic [ref=e18]:
+          - generic [ref=e19]: person
+          - generic [ref=e21]:
+            - generic: 请输入您的学号
+            - textbox [ref=e22]
+      - generic [ref=e23]:
+        - generic [ref=e24]: 密码
+        - generic [ref=e25]:
+          - generic [ref=e26]: lock
+          - generic [ref=e28]:
+            - generic: 请输入密码
+            - textbox [ref=e29]
+          - generic [ref=e30]: visibility_off
+      - generic [ref=e31] [cursor=pointer]:
+        - generic [ref=e32]: 登录
+        - generic [ref=e33]: arrow_forward
+    - generic [ref=e35]: 忘记密码？
+  - generic [ref=e36]:
+    - generic [ref=e37]: 初始密码与学号相同
+    - generic [ref=e38]:
+      - generic [ref=e39]: 隐私政策
+      - generic [ref=e41]: 服务协议

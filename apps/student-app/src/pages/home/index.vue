@@ -139,10 +139,10 @@ const bentoItems = ref([
 ])
 
 const services = ref([
-  { id: 's1', label: '教务管理系统', icon: 'school' },
-  { id: 's2', label: '图书馆', icon: 'library_books' },
-  { id: 's3', label: '学生邮箱', icon: 'mail' },
-  { id: 's4', label: '学校官网', icon: 'language' },
+  { id: 's1', label: '教务管理系统', icon: 'school', url: 'http://jwc.sdfmu.edu.cn' },
+  { id: 's2', label: '图书馆', icon: 'library_books', url: 'http://202.194.232.127/index.html' },
+  { id: 's3', label: '学生邮箱', icon: 'mail', url: 'https://mail.sdfmu.edu.cn/' },
+  { id: 's4', label: '学校官网', icon: 'language', url: 'https://www.sdfmu.edu.cn' },
 ])
 
 const notice = ref('你有 3 条未读通知')
@@ -185,8 +185,21 @@ function onBentoClick(item: { id: string; label: string; icon: string; route: st
   }
 }
 
-function onServiceClick(svc: { id: string; label: string; icon: string }) {
-  uni.showToast({ title: '即将上线', icon: 'none' })
+function openUrl(url: string) {
+  // #ifdef H5
+  window.open(url, '_blank')
+  // #endif
+  // #ifndef H5
+  uni.navigateTo({ url: `/pages/services/webview?url=${encodeURIComponent(url)}` })
+  // #endif
+}
+
+function onServiceClick(svc: { id: string; label: string; icon: string; url?: string }) {
+  if (svc.url) {
+    openUrl(svc.url)
+  } else {
+    uni.showToast({ title: '功能开发中', icon: 'none' })
+  }
 }
 
 function goNotifications() {
@@ -194,7 +207,7 @@ function goNotifications() {
 }
 
 function showToastSoon() {
-  uni.showToast({ title: '即将上线', icon: 'none' })
+  uni.switchTab({ url: '/pages/services/index' })
 }
 </script>
 

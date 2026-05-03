@@ -3,6 +3,7 @@
 AI 校园智能服务系统 — 第二代架构
 
 ## 技术栈
+
 - **后端**: FastAPI + SQLAlchemy + Alembic
 - **AI 引擎**: Dify (self-hosted)
 - **数据库**: PostgreSQL 15+ / Redis 7+
@@ -10,6 +11,7 @@ AI 校园智能服务系统 — 第二代架构
 - **教师端**: Vue 3 + Element Plus
 
 ## 快速启动
+
 ```bash
 cd deploy && docker compose up -d
 ```

@@ -48,6 +48,20 @@
         "navigationStyle": "custom",
         "navigationBarTitleText": "知识详情"
       }
+    },
+    {
+      "path": "pages/admin/users",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "用户管理"
+      }
+    },
+    {
+      "path": "pages/admin/import",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "批量导入"
+      }
     }
   ],
   "globalStyle": {

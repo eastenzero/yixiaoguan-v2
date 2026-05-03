@@ -15,7 +15,6 @@ from app.services.conversation_service import (
 )
 from app.services.state_machine import transition
 from app.services.dify_client import dify_client
-from app.services.refusal import is_refusal
 from app.services.ws_manager import manager
 from app.services.announcement_service import (
     get_active_announcements_for_user,
@@ -200,16 +199,10 @@ async def _stream_ai_response(db, conv, user, query: str):
         yield f"event: error\ndata: {json.dumps({'message': 'AI 服务异常，请稍后再试'}, ensure_ascii=False)}\n\n"
         return
 
-    refusal = is_refusal(full_answer, sources)
-
     # 保存 AI 消息到 DB
     ai_msg = await add_message(
         db, conv.id, SenderType.ai, full_answer,
-        metadata={
-            "sources": sources,
-            "dify_conversation_id": new_dify_conv_id,
-            "refusal": refusal,
-        },
+        metadata={"sources": sources, "dify_conversation_id": new_dify_conv_id},
     )
 
     # 更新 Dify conversation_id（首次对话时）
@@ -229,12 +222,21 @@ async def _stream_ai_response(db, conv, user, query: str):
         build_message_broadcast_event(
             ai_msg,
             conv_id=conv.id,
-            metadata={"sources": sources, "refusal": refusal},
+            metadata={"sources": sources},
         ),
     )
 
-    # 发送 message_end 和 done
-    yield f"event: message_end\ndata: {json.dumps({'full_content': full_answer, 'sources': sources, 'message_id': ai_msg.id, 'refusal': refusal}, ensure_ascii=False)}\n\n"
+    # 发送 message_end
+    yield f"event: message_end\ndata: {json.dumps({'full_content': full_answer, 'sources': sources, 'message_id': ai_msg.id}, ensure_ascii=False)}\n\n"
+
+    # R10: 异步生成关联问题推荐
+    try:
+        suggestions = await dify_client.generate_suggestions(query, full_answer)
+        if suggestions:
+            yield f"event: suggestions\ndata: {json.dumps({'questions': suggestions}, ensure_ascii=False)}\n\n"
+    except Exception as e:
+        logger.warning(f"Suggestions generation failed for conv={conv.id}: {e}")
+
     yield "event: done\ndata: {}\n\n"
     _schedule_chat_analytics(
         conv_id=conv.id,

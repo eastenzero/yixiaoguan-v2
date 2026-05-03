@@ -1,0 +1,53 @@
+深度探查这台 Windows 本机（用户 Administrator 的电脑）上所有可能藏「医小管 KB 知识条目」的地方。用户怀疑实际有 800-900 条独立条目，怀疑除了 ub:/home/easten/dev/yixiaoguan/knowledge-base/entries/ 的 433 条之外，还有别的地方藏了 400-500 条。只读探查不修改任何东西。
+
+## 必查的 4 个层面
+
+### 层面 1：本机所有可能的 yixiaoguan 相关目录
+```powershell
+# 用户 Administrator 主目录下
+Get-ChildItem -Path "C:\Users\Administrator" -Directory -Recurse -Depth 3 -ErrorAction SilentlyContinue | Where-Object { $_.Name -match "yixiao|xiaoguan|knowledge|kb" } | Select-Object FullName
+# 常见 code 根目录
+Get-ChildItem -Path "C:\code", "C:\dev", "C:\work", "C:\Projects", "D:\code", "D:\dev", "D:\work" -ErrorAction SilentlyContinue | Where-Object { $_.PSIsContainer } | Select-Object FullName
+# 全盘搜索（限深度防止扫太久）
+Get-ChildItem -Path "C:\" -Directory -Recurse -Depth 4 -ErrorAction SilentlyContinue | Where-Object { $_.Name -match "^yixiaoguan" } | Select-Object FullName
+```
+
+### 层面 2：找 KB-*.md 文件
+```powershell
+# 在所有上述候选目录里找 KB-*.md
+Get-ChildItem -Path "C:\Users\Administrator", "C:\code", "C:\dev", "C:\Projects" -Filter "KB-*.md" -Recurse -ErrorAction SilentlyContinue | Group-Object Directory | Select-Object Name, Count
+# 全盘 KB-*.md 总数（限制深度）
+Get-ChildItem -Path "C:\" -Filter "KB-*.md" -Recurse -Depth 6 -ErrorAction SilentlyContinue | Measure-Object | Select-Object Count
+```
+
+### 层面 3：找其他相关数据格式（不一定 KB- 前缀）
+```powershell
+# 找 yixiaoguan 相关的 .md/.csv/.json/.yaml/.sql
+Get-ChildItem -Path "C:\Users\Administrator" -Recurse -Depth 5 -Include *.md,*.csv,*.json,*.yaml,*.sql -ErrorAction SilentlyContinue | Where-Object { $_.FullName -match "yixiao|knowledge.base|医小管" -or $_.Name -match "yixiao|kb-|knowledge|医小管" } | Select-Object FullName, Length
+# 找微信公众号爬虫产出
+Get-ChildItem -Path "C:\Users\Administrator" -Recurse -Depth 5 -ErrorAction SilentlyContinue | Where-Object { $_.PSIsContainer -and ($_.Name -match "wechat|spider|crawl|公众号") } | Select-Object FullName
+```
+
+### 层面 4：windsurf worktrees 下其他 yixiaoguan 工作树
+```powershell
+# 用户用了 windsurf worktree，可能有 v1/v2/master 等多个工作树
+Get-ChildItem -Path "C:\Users\Administrator\.windsurf\worktrees" -Directory -Recurse -Depth 3 -ErrorAction SilentlyContinue | Select-Object FullName
+# 每个工作树根目录里的 knowledge-base 总数
+Get-ChildItem -Path "C:\Users\Administrator\.windsurf\worktrees" -Filter "knowledge-base" -Directory -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+    $count = (Get-ChildItem -Path $_.FullName -Filter "KB-*.md" -Recurse -ErrorAction SilentlyContinue | Measure-Object).Count
+    "$($_.FullName): $count KB-*.md"
+}
+```
+
+## 输出要求
+
+紧凑 markdown 报告，回答：
+
+A. **本机有几个 yixiaoguan 相关目录**（列绝对路径）
+B. **每个目录里的 KB-*.md 文件数**
+C. **是否有 .windsurf 主仓库或其他 worktree 里藏 KB 数据**（用户工作目录在 worktree 里，可能 main repo 还有更多）
+D. **是否有 csv/sql/json 形式的批量 KB 数据**
+
+每条结论附 powershell 命令证据。**最终目的：判断本机是否藏了比 ub 上那 433 条更多的 KB 数据**。
+
+注意你跑在 PowerShell 上，不是 cmd。所有命令用 powershell 语法。不要尝试 ssh 任何机器（那是另一个 kimi 在做的）。

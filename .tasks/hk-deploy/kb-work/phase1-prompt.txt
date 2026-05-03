@@ -1,0 +1,56 @@
+你是医小管 KB 整合工程师。我有 1267 条校园 KB 条目要合并去重，分两批：v1 432 条（旧手册整理版）+ v2 835 条（按学院网站爬取版）。命名零重叠，但分类标签不一致需要先统一。
+
+## 任务：生成 unified-categories.yaml
+
+用 .tasks/hk-deploy/kb-work/manifest.csv 作为输入（绝对路径 C:\Users\Administrator\.windsurf\worktrees\yixiaoguan-v2\yixiaoguan-v2-d990a10b\.tasks\hk-deploy\kb-work\manifest.csv）。
+
+**v1 的 31 个 category 分布**：
+- 毕业与就业 50, 校园生活与服务 49, 奖助贷补 38, 生活服务 26, 教务与课程 23, 就业与毕业 19, 财务与缴费 19, 证件与校园服务 18, 图书馆服务 18, 院系与专业 16, 事务申请与审批 15, 研究生教育 15, 心理与测评 13, 国际交流 13, 竞赛与第二课堂 12, 信息化服务 12, 入学与学籍 11, 招生与深造 11, 心理健康 10, 科研与创新 9, 研究生事务 7, 图书馆 6, 学生资助 5, 学籍与教务 4, 学生管理 3, 学业管理 3, 学校概况 3, 校园安全 1, 学生服务 1, 学业发展 1, 教学与培养 1
+
+**v2 的 13 个 category 分布**：
+- 医疗与心理 122, 教务与学籍 120, 行政与规章 107, 学术与竞赛 88, (空) 57, 就业与毕业 57, 奖助学金 50, 校园生活 50, 院系与学校 47, 研究生事务 43, 图书馆与信息化 42, 国际交流 29, 财务与缴费 23
+
+## 你需要
+
+1. 设计一个**统一分类体系 unified_categories**（推荐 12-15 个），覆盖中国高校常见学生事务 + 医科大学特色（医疗、实习等）。命名要简洁、互斥、对学生友好（不是按部门切，而是按事务类型切）。
+
+2. 给 v1 的 31 个 category 和 v2 的 13 个 category 各自一个 unified mapping。同义合并（如「就业与毕业」+「毕业与就业」→「就业与毕业」；「奖助贷补」+「学生资助」+「奖助学金」→「奖助贷补」）。
+
+3. 对 v2 里 57 条空 category，**抽样查看 5 条 manifest.csv 里 source=v2 且 category 为空的 title 字段**（用 powershell `Import-Csv` 看），分析它们应该归类到哪。
+
+4. 输出到 .tasks\hk-deploy\kb-work\unified-categories.yaml，结构：
+```yaml
+version: "1.0"
+unified_categories:
+  - id: "C01"
+    name: "入学与学籍"
+    description: "新生报到、学籍注册、转专业、休学复学、退学等"
+    keywords: ["入学", "学籍", "学号", "转专业", "休学"]
+  - id: "C02"
+    name: "教务与课程"
+    ...
+mappings:
+  v1:
+    "入学与学籍": "C01"
+    "学籍与教务": "C02"
+    "教务与课程": "C02"
+    "毕业与就业": "C09"
+    "就业与毕业": "C09"
+    ...
+  v2:
+    "教务与学籍": "C02"
+    "就业与毕业": "C09"
+    ...
+notes: |
+  - v2 里 57 条空 category 的兜底分类是 X (基于抽样 title 判断)
+  - 一些争议合并的解释...
+```
+
+5. 同时输出对应的 docs：unified-categories-summary.md（中文，用 markdown table 展示统一分类，每个 unified category 给样本 v1+v2 title 各 2 条作为说明）。
+
+## 工具
+- 你可以 powershell 跑 Import-Csv 来分析 manifest.csv
+- 不要修改 manifest.csv 本身
+- 用 Set-Content / Out-File 把 yaml 和 md 写到目标路径
+
+完成后简短回报：unified categories 数量、每个 v1 cat 和 v2 cat 的去向。

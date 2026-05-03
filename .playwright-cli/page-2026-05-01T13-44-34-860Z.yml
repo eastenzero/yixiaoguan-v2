@@ -1,0 +1,85 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e150]:
+    - generic [ref=e151]:
+      - generic [ref=e152]:
+        - generic [ref=e153]: arrow_back
+        - generic [ref=e154]: 医小管
+      - generic [ref=e156]: history
+    - generic [ref=e186]:
+      - generic [ref=e188]:
+        - generic [ref=e190]: 宿舍电费怎么交？
+        - generic [ref=e191]: 1分钟前
+      - generic [ref=e193]:
+        - generic [ref=e194]:
+          - generic [ref=e196]: smart_toy
+          - generic [ref=e197]: MEDICAL ASSISTANT
+        - generic [ref=e198]:
+          - generic [ref=e199]:
+            - paragraph [ref=e218]: 你好！作为泰安校区的同学，你可以通过以下三种方式缴纳宿舍电费：
+            - list [ref=e219]:
+              - listitem [ref=e220]:
+                - strong [ref=e221]: 完美校园APP
+                - text: ：登录APP进入“电费充值”模块，选择楼栋房间后支付。
+              - listitem [ref=e222]:
+                - strong [ref=e223]: 支付宝小程序
+                - text: ：搜索“完美校园”，进入小程序选择“电费充值”并按提示操作。
+              - listitem [ref=e224]:
+                - strong [ref=e225]: 微信小程序
+                - text: ：搜索“完美校园”，绑定个人信息（默认密码为身份证后六位）后使用充值功能。
+            - paragraph [ref=e226]: 宿舍电费采用预付费制，余额不足会自动断电，充值后实时到账恢复供电。建议平时多关注余额，避免突然断电影响生活；如遇充值问题，可联系后勤管理部。
+          - generic [ref=e227]:
+            - generic [ref=e228]:
+              - generic [ref=e229]: menu_book
+              - generic [ref=e230]: 参考资料
+            - generic [ref=e231]:
+              - generic [ref=e232]:
+                - generic [ref=e233]: 1. 电费缴纳指南
+                - generic [ref=e234]: open_in_new
+              - generic [ref=e235]:
+                - generic [ref=e236]: 2. 临床与基础医学院 — 济南校区宿舍生活指南
+                - generic [ref=e237]: open_in_new
+              - generic [ref=e238]:
+                - generic [ref=e239]: 3. 水电管理与节约要求
+                - generic [ref=e240]: open_in_new
+              - generic [ref=e241]:
+                - generic [ref=e242]: 4. 学生学宿费收取流程
+                - generic [ref=e243]: open_in_new
+        - generic [ref=e209]: 1分钟前
+      - generic [ref=e245]:
+        - generic [ref=e247]: 我想转人工服务
+        - generic [ref=e248]: 刚刚
+      - generic [ref=e250]:
+        - generic [ref=e251]:
+          - generic [ref=e253]: smart_toy
+          - generic [ref=e254]: MEDICAL ASSISTANT
+        - generic [ref=e256]:
+          - paragraph [ref=e257]: 我已收到你的转人工请求。正在为你转接人工客服，请稍候…
+          - paragraph [ref=e258]: 如果等待时间较长，你也可以继续向我提问，我会尽力帮助你。
+        - generic [ref=e259]: 刚刚
+        - generic [ref=e263]:
+          - generic [ref=e264]: check_circle
+          - generic [ref=e265]: 已通知老师，请耐心等待
+      - generic [ref=e268]: 已通知老师，请耐心等待回复。
+    - generic [ref=e212]:
+      - generic [ref=e214]:
+        - generic: 等待老师接入...
+        - textbox [ref=e215]
+      - generic [ref=e217]: send
+    - generic [ref=e170]:
+      - generic [ref=e171]:
+        - generic [ref=e172]: home
+        - generic [ref=e173]: 首页
+      - generic [ref=e174]:
+        - generic [ref=e175]: chat_bubble
+        - generic [ref=e176]: 智能问答
+      - generic [ref=e177]:
+        - generic [ref=e178]: business_center
+        - generic [ref=e179]: 事务导办
+      - generic [ref=e180]:
+        - generic [ref=e181]: person
+        - generic [ref=e182]: 我的
+  - generic:
+    - generic:
+      - generic:
+        - img
+        - paragraph: 已呼叫老师

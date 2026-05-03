@@ -1,0 +1,27 @@
+请 ssh 到 ub 主机（命令: ssh ub） 探查 /home/easten/dev/yixiaoguan/knowledge-base/ 下的 KB 数据。只读探查不要修改任何东西。
+
+我需要这些事实：
+
+1. 全部 KB-*.md 文件总数（命令: ssh ub "find /home/easten/dev/yixiaoguan/knowledge-base -name 'KB-*.md' | wc -l"）
+
+2. 这些 .md 分布在哪些子目录里（dirname 去重列表，标注每个目录的文件数量）
+
+3. 如果有多个版本（raw / processed / entries / final 之类），告诉我哪个目录是「最适合直接喂给 Dify 知识库导入」的最终版本。判断标准：
+   - frontmatter（YAML metadata）完整
+   - 正文 markdown 已经 polish 过
+   - 是项目脚本 scripts/migrate_kb.py 默认期待的目录（脚本默认 entries-dir 是 `../yixiaoguan/knowledge-base/entries`）
+   - 可参考 git log 看最近哪个目录提交过
+
+4. 给我一条 KB-*.md 的完整 frontmatter（用 head -30 看），列出全部字段名（如 title / category / tags / source / source_url / material_id / campus 等）
+
+5. 看 ub 上有没有在跑 dify docker（命令: ssh ub "docker ps" 然后过滤 dify 关键字），如果有，找 dify 的 .env 或 config 文件，看是否能找到：
+   - 现成的 dataset API key (字符串以 dataset- 开头)
+   - 已迁移过的 dataset id (UUID 格式)
+   - 是否有 v1 时代的 migrate_result.csv 之类的迁移成果文件
+
+最后用一个紧凑的 markdown 报告给我答复，每个事实附上具体证据（命令输出片段）。不要乱搜，目标明确：让我能马上跑 migrate_kb.py 把这些 KB 导入到 HK 服务器（64.90.13.65）的 Dify dataset c2363fef-405b-48ab-a0e2-9274a4186cef。
+
+注意：
+- ssh ub 需要的连接是 user 192.168.100.165 ssh config 里的 alias，已经能直接连
+- 不要尝试登 64 服务器，64 那边我已经熟悉
+- 全部输出用 markdown 报告，不要进入交互模式问我问题，全部信息可以从 ssh ub 上读到

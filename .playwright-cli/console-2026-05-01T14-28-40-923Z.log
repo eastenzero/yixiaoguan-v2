@@ -1,0 +1,4 @@
+[    6072ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ https://yxg.130814.xyz/#/:0
+[   10239ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://fonts.gstatic.com/s/manrope/v15/xn7_YHE41ni1AdIRqAuZuw1Bx9mbZk59FO_F87jxeN7B.woff2:0
+[   10423ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://yxg.130814.xyz/favicon.ico:0
+[   46292ms] [LOG] [WS] connected @ https://yxg.130814.xyz/assets/index-Dkkm-1l8.js:31

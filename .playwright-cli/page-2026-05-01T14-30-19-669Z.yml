@@ -1,0 +1,46 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e150]:
+    - generic [ref=e151]:
+      - generic [ref=e152]:
+        - generic [ref=e153]: arrow_back
+        - generic [ref=e154]: 医小管
+      - generic [ref=e156]: history
+    - generic [ref=e186]:
+      - generic [ref=e188]:
+        - generic [ref=e190]: 【ws-smoke-1429】请帮我转人工
+        - generic [ref=e191]: 刚刚
+      - generic [ref=e193]:
+        - generic [ref=e194]:
+          - generic [ref=e196]: smart_toy
+          - generic [ref=e197]: MEDICAL ASSISTANT
+        - generic [ref=e199]:
+          - paragraph [ref=e200]: 我已收到你的转人工请求。正在为你转接人工客服，请稍候…
+          - paragraph [ref=e201]: 如果等待时间较长，你也可以继续向我提问，我会尽力帮助你。
+        - generic [ref=e202]: 刚刚
+        - generic [ref=e214]:
+          - generic [ref=e215]: check_circle
+          - generic [ref=e216]: 已通知老师，请耐心等待
+      - generic [ref=e219]: 已通知老师，请耐心等待回复。
+    - generic [ref=e208]:
+      - generic [ref=e210]:
+        - generic: 等待老师接入...
+        - textbox [ref=e211]
+      - generic [ref=e213]: send
+    - generic [ref=e170]:
+      - generic [ref=e171]:
+        - generic [ref=e172]: home
+        - generic [ref=e173]: 首页
+      - generic [ref=e174]:
+        - generic [ref=e175]: chat_bubble
+        - generic [ref=e176]: 智能问答
+      - generic [ref=e177]:
+        - generic [ref=e178]: business_center
+        - generic [ref=e179]: 事务导办
+      - generic [ref=e180]:
+        - generic [ref=e181]: person
+        - generic [ref=e182]: 我的
+  - generic:
+    - generic:
+      - generic:
+        - img
+        - paragraph: 已呼叫老师

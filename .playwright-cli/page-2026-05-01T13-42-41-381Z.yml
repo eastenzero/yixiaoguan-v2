@@ -1,0 +1,47 @@
+- generic [ref=e150]:
+  - generic [ref=e151]:
+    - generic [ref=e152]:
+      - generic [ref=e153]: arrow_back
+      - generic [ref=e154]: 医小管
+    - generic [ref=e156]: history
+  - generic [ref=e186]:
+    - generic [ref=e188]:
+      - generic [ref=e190]: 宿舍电费怎么交？
+      - generic [ref=e191]: 刚刚
+    - generic [ref=e193]:
+      - generic [ref=e194]:
+        - generic [ref=e196]: smart_toy
+        - generic [ref=e197]: MEDICAL ASSISTANT
+      - generic [ref=e198]:
+        - generic [ref=e199]:
+          - paragraph [ref=e200]: 你好！作为泰安校区的同学，你可以通过以下三种方式缴纳宿舍电费：
+          - list [ref=e201]:
+            - listitem [ref=e202]:
+              - strong [ref=e203]: 完美校园APP
+              - text: ：登录APP进入“电费充值”模块，选择楼栋房间后支付。
+            - listitem [ref=e204]:
+              - strong [ref=e205]: 支付宝小程序
+              - text: ：搜索“完美校园”，进入小程序选择“电费充值”并按提示操作。
+            - listitem [ref=e206]:
+              - strong [ref=e207]: 微信小程序
+              - text: ：搜索“完美校园”，绑定个人信息（默认密码为身份证后六位）后使用
+        - generic [ref=e208]: "|"
+      - generic [ref=e209]: 刚刚
+  - generic [ref=e212]:
+    - generic [ref=e214]:
+      - generic: 输入你的问题...
+      - textbox [disabled] [ref=e215]
+    - generic [ref=e217]: send
+  - generic [ref=e170]:
+    - generic [ref=e171]:
+      - generic [ref=e172]: home
+      - generic [ref=e173]: 首页
+    - generic [ref=e174]:
+      - generic [ref=e175]: chat_bubble
+      - generic [ref=e176]: 智能问答
+    - generic [ref=e177]:
+      - generic [ref=e178]: business_center
+      - generic [ref=e179]: 事务导办
+    - generic [ref=e180]:
+      - generic [ref=e181]: person
+      - generic [ref=e182]: 我的

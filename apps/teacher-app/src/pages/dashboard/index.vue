@@ -128,6 +128,23 @@
           </view>
         </view>
       </view>
+
+      <!-- 管理员快捷入口 (仅 admin 可见) -->
+      <view v-if="isAdmin" class="admin-section animate-fade-up delay-3">
+        <view class="section-header">
+          <text class="section-title">系统管理</text>
+        </view>
+        <view class="admin-grid">
+          <view class="admin-card" @click="goAdminUsers">
+            <text class="material-symbols-outlined admin-card-icon">group</text>
+            <text class="admin-card-label">用户管理</text>
+          </view>
+          <view class="admin-card" @click="goAdminImport">
+            <text class="material-symbols-outlined admin-card-icon">person_add</text>
+            <text class="admin-card-label">批量导入</text>
+          </view>
+        </view>
+      </view>
     </view>
 
     <!-- 底部导航栏 -->
@@ -146,6 +163,7 @@ import { getStatusText } from '@/utils/status-map'
 // 用户状态
 const userStore = useUserStore()
 const displayName = computed(() => userStore.displayName)
+const isAdmin = computed(() => userStore.isAdmin)
 
 // 统计数据
 const stats = ref({
@@ -210,6 +228,14 @@ const viewAllQuestions = () => {
 // 查看单个提问
 const viewQuestion = (id: number) => {
   uni.navigateTo({ url: `/pages/questions/detail?id=${id}` })
+}
+
+// 管理员入口
+const goAdminUsers = () => {
+  uni.navigateTo({ url: '/pages/admin/users' })
+}
+const goAdminImport = () => {
+  uni.navigateTo({ url: '/pages/admin/import' })
 }
 
 // 加载统计数据（v2: 从会话列表统计）
@@ -690,6 +716,46 @@ onShow(() => {
 
 .delay-3 {
   animation-delay: 0.2s;
+}
+
+// 管理员区块
+.admin-section {
+  margin-top: 1rem;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.admin-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.25rem 0.5rem;
+  background: linear-gradient(135deg, rgba(112, 42, 225, 0.06), rgba(147, 51, 234, 0.04));
+  border: 1px solid rgba(112, 42, 225, 0.12);
+  border-radius: 1rem;
+  transition: all 0.2s;
+
+  &:active {
+    transform: scale(0.97);
+    background: rgba(112, 42, 225, 0.1);
+  }
+}
+
+.admin-card-icon {
+  font-size: 1.75rem;
+  color: $primary;
+}
+
+.admin-card-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: $on-surface;
 }
 
 @keyframes fadeUp {

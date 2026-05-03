@@ -1,0 +1,76 @@
+再次 ssh 到 ub 主机（命令: ssh ub），深度盘点 /home/easten/dev/yixiaoguan/knowledge-base/ 下到底有多少**独立的真实知识条目**。只读探查不修改。
+
+我之前的简单 find 给出 888 = 433 (entries/) + 433 (entries/first-batch-drafts/) + 22 (raw/.../markdown/)，但用户说他记得是「800-900 条独立条目」，怀疑 entries/ 和 first-batch-drafts/ 不是简单镜像。请彻查：
+
+## 必须搞清楚的事实
+
+1. **entries/ 根目录 vs entries/first-batch-drafts/ 是否重复**
+   - 比对两边的 basename（去 .md 后缀）：完全一样、部分重叠、还是完全不重叠？
+   - 命令参考：
+     ```bash
+     ssh ub "ls /home/easten/dev/yixiaoguan/knowledge-base/entries/*.md 2>/dev/null | xargs -n1 basename | sort > /tmp/entries-root.txt"
+     ssh ub "ls /home/easten/dev/yixiaoguan/knowledge-base/entries/first-batch-drafts/*.md | xargs -n1 basename | sort > /tmp/entries-drafts.txt"
+     ssh ub "comm -12 /tmp/entries-root.txt /tmp/entries-drafts.txt | wc -l  # 共有"
+     ssh ub "comm -23 /tmp/entries-root.txt /tmp/entries-drafts.txt | wc -l  # 仅根目录有"
+     ssh ub "comm -13 /tmp/entries-root.txt /tmp/entries-drafts.txt | wc -l  # 仅 drafts 有"
+     ```
+
+2. **entries/ 里的命名分布**：到底 KB-NNNN-名字.md (旧4位序号格式) 多少个，KB-YYYYMMDD-NNNN.md (新日期格式) 多少个，其他格式多少个？
+   ```bash
+   ssh ub "ls /home/easten/dev/yixiaoguan/knowledge-base/entries/ | grep -E '^KB-[0-9]{4}-' | wc -l"
+   ssh ub "ls /home/easten/dev/yixiaoguan/knowledge-base/entries/ | grep -E '^KB-[0-9]{8}-' | wc -l"
+   ssh ub "ls /home/easten/dev/yixiaoguan/knowledge-base/entries/ | grep -vE '^KB-[0-9]+-' | head -10"
+   ```
+
+3. **knowledge-base 还有什么我之前漏看的子目录**？
+   - 列全部子目录及其 .md 文件数（包括非 KB- 前缀的 markdown）：
+     ```bash
+     ssh ub "find /home/easten/dev/yixiaoguan/knowledge-base -maxdepth 4 -type d | sort"
+     ssh ub "find /home/easten/dev/yixiaoguan/knowledge-base -maxdepth 4 -name '*.md' | xargs -I {} dirname {} | sort | uniq -c | sort -rn | head -30"
+     ```
+   - 找 KB- 之外可能的条目命名：是否有 .yaml / .json / .csv 形式的条目源数据？
+     ```bash
+     ssh ub "find /home/easten/dev/yixiaoguan/knowledge-base -maxdepth 3 -type f -name '*.yaml' -o -name '*.json' -o -name '*.csv' | head -20"
+     ```
+
+4. **entries/ 之外是否还有其他「polished」的导入候选**？比如：
+   - `processed/` `output/` `final/` `dify-import/` `for-import/` 之类目录
+   - 命令：
+     ```bash
+     ssh ub "find /home/easten/dev/yixiaoguan/knowledge-base -maxdepth 3 -type d | grep -iE 'process|final|output|import|polish|publish'"
+     ```
+
+5. **看一下 yixiaoguan 项目根目录 README 或 docs 有没有说明**「正式 KB 导入用哪个目录」：
+   ```bash
+   ssh ub "ls /home/easten/dev/yixiaoguan/knowledge-base/"
+   ssh ub "find /home/easten/dev/yixiaoguan -maxdepth 2 -name 'README*' -o -name 'KNOWLEDGE_BASE*' 2>/dev/null"
+   ssh ub "head -50 /home/easten/dev/yixiaoguan/knowledge-base/README.md 2>/dev/null"
+   ```
+
+6. **抽查 entries/ 里 5 条不同命名格式的 KB 文件**，看正文是否都 polish 了（没有 TODO / FIXME / 草稿标记）：
+   ```bash
+   ssh ub "for f in \$(ls /home/easten/dev/yixiaoguan/knowledge-base/entries/KB-*.md | shuf -n 5); do echo '=== '\$f' ==='; head -25 \$f; echo; done"
+   ```
+
+7. **如果有 git repo（哪怕在父目录），看最近 commit 涉及哪些目录**：
+   ```bash
+   ssh ub "cd /home/easten/dev/yixiaoguan && git log --oneline --name-only -n 20 2>/dev/null | grep -E 'knowledge-base|entries' | head -30"
+   ```
+
+## 输出要求
+
+紧凑 markdown 报告，回答：
+
+A. **真实独立条目数** = ？（entries/ 根目录 unique + entries/first-batch-drafts/ 仅有的 + raw/.../markdown/ 仅有的，去重）
+
+B. **推荐喂给 Dify 的目录列表 + 为什么**（可能是单个目录，也可能是多个目录的 union，比如「entries/ 433 + drafts 仅有的 50 = 483 条」）
+
+C. **entries/ 里的命名格式构成**
+
+D. **任何其他遗漏的 KB 源**（yaml/json/不同子目录）
+
+E. **是否有 README / 项目文档明确说明「正式导入路径是 X」**
+
+F. **抽查 5 条样本是否都 polished**（没草稿迹象）
+
+报告短而准，每条结论附 1-2 行命令证据。**目标：让我能确定要导入到 HK Dify 的最终文件清单（绝对路径列表）和总数**。

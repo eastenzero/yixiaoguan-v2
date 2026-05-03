@@ -1,0 +1,46 @@
+[    5697ms] [LOG] Teacher App Launch @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:31
+[    5697ms] [LOG] Teacher App Show @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:31
+[    6437ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ https://teacher.130814.xyz/#/:0
+[    6989ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://fonts.gstatic.com/s/manrope/v15/xn7_YHE41ni1AdIRqAuZuw1Bx9mbZk59FO_F87jxeN7B.woff2:0
+[    7543ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teacher.130814.xyz/favicon.ico:0
+[   34740ms] [INFO] Slow network is detected. See https://www.chromestatus.com/feature/5636954674692096 for more details. Fallback font will be used while loading: https://fonts.gstatic.com/s/materialsymbolsoutlined/v332/kJEhBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oFsI.woff2 @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:24
+[   35220ms] [ERROR] WebSocket connection to 'wss://teacher.130814.xyz/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwic3RhZmZfaWQiOiJhbmppbmciLCJyb2xlIjoidGVhY2hlciIsImNvbGxlZ2VfaWQiOjE3LCJjbGFzc19pZCI6MSwibmFtZSI6Ilx1NWI4OVx1OTc1OSIsImV4cCI6MTc3NzcyOTUyMX0.teJ8vcvyn6EbLHwT8UADzg7J5m3sklzLESBe30mfO30' failed: Error during WebSocket handshake: Unexpected response code: 200 @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:24
+[   35220ms] [ERROR] [WS] error {} @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   35221ms] [LOG] [WS] disconnected @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   35221ms] [LOG] [WS] reconnect #1 in 1000ms @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   37757ms] [ERROR] WebSocket connection to 'wss://teacher.130814.xyz/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwic3RhZmZfaWQiOiJhbmppbmciLCJyb2xlIjoidGVhY2hlciIsImNvbGxlZ2VfaWQiOjE3LCJjbGFzc19pZCI6MSwibmFtZSI6Ilx1NWI4OVx1OTc1OSIsImV4cCI6MTc3NzcyOTUyMX0.teJ8vcvyn6EbLHwT8UADzg7J5m3sklzLESBe30mfO30' failed: Error during WebSocket handshake: Unexpected response code: 200 @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:24
+[   37757ms] [ERROR] [WS] error {} @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   37757ms] [LOG] [WS] disconnected @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   37757ms] [LOG] [WS] reconnect #2 in 2000ms @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   41326ms] [ERROR] WebSocket connection to 'wss://teacher.130814.xyz/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwic3RhZmZfaWQiOiJhbmppbmciLCJyb2xlIjoidGVhY2hlciIsImNvbGxlZ2VfaWQiOjE3LCJjbGFzc19pZCI6MSwibmFtZSI6Ilx1NWI4OVx1OTc1OSIsImV4cCI6MTc3NzcyOTUyMX0.teJ8vcvyn6EbLHwT8UADzg7J5m3sklzLESBe30mfO30' failed: Error during WebSocket handshake: Unexpected response code: 200 @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:24
+[   41327ms] [ERROR] [WS] error {} @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   41327ms] [LOG] [WS] disconnected @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   41327ms] [LOG] [WS] reconnect #3 in 4000ms @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   46880ms] [ERROR] WebSocket connection to 'wss://teacher.130814.xyz/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwic3RhZmZfaWQiOiJhbmppbmciLCJyb2xlIjoidGVhY2hlciIsImNvbGxlZ2VfaWQiOjE3LCJjbGFzc19pZCI6MSwibmFtZSI6Ilx1NWI4OVx1OTc1OSIsImV4cCI6MTc3NzcyOTUyMX0.teJ8vcvyn6EbLHwT8UADzg7J5m3sklzLESBe30mfO30' failed: Error during WebSocket handshake: Unexpected response code: 200 @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:24
+[   46880ms] [ERROR] [WS] error {} @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   46880ms] [LOG] [WS] disconnected @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   46880ms] [LOG] [WS] reconnect #4 in 8000ms @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   56434ms] [ERROR] WebSocket connection to 'wss://teacher.130814.xyz/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwic3RhZmZfaWQiOiJhbmppbmciLCJyb2xlIjoidGVhY2hlciIsImNvbGxlZ2VfaWQiOjE3LCJjbGFzc19pZCI6MSwibmFtZSI6Ilx1NWI4OVx1OTc1OSIsImV4cCI6MTc3NzcyOTUyMX0.teJ8vcvyn6EbLHwT8UADzg7J5m3sklzLESBe30mfO30' failed: Error during WebSocket handshake: Unexpected response code: 200 @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:24
+[   56434ms] [ERROR] [WS] error {} @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   56434ms] [LOG] [WS] disconnected @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   56434ms] [LOG] [WS] reconnect #5 in 16000ms @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   73974ms] [ERROR] WebSocket connection to 'wss://teacher.130814.xyz/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwic3RhZmZfaWQiOiJhbmppbmciLCJyb2xlIjoidGVhY2hlciIsImNvbGxlZ2VfaWQiOjE3LCJjbGFzc19pZCI6MSwibmFtZSI6Ilx1NWI4OVx1OTc1OSIsImV4cCI6MTc3NzcyOTUyMX0.teJ8vcvyn6EbLHwT8UADzg7J5m3sklzLESBe30mfO30' failed: Error during WebSocket handshake: Unexpected response code: 200 @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:24
+[   73974ms] [ERROR] [WS] error {} @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   73974ms] [LOG] [WS] disconnected @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[   73974ms] [LOG] [WS] reconnect #6 in 30000ms @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[  105631ms] [ERROR] WebSocket connection to 'wss://teacher.130814.xyz/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwic3RhZmZfaWQiOiJhbmppbmciLCJyb2xlIjoidGVhY2hlciIsImNvbGxlZ2VfaWQiOjE3LCJjbGFzc19pZCI6MSwibmFtZSI6Ilx1NWI4OVx1OTc1OSIsImV4cCI6MTc3NzcyOTUyMX0.teJ8vcvyn6EbLHwT8UADzg7J5m3sklzLESBe30mfO30' failed: Error during WebSocket handshake: Unexpected response code: 200 @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:24
+[  105631ms] [ERROR] [WS] error {} @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[  105631ms] [LOG] [WS] disconnected @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[  105631ms] [LOG] [WS] reconnect #7 in 30000ms @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[  137150ms] [ERROR] WebSocket connection to 'wss://teacher.130814.xyz/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwic3RhZmZfaWQiOiJhbmppbmciLCJyb2xlIjoidGVhY2hlciIsImNvbGxlZ2VfaWQiOjE3LCJjbGFzc19pZCI6MSwibmFtZSI6Ilx1NWI4OVx1OTc1OSIsImV4cCI6MTc3NzcyOTUyMX0.teJ8vcvyn6EbLHwT8UADzg7J5m3sklzLESBe30mfO30' failed: Error during WebSocket handshake: Unexpected response code: 200 @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:24
+[  137150ms] [ERROR] [WS] error {} @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[  137150ms] [LOG] [WS] disconnected @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[  137150ms] [LOG] [WS] reconnect #8 in 30000ms @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[  168697ms] [ERROR] WebSocket connection to 'wss://teacher.130814.xyz/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwic3RhZmZfaWQiOiJhbmppbmciLCJyb2xlIjoidGVhY2hlciIsImNvbGxlZ2VfaWQiOjE3LCJjbGFzc19pZCI6MSwibmFtZSI6Ilx1NWI4OVx1OTc1OSIsImV4cCI6MTc3NzcyOTUyMX0.teJ8vcvyn6EbLHwT8UADzg7J5m3sklzLESBe30mfO30' failed: Error during WebSocket handshake: Unexpected response code: 200 @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:24
+[  168698ms] [ERROR] [WS] error {} @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[  168698ms] [LOG] [WS] disconnected @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[  168698ms] [LOG] [WS] reconnect #9 in 30000ms @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[  200601ms] [ERROR] WebSocket connection to 'wss://teacher.130814.xyz/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwic3RhZmZfaWQiOiJhbmppbmciLCJyb2xlIjoidGVhY2hlciIsImNvbGxlZ2VfaWQiOjE3LCJjbGFzc19pZCI6MSwibmFtZSI6Ilx1NWI4OVx1OTc1OSIsImV4cCI6MTc3NzcyOTUyMX0.teJ8vcvyn6EbLHwT8UADzg7J5m3sklzLESBe30mfO30' failed: Error during WebSocket handshake: Unexpected response code: 200 @ https://teacher.130814.xyz/assets/index-DllF3qJc.js:24
+[  200601ms] [ERROR] [WS] error {} @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[  200601ms] [LOG] [WS] disconnected @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0
+[  200601ms] [LOG] [WS] reconnect #10 in 30000ms @ https://teacher.130814.xyz/assets/websocket.BJuPRH8F.js:0

@@ -1,0 +1,85 @@
+目标：对 HK 生产环境执行完整端到端冒烟测试，验证内测上线前所有关键流程可用。
+
+## 环境信息
+
+- Gateway API: https://yxg.130814.xyz/api (反代到 127.0.0.1:8100)
+- 学生端 H5: https://yxg.130814.xyz/
+- 教师端 H5: https://teacher.130814.xyz/
+- Dify Console: https://dify.130814.xyz/
+
+## 测试账号
+
+| 角色     | staff_id     | 密码              | 姓名   |
+|----------|-------------|-------------------|--------|
+| 学生     | 4125150001  | 4125150001        | 黄静   |
+| 辅导员   | anjing      | Anjing@yxg2026    | 安静   |
+
+## API 路由（Gateway）
+
+- POST /api/auth/login  → { staff_id, password } → { access_token }
+- GET  /api/auth/me → 需 Bearer token
+- POST /api/conversations → { title } → { id }
+- POST /api/chat/send → { conv_id, content } → SSE stream
+- GET  /api/conversations → 会话列表
+- GET  /api/conversations/{conv_id} → 会话详情
+- POST /api/conversations/{conv_id}/escalate → 转交辅导员
+- POST /api/conversations/{conv_id}/accept → 辅导员接受
+- POST /api/conversations/{conv_id}/messages → 辅导员回复 { content }
+- POST /api/conversations/{conv_id}/resolve → 辅导员关闭
+- GET  /api/conversations/unread-summary → 未读统计
+- GET  /api/v1/knowledge/unanswered-top → 知识库未回答排行
+- POST /api/v1/knowledge/drafts → 提交知识草稿
+- GET  /health → 健康检查
+
+## 需要测试的完整流程
+
+用纯 API 调用（curl/httpie/Python requests）完成以下测试，每步打印结果和 PASS/FAIL：
+
+### 1. 基础健康检查
+- GET /health → 200
+- 学生登录 → 拿到 token → GET /api/auth/me → 确认 name=黄静
+- 教师登录 → 拿到 token → GET /api/auth/me → 确认 name=安静
+
+### 2. AI 对话（RAG 质量验证）
+用学生 token：
+- POST /api/conversations 创建会话
+- POST /api/chat/send 发送 "宿舍电费怎么交？" → 读 SSE stream → 验证回答包含"完美校园"或"充值"
+- POST /api/chat/send 发送 "国家奖学金有哪些？" → 验证回答包含"10000"或"奖学金"
+- POST /api/chat/send 发送 "图书馆开放时间？" → 验证回答不为空且长度 > 50 字
+
+### 3. 学生转交 → 辅导员处理全流程
+- 学生创建新会话，发一条消息 "【smoke-test】请问毕业证什么时候发？"
+- 学生 POST /api/conversations/{id}/escalate → 转交辅导员
+- 切换到辅导员 token
+- GET /api/conversations → 确认能看到该会话（状态应为 pending_teacher 或类似）
+- POST /api/conversations/{id}/accept → 辅导员接受
+- POST /api/conversations/{id}/messages → 辅导员回复 "毕业证6月底发放"
+- POST /api/conversations/{id}/resolve → 关闭会话
+- 切回学生 token
+- GET /api/conversations/{id} → 验证能看到辅导员的回复
+- GET /api/conversations/unread-summary → 验证有未读
+
+### 4. 知识库接口
+用辅导员 token：
+- GET /api/v1/knowledge/unanswered-top → 验证返回 200
+- POST /api/v1/knowledge/drafts → 提交一条测试草稿 { title: "smoke-test-draft", content: "测试内容" } → 验证返回 200/201
+
+### 5. 前端可达性
+- curl 学生端首页 → 200 且 body 包含 "html"
+- curl 教师端首页 → 200 且 body 包含 "html"
+
+## 输出格式
+
+最后汇总打印表格：
+
+| # | 测试项 | 结果 | 备注 |
+|---|--------|------|------|
+
+全部 PASS 则输出 "✅ HK 环境冒烟测试全部通过，可以启动内测"。
+任何 FAIL 则输出具体失败原因。
+
+## 注意事项
+- SSE stream 的格式是 `event: xxx\ndata: {...}\n\n`，data 中 message_end 事件包含 full_content
+- 所有 HTTPS 请求需忽略证书（自签）
+- 测试结束后清理：resolve 掉测试创建的会话
+- 把测试脚本写到 .tasks/hk-deploy/hk-smoke-test.py

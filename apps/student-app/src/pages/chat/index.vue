@@ -145,6 +145,25 @@
           </view>
         </view>
 
+        <!-- R10: 关联问题推荐 -->
+        <view v-if="suggestedQuestions.length && !isStreaming" class="suggestions-area">
+          <view class="suggestions-header">
+            <text class="material-symbols-outlined suggestions-icon">lightbulb</text>
+            <text class="suggestions-title">你可能还想问</text>
+          </view>
+          <view class="suggestions-list">
+            <view
+              v-for="(q, qi) in suggestedQuestions"
+              :key="qi"
+              class="suggestion-chip"
+              @click="handleSuggestionClick(q)"
+            >
+              <text class="suggestion-text">{{ q }}</text>
+              <text class="material-symbols-outlined suggestion-arrow">arrow_forward</text>
+            </view>
+          </view>
+        </view>
+
         <view class="bottom-spacer" />
       </scroll-view>
 
@@ -155,21 +174,6 @@
             <view class="call-menu-item" @click="handleCallTeacher">
               <text class="material-symbols-outlined call-menu-icon">call</text>
               <text class="call-menu-text">呼叫老师</text>
-            </view>
-          </view>
-        </view>
-        <view v-if="showRefusalCTA && conversationStatus === 'ai_serving'" class="refusal-cta">
-          <view class="refusal-cta-icon-wrap">
-            <text class="material-symbols-outlined refusal-cta-icon">support_agent</text>
-          </view>
-          <view class="refusal-cta-body">
-            <text class="refusal-cta-title">AI 似乎无法回答</text>
-            <text class="refusal-cta-desc">需要老师介入吗？</text>
-          </view>
-          <view class="refusal-cta-actions">
-            <text class="refusal-cta-dismiss" @click="showRefusalCTA = false">忽略</text>
-            <view class="refusal-cta-btn" @click="handleCallTeacher">
-              <text class="refusal-cta-btn-text">{{ escalateLoading ? '呼叫中...' : '呼叫老师' }}</text>
             </view>
           </view>
         </view>
@@ -195,15 +199,37 @@
 
     <CustomTabBar current="assistant" />
 
-    <!-- 来源弹层 -->
-    <view v-if="sourcePopup.visible" class="source-overlay" @click="sourcePopup.visible = false">
-      <view class="source-popup" @click.stop>
+    <!-- 来源弹层 (可拖拽全屏) -->
+    <view v-if="sourcePopup.visible" class="source-overlay" @click="closeSourcePopup">
+      <view
+        class="source-popup"
+        :style="{ height: sourceSheetHeight + 'vh' }"
+        @click.stop
+        @touchstart="onSheetTouchStart"
+        @touchmove="onSheetTouchMove"
+        @touchend="onSheetTouchEnd"
+      >
+        <view class="source-popup-drag-bar">
+          <view class="drag-indicator" />
+        </view>
         <view class="source-popup-header">
           <text class="source-popup-title">{{ sourcePopup.title }}</text>
-          <text class="material-symbols-outlined source-close" @click="sourcePopup.visible = false">close</text>
+          <view class="source-header-actions">
+            <text
+              v-if="sourceSheetHeight < 95"
+              class="material-symbols-outlined source-expand"
+              @click="sourceSheetHeight = 95"
+            >open_in_full</text>
+            <text
+              v-else
+              class="material-symbols-outlined source-expand"
+              @click="sourceSheetHeight = 50"
+            >close_fullscreen</text>
+            <text class="material-symbols-outlined source-close" @click="closeSourcePopup">close</text>
+          </view>
         </view>
         <scroll-view class="source-popup-body" scroll-y>
-          <text class="source-popup-content">{{ sourcePopup.content }}</text>
+          <view class="markdown-body source-markdown" v-html="renderMarkdown(sourcePopup.content)" />
         </scroll-view>
       </view>
     </view>
@@ -216,7 +242,6 @@ import { onShow, onHide } from '@dcloudio/uni-app'
 import MarkdownIt from 'markdown-it'
 import { useUserStore } from '@/stores/user'
 import { createConversation, getConversation, getMessages, escalate } from '@/api/chat'
-import { markRead } from '@/api/notification'
 import { fetchSSE } from '@/utils/sse'
 import { wsManager } from '@/utils/websocket'
 import CustomTabBar from '@/components/CustomTabBar.vue'
@@ -240,9 +265,12 @@ const scrollTop = ref(0)
 const conversationId = ref<number | null>(null)
 const conversationStatus = ref<ConversationStatus>('ai_serving')
 const escalateLoading = ref(false)
+const suggestedQuestions = ref<string[]>([])
 const showCallMenu = ref(false)
-const showRefusalCTA = ref(false)
 const sourcePopup = reactive({ visible: false, title: '', content: '' })
+const sourceSheetHeight = ref(50)
+let sheetTouchStartY = 0
+let sheetHeightAtStart = 50
 
 // ============ 计算属性 ============
 const canSend = computed(() => inputMessage.value.trim().length > 0 && !isStreaming.value)
@@ -277,7 +305,6 @@ onShow(() => {
   }
   registerWsListeners()
   if (conversationId.value) {
-    markRead(conversationId.value).catch(() => {})
     wsManager.send({ type: 'join_room', data: { conv_id: conversationId.value } })
   }
 })
@@ -321,7 +348,6 @@ function onStatusChanged(data: any) {
   if (convId !== conversationId.value) return
   const newStatus = (data.newStatus || data.new_status || data.status) as ConversationStatus
   conversationStatus.value = newStatus
-  if (newStatus !== 'ai_serving') showRefusalCTA.value = false
 
   let systemMsg = ''
   if (newStatus === 'teacher_serving') systemMsg = '老师已接入，你可以直接向老师提问。'
@@ -351,7 +377,6 @@ async function loadConversation() {
     const conv = await getConversation(conversationId.value)
     conversationStatus.value = (conv.status as ConversationStatus) || 'ai_serving'
     await loadHistory()
-    markRead(conversationId.value).catch(() => {})
     wsManager.send({ type: 'join_room', data: { conv_id: conversationId.value } })
   } catch (e) {
     console.error('加载会话失败:', e)
@@ -363,8 +388,6 @@ async function loadHistory() {
   try {
     const res = await getMessages(conversationId.value)
     messages.value = res.items.map(mapServerMessage)
-    const lastAiMessage = [...messages.value].reverse().find(msg => msg.role === 'assistant')
-    showRefusalCTA.value = Boolean(lastAiMessage?.refusal)
     scrollToBottom()
   } catch (e) {
     console.error('加载消息失败:', e)
@@ -380,7 +403,6 @@ function mapServerMessage(m: MessageResponse): Message {
     role: roleMap[m.sender_type] || 'system',
     content: m.content || '',
     sources: m.metadata_?.sources || [],
-    refusal: m.metadata_?.refusal || false,
     timestamp: m.created_at ? new Date(m.created_at).getTime() : Date.now(),
   }
 }
@@ -393,7 +415,6 @@ function goToHistory() { uni.navigateTo({ url: '/pages/chat/history' }) }
 async function sendMessage() {
   const content = inputMessage.value.trim()
   if (!content || isStreaming.value) return
-  showRefusalCTA.value = false
 
   if (!conversationId.value) {
     try {
@@ -414,6 +435,7 @@ async function sendMessage() {
     content,
     timestamp: Date.now(),
   }
+  suggestedQuestions.value = []
   messages.value.push(userMessage)
   inputMessage.value = ''
   scrollToBottom()
@@ -479,9 +501,11 @@ async function streamResponse(userContent: string) {
           const msg = getReactive()
           msg.content = data.full_content || msg.content
           msg.sources = data.sources || []
-          msg.refusal = data.refusal === true
           msg.isStreaming = false
-          showRefusalCTA.value = data.refusal === true && conversationStatus.value === 'ai_serving'
+          scrollToBottom()
+        },
+        onSuggestions: (questions: string[]) => {
+          suggestedQuestions.value = questions
           scrollToBottom()
         },
         onError: (errMsg: string) => {
@@ -510,7 +534,25 @@ async function streamResponse(userContent: string) {
 function handleSourceClick(source: Source) {
   sourcePopup.title = source.title || '参考资料'
   sourcePopup.content = source.content || '暂无详细内容'
+  sourceSheetHeight.value = 50
   sourcePopup.visible = true
+}
+function closeSourcePopup() {
+  sourcePopup.visible = false
+}
+function onSheetTouchStart(e: TouchEvent) {
+  sheetTouchStartY = e.touches[0].clientY
+  sheetHeightAtStart = sourceSheetHeight.value
+}
+function onSheetTouchMove(e: TouchEvent) {
+  const dy = sheetTouchStartY - e.touches[0].clientY
+  const dvh = (dy / window.innerHeight) * 100
+  sourceSheetHeight.value = Math.min(95, Math.max(30, sheetHeightAtStart + dvh))
+}
+function onSheetTouchEnd() {
+  if (sourceSheetHeight.value > 75) sourceSheetHeight.value = 95
+  else if (sourceSheetHeight.value < 35) closeSourcePopup()
+  else sourceSheetHeight.value = 50
 }
 
 // ============ 拒答检测 ============
@@ -519,15 +561,18 @@ const REFUSAL_KEYWORDS = [
   '超出了我的知识范围', '建议您直接咨询', '暂时不可用', '请稍后重试',
   '无法为您提供', '没有找到相关', '不在我的服务范围',
   '转人工请求', '转接人工客服', '转人工服务', '转接人工',
-  '无法理解', '请联系', '建议您联系', '建议咨询',
-  '我没有相关信息', '我无法确认', '建议直接联系',
 ]
 function isRefusalMsg(msg: Message): boolean {
   if (msg.role !== 'assistant' || !msg.content) return false
-  if (msg.refusal === true) return true
   if (REFUSAL_KEYWORDS.some(kw => msg.content.includes(kw))) return true
   if (msg.content.includes('抱歉') && (!msg.sources || msg.sources.length === 0)) return true
   return false
+}
+
+// ============ R10: 推荐问题点击 ============
+function handleSuggestionClick(question: string) {
+  inputMessage.value = question
+  nextTick(() => sendMessage())
 }
 
 // ============ 长按弹出 ============
@@ -546,7 +591,6 @@ async function handleCallTeacher() {
   try {
     await escalate(conversationId.value)
     conversationStatus.value = 'pending_teacher'
-    showRefusalCTA.value = false
     messages.value.push({
       id: `sys-escalate-${Date.now()}`,
       role: 'system',
@@ -637,16 +681,6 @@ function scrollToBottom() {
 .bottom-spacer { height: 10rem; }
 
 .bottom-area { position: fixed; bottom: 3.5rem; left: 0; right: 0; z-index: 40; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); padding: 0.75rem 1rem; padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)); }
-.refusal-cta { display: flex; align-items: center; gap: 0.625rem; padding: 0.75rem 1rem; margin: 0 0 0.5rem; background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(99,14,212,0.12)); border: 1px solid rgba(124,58,237,0.2); border-radius: 1rem; }
-.refusal-cta-icon-wrap { width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #7c3aed, #630ed4); border-radius: 0.625rem; flex-shrink: 0; }
-.refusal-cta-icon { font-size: 1.125rem; color: #fff; }
-.refusal-cta-body { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-.refusal-cta-title { font-size: 0.875rem; font-weight: 700; color: #1a1a2e; }
-.refusal-cta-desc { font-size: 0.75rem; color: #64748b; margin-top: 0.125rem; }
-.refusal-cta-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
-.refusal-cta-dismiss { font-size: 0.75rem; color: #94a3b8; padding: 0.375rem 0.5rem; }
-.refusal-cta-btn { padding: 0.5rem 0.875rem; background: linear-gradient(135deg, #7c3aed, #630ed4); border-radius: 0.625rem; }
-.refusal-cta-btn-text { font-size: 0.8125rem; font-weight: 700; color: #fff; }
 .call-menu-overlay { position: absolute; bottom: 100%; left: 0; right: 0; display: flex; justify-content: flex-end; padding: 0 1rem 0.5rem; z-index: 50; }
 .call-menu { background: #fff; border-radius: 0.75rem; box-shadow: 0 0.25rem 1.5rem rgba(0,0,0,0.12); overflow: hidden; min-width: 8rem; }
 .call-menu-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; }
@@ -677,12 +711,39 @@ function scrollToBottom() {
 .call-done-icon { font-size: 1.125rem; color: #1e8e3e; }
 .call-done-text { font-size: 0.8125rem; font-weight: 700; color: #1e8e3e; }
 
-/* 来源弹层 */
-.source-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: flex-end; justify-content: center; }
-.source-popup { width: 100%; max-width: 30rem; background: #fff; border-radius: 1rem 1rem 0 0; max-height: 60vh; display: flex; flex-direction: column; }
-.source-popup-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; border-bottom: 1px solid #e2e8f0; }
-.source-popup-title { font-size: 1rem; font-weight: 700; color: #191c1e; flex: 1; }
+/* R10: 关联问题推荐 */
+.suggestions-area { padding: 0 0.5rem; margin-bottom: 1.5rem; }
+.suggestions-header { display: flex; align-items: center; gap: 0.375rem; margin-bottom: 0.625rem; padding: 0 0.25rem; }
+.suggestions-icon { font-size: 1rem; color: #f59e0b; }
+.suggestions-title { font-size: 0.75rem; font-weight: 700; color: #92400e; }
+.suggestions-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.suggestion-chip { display: flex; align-items: center; justify-content: space-between; padding: 0.625rem 0.875rem; background: #fff; border: 1px solid #e9d5ff; border-radius: 0.75rem; transition: all 0.2s; box-shadow: 0 1px 3px rgba(99,14,212,0.06); }
+.suggestion-chip:active { background: #f5f3ff; border-color: #630ed4; transform: scale(0.98); }
+.suggestion-text { flex: 1; font-size: 0.8125rem; color: #4c1d95; line-height: 1.5; }
+.suggestion-arrow { font-size: 0.875rem; color: #a78bfa; margin-left: 0.5rem; flex-shrink: 0; }
+
+/* 来源弹层 (可拖拽全屏) */
+.source-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.45); z-index: 1000; display: flex; align-items: flex-end; justify-content: center; }
+.source-popup { width: 100%; max-width: 30rem; background: #fff; border-radius: 1rem 1rem 0 0; display: flex; flex-direction: column; transition: height 0.15s ease-out; }
+.source-popup-drag-bar { display: flex; justify-content: center; padding: 0.5rem 0 0.25rem; cursor: grab; }
+.drag-indicator { width: 2rem; height: 0.25rem; border-radius: 0.125rem; background: #d1d5db; }
+.source-popup-header { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1.25rem 0.75rem; border-bottom: 1px solid #e2e8f0; }
+.source-popup-title { font-size: 1rem; font-weight: 700; color: #191c1e; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.source-header-actions { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+.source-expand { font-size: 1.125rem; color: #94a3b8; }
 .source-close { font-size: 1.25rem; color: #94a3b8; }
-.source-popup-body { padding: 1.25rem; flex: 1; }
-.source-popup-content { font-size: 0.875rem; color: #475569; line-height: 1.8; white-space: pre-wrap; }
+.source-popup-body { padding: 1.25rem; flex: 1; overflow: hidden; }
+.source-markdown { font-size: 0.875rem; color: #475569; line-height: 1.8; }
+.source-markdown :deep(p) { margin-bottom: 0.5rem; }
+.source-markdown :deep(ul) { padding-left: 1rem; margin-bottom: 0.5rem; list-style-type: disc; }
+.source-markdown :deep(ol) { padding-left: 1rem; margin-bottom: 0.5rem; list-style-type: decimal; }
+.source-markdown :deep(li) { margin-bottom: 0.25rem; }
+.source-markdown :deep(strong) { font-weight: 700; color: #630ed4; }
+.source-markdown :deep(code) { background: #f3f4f6; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.8125rem; }
+.source-markdown :deep(pre) { background: #f3f4f6; padding: 0.75rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 0.5rem; }
+.source-markdown :deep(a) { color: #630ed4; text-decoration: underline; }
+.source-markdown :deep(h1), .source-markdown :deep(h2), .source-markdown :deep(h3) { font-weight: 700; color: #191c1e; margin: 0.75rem 0 0.375rem; }
+.source-markdown :deep(blockquote) { border-left: 3px solid #630ed4; padding-left: 0.75rem; color: #6b7280; margin: 0.5rem 0; }
+.source-markdown :deep(table) { width: 100%; border-collapse: collapse; margin-bottom: 0.5rem; font-size: 0.8125rem; }
+.source-markdown :deep(th), .source-markdown :deep(td) { border: 1px solid #e5e7eb; padding: 0.375rem 0.5rem; text-align: left; }
 </style>

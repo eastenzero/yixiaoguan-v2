@@ -1,0 +1,52 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e141]:
+    - generic [ref=e142]:
+      - img [ref=e145]
+      - generic [ref=e147]: 提问详情
+    - generic [ref=e151]:
+      - generic [ref=e156]:
+        - generic [ref=e157]:
+          - generic [ref=e158]: "学生 #3"
+          - generic [ref=e160]: 已解决
+        - generic [ref=e161]: 【ws-smoke-1429】请帮我转人
+      - generic [ref=e162]:
+        - generic [ref=e165]:
+          - generic [ref=e167]: notifications
+          - generic [ref=e168]: 会话已创建，AI 助手为您服务
+        - generic [ref=e170]:
+          - generic [ref=e172]: 【ws-smoke-1429】请帮我转人工
+          - generic [ref=e173]: 05/01 14:30
+        - generic [ref=e175]:
+          - generic [ref=e178]: smart_toy
+          - generic [ref=e179]:
+            - generic [ref=e182]:
+              - text: 我已收到你的转人工请求。正在为你转接人工客服，请稍候...
+              - text: 如果等待时间较长，你也可以继续向我提问，我会尽力帮助你。
+            - generic [ref=e183]: 05/01 14:30
+        - generic [ref=e186]:
+          - generic [ref=e188]: notifications
+          - generic [ref=e189]: 学生请求转接人工服务
+        - generic [ref=e203]:
+          - generic [ref=e205]: notifications
+          - generic [ref=e206]: 教师 安静 已接入对话
+        - generic [ref=e224]:
+          - generic [ref=e227]: support_agent
+          - generic [ref=e228]:
+            - generic [ref=e230]: WS冒烟测试：老师回复已实时发送。
+            - generic [ref=e231]: 05/01 14:31
+        - generic [ref=e234]:
+          - generic [ref=e236]: notifications
+          - generic [ref=e237]: 教师已将问题标记为已解决
+        - generic [ref=e191]:
+          - generic [ref=e193]: notifications
+          - generic [ref=e194]: 学生已呼叫老师 — 05/01 14:30
+    - generic [ref=e196]:
+      - generic:
+        - generic:
+          - generic: check_circle
+        - generic: 已解决
+  - generic:
+    - generic:
+      - generic:
+        - img
+        - paragraph: 已解决

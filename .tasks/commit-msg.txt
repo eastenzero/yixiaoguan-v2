@@ -1,0 +1,7 @@
+fix(student-app): services page redo + link bindings + chat source popup markdown
+
+F0: resolve git conflict markers in 7 files (HK worktree as source of truth)
+F1: chat source popup — markdown rendering (v-html + markdown-it) + draggable bottom sheet
+F3: services page — full redesign with hero, quick links, campus grid, academic & personal sections
+F3: home page — bind real URLs to service list (jwc, library, email, website) + section-more → services tab
+Admin: pull R11 admin files from HK (admin.ts, users.vue, import.vue, admin router + schema)

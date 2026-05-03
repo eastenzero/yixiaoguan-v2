@@ -98,25 +98,13 @@
           </button>
         </view>
 
-        <!-- 其他登录方式 -->
-        <view class="alt-login">
-          <text class="alt-login-title">其他登录方式</text>
-          <view class="alt-login-buttons">
-            <view class="alt-login-btn" @click="handleQrLogin">
-              <IconQrCode :size="20" :color="onSurfaceVariantColor" />
-            </view>
-            <view class="alt-login-btn" @click="handleFingerprintLogin">
-              <IconFingerprint :size="20" :color="onSurfaceVariantColor" />
-            </view>
-          </view>
-        </view>
+        <!-- 其他登录方式（暂未对接，隐藏） -->
       </view>
     </view>
 
     <!-- Footer -->
     <view class="footer animate-fade-up delay-2">
       <text class="footer-text">山东第一医科大学 · 医小管智能管理系统</text>
-      <text class="footer-copyright">© 2024 Intelligent Management System</text>
     </view>
   </view>
 </template>
@@ -132,8 +120,6 @@ import IconLock from '../../components/icons/IconLock.vue'
 import IconEye from '../../components/icons/IconEye.vue'
 import IconCheck from '../../components/icons/IconCheck.vue'
 import IconArrowRight from '../../components/icons/IconArrowRight.vue'
-import IconQrCode from '../../components/icons/IconQrCode.vue'
-import IconFingerprint from '../../components/icons/IconFingerprint.vue'
 
 // 主题色（用于动态绑定）
 const primaryColor = '#702ae1'
@@ -163,15 +149,17 @@ const toggleRememberMe = () => {
 
 // 登录处理
 const handleLogin = async () => {
-  if (!username.value || !password.value) {
+  const staffId = username.value.trim()
+  const pwd = password.value.trim()
+  if (!staffId || !pwd) {
     uni.showToast({ title: '请输入工号和密码', icon: 'none' })
     return
   }
   loading.value = true
   try {
     const loginRes = await loginApi({
-      staff_id: username.value,
-      password: password.value
+      staff_id: staffId,
+      password: pwd
     })
     userStore.setToken(loginRes.access_token)
     
@@ -195,15 +183,6 @@ const handleForgotPassword = () => {
   uni.showToast({ title: '请联系管理员', icon: 'none' })
 }
 
-// 二维码登录
-const handleQrLogin = () => {
-  uni.showToast({ title: '二维码登录', icon: 'none' })
-}
-
-// 指纹登录
-const handleFingerprintLogin = () => {
-  uni.showToast({ title: '指纹登录', icon: 'none' })
-}
 </script>
 
 <style lang="scss" scoped>

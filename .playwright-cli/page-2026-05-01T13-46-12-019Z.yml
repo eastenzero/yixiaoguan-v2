@@ -1,0 +1,54 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e215]:
+    - generic [ref=e216]:
+      - img [ref=e219]
+      - generic [ref=e221]: 提问详情
+    - generic [ref=e225]:
+      - generic [ref=e238]:
+        - generic [ref=e239]:
+          - generic [ref=e240]: "学生 #3"
+          - generic [ref=e242]: 已解决
+        - generic [ref=e243]: 宿舍电费怎么交？
+      - generic [ref=e244]:
+        - generic [ref=e247]:
+          - generic [ref=e249]: notifications
+          - generic [ref=e250]: 会话已创建，AI 助手为您服务
+        - generic [ref=e252]:
+          - generic [ref=e254]: 宿舍电费怎么交？
+          - generic [ref=e255]: 05/01 13:42
+        - generic [ref=e257]:
+          - generic [ref=e260]: smart_toy
+          - generic [ref=e261]:
+            - generic [ref=e264]:
+              - text: 你好！作为泰安校区的同学，你可以通过以下三种方式缴纳宿舍电费：
+              - text: 1. **完美校园APP**：登录APP进入“电费充值”模块，选择楼栋房间后支付。
+              - text: 2. **支付宝小程序**：搜索“完美校园”，进入小程序选择“电费充值”并按提示操作。
+              - text: 3. **微信小程序**：搜索“完美校园”，绑定个人信息（默认密码为身份证后六位）后使用充值功能。
+              - text: 宿舍电费采用预付费制，余额不足会自动断电，充值后实时到账恢复供电。建议平时多关注余额，避免突然断电影响生活；如遇充值问题，可联系后勤管理部。
+            - generic [ref=e265]: 05/01 13:42
+        - generic [ref=e267]:
+          - generic [ref=e269]: 我想转人工服务
+          - generic [ref=e270]: 05/01 13:44
+        - generic [ref=e272]:
+          - generic [ref=e275]: smart_toy
+          - generic [ref=e276]:
+            - generic [ref=e279]:
+              - text: 我已收到你的转人工请求。正在为你转接人工客服，请稍候...
+              - text: 如果等待时间较长，你也可以继续向我提问，我会尽力帮助你。
+            - generic [ref=e280]: 05/01 13:44
+        - generic [ref=e283]:
+          - generic [ref=e285]: notifications
+          - generic [ref=e286]: 学生请求转接人工服务
+        - generic [ref=e288]:
+          - generic [ref=e290]: notifications
+          - generic [ref=e291]: 学生已呼叫老师 — 05/01 13:42
+    - generic [ref=e229]:
+      - generic:
+        - generic:
+          - generic: check_circle
+        - generic: 已解决
+  - generic:
+    - generic:
+      - generic:
+        - img
+        - paragraph: 已解决

@@ -100,6 +100,57 @@ class DifyClient:
             resp.raise_for_status()
             return resp.json()
 
+    # ============================================================
+    # Suggested Questions — 回答后生成关联问题
+    # ============================================================
+    async def generate_suggestions(
+        self,
+        query: str,
+        answer_summary: str,
+        *,
+        timeout: float = 5.0,
+    ) -> list[str]:
+        """
+        调用 Dify blocking chat 生成 3 条关联问题。
+        返回字符串列表，失败返回空列表。
+        """
+        prompt = (
+            f"用户问：\"{query}\"\n"
+            f"AI 答（摘要）：\"{answer_summary[:300]}\"\n\n"
+            "请基于以上对话，生成3个用户可能接着问的简短问题。\n"
+            "仅输出 JSON 数组，如 [\"问题1\",\"问题2\",\"问题3\"]，不要其他内容。"
+        )
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "inputs": {},
+            "query": prompt,
+            "response_mode": "blocking",
+            "user": "suggestion-generator",
+        }
+        try:
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                resp = await client.post(
+                    f"{self.base_url}/chat-messages",
+                    headers=headers,
+                    json=payload,
+                )
+                resp.raise_for_status()
+                data = resp.json()
+                answer = data.get("answer", "").strip()
+                # 从回答中提取 JSON 数组
+                import re as _re
+                match = _re.search(r'\[.*\]', answer, _re.DOTALL)
+                if match:
+                    questions = json.loads(match.group())
+                    if isinstance(questions, list):
+                        return [str(q).strip() for q in questions[:3] if str(q).strip()]
+        except Exception as e:
+            logger.warning(f"generate_suggestions failed: {e}")
+        return []
+
     async def polish_text(
         self,
         *,
