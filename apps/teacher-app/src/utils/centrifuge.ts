@@ -31,13 +31,13 @@ class CentrifugeManager {
     })
 
     this.client.on('connected', () => {
-      console.log('[Centrifuge] connected')
+      // silent: Centrifuge connected
       this._isConnected = true
       this.dispatch('_connected', {})
     })
 
     this.client.on('disconnected', (ctx) => {
-      console.log('[Centrifuge] disconnected', ctx.reason)
+      // silent: Centrifuge disconnected
       this._isConnected = false
       this.dispatch('_disconnected', { reason: ctx.reason })
     })
