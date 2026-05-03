@@ -1,42 +1,130 @@
 // ============================================================
-// Design Tokens — yixiaoguan-v2 v2 launch
-// Source: docs/design/ui-references/ (stitch designs)
-// Decided: violet-800 primary, Manrope font, Material Symbols icons
+// 医小管 v2 — Design Tokens
+// Material Design 3 tonal palette, 逐字复刻自:
+//   docs/design/ui-references/teacher-app-stitch/stitch_/dashboard/code.html
+//   (tailwind.config.colors)
+// 主色 $primary 保留现状 #5b21b6 (覆盖 dashboard 的 #702ae1)
+// surface-tint 跟随 $primary 保留一致性
+// 两端 (student-app / teacher-app) 共用同一套 tokens
+// ------------------------------------------------------------
+// 规则 (来自两份 DESIGN.md):
+//   · No-Line      : 禁 1px solid 边框；层次靠 container tint 差异
+//   · No-Shadow    : 阴影不作默认；只在悬浮元素 (FAB / Nav) 使用
+//                    且必须是紫色折射 (不是中性灰)
+//   · 图标 wght 300: 高端、细腻
+//   · 大半径       : lg 2rem / xl 3rem
+//   · display-md   : 2.75rem, weight 800
 // ============================================================
 
-// ----- Color: Primary -----
-$primary:        #5b21b6;  // violet-800
-$primary-hover:  #4c1d95;  // violet-900
-$primary-soft:   #ede9fe;  // violet-100 — backgrounds, badges
-$primary-on:     #ffffff;  // text on primary
+// ─────────────────────────────────────────────────────────
+// 1. MD3 Tonal Palette (51 tokens · 来自 dashboard/code.html)
+// ─────────────────────────────────────────────────────────
 
-// ----- Color: Surface / Background -----
-$bg-page:    #f9fafb;  // gray-50
-$bg-card:    #ffffff;
-$bg-elevated:#ffffff;
-$surface:    $bg-page;          // alias for legacy
-$on-surface: #111827;           // alias for legacy
+// ── Primary tier ──
+$primary: #5b21b6; // [OVERRIDE] 保留现状 (dashboard 原值 #702ae1)
+$primary-dim: #6411d5;
+$primary-container: #b28cff;
+$on-primary: #f8f0ff;
+$on-primary-container: #2e006c;
+$primary-fixed: #b28cff;
+$primary-fixed-dim: #a67aff;
+$on-primary-fixed: #000000;
+$on-primary-fixed-variant: #390083;
+$inverse-primary: #a476ff;
 
-// ----- Color: Text -----
-$text-primary:   #111827;  // gray-900
-$text-secondary: #6b7280;  // gray-500
-$text-muted:     #9ca3af;  // gray-400
-$text-inverse:   #ffffff;
+// ── Secondary tier ──
+$secondary: #7742a6;
+$secondary-dim: #6a3599;
+$secondary-container: #e6c5ff;
+$on-secondary: #fbefff;
+$on-secondary-container: #612c90;
+$secondary-fixed: #e6c5ff;
+$secondary-fixed-dim: #ddb3ff;
+$on-secondary-fixed: #4d137b;
+$on-secondary-fixed-variant: #6b369a;
 
-// ----- Color: Border -----
-$border:       #e5e7eb;    // gray-200
-$border-strong:#d1d5db;    // gray-300
-$divider:      #f3f4f6;    // gray-100
+// ── Tertiary tier ──
+$tertiary: #9e3657;
+$tertiary-dim: #8e294c;
+$tertiary-container: #ff8eac;
+$on-tertiary: #ffeff1;
+$on-tertiary-container: #64042d;
+$tertiary-fixed: #ff8eac;
+$tertiary-fixed-dim: #f77c9e;
+$on-tertiary-fixed: #380016;
+$on-tertiary-fixed-variant: #711036;
 
-// ----- Color: Status -----
-$success: #059669;
-$warning: #d97706;
-$danger:  #dc2626;
-$info:    #3b82f6;
+// ── Error tier ──
+$error: #b41340;
+$error-dim: #a70138;
+$error-container: #f74b6d;
+$on-error: #ffefef;
+$on-error-container: #510017;
 
-// ----- Typography -----
-$font-family-sans: 'Manrope', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+// ── Surface tier (ivory tonal canvas) ──
+$surface: #faf5fb; // 基础画布 (ivory)
+$surface-dim: #d7d3db;
+$surface-bright: #faf5fb;
+$surface-variant: #e0dbe3;
+$surface-container-lowest: #ffffff; // L3 (最高层 card)
+$surface-container-low: #f4eff5; // L1 (section 分组)
+$surface-container: #ebe7ed; // L2 (主力 container)
+$surface-container-high: #e5e1e8; // L3 focus
+$surface-container-highest: #e0dbe3; // L4 modal-ish
+$surface-tint: #5b21b6; // [OVERRIDE] 跟随 $primary (dashboard 原值 #702ae1)
 
+// ── On-surface / background ──
+$on-surface: #2f2e32;
+$on-surface-variant: #5d5b5f;
+$background: #faf5fb;
+$on-background: #2f2e32;
+
+// ── Inverse (dark snippets) ──
+$inverse-surface: #0e0e11;
+$inverse-on-surface: #9f9ca1;
+
+// ── Outline (ghost borders only, <=15% alpha) ──
+$outline: #78767b;
+$outline-variant: #afacb1;
+
+// ─────────────────────────────────────────────────────────
+// 2. Gradients · signature hero/CTA (from DESIGN.md rules)
+//    hero: primary-container → tertiary-container @ 135° (pastel)
+//    cta:  primary           → primary-container   @ 135° (signature)
+// ─────────────────────────────────────────────────────────
+$gradient-hero: linear-gradient(135deg, $primary-container 0%, $tertiary-container 100%);
+$gradient-cta: linear-gradient(135deg, $primary 0%, $primary-container 100%);
+$gradient-primary: $gradient-cta; // legacy alias
+$gradient-btn: $gradient-cta; // legacy alias
+
+// ─────────────────────────────────────────────────────────
+// 3. Typography — Manrope + PingFang SC; MD3 type scale
+//    来自 dashboard/code.html <style> 段
+// ─────────────────────────────────────────────────────────
+$font-headline: 'Manrope', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+$font-body: 'Manrope', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+$font-label: 'Manrope', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+$font-family-sans: $font-body;
+$font-family: $font-body;
+
+// MD3 type scale
+$display-md-size: 2.75rem; // 44px — dashboard greetings / empty states
+$display-md-lh: 3.25rem;
+$display-md-weight: 800;
+
+$title-lg-size: 1.375rem; // 22px — card headers
+$title-lg-lh: 1.5;
+$title-lg-weight: 700;
+
+$body-md-size: 0.875rem; // 14px — workhorse
+$body-md-lh: 1.25rem;
+$body-md-weight: 400;
+
+$label-md-size: 0.75rem; // 12px — categories / status
+$label-md-lh: 1rem;
+$label-md-weight: 500;
+
+// Legacy numeric sizes (保留兼容, 避免现有 .vue 一次性全改)
 $font-size-xs: 12px;
 $font-size-sm: 14px;
 $font-size-base: 16px;
@@ -49,12 +137,15 @@ $font-weight-regular: 400;
 $font-weight-medium: 500;
 $font-weight-semibold: 600;
 $font-weight-bold: 700;
+$font-weight-black: 800;
 
 $line-height-tight: 1.25;
 $line-height-normal: 1.5;
 $line-height-relaxed: 1.75;
 
-// ----- Spacing (8pt grid) -----
+// ─────────────────────────────────────────────────────────
+// 4. Spacing (8pt grid)
+// ─────────────────────────────────────────────────────────
 $space-1: 4px;
 $space-2: 8px;
 $space-3: 12px;
@@ -65,93 +156,158 @@ $space-8: 32px;
 $space-10: 40px;
 $space-12: 48px;
 
-// ----- Radius -----
-$radius-sm: 8px;
-$radius-md: 12px;
-$radius-lg: 16px;     // default for cards
-$radius-xl: 24px;     // hero cards / sheets
-$radius-full: 9999px;
+// ─────────────────────────────────────────────────────────
+// 5. Radius — MD3: DEFAULT 1rem, lg 2rem, xl 3rem
+//    严守 DESIGN.md: 「Stick to lg (2rem) for any container」
+// ─────────────────────────────────────────────────────────
+$radius-sm: 0.5rem; //   8px — chips, small utility
+$radius-md: 1rem; //  16px — MD3 DEFAULT: buttons, small cards
+$radius-lg: 2rem; //  32px — 主力 card / sheet 半径
+$radius-xl: 3rem; //  48px — 全屏 hero / modal sheet
+$radius-full: 9999px; //       — pills, avatars, indicators
 
-// ----- Shadow -----
-$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-$shadow-md: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-$shadow-lg: 0 4px 12px rgba(91, 33, 182, 0.10);  // primary-tinted
+// ─────────────────────────────────────────────────────────
+// 6. Shadow — NO-SHADOW-AS-DEFAULT
+//    仅用于悬浮元素；一律使用 primary 折射色，禁止中性灰
+// ─────────────────────────────────────────────────────────
+$shadow-fab: 0 12px 32px -4px rgba(91, 33, 182, 0.15); // primary-tinted FAB
+$shadow-nav: 0 -4px 20px rgba(91, 33, 182, 0.05); // bottom nav lift
 
-// ----- Z-index -----
+// Legacy aliases (旧代码若仍引用则降级为 FAB 阴影; 新代码请直接用上面两个)
+$shadow-sm: none;
+$shadow-md: none;
+$shadow-lg: $shadow-fab;
+$elevation-1: $shadow-nav;
+$elevation-2: $shadow-fab;
+$elevation-3: $shadow-fab;
+
+// ─────────────────────────────────────────────────────────
+// 7. Glassmorphism (nav bars; surface-container-lowest @ 80%)
+// ─────────────────────────────────────────────────────────
+$backdrop-bar: blur(20px) saturate(180%);
+$glass-bg: rgba(255, 255, 255, 0.80);
+
+// ─────────────────────────────────────────────────────────
+// 8. Z-index
+// ─────────────────────────────────────────────────────────
 $z-dropdown: 100;
 $z-modal: 1000;
 $z-toast: 1100;
 
-// ----- CSS variable bridge (for runtime theming) -----
+// ─────────────────────────────────────────────────────────
+// 9. Backward-compat aliases (旧命名 → MD3 token)
+//    保留以避免一次性改掉所有 .vue; 新代码请直接用上面的 MD3 名
+// ─────────────────────────────────────────────────────────
+
+// -- primary legacy --
+$primary-hover: $primary-dim;
+$primary-soft: $primary-container;
+$primary-on: $on-primary;
+$primary-40: $primary;
+$primary-90: $primary-container;
+
+// -- surface legacy --
+$bg-page: $background;
+$bg-card: $surface-container-lowest;
+$bg-elevated: $surface-container-lowest;
+$bg-secondary: $surface-container-low;
+
+// -- text legacy --
+$text-primary: $on-surface;
+$text-secondary: $on-surface-variant;
+$text-tertiary: $outline;
+$text-muted: $outline;
+$text-inverse: $on-primary;
+
+// -- border legacy (ghost only, 通常配 rgba 0.10~0.15) --
+$border: $outline-variant;
+$border-strong: $outline;
+$border-color: $border;
+$divider: $surface-container-low;
+
+// -- status (non-MD3 sugar; success/warning/info) --
+$success: #059669;
+$warning: #d97706;
+$danger: $error;
+$info: #3b82f6;
+
+// ─────────────────────────────────────────────────────────
+// 10. CSS custom property bridge (runtime theming hook)
+// ─────────────────────────────────────────────────────────
 :root {
-  --color-primary: #{$primary};
-  --color-primary-hover: #{$primary-hover};
-  --color-primary-soft: #{$primary-soft};
-  --color-bg-page: #{$bg-page};
-  --color-bg-card: #{$bg-card};
-  --color-text-primary: #{$text-primary};
-  --color-text-secondary: #{$text-secondary};
-  --color-border: #{$border};
+  // MD3 核心
+  --md-primary: #{$primary};
+  --md-primary-container: #{$primary-container};
+  --md-on-primary: #{$on-primary};
+  --md-on-primary-container: #{$on-primary-container};
+  --md-secondary-container: #{$secondary-container};
+  --md-tertiary-container: #{$tertiary-container};
+  --md-error: #{$error};
+  --md-error-container: #{$error-container};
+  --md-surface: #{$surface};
+  --md-surface-container-lowest: #{$surface-container-lowest};
+  --md-surface-container-low: #{$surface-container-low};
+  --md-surface-container: #{$surface-container};
+  --md-surface-container-high: #{$surface-container-high};
+  --md-surface-container-highest: #{$surface-container-highest};
+  --md-on-surface: #{$on-surface};
+  --md-on-surface-variant: #{$on-surface-variant};
+  --md-outline: #{$outline};
+  --md-outline-variant: #{$outline-variant};
+
+  // Radius
   --radius-md: #{$radius-md};
   --radius-lg: #{$radius-lg};
+  --radius-xl: #{$radius-xl};
+  --radius-full: #{$radius-full};
+
+  // Legacy
+  --color-primary: #{$primary};
+  --color-primary-hover: #{$primary-dim};
+  --color-primary-soft: #{$primary-container};
+  --color-bg-page: #{$background};
+  --color-bg-card: #{$surface-container-lowest};
+  --color-text-primary: #{$on-surface};
+  --color-text-secondary: #{$on-surface-variant};
+  --color-border: #{$border};
 }
 
-// ============================================================
-// Backward-compat aliases — student-app legacy
-// ============================================================
-$primary-40: $primary;
-$primary-90: $primary-soft;
-$on-primary: $primary-on;
-$error: $danger;
-$error-container: #fee2e2;
-$border-color: $border;
-$text-tertiary: $text-muted;
-$bg-secondary: $bg-page;
-$font-family: $font-family-sans;
+// ─────────────────────────────────────────────────────────
+// 11. MD3 Type Scale utility classes
+//     用法: <text class="display-md">欢迎</text>
+// ─────────────────────────────────────────────────────────
+.display-md {
+  font-family: $font-headline;
+  font-size: $display-md-size;
+  line-height: $display-md-lh;
+  font-weight: $display-md-weight;
+}
 
-// ============================================================
-// Backward-compat aliases — teacher-app legacy
-// ============================================================
-$background: $bg-page;
-$on-surface-variant: $text-secondary;
-$font-body: $font-family-sans;
-$font-headline: $font-family-sans;
-$font-label: $font-family-sans;
-$primary-container: $primary-soft;
-$primary-dim: $primary-hover;
-$primary-fixed-dim: $primary-soft;
-$on-primary-container: $primary;
-$on-primary-fixed: $text-inverse;
-$on-primary-fixed-variant: $primary-hover;
-$on-secondary-container: #4c1d95;
-$on-tertiary-container: #701a36;
-$outline-variant: $border;
-$secondary-container: #ddd6fe;
-$tertiary-container: #fbcfe8;
-$surface-dim: #e5e7eb;
-$surface-bright: #ffffff;
-$surface-variant: #f3f4f6;
-$surface-tint: $primary;
-$surface-container-lowest: #ffffff;
-$surface-container-low: #f9fafb;
-$surface-container: #f3f4f6;
-$surface-container-high: #e5e7eb;
-$surface-container-highest: #d1d5db;
-$inverse-surface: #111827;
-$inverse-on-surface: #9ca3af;
-$outline: $border-strong;
-$on-background: $text-primary;
-$inverse-primary: $primary-soft;
-$secondary: #6d28d9;
-$secondary-dim: #5b21b6;
-$tertiary: #be185d;
-$tertiary-dim: #9d174d;
-$elevation-1: 0 1px 3px rgba(91, 33, 182, 0.06), 0 4px 8px -2px rgba(91, 33, 182, 0.08);
-$elevation-2: 0 2px 6px rgba(91, 33, 182, 0.08), 0 8px 24px -4px rgba(91, 33, 182, 0.12);
-$elevation-3: 0 4px 12px rgba(91, 33, 182, 0.10), 0 16px 40px -8px rgba(91, 33, 182, 0.16);
-$backdrop-bar: blur(20px) saturate(180%);
+.title-lg {
+  font-family: $font-headline;
+  font-size: $title-lg-size;
+  line-height: $title-lg-lh;
+  font-weight: $title-lg-weight;
+}
 
-// ----- Gradients (teacher-app legacy) -----
-$gradient-primary: linear-gradient(135deg, $primary 0%, $primary-container 50%, $tertiary-container 100%);
-$gradient-hero: linear-gradient(135deg, $primary 0%, $primary-container 60%, $tertiary-container 100%);
-$gradient-btn: linear-gradient(135deg, $primary 0%, $primary-container 100%);
+.body-md {
+  font-family: $font-body;
+  font-size: $body-md-size;
+  line-height: $body-md-lh;
+  font-weight: $body-md-weight;
+}
+
+.label-md {
+  font-family: $font-label;
+  font-size: $label-md-size;
+  line-height: $label-md-lh;
+  font-weight: $label-md-weight;
+}
+
+// ─────────────────────────────────────────────────────────
+// 12. Material Symbols — wght 300 per DESIGN.md
+//     「保持细腻、高端的笔画」
+// ─────────────────────────────────────────────────────────
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}

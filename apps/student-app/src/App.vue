@@ -10,6 +10,7 @@ onLaunch(() => {
 
 <style lang="scss">
 @import '@/styles/tokens.scss';
+@import '@/styles/global.scss';
 @import '@/styles/theme.scss';
 
 @font-face {
