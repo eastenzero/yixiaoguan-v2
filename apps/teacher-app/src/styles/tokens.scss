@@ -89,10 +89,10 @@ $outline-variant: #afacb1;
 
 // ─────────────────────────────────────────────────────────
 // 2. Gradients · signature hero/CTA (from DESIGN.md rules)
-//    hero: primary-container → secondary-container @ 135° (pastel purple)
+//    hero: primary-container → tertiary-container @ 135° (pastel, matches production)
 //    cta:  primary           → primary-container   @ 135° (signature)
 // ─────────────────────────────────────────────────────────
-$gradient-hero: linear-gradient(135deg, $primary-container 0%, $secondary-container 100%);
+$gradient-hero: linear-gradient(135deg, $primary-container 0%, $tertiary-container 100%);
 $gradient-cta: linear-gradient(135deg, $primary 0%, $primary-container 100%);
 $gradient-primary: $gradient-cta; // legacy alias
 $gradient-btn: $gradient-cta; // legacy alias
