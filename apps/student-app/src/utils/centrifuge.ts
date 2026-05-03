@@ -60,9 +60,14 @@ class CentrifugeManager {
     const channel = `conv:${convId}`
     if (this.subscriptions.has(channel) || !this.client) return
 
-    const sub = this.client.newSubscription(channel, {
-      recoverable: true,
-    })
+    let sub: Subscription
+    try {
+      sub = this.client.newSubscription(channel, { recoverable: true })
+    } catch {
+      const existing = this.client.getSubscription(channel)
+      if (!existing) return
+      sub = existing
+    }
 
     sub.on('publication', (ctx) => {
       const msg = ctx.data
@@ -78,6 +83,7 @@ class CentrifugeManager {
     const sub = this.subscriptions.get(channel)
     if (sub) {
       sub.unsubscribe()
+      this.client?.removeSubscription(sub)
       this.subscriptions.delete(channel)
     }
   }
