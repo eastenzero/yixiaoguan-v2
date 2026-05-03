@@ -117,6 +117,7 @@
 
     <CustomTabBar current="profile" />
     <FeatureNoticeSheet />
+    <AppDialog />
   </view>
 </template>
 
@@ -129,8 +130,11 @@ import { getUnreadSummary } from '@/api/notification'
 import { openAiQuestion, showComingSoon } from '@/composables/useServiceNavigation'
 import CustomTabBar from '@/components/CustomTabBar.vue'
 import FeatureNoticeSheet from '@/components/FeatureNoticeSheet.vue'
+import AppDialog from '@/components/AppDialog.vue'
+import { useDialog } from '@/composables/useDialog'
 
 const userStore = useUserStore()
+const dialog = useDialog()
 const conversationCount = ref(0)
 const totalUnread = ref(0)
 
@@ -180,10 +184,11 @@ function handleSettingClick(item: SettingItem) {
   if (item.action === 'aiQuestion' && item.aiQuestion) {
     openAiQuestion(item.aiQuestion)
   } else if (item.action === 'about') {
-    uni.showModal({
+    dialog.alert({
       title: '关于医小管',
-      content: '医小管 v1.0.0\n校园事务 AI 咨询与人工兑底平台',
-      showCancel: false,
+      content: '医小管 v1.0.0\n校园事务 AI 咨询与人工兜底平台',
+      icon: 'school',
+      iconFill: true,
       confirmText: '知道了',
     })
   } else {
@@ -202,17 +207,19 @@ onShow(async () => {
   } catch { totalUnread.value = 0 }
 })
 
-function handleLogout() {
-  uni.showModal({
-    title: '提示',
-    content: '确定退出登录吗？',
-    success: (res) => {
-      if (res.confirm) {
-        userStore.logout()
-        uni.reLaunch({ url: '/pages/login/index' })
-      }
-    },
+async function handleLogout() {
+  const confirmed = await dialog.confirm({
+    title: '退出登录',
+    content: '确定要退出当前账号吗？',
+    icon: 'logout',
+    confirmText: '退出',
+    cancelText: '取消',
+    confirmDanger: true,
   })
+  if (confirmed) {
+    userStore.logout()
+    uni.reLaunch({ url: '/pages/login/index' })
+  }
 }
 </script>
 

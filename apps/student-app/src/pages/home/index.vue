@@ -14,7 +14,7 @@
     <view class="main">
       <!-- 1. Personalized Greeting -->
       <view class="greeting animate-fade-up delay-1">
-        <text class="greeting-sub">下午好，{{ displayName }}</text>
+        <text class="greeting-sub">{{ greeting }}，{{ displayName }}</text>
         <text class="greeting-title">智慧校园助理</text>
       </view>
 
@@ -158,6 +158,17 @@ import type { ConversationResponse } from '@/types/chat'
 const userStore = useUserStore()
 
 const displayName = computed(() => userStore.userInfo?.name || userStore.userInfo?.staff_id || '同学')
+
+const greeting = computed(() => {
+  const h = new Date().getHours()
+  if (h < 6) return '夜深了'
+  if (h < 9) return '早上好'
+  if (h < 12) return '上午好'
+  if (h < 14) return '中午好'
+  if (h < 18) return '下午好'
+  if (h < 22) return '晚上好'
+  return '夜深了'
+})
 const totalUnread = ref(0)
 const recentConversations = ref<ConversationResponse[]>([])
 
