@@ -4,15 +4,15 @@ import uni from "@dcloudio/vite-plugin-uni";
 export default defineConfig({
   plugins: [uni()],
   server: {
-    port: 5174,
+    port: 3000,
     host: true,
     proxy: {
       '/api': {
-        target: 'http://192.168.100.165:8100',
+        target: 'https://yxg.xiaoguan.site',
         changeOrigin: true
       },
       '/ws': {
-        target: 'ws://192.168.100.165:8100',
+        target: 'wss://yxg.xiaoguan.site',
         ws: true,
         changeOrigin: true
       }

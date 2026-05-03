@@ -36,7 +36,7 @@ const state = reactive<FeatureNoticeState>({
 
 export function showFeatureNotice(options: FeatureNoticeOptions) {
   state.title = options.title
-  state.description = options.description || '该功能正在接入中\n你可以先让医小管帮你查询办理流程、材料和入口。'
+  state.description = options.description || '该功能正在建设中，敬请期待。\n你可以先让医小管帮你查询相关流程和入口。'
   state.icon = options.icon || 'construction'
   state.primaryText = options.primaryText || '问问医小管'
   state.secondaryText = options.secondaryText || '我知道了'

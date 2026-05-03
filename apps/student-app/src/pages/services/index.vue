@@ -38,14 +38,15 @@
               <text class="quick-label">信息门户</text>
               <text class="material-symbols-outlined meta-external">open_in_new</text>
             </view>
-            <view class="quick-row" @click="openExternal('http://portal.sdfmu.edu.cn')">
+            <view class="quick-row" @click="openExternal('https://ehall.sdfmu.edu.cn/v2/site/index')">
               <text class="material-symbols-outlined quick-icon text-tertiary">cloud_done</text>
               <text class="quick-label">服务大厅</text>
               <text class="material-symbols-outlined meta-external">open_in_new</text>
             </view>
           </view>
         </view>
-        <view class="quick-wide" @click="handleComingSoon('统一消息平台', '我在哪里查看学校通知和老师回复？')">
+        <!-- 统一消息平台: 企业微信原生应用，暂无 Web URL，暂时隐藏 -->
+        <view v-if="false" class="quick-wide" @click="handleComingSoon('统一消息平台', '我在哪里查看学校通知和老师回复？')">
           <view class="quick-wide-left">
             <text class="material-symbols-outlined quick-icon text-primary">message</text>
             <text class="quick-label">统一消息平台</text>
@@ -75,13 +76,13 @@
       <view class="section">
         <text class="section-title">学业</text>
         <view class="query-grid">
-          <view class="query-card" @click="handleAiQuestion('学生课表在哪里查看？')">
+          <view class="query-card" @click="openExternal('https://app.sdfmu.edu.cn/site/schedule/index')">
             <view class="query-icon-box bg-secondary-light">
               <text class="material-symbols-outlined text-secondary">calendar_month</text>
             </view>
             <view class="query-info">
               <text class="query-name">学生课表</text>
-              <text class="query-meta">问医小管</text>
+              <text class="query-meta">课表查询 <text class="material-symbols-outlined meta-external">open_in_new</text></text>
             </view>
           </view>
           <view class="query-card" @click="openExternal('http://jwc.sdfmu.edu.cn')">
@@ -117,12 +118,12 @@
       <view class="section">
         <text class="section-title">个人</text>
         <view class="personal-list">
-          <view class="personal-item border-bottom" @click="handleComingSoon('个人日程', '学校重要日程在哪里查看？')">
+          <view class="personal-item" @click="openExternal('https://app.sdfmu.edu.cn/site/agenda/index')">
             <view class="personal-left">
               <text class="material-symbols-outlined text-primary">event_note</text>
               <text class="personal-name">个人日程</text>
             </view>
-            <text class="material-symbols-outlined text-outline-variant">chevron_right</text>
+            <text class="material-symbols-outlined meta-external">open_in_new</text>
           </view>
           <view class="personal-item" @click="goChatHistory">
             <view class="personal-left">
@@ -159,12 +160,17 @@ interface ServiceItem {
 
 const campusServices: ServiceItem[] = [
   { icon: 'meeting_room', label: '空教室申请', aiQuestion: '我想申请空教室，办理流程是什么？' },
-  { icon: 'assignment', label: '我的申请', comingSoon: true, aiQuestion: '我想查看或跟进自己的校园事务申请，应该去哪里？' },
+  // { icon: 'assignment', label: '我的申请', comingSoon: true, aiQuestion: '我想查看或跟进自己的校园事务申请，应该去哪里？' }, // 暂无对接 URL，暂时隐藏
   { icon: 'handyman', label: '网上报修', url: 'https://metc.sdfmu.edu.cn/info/1073/1954.htm' },
-  { icon: 'feedback', label: '接诉即办', aiQuestion: '我想反馈校园问题或投诉建议，应该怎么提交？' },
+  { icon: 'feedback', label: '接诉即办', url: 'https://ehall.sdfmu.edu.cn/v2/site/appGroup?id=3' },
   { icon: 'wifi', label: '校园网', url: 'http://vpnportal.sdfmu.edu.cn' },
   { icon: 'local_hospital', label: '校医院', aiQuestion: '校医院就诊流程和开放时间是什么？' },
   { icon: 'directions_bus', label: '班车查询', aiQuestion: '班车时刻表在哪里查询？' },
+  { icon: 'podium', label: '学术讲座', url: 'http://academic.sdfmu.edu.cn/index.php?redirect=apply/showlist' },
+  { icon: 'event_available', label: '预约中心', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=3' },
+  { icon: 'face_retouching_natural', label: '人脸采集', url: 'https://fpc.sdfmu.edu.cn/#/home' },
+  { icon: 'photo_camera', label: '证件照采集', url: 'https://ppu.sdfmu.edu.cn' },
+  { icon: 'live_tv', label: '直播山一大', url: 'https://qjjern.vnet.weizan.cn/live/channelpage-253967?v=1764637917204' },
   { icon: 'more_horiz', label: '更多', aiQuestion: '医小管可以帮我做什么？' },
 ]
 
