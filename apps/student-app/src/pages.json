@@ -46,13 +46,13 @@
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "医小管",
-    "navigationBarBackgroundColor": "#F9FAFB",
-    "backgroundColor": "#F9FAFB"
+    "navigationBarBackgroundColor": "#F8FAFC",
+    "backgroundColor": "#F8FAFC"
   },
   "tabBar": {
     "custom": true,
-    "color": "#9CA3AF",
-    "selectedColor": "#5B21B6",
+    "color": "#94A3B8",
+    "selectedColor": "#7C3AED",
     "list": [
       {
         "pagePath": "pages/home/index",

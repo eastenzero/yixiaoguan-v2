@@ -1,22 +1,21 @@
 // 山东第一医科大学紫色主题 — v2
-// NOTE: unified tokens now live in tokens.scss. Animations and utility
-// classes live in global.scss. This file keeps a few legacy aliases for
-// pages still mid-migration plus the shared transition curve.
+// NOTE: unified tokens now live in tokens.scss. This file only keeps
+// student-specific variables not yet absorbed into the shared system.
 
 @import '@/styles/tokens.scss';
 
-// ── Transition curves ──
-$transition-base: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-$transition-spring: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+$primary-10: #2E1065;
+$primary-20: #4C1D95;
+$primary-30: #5B21B6;
+$primary-50: #8B5CF6;
+$primary-60: #A78BFA;
+$primary-70: #C4B5FD;
+$primary-80: #DDD6FE;
+$primary-95: #F5F3FF;
 
-// ── Legacy primary palette aliases (kept for pages mid-migration; do
-// NOT introduce new usages — prefer $primary / $primary-hover /
-// $primary-soft from tokens.scss).
-$primary-10: #2e1065; // violet-950
-$primary-20: #4c1d95; // violet-900 (= $primary-hover alias)
-$primary-30: $primary; // violet-800 (canonical primary)
-$primary-50: #8b5cf6; // violet-500
-$primary-60: #a78bfa; // violet-400
-$primary-70: #c4b5fd; // violet-300
-$primary-80: #ddd6fe; // violet-200
-$primary-95: $primary-soft;
+$transition-base: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}

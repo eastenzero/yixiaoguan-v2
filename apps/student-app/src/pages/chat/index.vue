@@ -1,10 +1,14 @@
 <template>
   <view class="chat-page">
-    <TopAppBar
-      title="智能助理"
-      action-icon="history"
-      @action="goToHistory"
-    />
+    <view class="top-nav">
+      <view class="nav-left" @click="goBack">
+        <text class="material-symbols-outlined nav-back-icon">arrow_back</text>
+        <text class="nav-title">医小管</text>
+      </view>
+      <view class="nav-right" @click="goToHistory">
+        <text class="material-symbols-outlined nav-history-icon">history</text>
+      </view>
+    </view>
 
     <!-- 欢迎空状态 -->
     <view v-if="!messages.length" class="welcome-center">
@@ -81,13 +85,13 @@
             </view>
             <view class="msg-bubble ai-bubble">
               <!-- 等待中动画 -->
-              <view v-if="msg.isStreaming && !msg.content" class="typing-dots">
+              <view v-if="msg.isStreaming && !msg.content" class="typing-animation">
                 <view class="dot" /><view class="dot" /><view class="dot" />
               </view>
               <!-- Markdown 渲染 -->
               <view v-else class="markdown-body" v-html="renderMarkdown(msg.content)" />
               <!-- 流式光标 -->
-              <text v-if="msg.isStreaming && msg.content" class="blink-cursor">|</text>
+              <text v-if="msg.isStreaming && msg.content" class="cursor">|</text>
               <!-- 来源引用 -->
               <view v-if="msg.sources && msg.sources.length && !msg.isStreaming" class="citations">
                 <view class="cit-header">
@@ -134,7 +138,7 @@
               <text class="ai-name">MEDICAL ASSISTANT</text>
             </view>
             <view class="msg-bubble ai-bubble">
-              <view class="typing-dots">
+              <view class="typing-animation">
                 <view class="dot" /><view class="dot" /><view class="dot" />
               </view>
             </view>
@@ -225,7 +229,7 @@
           </view>
         </view>
         <scroll-view class="source-popup-body" scroll-y>
-          <view class="markdown-body markdown-body--rich" v-html="renderMarkdown(sourcePopup.content)" />
+          <view class="markdown-body source-markdown" v-html="renderMarkdown(sourcePopup.content)" />
         </scroll-view>
       </view>
     </view>
@@ -241,7 +245,6 @@ import { createConversation, getConversation, getMessages, escalate } from '@/ap
 import { fetchSSE } from '@/utils/sse'
 import { wsManager } from '@/utils/websocket'
 import CustomTabBar from '@/components/CustomTabBar.vue'
-import TopAppBar from '@/components/TopAppBar.vue'
 import type { Message, Source, ConversationStatus, MessageResponse } from '@/types/chat'
 
 const userStore = useUserStore()
@@ -405,6 +408,7 @@ function mapServerMessage(m: MessageResponse): Message {
 }
 
 // ============ 导航 ============
+function goBack() { uni.navigateBack() }
 function goToHistory() { uni.navigateTo({ url: '/pages/chat/history' }) }
 
 // ============ 发送消息 ============
@@ -622,743 +626,124 @@ function scrollToBottom() {
 }
 </script>
 
-<style scoped lang="scss">
-@import '@/styles/tokens.scss';
-
-// Layout constants synchronised with shared components
-$top-bar-h: 56px;
-$tab-bar-h: 64px;
-$input-bar-h: 60px;
-
-.chat-page {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: $bg-page;
-  font-family: $font-family-sans;
-  color: $text-primary;
-}
-
-// ============================================================
-// Welcome empty state
-// ============================================================
-.welcome-center {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-top: calc(env(safe-area-inset-top) + #{$top-bar-h} + #{$space-6});
-  padding-bottom: calc(env(safe-area-inset-bottom) + #{$tab-bar-h} + #{$space-12});
-  padding-left: $space-6;
-  padding-right: $space-6;
-}
-
-.welcome-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-bottom: $space-10;
-  opacity: 0;
-  animation: fadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.welcome-input-area {
-  width: 100%;
-  max-width: 320px;
-  opacity: 0;
-  animation: fadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.12s forwards;
-}
-
-.empty-icon {
-  position: relative;
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
-  border-radius: $radius-xl;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: $space-5;
-  box-shadow: 0 12px 32px -8px rgba($primary, 0.45),
-              0 4px 10px -2px rgba($primary, 0.25);
-  transform: rotate(-3deg);
-}
-
-.empty-icon::after {
-  content: '';
-  position: absolute;
-  inset: -10px;
-  border-radius: $radius-full;
-  background: radial-gradient(circle at center, rgba($primary, 0.18) 0%, transparent 60%);
-  z-index: -1;
-}
-
-.empty-sparkle-icon {
-  font-size: 28px;
-  color: $text-inverse;
-  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
-}
-
-.empty-title {
-  font-size: $font-size-2xl;
-  font-weight: $font-weight-bold;
-  color: $text-primary;
-  letter-spacing: -0.01em;
-  margin-bottom: $space-2;
-}
-
-.empty-desc {
-  font-size: $font-size-sm;
-  color: $text-secondary;
-  line-height: $line-height-relaxed;
-  max-width: 260px;
-}
-
-// ============================================================
-// Chat container & messages
-// ============================================================
-.chat-container {
-  flex: 1;
-  padding: calc(env(safe-area-inset-top) + #{$top-bar-h} + #{$space-3}) $space-4 0;
-  box-sizing: border-box;
-}
-
-.msg-wrapper {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: $space-5;
-  opacity: 0;
-  animation: fadeUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.bottom-spacer {
-  height: calc(#{$tab-bar-h} + #{$input-bar-h} + #{$space-6});
-}
-
-// ── User bubble ───────────────────────────────────────
-.user-msg {
-  align-items: flex-end;
-}
-
-.user-bubble {
-  background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
-  color: $text-inverse;
-  border-radius: $radius-md $radius-md $space-1 $radius-md;
-  max-width: 85%;
-  padding: $space-3 $space-4;
-  font-size: $font-size-sm;
-  line-height: $line-height-normal;
-  box-shadow: 0 6px 18px -6px rgba($primary, 0.45),
-              0 2px 4px -2px rgba($primary, 0.20);
-}
-
-// ── Time stamp ────────────────────────────────────────
-.msg-time {
-  font-size: 11px;
-  font-weight: $font-weight-semibold;
-  color: $text-muted;
-  margin-top: $space-1;
-  padding: 0 $space-2;
-}
-
-// ── AI bubble ─────────────────────────────────────────
-.ai-msg {
-  align-items: flex-start;
-}
-
-.ai-header {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  margin-bottom: $space-2;
-  padding: 0 $space-2;
-}
-
-.ai-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: $radius-full;
-  background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba($primary, 0.30);
-}
-
-.bot-icon {
-  font-size: 14px;
-  color: $text-inverse;
-  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
-}
-
-.ai-name {
-  font-size: 11px;
-  font-weight: $font-weight-bold;
-  color: $primary;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.ai-bubble {
-  background: $bg-card;
-  color: $text-primary;
-  border-radius: $radius-md $radius-md $radius-md $space-1;
-  max-width: 90%;
-  padding: $space-4;
-  font-size: $font-size-sm;
-  line-height: $line-height-normal;
-  box-shadow: 0 1px 2px rgba($text-primary, 0.04),
-              0 4px 16px -4px rgba($primary, 0.08);
-  border: 1px solid rgba($primary, 0.06);
-}
-
-// ── Teacher bubble ────────────────────────────────────
-.teacher-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: $radius-full;
-  // emerald-700 (#047857) is the canonical darker shade of $success
-  // (#059669); kept inline because tokens.scss has no $success-hover.
-  background: linear-gradient(135deg, $success 0%, #047857 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba($success, 0.30);
-}
-
-.teacher-icon {
-  font-size: 14px;
-  color: $text-inverse;
-  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
-}
-
-.teacher-name {
-  font-size: 11px;
-  font-weight: $font-weight-bold;
-  color: $success;
-  letter-spacing: 0.08em;
-}
-
-.teacher-bubble {
-  background: $bg-card;
-  color: $text-primary;
-  border-radius: $radius-md $radius-md $radius-md $space-1;
-  max-width: 90%;
-  padding: $space-4;
-  font-size: $font-size-sm;
-  line-height: $line-height-normal;
-  box-shadow: 0 1px 2px rgba($text-primary, 0.04),
-              0 4px 16px -4px rgba($success, 0.10);
-  border: 1px solid rgba($success, 0.10);
-}
-
-// ── Citations ─────────────────────────────────────────
-.citations {
-  margin-top: $space-3;
-  padding: $space-3;
-  background: $primary-soft;
-  border-radius: $radius-md;
-}
-
-.cit-header {
-  display: flex;
-  align-items: center;
-  gap: $space-1;
-  margin-bottom: $space-2;
-  color: $primary;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
-  letter-spacing: 0.02em;
-}
-
-.book-icon {
-  font-size: 14px;
-  color: $primary;
-}
-
-.cit-list {
-  display: flex;
-  flex-direction: column;
-  gap: $space-2;
-}
-
-.cit-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: $space-2 $space-3;
-  background: $bg-card;
-  border-radius: $radius-sm;
-  font-size: $font-size-xs;
-  color: $primary-hover;
-  transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
-}
-
-.cit-item:active {
-  transform: scale(0.98);
-  box-shadow: 0 2px 8px rgba($primary, 0.12);
-}
-
-.cit-text {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-right: $space-2;
-  font-weight: $font-weight-medium;
-}
-
-.ext-link-icon {
-  font-size: 14px;
-  color: $primary;
-  flex-shrink: 0;
-}
-
-// ── System messages (status, escalation hints) ────────
-.system-message {
-  display: flex;
-  justify-content: center;
-  padding: $space-2 0;
-  font-size: $font-size-xs;
-  color: $text-muted;
-  font-style: italic;
-}
-
-// ── Inline call-teacher button & confirmation ─────────
-.inline-call-teacher {
-  display: inline-flex;
-  align-items: center;
-  gap: $space-2;
-  margin-top: $space-3;
-  padding: $space-2 $space-4;
-  background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
-  color: $text-inverse;
-  border-radius: $radius-full;
-  box-shadow: 0 6px 18px -6px rgba($primary, 0.50),
-              0 2px 4px -2px rgba($primary, 0.20);
-  transition: transform 0.18s ease-out, opacity 0.18s ease-out;
-}
-
-.inline-call-teacher:active {
-  transform: scale(0.96);
-  opacity: 0.92;
-}
-
-.call-inline-icon {
-  font-size: 18px;
-  color: $text-inverse;
-  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
-}
-
-.call-inline-text {
-  font-size: 13px;
-  font-weight: $font-weight-bold;
-  color: $text-inverse;
-}
-
-.inline-call-done {
-  display: inline-flex;
-  align-items: center;
-  gap: $space-2;
-  margin-top: $space-3;
-  padding: $space-2 $space-4;
-  background: rgba($success, 0.10);
-  border: 1px solid rgba($success, 0.18);
-  border-radius: $radius-full;
-}
-
-.call-done-icon {
-  font-size: 18px;
-  color: $success;
-  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
-}
-
-.call-done-text {
-  font-size: 13px;
-  font-weight: $font-weight-bold;
-  color: $success;
-}
-
-// ============================================================
-// Suggestions (R10 follow-up questions)
-// ============================================================
-.suggestions-area {
-  padding: 0 $space-2;
-  margin-bottom: $space-5;
-  opacity: 0;
-  animation: fadeUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.suggestions-header {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  margin-bottom: $space-3;
-  padding: 0 $space-1;
-}
-
-.suggestions-icon {
-  font-size: 16px;
-  color: $warning;
-  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
-}
-
-.suggestions-title {
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
-  color: $text-secondary;
-  letter-spacing: 0.02em;
-}
-
-.suggestions-list {
-  display: flex;
-  flex-direction: column;
-  gap: $space-2;
-}
-
-.suggestion-chip {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: $space-3 $space-4;
-  background: $bg-card;
-  border: 1px solid rgba($primary, 0.14);
-  border-radius: $radius-md;
-  box-shadow: 0 1px 3px rgba($primary, 0.06);
-  transition: transform 0.18s ease-out, background 0.18s ease-out, border-color 0.18s ease-out;
-}
-
-.suggestion-chip:active {
-  background: $primary-soft;
-  border-color: $primary;
-  transform: scale(0.98);
-}
-
-.suggestion-text {
-  flex: 1;
-  font-size: 13px;
-  color: $primary-hover;
-  line-height: $line-height-normal;
-  font-weight: $font-weight-medium;
-}
-
-.suggestion-arrow {
-  font-size: 16px;
-  color: $primary;
-  margin-left: $space-2;
-  flex-shrink: 0;
-}
-
-// ============================================================
-// Bottom input bar (sits above CustomTabBar)
-// ============================================================
-.bottom-area {
-  position: fixed;
-  bottom: calc(#{$tab-bar-h} + env(safe-area-inset-bottom));
-  left: 0;
-  right: 0;
-  z-index: 40;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  padding: $space-3 $space-4;
-  border-top: 1px solid rgba($primary, 0.06);
-}
-
-.call-menu-overlay {
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: flex-end;
-  padding: 0 $space-4 $space-2;
-  z-index: 50;
-}
-
-.call-menu {
-  background: $bg-card;
-  border-radius: $radius-md;
-  box-shadow: 0 8px 24px rgba($text-primary, 0.12),
-              0 2px 6px rgba($text-primary, 0.06);
-  overflow: hidden;
-  min-width: 140px;
-}
-
-.call-menu-item {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  padding: $space-3 $space-4;
-  transition: background 0.15s ease-out;
-}
-
-.call-menu-item:active {
-  background: $primary-soft;
-}
-
-.call-menu-icon {
-  font-size: 18px;
-  color: $primary;
-}
-
-.call-menu-text {
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  color: $text-primary;
-}
-
-.input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  background: $surface-container-low;
-  border-radius: $radius-full;
-  padding: $space-1 $space-1 $space-1 $space-4;
-  border: 1px solid transparent;
-  transition: border-color 0.18s ease-out, background 0.18s ease-out;
-}
-
-.input-wrapper:focus-within {
-  background: $bg-card;
-  border-color: rgba($primary, 0.30);
-  box-shadow: 0 0 0 4px rgba($primary, 0.08);
-}
-
-.input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  font-size: $font-size-sm;
-  color: $text-primary;
-  font-family: $font-family-sans;
-}
-
-.input::placeholder {
-  color: $text-muted;
-}
-
-.send-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: $radius-full;
-  background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px -4px rgba($primary, 0.40);
-  transition: transform 0.18s ease-out, opacity 0.18s ease-out, box-shadow 0.18s ease-out;
-}
-
-.send-btn:active {
-  transform: scale(0.92);
-}
-
-.send-btn.disabled {
-  opacity: 0.40;
-  box-shadow: none;
-}
-
-.send-icon {
-  font-size: 20px;
-  color: $text-inverse;
-  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
-}
-
-// ============================================================
-// Markdown rendering — shared by ai-bubble, teacher-bubble,
-// and source popup (use modifier .markdown-body--rich for the
-// fuller code/blockquote/table styles in popup).
-// ============================================================
-.markdown-body {
-  font-size: $font-size-sm;
-  line-height: $line-height-relaxed;
-
-  :deep(p) {
-    margin-bottom: $space-2;
-  }
-  :deep(p:last-child) {
-    margin-bottom: 0;
-  }
-  :deep(ul) {
-    padding-left: $space-4;
-    margin-bottom: $space-2;
-    list-style-type: disc;
-  }
-  :deep(ol) {
-    padding-left: $space-4;
-    margin-bottom: $space-2;
-    list-style-type: decimal;
-  }
-  :deep(li) {
-    margin-bottom: $space-1;
-  }
-  :deep(strong) {
-    font-weight: $font-weight-bold;
-    color: $primary;
-  }
-  :deep(em) {
-    font-style: italic;
-    color: $text-primary;
-  }
-  :deep(a) {
-    color: $primary;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-  :deep(code) {
-    background: $surface-container-low;
-    padding: 2px 6px;
-    border-radius: $radius-sm;
-    font-family: 'SF Mono', 'Roboto Mono', Menlo, Consolas, monospace;
-    font-size: 13px;
-    color: $primary-hover;
-  }
-}
-
-.markdown-body--rich {
-  font-size: $font-size-sm;
-  color: $text-secondary;
-  line-height: $line-height-relaxed;
-
-  :deep(h1),
-  :deep(h2),
-  :deep(h3) {
-    font-weight: $font-weight-bold;
-    color: $text-primary;
-    margin: $space-3 0 $space-2;
-  }
-  :deep(h1) { font-size: $font-size-lg; }
-  :deep(h2) { font-size: $font-size-base; }
-  :deep(h3) { font-size: $font-size-sm; }
-  :deep(pre) {
-    background: $surface-container-low;
-    padding: $space-3;
-    border-radius: $radius-md;
-    overflow-x: auto;
-    margin-bottom: $space-3;
-    font-size: 13px;
-    line-height: $line-height-normal;
-  }
-  :deep(pre code) {
-    background: transparent;
-    padding: 0;
-    color: $text-primary;
-  }
-  :deep(blockquote) {
-    border-left: 3px solid $primary;
-    padding-left: $space-3;
-    color: $text-secondary;
-    margin: $space-3 0;
-  }
-  :deep(table) {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: $space-3;
-    font-size: 13px;
-  }
-  :deep(th),
-  :deep(td) {
-    border: 1px solid $border;
-    padding: $space-2 $space-3;
-    text-align: left;
-  }
-  :deep(th) {
-    background: $surface-container-low;
-    font-weight: $font-weight-semibold;
-  }
-}
-
-// ============================================================
-// Source popup (drag-to-fullscreen sheet)
-// ============================================================
-.source-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba($text-primary, 0.55);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  z-index: 1000;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  animation: fadeIn 0.2s ease-out;
-}
-
-.source-popup {
-  width: 100%;
-  max-width: 480px;
-  background: $bg-card;
-  border-radius: $radius-xl $radius-xl 0 0;
-  display: flex;
-  flex-direction: column;
-  transition: height 0.2s cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: 0 -16px 48px -12px rgba($text-primary, 0.25);
-}
-
-.source-popup-drag-bar {
-  display: flex;
-  justify-content: center;
-  padding: $space-2 0 0;
-  cursor: grab;
-}
-
-.drag-indicator {
-  width: 36px;
-  height: 4px;
-  border-radius: $radius-full;
-  background: $border-strong;
-}
-
-.source-popup-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: $space-3 $space-5 $space-3;
-  border-bottom: 1px solid $divider;
-}
-
-.source-popup-title {
-  font-size: $font-size-base;
-  font-weight: $font-weight-bold;
-  color: $text-primary;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.source-header-actions {
-  display: flex;
-  align-items: center;
-  gap: $space-3;
-  flex-shrink: 0;
-}
-
-.source-expand,
-.source-close {
-  font-size: 22px;
-  color: $text-muted;
-  padding: $space-1;
-  border-radius: $radius-full;
-  transition: background 0.15s ease-out, color 0.15s ease-out;
-}
-
-.source-expand:active,
-.source-close:active {
-  background: $surface-container-low;
-  color: $text-primary;
-}
-
-.source-popup-body {
-  padding: $space-5;
-  flex: 1;
-  overflow: hidden;
-}
+<style scoped>
+.chat-page { display: flex; flex-direction: column; height: 100vh; background: #f7f9fb; }
+
+.top-nav { display: flex; justify-content: space-between; align-items: center; padding: calc(env(safe-area-inset-top) + 1rem) 1.5rem 1rem; background: rgba(247,249,251,0.8); backdrop-filter: blur(20px); z-index: 50; }
+.nav-left { display: flex; align-items: center; gap: 0.75rem; }
+.nav-title { font-size: 1.25rem; font-weight: 700; color: #630ed4; }
+.nav-back-icon, .nav-history-icon { font-size: 1.5rem; color: #630ed4; }
+
+.welcome-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 1.5rem 7.5rem; }
+.welcome-content { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 2.5rem; }
+.welcome-input-area { width: 100%; max-width: 20rem; }
+.empty-icon { width: 3.75rem; height: 3.75rem; background: linear-gradient(135deg, #630ed4, #7c3aed); border-radius: 1.875rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; box-shadow: 0 0.5rem 1.5rem rgba(99,14,212,0.2); }
+.empty-sparkle-icon { font-size: 1.75rem; color: #fff; }
+.empty-title { font-size: 1.5rem; font-weight: 800; color: #191c1e; margin-bottom: 0.625rem; }
+.empty-desc { font-size: 0.875rem; color: #64748b; line-height: 1.7; max-width: 16.25rem; }
+
+.chat-container { flex: 1; padding: 0 1rem; box-sizing: border-box; }
+.msg-wrapper { display: flex; flex-direction: column; margin-bottom: 1.5rem; }
+
+.user-msg { align-items: flex-end; }
+.user-bubble { background: linear-gradient(135deg, #630ed4, #7c3aed); color: #fff; border-radius: 0.75rem 0.75rem 0 0.75rem; max-width: 85%; padding: 0.75rem 1rem; box-shadow: 0 0.5rem 1rem rgba(99,14,212,0.1); font-size: 0.875rem; line-height: 1.6; }
+.msg-time { font-size: 0.6875rem; font-weight: 700; color: #94a3b8; margin-top: 0.5rem; padding: 0 0.5rem; }
+
+.ai-msg { align-items: flex-start; }
+.ai-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; padding: 0 0.5rem; }
+.ai-avatar { width: 1.5rem; height: 1.5rem; border-radius: 0.75rem; background: linear-gradient(135deg, #630ed4, #7c3aed); display: flex; align-items: center; justify-content: center; }
+.bot-icon { font-size: 0.875rem; color: #fff; }
+.ai-name { font-size: 0.75rem; font-weight: 700; color: #630ed4; letter-spacing: 0.0625rem; }
+.ai-bubble { background: #fff; color: #191c1e; border-radius: 0.75rem 0.75rem 0.75rem 0; max-width: 90%; padding: 1rem; box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.02); border-left: 0.25rem solid #630ed4; font-size: 0.875rem; line-height: 1.6; }
+
+.teacher-avatar { width: 1.5rem; height: 1.5rem; border-radius: 0.75rem; background: linear-gradient(135deg, #059669, #34d399); display: flex; align-items: center; justify-content: center; }
+.teacher-icon { font-size: 0.875rem; color: #fff; }
+.teacher-name { font-size: 0.75rem; font-weight: 700; color: #059669; letter-spacing: 0.0625rem; }
+.teacher-bubble { background: #fff; color: #191c1e; border-radius: 0.75rem 0.75rem 0.75rem 0; max-width: 90%; padding: 1rem; box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.02); border-left: 0.25rem solid #059669; font-size: 0.875rem; line-height: 1.6; }
+
+.citations { margin-top: 1rem; padding: 0.75rem; background: #f2f4f6; border-radius: 0.5rem; }
+.cit-header { display: flex; align-items: center; gap: 0.25rem; margin-bottom: 0.5rem; color: #630ed4; font-size: 0.75rem; font-weight: 700; }
+.book-icon { font-size: 0.875rem; color: #630ed4; }
+.cit-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.cit-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.5); border-radius: 0.25rem; font-size: 0.75rem; color: #6e3aca; text-decoration: underline; }
+.cit-text { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 0.5rem; }
+.ext-link-icon { font-size: 0.75rem; color: #6e3aca; }
+
+.typing-animation { display: flex; gap: 0.25rem; padding: 0.25rem 0; }
+.dot { width: 0.375rem; height: 0.375rem; background: #630ed4; border-radius: 50%; animation: typing 1.4s infinite ease-in-out; }
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+@keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+.cursor { display: inline-block; color: #630ed4; animation: blink 1s infinite; margin-left: 0.125rem; }
+@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+.bottom-spacer { height: 10rem; }
+
+.bottom-area { position: fixed; bottom: 3.5rem; left: 0; right: 0; z-index: 40; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); padding: 0.75rem 1rem; padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)); }
+.call-menu-overlay { position: absolute; bottom: 100%; left: 0; right: 0; display: flex; justify-content: flex-end; padding: 0 1rem 0.5rem; z-index: 50; }
+.call-menu { background: #fff; border-radius: 0.75rem; box-shadow: 0 0.25rem 1.5rem rgba(0,0,0,0.12); overflow: hidden; min-width: 8rem; }
+.call-menu-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; }
+.call-menu-item:active { background: #f2f4f6; }
+.call-menu-icon { font-size: 1.125rem; color: #630ed4; }
+.call-menu-text { font-size: 0.875rem; font-weight: 600; color: #191c1e; }
+
+.system-message { display: flex; justify-content: center; padding: 0.5rem 0; font-size: 0.75rem; color: #94a3b8; font-style: italic; }
+
+.input-wrapper { display: flex; align-items: center; gap: 0.5rem; background: #e6e8ea; border-radius: 1.5rem; padding: 0.375rem 0.375rem 0.375rem 1rem; }
+.input { flex: 1; background: transparent; border: none; font-size: 0.875rem; color: #191c1e; }
+.send-btn { width: 2.5rem; height: 2.5rem; border-radius: 1.25rem; background: linear-gradient(135deg, #630ed4, #7c3aed); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.send-btn.disabled { opacity: 0.5; }
+.send-icon { font-size: 1.25rem; color: #fff; }
+
+.markdown-body { font-size: 0.875rem; line-height: 1.6; }
+.markdown-body :deep(p) { margin-bottom: 0.5rem; }
+.markdown-body :deep(ul) { padding-left: 1rem; margin-bottom: 0.5rem; list-style-type: disc; }
+.markdown-body :deep(ol) { padding-left: 1rem; margin-bottom: 0.5rem; list-style-type: decimal; }
+.markdown-body :deep(li) { margin-bottom: 0.25rem; }
+.markdown-body :deep(strong) { font-weight: 700; color: #630ed4; }
+
+.inline-call-teacher { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 0.75rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #630ed4, #7c3aed); color: #fff; border-radius: 1.5rem; transition: all 0.2s; box-shadow: 0 0.25rem 0.75rem rgba(99,14,212,0.25); }
+.inline-call-teacher:active { transform: scale(0.95); opacity: 0.9; }
+.call-inline-icon { font-size: 1.125rem; color: #fff; }
+.call-inline-text { font-size: 0.8125rem; font-weight: 700; color: #fff; }
+.inline-call-done { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 0.75rem; padding: 0.5rem 1rem; background: rgba(30,200,60,0.1); border-radius: 1.5rem; }
+.call-done-icon { font-size: 1.125rem; color: #1e8e3e; }
+.call-done-text { font-size: 0.8125rem; font-weight: 700; color: #1e8e3e; }
+
+/* R10: 关联问题推荐 */
+.suggestions-area { padding: 0 0.5rem; margin-bottom: 1.5rem; }
+.suggestions-header { display: flex; align-items: center; gap: 0.375rem; margin-bottom: 0.625rem; padding: 0 0.25rem; }
+.suggestions-icon { font-size: 1rem; color: #f59e0b; }
+.suggestions-title { font-size: 0.75rem; font-weight: 700; color: #92400e; }
+.suggestions-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.suggestion-chip { display: flex; align-items: center; justify-content: space-between; padding: 0.625rem 0.875rem; background: #fff; border: 1px solid #e9d5ff; border-radius: 0.75rem; transition: all 0.2s; box-shadow: 0 1px 3px rgba(99,14,212,0.06); }
+.suggestion-chip:active { background: #f5f3ff; border-color: #630ed4; transform: scale(0.98); }
+.suggestion-text { flex: 1; font-size: 0.8125rem; color: #4c1d95; line-height: 1.5; }
+.suggestion-arrow { font-size: 0.875rem; color: #a78bfa; margin-left: 0.5rem; flex-shrink: 0; }
+
+/* 来源弹层 (可拖拽全屏) */
+.source-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.45); z-index: 1000; display: flex; align-items: flex-end; justify-content: center; }
+.source-popup { width: 100%; max-width: 30rem; background: #fff; border-radius: 1rem 1rem 0 0; display: flex; flex-direction: column; transition: height 0.15s ease-out; }
+.source-popup-drag-bar { display: flex; justify-content: center; padding: 0.5rem 0 0.25rem; cursor: grab; }
+.drag-indicator { width: 2rem; height: 0.25rem; border-radius: 0.125rem; background: #d1d5db; }
+.source-popup-header { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1.25rem 0.75rem; border-bottom: 1px solid #e2e8f0; }
+.source-popup-title { font-size: 1rem; font-weight: 700; color: #191c1e; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.source-header-actions { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+.source-expand { font-size: 1.125rem; color: #94a3b8; }
+.source-close { font-size: 1.25rem; color: #94a3b8; }
+.source-popup-body { padding: 1.25rem; flex: 1; overflow: hidden; }
+.source-markdown { font-size: 0.875rem; color: #475569; line-height: 1.8; }
+.source-markdown :deep(p) { margin-bottom: 0.5rem; }
+.source-markdown :deep(ul) { padding-left: 1rem; margin-bottom: 0.5rem; list-style-type: disc; }
+.source-markdown :deep(ol) { padding-left: 1rem; margin-bottom: 0.5rem; list-style-type: decimal; }
+.source-markdown :deep(li) { margin-bottom: 0.25rem; }
+.source-markdown :deep(strong) { font-weight: 700; color: #630ed4; }
+.source-markdown :deep(code) { background: #f3f4f6; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.8125rem; }
+.source-markdown :deep(pre) { background: #f3f4f6; padding: 0.75rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 0.5rem; }
+.source-markdown :deep(a) { color: #630ed4; text-decoration: underline; }
+.source-markdown :deep(h1), .source-markdown :deep(h2), .source-markdown :deep(h3) { font-weight: 700; color: #191c1e; margin: 0.75rem 0 0.375rem; }
+.source-markdown :deep(blockquote) { border-left: 3px solid #630ed4; padding-left: 0.75rem; color: #6b7280; margin: 0.5rem 0; }
+.source-markdown :deep(table) { width: 100%; border-collapse: collapse; margin-bottom: 0.5rem; font-size: 0.8125rem; }
+.source-markdown :deep(th), .source-markdown :deep(td) { border: 1px solid #e5e7eb; padding: 0.375rem 0.5rem; text-align: left; }
 </style>

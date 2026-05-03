@@ -1,23 +1,23 @@
-/* uni-app 内置样式变量 — 与 src/styles/tokens.scss 保持一致 */
-$uni-color-primary: #5B21B6; // violet-800
+/* uni-app 内置样式变量 */
+$uni-color-primary: #7C3AED;
 $uni-color-success: #059669;
 $uni-color-warning: #D97706;
 $uni-color-error: #DC2626;
 
-$uni-text-color: #111827; // gray-900
-$uni-text-color-inverse: #FFFFFF;
-$uni-text-color-grey: #9CA3AF; // gray-400
-$uni-text-color-placeholder: #9CA3AF;
+$uni-text-color: #0F172A;
+$uni-text-color-inverse: #fff;
+$uni-text-color-grey: #94A3B8;
+$uni-text-color-placeholder: #94A3B8;
 
-$uni-bg-color: #FFFFFF;
-$uni-bg-color-grey: #F9FAFB; // gray-50
+$uni-bg-color: #fff;
+$uni-bg-color-grey: #F8FAFC;
 
-$uni-border-color: #E5E7EB; // gray-200
+$uni-border-color: #E2E8F0;
 
 $uni-font-size-sm: 12px;
 $uni-font-size-base: 14px;
 $uni-font-size-lg: 16px;
 
-$uni-border-radius-sm: 8px;
-$uni-border-radius-base: 12px;
+$uni-border-radius-sm: 4px;
+$uni-border-radius-base: 8px;
 $uni-border-radius-lg: 16px;
