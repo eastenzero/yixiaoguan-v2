@@ -122,7 +122,7 @@ import IconCheck from '../../components/icons/IconCheck.vue'
 import IconArrowRight from '../../components/icons/IconArrowRight.vue'
 
 // 主题色（用于动态绑定）
-const primaryColor = '#702ae1'
+const primaryColor = '#5b21b6'
 const onSurfaceVariantColor = '#5d5b5f'
 
 // 用户状态
@@ -240,10 +240,11 @@ const handleForgotPassword = () => {
 .login-card {
   background: rgba($surface-container-lowest, 0.95);
   backdrop-filter: blur(40px);
-  border-radius: 24px;
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: $radius-lg;                   // 2rem MD3
   padding: 40px 32px;
-  box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: $shadow-fab;                     // No-Shadow: 紫色折射取代中性灰
+  // No-Line: 去掉 1px solid glass border
 }
 
 // Logo 区域

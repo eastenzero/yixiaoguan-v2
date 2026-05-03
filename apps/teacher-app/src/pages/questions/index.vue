@@ -328,14 +328,14 @@ onUnmounted(() => {
 // Question Card
 .question-card {
   background: $surface-container-lowest;
-  border-radius: 24px;
+  border-radius: $radius-md;                   // 1rem MD3 DEFAULT
   padding: 20px;
-  transition: transform 0.2s ease;
-  box-shadow: $elevation-1;
+  transition: background 0.2s ease, transform 0.2s ease;
+  // No-Shadow-as-default: 靠 container tint 差异承担层次
 
   &:active {
     transform: scale(0.98);
-    box-shadow: $elevation-2;
+    background: $surface-container;
   }
 }
 

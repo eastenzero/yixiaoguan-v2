@@ -507,14 +507,13 @@ onUnmounted(() => {
 
 .ai-bubble {
   background: $surface-container-lowest;
-  border: 1px solid rgba($error, 0.2);
+  border-left: 4px solid $error;              // No-Line: 单侧强调、不延座 1px solid 圆边
   border-radius: 16px 16px 16px 0;
   max-width: 90%;
 }
 
 .teacher-bubble {
-  background: rgba($primary-container, 0.3);
-  border: 1px solid rgba($primary, 0.2);
+  background: rgba($primary-container, 0.30);   // No-Line: 完全靠 pastel tint 区隔
   border-radius: 16px 16px 16px 0;
   max-width: 90%;
 }

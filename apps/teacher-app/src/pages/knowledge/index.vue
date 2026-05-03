@@ -624,15 +624,14 @@ onShow(() => loadData())
 
 .knowledge-card {
   background: $surface-container-lowest;
-  border-radius: 24px;
+  border-radius: $radius-md;                   // 1rem MD3 DEFAULT
   padding: 24px;
-  transition: all 0.2s ease;
-  box-shadow: $elevation-1;
-  
+  transition: background 0.2s ease, transform 0.2s ease;
+  // No-Shadow-as-default: 靠 container tint 差异承担层次
+
   &:active {
     transform: scale(0.98);
     background: $surface-container-low;
-    box-shadow: $elevation-2;
   }
 }
 

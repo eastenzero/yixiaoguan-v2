@@ -209,10 +209,10 @@ const handleLogout = () => {
 .hero-bg {
   position: relative;
   overflow: hidden;
-  border-radius: 24px;
+  border-radius: $radius-lg;                  // 2rem MD3 大半径
   padding: 32px;
   background: $gradient-hero;
-  box-shadow: $elevation-3;
+  box-shadow: $shadow-fab;                    // hero 允许紫色折射阐级氛围
 }
 
 // 装饰光晕
@@ -310,7 +310,7 @@ const handleLogout = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: $elevation-1;
+  // No-Shadow-as-default: 靠 container tint 承担层次
 }
 
 .stat-value {

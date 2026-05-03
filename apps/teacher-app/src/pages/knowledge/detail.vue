@@ -375,7 +375,7 @@ const formatTime = (time?: string) => {
   gap: 12px;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.04);
+  box-shadow: $shadow-nav;                    // 紫色折射 nav lift 代替中性灰
 }
 
 .action-btn {
@@ -400,8 +400,7 @@ const formatTime = (time?: string) => {
   
   &--outline {
     flex: 1;
-    background: transparent;
-    border: 1px solid $outline-variant;
+    background: $surface-container-high;        // No-Line: 用 L3 tonal 替代 1px solid 边框
     
     .btn-text {
       color: $on-surface;
