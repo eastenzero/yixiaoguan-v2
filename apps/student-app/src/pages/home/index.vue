@@ -57,28 +57,25 @@
           <view class="glow glow-corner" />
         </view>
 
-        <!-- Small 1: Room Booking (tertiary tint) -->
+        <!-- Small 1: Chat History (tertiary tint) -->
         <view class="bento-small" @click="onBentoClick(bentoItems[1])">
-          <view class="bento-small-top">
-            <view class="icon-wrap icon-wrap-tertiary">
-              <text class="material-symbols-outlined icon-tertiary">calendar_month</text>
-            </view>
-            <text class="badge-hot">HOT</text>
+          <view class="icon-wrap icon-wrap-tertiary">
+            <text class="material-symbols-outlined icon-tertiary">history</text>
           </view>
           <view class="bento-small-body">
-            <text class="bento-small-title">空教室预约</text>
-            <text class="bento-small-desc">可预约 12 间</text>
+            <text class="bento-small-title">对话历史</text>
+            <text class="bento-small-desc">回顾过往提问</text>
           </view>
         </view>
 
-        <!-- Small 2: Applications (primary tint) -->
+        <!-- Small 2: Campus Services (primary tint) -->
         <view class="bento-small" @click="onBentoClick(bentoItems[2])">
           <view class="icon-wrap icon-wrap-primary">
-            <text class="material-symbols-outlined icon-primary">assignment</text>
+            <text class="material-symbols-outlined icon-primary">grid_view</text>
           </view>
           <view class="bento-small-body">
-            <text class="bento-small-title">我的申请</text>
-            <text class="bento-small-desc-active">2 项进行中</text>
+            <text class="bento-small-title">校园服务</text>
+            <text class="bento-small-desc">一站式办事入口</text>
           </view>
         </view>
       </view>
@@ -144,8 +141,8 @@ const tags = ref([
 
 const bentoItems = ref([
   { id: 'b1', label: 'AI 问答', icon: 'auto_awesome', route: '/pages/chat/index' },
-  { id: 'b2', label: '空教室预约', icon: 'calendar_month', route: '' },
-  { id: 'b3', label: '我的申请', icon: 'assignment', route: '' },
+  { id: 'b2', label: '对话历史', icon: 'history', route: '/pages/chat/history' },
+  { id: 'b3', label: '校园服务', icon: 'grid_view', route: '/pages/services/index' },
   { id: 'b4', label: '个人中心', icon: 'person', route: '/pages/profile/index' },
 ])
 
