@@ -30,53 +30,63 @@ function switchTab(tab: { path: string; key: string }) {
 <style lang="scss" scoped>
 @import '@/styles/tokens.scss';
 
+// Aether Academic BottomNavBar — 1:1 复刻 stitch home_page/code.html
 .tab-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 50;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: $space-2 $space-3 calc(env(safe-area-inset-bottom, 0) + #{$space-2});
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: $radius-xl $radius-xl 0 0;
-  box-shadow: 0 -4px 12px rgba(91, 33, 182, 0.08);
+  padding: $space-2 $space-4 calc(env(safe-area-inset-bottom, 0) + $space-6);
+  background: $glass-bg;                              // white/80
+  backdrop-filter: $backdrop-bar;                     // blur(20px) saturate(180%)
+  -webkit-backdrop-filter: $backdrop-bar;
+  border-radius: $radius-lg $radius-lg 0 0;           // rounded-t-[2rem]
+  box-shadow: 0 -10px 40px rgba(124, 58, 237, 0.08);  // 紫色折射 glow
 }
 
 .tab-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  justify-content: center;
+  gap: 4px;
   padding: $space-2 $space-3;
-  border-radius: $radius-lg;
-  transition: background 0.2s, color 0.2s;
-  flex: 1;
+  border-radius: $radius-full;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 
   .tab-icon {
     font-size: 24px;
-    color: $text-secondary;
-    transition: color 0.2s;
+    color: $outline;                                  // slate-400 等价 → outline
+    transition: color 0.2s ease;
   }
 
   .tab-label {
-    font-size: $font-size-xs;
-    color: $text-secondary;
-    transition: color 0.2s;
-    font-weight: $font-weight-medium;
+    font-size: 10px;
+    letter-spacing: 0.02em;
+    color: $outline;
+    font-weight: $font-weight-bold;
+    transition: color 0.2s ease;
+  }
+
+  &:active {
+    transform: scale(0.90);
   }
 
   &.active {
-    background: $primary-soft;
+    background: rgba($primary, 0.10);                 // primary/10 tint
+    padding: $space-2 $space-5;                       // px-5 py-2
+    border-radius: 24px;                              // rounded-[24px] per stitch
 
-    .tab-icon,
+    .tab-icon {
+      color: $primary;
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
     .tab-label {
       color: $primary;
-      font-weight: $font-weight-semibold;
     }
   }
 }

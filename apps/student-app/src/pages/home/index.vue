@@ -1,109 +1,120 @@
 <template>
   <view class="home-page">
-    <!-- 1. Brand bar + greeting -->
-    <view class="brand-bar">
+    <!-- TopAppBar — fixed, ivory glass, brand + notifications only -->
+    <view class="top-app-bar">
       <text class="brand-logo">医小管</text>
-      <view class="brand-actions">
+      <view class="top-actions">
         <view class="notif-btn" @click="goNotifications">
-          <text class="material-symbols-outlined notif-btn-icon">notifications</text>
-          <view v-if="totalUnread > 0" class="notif-badge">{{ totalUnread > 99 ? '99+' : totalUnread }}</view>
+          <text class="material-symbols-outlined notif-icon">notifications</text>
+          <view v-if="totalUnread > 0" class="notif-dot" />
         </view>
       </view>
     </view>
 
-    <view class="greeting-section">
-      <text class="greeting-sub">下午好，{{ displayName }}</text>
-      <text class="greeting-title">智慧校园助理</text>
-    </view>
-
-    <!-- 2. Search pill (links to chat) -->
-    <view class="search-pill" @click="goChat()">
-      <view class="search-icon-box">
-        <text class="material-symbols-outlined search-icon">auto_awesome</text>
+    <view class="main">
+      <!-- 1. Personalized Greeting -->
+      <view class="greeting animate-fade-up delay-1">
+        <text class="greeting-sub">下午好，{{ displayName }}</text>
+        <text class="greeting-title">智慧校园助理</text>
       </view>
-      <input class="search-input" placeholder="有什么可以帮你的？" disabled />
-      <view class="search-action">
-        <text class="search-action-text">提问</text>
-      </view>
-    </view>
 
-    <!-- 3. Horizontal category tags -->
-    <scroll-view scroll-x class="tag-scroll" show-scrollbar="false">
-      <view class="tag-list">
-        <view v-for="t in tags" :key="t.id" class="tag-chip" @click="onTagClick(t)">
-          <text class="tag-text">{{ t.label }}</text>
+      <!-- 2. AI Search Pill (No-Line; relies on ivory→white tonal shift) -->
+      <view class="search-pill animate-fade-up delay-2" @click="goChat()">
+        <view class="search-icon-box">
+          <text class="material-symbols-outlined search-icon">auto_awesome</text>
+        </view>
+        <input class="search-input" placeholder="有什么可以帮你的？" disabled />
+        <view class="search-action">
+          <text class="search-action-text">提问</text>
         </view>
       </view>
-    </scroll-view>
 
-    <!-- 4. Bento grid of quick services -->
-    <view class="bento-grid">
-      <view class="bento-card bento-large" @click="goChat()">
-        <view class="bento-large-top">
-          <view class="bento-large-icon-wrap">
-            <text class="material-symbols-outlined bento-large-icon">auto_awesome</text>
+      <!-- 3. Horizontal Scrollable Tag Chips -->
+      <scroll-view scroll-x class="tag-scroll animate-fade-up delay-3" show-scrollbar="false">
+        <view class="tag-list">
+          <view v-for="t in tags" :key="t.id" class="tag-chip" @click="onTagClick(t)">
+            <text class="tag-text">{{ t.label }}</text>
           </view>
-          <text class="bento-large-title">AI 智能助手</text>
-          <text class="bento-large-desc">您的全天候校园百科全书</text>
         </view>
-        <view class="bento-large-action">
-          <text class="bento-large-action-text">立即开启</text>
-          <text class="material-symbols-outlined bento-large-action-icon">arrow_forward</text>
-        </view>
-        <view class="bento-large-glow" />
-        <view class="bento-large-glow-secondary" />
-      </view>
+      </scroll-view>
 
-      <view class="bento-card bento-small" @click="onBentoClick(bentoItems[1])">
-        <view class="bento-small-header">
-          <view class="bento-small-icon-wrap">
-            <text class="material-symbols-outlined bento-small-icon">calendar_month</text>
+      <!-- 4. Bento Feature Grid -->
+      <view class="bento-grid animate-fade-up delay-4">
+        <!-- Large: AI Assistant (gradient, 2 rows) -->
+        <view class="bento-large" @click="goChat()">
+          <view class="bento-large-top">
+            <view class="bento-large-icon-wrap">
+              <text class="material-symbols-outlined bento-large-icon">auto_awesome</text>
+            </view>
+            <text class="bento-large-title">AI 智能助手</text>
+            <text class="bento-large-desc">您的全天候校园百科全书</text>
           </view>
-          <text class="bento-badge">HOT</text>
-        </view>
-        <view class="bento-small-body">
-          <text class="bento-small-title">空教室预约</text>
-          <text class="bento-small-desc">可预约 12 间</text>
-        </view>
-      </view>
-
-      <view class="bento-card bento-small" @click="onBentoClick(bentoItems[2])">
-        <view class="bento-small-icon-wrap">
-          <text class="material-symbols-outlined bento-small-icon">assignment</text>
-        </view>
-        <view class="bento-small-body">
-          <text class="bento-small-title">我的申请</text>
-          <text class="bento-small-desc-status">2 项进行中</text>
-        </view>
-      </view>
-    </view>
-
-    <!-- 5. Service list / cards -->
-    <view class="service-section">
-      <view class="service-section-header">
-        <text class="section-title">常用服务</text>
-        <text class="section-more" @click="showToastSoon">查看全部</text>
-      </view>
-      <view class="service-list">
-        <view v-for="svc in services" :key="svc.id" class="service-row" @click="onServiceClick(svc)">
-          <view class="service-row-left">
-            <text class="material-symbols-outlined service-icon">{{ svc.icon }}</text>
-            <text class="service-label">{{ svc.label }}</text>
+          <view class="bento-large-action">
+            <text class="bento-large-action-text">立即开启</text>
+            <text class="material-symbols-outlined bento-large-action-icon">arrow_forward</text>
           </view>
-          <text class="material-symbols-outlined service-arrow">chevron_right</text>
+          <view class="glow glow-secondary" />
+          <view class="glow glow-corner" />
         </view>
-      </view>
-    </view>
 
-    <!-- 6. Notification banner -->
-    <view v-if="notice" class="notice-banner" @click="goNotifications">
-      <view class="notice-left">
-        <view class="notice-icon-wrap">
-          <text class="material-symbols-outlined notice-icon">campaign</text>
+        <!-- Small 1: Room Booking (tertiary tint) -->
+        <view class="bento-small" @click="onBentoClick(bentoItems[1])">
+          <view class="bento-small-top">
+            <view class="icon-wrap icon-wrap-tertiary">
+              <text class="material-symbols-outlined icon-tertiary">calendar_month</text>
+            </view>
+            <text class="badge-hot">HOT</text>
+          </view>
+          <view class="bento-small-body">
+            <text class="bento-small-title">空教室预约</text>
+            <text class="bento-small-desc">可预约 12 间</text>
+          </view>
         </view>
-        <text class="notice-text">{{ notice }}</text>
+
+        <!-- Small 2: Applications (primary tint) -->
+        <view class="bento-small" @click="onBentoClick(bentoItems[2])">
+          <view class="icon-wrap icon-wrap-primary">
+            <text class="material-symbols-outlined icon-primary">assignment</text>
+          </view>
+          <view class="bento-small-body">
+            <text class="bento-small-title">我的申请</text>
+            <text class="bento-small-desc-active">2 项进行中</text>
+          </view>
+        </view>
       </view>
-      <text class="material-symbols-outlined notice-arrow">arrow_forward</text>
+
+      <!-- 5. Quick Links List (Common Services) -->
+      <view class="service-section animate-fade-up delay-5">
+        <view class="service-header">
+          <text class="section-title">常用服务</text>
+          <text class="section-more" @click="showToastSoon">查看全部</text>
+        </view>
+        <view class="service-list">
+          <view
+            v-for="svc in services"
+            :key="svc.id"
+            class="service-row"
+            @click="onServiceClick(svc)"
+          >
+            <view class="service-row-left">
+              <text class="material-symbols-outlined service-icon">{{ svc.icon }}</text>
+              <text class="service-label">{{ svc.label }}</text>
+            </view>
+            <text class="material-symbols-outlined service-arrow">chevron_right</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 6. Notification Banner -->
+      <view v-if="notice" class="notice-banner animate-fade-up delay-6" @click="goNotifications">
+        <view class="notice-left">
+          <view class="notice-icon-wrap">
+            <text class="material-symbols-outlined notice-icon">campaign</text>
+          </view>
+          <text class="notice-text">{{ notice }}</text>
+        </view>
+        <text class="material-symbols-outlined notice-arrow">arrow_forward</text>
+      </view>
     </view>
 
     <view class="bottom-spacer" />
@@ -214,105 +225,132 @@ function showToastSoon() {
 <style lang="scss" scoped>
 @import '@/styles/tokens.scss';
 
+// ─────────────────────────────────────────────────────────
+// Aether Academic Home — 1:1 per docs/design/ui-references/
+//   student-app-stitch/stitch_yixiaoguan_campus_assistant/
+//   home_page/code.html
+// 严守: No-Line · No-Shadow-as-default · wght 300 · 大半径
+// ─────────────────────────────────────────────────────────
+
 .home-page {
   min-height: 100vh;
-  padding: 0 $space-4 calc(env(safe-area-inset-bottom) + 5rem);
-  padding-top: 64px;
-  background: $bg-page;
-  font-family: $font-family-sans;
+  background: $surface;           // #faf5fb ivory canvas (L0)
+  color: $on-surface;
+  font-family: $font-body;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 8rem);
 }
 
-/* 1. Brand bar */
-.brand-bar {
+// ── TopAppBar (fixed glass; No-Line) ──
+.top-app-bar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 50;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: calc(env(safe-area-inset-top) + $space-4);
-  padding-bottom: $space-3;
-  padding-left: $space-4;
-  padding-right: $space-4;
-  background: rgba(249, 250, 251, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: calc(env(safe-area-inset-top) + $space-4) $space-6 $space-4;
+  background: rgba(250, 245, 251, 0.80);   // ivory/80
+  backdrop-filter: $backdrop-bar;
+  -webkit-backdrop-filter: $backdrop-bar;
 }
 
 .brand-logo {
-  font-size: $font-size-xl;
-  font-weight: $font-weight-bold;
+  font-family: $font-headline;
+  font-size: 20px;
+  font-weight: 900;               // stitch: font-black
+  letter-spacing: -0.01em;
   color: $primary;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
 }
 
 .notif-btn {
   position: relative;
-  padding: $space-2;
-  color: $text-secondary;
-}
-
-.notif-btn-icon {
-  font-size: 20px;
-}
-
-.notif-badge {
-  position: absolute;
-  top: 4px;
-  right: 2px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 5px;
-  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
   border-radius: $radius-full;
-  background: $danger;
-  color: #fff;
-  font-size: 10px;
-  font-weight: $font-weight-bold;
-  line-height: 16px;
-  text-align: center;
-  box-shadow: 0 0 0 2px $bg-page;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.2s ease;
+
+  &:active {
+    background: rgba($primary, 0.08);
+    transform: scale(0.95);
+  }
 }
 
-/* Greeting */
-.greeting-section {
-  margin-bottom: $space-4;
+.notif-icon {
+  font-size: 24px;
+  color: $on-surface-variant;
+}
+
+.notif-dot {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: $radius-full;
+  background: $error;
+  box-shadow: 0 0 0 2px $surface;  // ring-2 ring-background
+}
+
+// ── Main canvas ──
+.main {
+  padding: calc(env(safe-area-inset-top) + 72px) $space-6 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-8;                  // space-y-8
+}
+
+// 1. Greeting
+.greeting {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
 }
 
 .greeting-sub {
-  display: block;
-  font-size: $font-size-sm;
-  color: $text-secondary;
+  font-size: $body-md-size;
   font-weight: $font-weight-medium;
-  margin-bottom: $space-1;
+  color: $on-surface-variant;
+  letter-spacing: -0.01em;
 }
 
 .greeting-title {
-  display: block;
-  font-size: $font-size-2xl;
+  font-family: $font-headline;
+  font-size: 1.875rem;            // text-3xl = 30px
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $on-surface;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
-/* 2. Search pill */
+// 2. AI Search Pill
 .search-pill {
+  position: relative;
   display: flex;
   align-items: center;
   gap: $space-2;
-  background: $bg-card;
+  background: $surface-container-lowest;     // pure white on ivory — tonal lift
   border-radius: $radius-full;
-  padding: $space-1;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba($border, 0.10);
-  margin-bottom: $space-5;
+  padding: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);  // very subtle ambient
 }
 
 .search-icon-box {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: $radius-full;
-  background: $primary;
+  background: $primary-container;     // pastel lavender (stitch: bg-primary-container)
+  color: $on-primary;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -320,8 +358,9 @@ function showToastSoon() {
 }
 
 .search-icon {
-  font-size: 18px;
-  color: $primary-on;
+  font-size: 20px;
+  color: $on-primary;
+  font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
 }
 
 .search-input {
@@ -329,47 +368,48 @@ function showToastSoon() {
   background: transparent;
   border: none;
   outline: none;
-  font-size: $font-size-sm;
-  color: $text-primary;
-  padding: 0 $space-2;
+  font-size: $body-md-size;
+  font-weight: $font-weight-medium;
+  color: $on-surface-variant;
+  padding: 0 $space-4;
 
   &::placeholder {
-    color: $text-muted;
+    color: $outline;
   }
 }
 
 .search-action {
   flex-shrink: 0;
   background: $surface-container-high;
-  color: $text-secondary;
   border-radius: $radius-full;
   padding: $space-2 $space-4;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 .search-action-text {
-  font-size: $font-size-xs;
+  font-size: $label-md-size;
   font-weight: $font-weight-bold;
+  color: $on-surface-variant;
 }
 
-/* 3. Horizontal tags */
+// 3. Horizontal tag chips
 .tag-scroll {
-  margin-left: -$space-4;
-  margin-right: -$space-4;
-  padding-left: $space-4;
-  padding-right: $space-4;
-  margin-bottom: $space-5;
-  scrollbar-width: none;
+  margin: 0 (-$space-6);
+  padding: 0 $space-6;
+  white-space: nowrap;
 
   &::-webkit-scrollbar,
   :deep(::-webkit-scrollbar) {
     display: none;
-    width: 0;
-    height: 0;
   }
 }
 
 .tag-list {
-  display: flex;
+  display: inline-flex;
   gap: $space-3;
 }
 
@@ -377,39 +417,45 @@ function showToastSoon() {
   flex-shrink: 0;
   background: $surface-container-low;
   border-radius: $radius-full;
-  padding: $space-2 $space-5;
+  padding: 10px $space-5;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  &:active {
+    background: $primary-container;
+    .tag-text { color: $on-primary; }
+  }
 }
 
 .tag-text {
-  font-size: $font-size-sm;
+  font-size: $body-md-size;
   font-weight: $font-weight-bold;
-  color: $text-secondary;
-  white-space: nowrap;
+  color: $on-surface-variant;
 }
 
-/* 4. Bento grid */
+// 4. Bento grid
 .bento-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: $space-4;
   height: 280px;
-  margin-bottom: $space-6;
-}
-
-.bento-card {
-  border-radius: $radius-lg;
-  overflow: hidden;
-  position: relative;
 }
 
 .bento-large {
   grid-row: span 2;
-  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);  // stitch: from-primary to-secondary
+  border-radius: $radius-lg;        // 2rem per MD3 DEFAULT lg
+  padding: $space-6;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: $space-5;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .bento-large-top {
@@ -420,9 +466,10 @@ function showToastSoon() {
 .bento-large-icon-wrap {
   width: 48px;
   height: 48px;
-  border-radius: $radius-md;
+  border-radius: $radius-md;        // rounded-2xl (1rem)
   background: rgba(255, 255, 255, 0.20);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -431,22 +478,25 @@ function showToastSoon() {
 
 .bento-large-icon {
   font-size: 24px;
-  color: $text-inverse;
+  color: #ffffff;
+  font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
 }
 
 .bento-large-title {
   display: block;
-  font-size: $font-size-xl;
+  font-family: $font-headline;
+  font-size: $font-size-xl;         // 20px
   font-weight: $font-weight-bold;
-  color: $text-inverse;
+  color: #ffffff;
   margin-bottom: $space-2;
 }
 
 .bento-large-desc {
   display: block;
-  font-size: $font-size-sm;
-  color: rgba(255, 255, 255, 0.90);
-  line-height: $line-height-relaxed;
+  font-size: $body-md-size;
+  color: $primary-fixed;            // stitch: text-primary-fixed
+  opacity: 0.90;
+  line-height: 1.6;
 }
 
 .bento-large-action {
@@ -455,68 +505,89 @@ function showToastSoon() {
   display: flex;
   align-items: center;
   gap: $space-2;
-  color: $text-inverse;
-  font-size: $font-size-xs;
+  font-size: $label-md-size;
   font-weight: $font-weight-bold;
+  color: #ffffff;
 }
 
 .bento-large-action-icon {
   font-size: 14px;
 }
 
-.bento-large-glow {
+.glow {
   position: absolute;
+  border-radius: $radius-full;
+  pointer-events: none;
+}
+
+.glow-secondary {
   right: -16px;
   bottom: -16px;
   width: 96px;
   height: 96px;
-  border-radius: $radius-full;
   background: rgba(255, 255, 255, 0.10);
-  filter: blur(16px);
+  filter: blur(32px);
 }
 
-.bento-large-glow-secondary {
-  position: absolute;
+.glow-corner {
   top: 0;
   right: 0;
   width: 128px;
   height: 128px;
-  border-radius: $radius-full;
   background: rgba($secondary-container, 0.20);
-  filter: blur(24px);
+  filter: blur(48px);
 }
 
 .bento-small {
+  position: relative;
   background: $surface-container-lowest;
-  padding: $space-4;
+  border-radius: $radius-lg;
+  padding: $space-5;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 4px 20px rgba($primary, 0.04);
+  transition: background 0.2s ease, transform 0.2s ease;
+
+  &:active {
+    background: $surface-container-high;
+    transform: scale(0.98);
+  }
 }
 
-.bento-small-header {
+.bento-small-top {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
 }
 
-.bento-small-icon-wrap {
+.icon-wrap {
   width: 40px;
   height: 40px;
-  border-radius: $radius-md;
-  background: rgba($tertiary, 0.10);
+  border-radius: $radius-md;        // rounded-xl (1rem)
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.bento-small-icon {
+.icon-wrap-tertiary {
+  background: rgba($tertiary, 0.10);
+}
+
+.icon-tertiary {
   font-size: 20px;
   color: $tertiary;
 }
 
-.bento-badge {
+.icon-wrap-primary {
+  background: rgba($primary, 0.10);
+}
+
+.icon-primary {
+  font-size: 20px;
+  color: $primary;
+}
+
+.badge-hot {
   font-size: 10px;
   font-weight: $font-weight-bold;
   color: $tertiary;
@@ -525,71 +596,81 @@ function showToastSoon() {
   border-radius: $radius-full;
 }
 
+.bento-small-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .bento-small-title {
-  display: block;
-  font-size: $font-size-sm;
+  font-size: $body-md-size;
   font-weight: $font-weight-bold;
-  color: $text-primary;
-  margin-bottom: 2px;
+  color: $on-surface;
 }
 
 .bento-small-desc {
-  display: block;
   font-size: 11px;
-  color: $text-secondary;
+  color: $on-surface-variant;
 }
 
-.bento-small-desc-status {
-  display: block;
+.bento-small-desc-active {
   font-size: 11px;
   font-weight: $font-weight-bold;
   color: $primary;
 }
 
-/* 5. Service list */
+// 5. Quick links list (nested tonal tiers)
 .service-section {
-  margin-bottom: $space-6;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
 }
 
-.service-section-header {
+.service-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: $space-4;
 }
 
 .section-title {
-  font-size: $font-size-lg;
+  font-family: $font-headline;
+  font-size: $font-size-lg;         // 18px
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $on-surface;
+  letter-spacing: -0.01em;
 }
 
 .section-more {
-  font-size: $font-size-xs;
+  font-size: $label-md-size;
   font-weight: $font-weight-bold;
   color: $primary;
 }
 
 .service-list {
-  background: $surface-container-low;
-  border-radius: $radius-lg;
+  background: $surface-container-low;   // L1 tonal nesting
+  border-radius: $radius-lg;            // 2rem
   padding: $space-2;
   display: flex;
   flex-direction: column;
-  gap: $space-1;
+  gap: 4px;
 }
 
 .service-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: $surface-container-lowest;
-  border-radius: $radius-md;
+  background: $surface-container-lowest; // white on L1 ivory
+  border-radius: $radius-md;             // 1rem rounded-md
   padding: $space-4;
-}
+  transition: background 0.2s ease;
 
-.service-row:active {
-  background: rgba($primary-soft, 0.30);
+  &:active {
+    background: rgba($primary-fixed, 0.30);
+    .service-icon,
+    .service-arrow,
+    .service-label { color: $primary; }
+    .service-arrow { transform: translateX(4px); }
+  }
 }
 
 .service-row-left {
@@ -599,41 +680,36 @@ function showToastSoon() {
 }
 
 .service-icon {
-  font-size: 20px;
-  color: $text-secondary;
-}
-
-.service-row:active .service-icon {
-  color: $primary;
+  font-size: 22px;
+  color: $on-surface-variant;
+  transition: color 0.2s ease;
 }
 
 .service-label {
-  font-size: $font-size-sm;
+  font-size: $body-md-size;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $on-surface;
 }
 
 .service-arrow {
-  font-size: 18px;
-  color: $text-muted;
-  transition: transform 0.2s;
+  font-size: 20px;
+  color: #cbd5e1;                        // slate-300 等价
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.service-row:active .service-arrow {
-  color: $primary;
-  transform: translateX(4px);
-}
-
-/* 6. Notification banner */
+// 6. Notification banner
 .notice-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: rgba($primary, 0.05);
-  border: 1px solid rgba($primary, 0.10);
-  border-radius: $radius-lg;
+  border-radius: $radius-lg;             // 2rem; No-Line (ghost border removed)
   padding: $space-4;
-  margin-bottom: $space-6;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.99);
+  }
 }
 
 .notice-left {
@@ -646,7 +722,7 @@ function showToastSoon() {
   width: 32px;
   height: 32px;
   border-radius: $radius-full;
-  background: rgba($primary, 0.10);
+  background: rgba($primary-container, 0.20);  // stitch: bg-primary-container/20
   display: flex;
   align-items: center;
   justify-content: center;
@@ -658,7 +734,7 @@ function showToastSoon() {
 }
 
 .notice-text {
-  font-size: $font-size-sm;
+  font-size: $body-md-size;
   font-weight: $font-weight-bold;
   color: $primary;
 }
@@ -669,6 +745,6 @@ function showToastSoon() {
 }
 
 .bottom-spacer {
-  height: 5rem;
+  height: 2rem;
 }
 </style>
