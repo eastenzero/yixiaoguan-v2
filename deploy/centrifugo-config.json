@@ -1,19 +1,22 @@
 {
-  "admin": false,
-  "allowed_origins": [
-    "https://yxg.xiaoguan.site",
-    "https://teacher.xiaoguan.site",
-    "http://localhost:*"
-  ],
-  "namespaces": [
-    {
-      "name": "conv",
-      "history_size": 100,
-      "history_ttl": "5m",
-      "force_recovery": true,
-      "presence": true,
-      "join_leave": false,
-      "allow_publish_for_client": true
-    }
-  ]
+  "client": {
+    "allowed_origins": [
+      "https://yxg.xiaoguan.site",
+      "https://teacher.xiaoguan.site",
+      "http://localhost:*"
+    ]
+  },
+  "channel": {
+    "namespaces": [
+      {
+        "name": "conv",
+        "history_size": 100,
+        "history_ttl": "5m",
+        "force_recovery": true,
+        "presence": true,
+        "join_leave": false,
+        "allow_publish_for_client": true
+      }
+    ]
+  }
 }

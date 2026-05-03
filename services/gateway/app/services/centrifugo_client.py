@@ -28,7 +28,7 @@ class CentrifugoClient:
                 resp = await client.post(
                     f"{self.api_url}/api/publish",
                     json={"channel": channel, "data": data},
-                    headers={"Authorization": f"apikey {self.api_key}"},
+                    headers={"X-API-Key": self.api_key, "Content-Type": "application/json"},
                     timeout=5.0,
                 )
                 if resp.status_code != 200:
@@ -48,7 +48,7 @@ class CentrifugoClient:
                 resp = await client.post(
                     f"{self.api_url}/api/broadcast",
                     json={"channels": channels, "data": data},
-                    headers={"Authorization": f"apikey {self.api_key}"},
+                    headers={"X-API-Key": self.api_key, "Content-Type": "application/json"},
                     timeout=5.0,
                 )
                 return resp.status_code == 200
