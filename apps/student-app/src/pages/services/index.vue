@@ -186,10 +186,12 @@ function handleServiceClick(item: ServiceItem) {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import '@/styles/tokens.scss';
+
 .services-page {
   min-height: 100vh;
-  background: #f7f9fb;
+  background: $surface;
   display: flex;
   flex-direction: column;
 }
@@ -204,14 +206,15 @@ function handleServiceClick(item: ServiceItem) {
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(247, 249, 251, 0.9);
-  backdrop-filter: blur(10px);
+  background: rgba(250, 245, 251, 0.90);    /* ivory/90 跟着 $surface */
+  backdrop-filter: $backdrop-bar;
+  -webkit-backdrop-filter: $backdrop-bar;
   box-sizing: border-box;
 }
 .bar-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #630ed4;
+  color: #5b21b6;
   letter-spacing: -0.01563rem;
 }
 
@@ -224,11 +227,12 @@ function handleServiceClick(item: ServiceItem) {
 .hero-card {
   position: relative;
   overflow: hidden;
-  border-radius: 1rem;
-  background: linear-gradient(135deg, #630ed4, #7c3aed);
+  border-radius: $radius-lg;
+  background: linear-gradient(135deg, $primary, $secondary);
   padding: 2rem;
   color: #fff;
   margin-bottom: 2rem;
+  box-shadow: $shadow-fab;
 }
 .hero-inner { position: relative; z-index: 10; }
 .hero-label { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.2em; opacity: 0.8; margin-bottom: 0.5rem; display: block; }
@@ -240,9 +244,9 @@ function handleServiceClick(item: ServiceItem) {
 
 .section { margin-bottom: 2rem; }
 .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-.section-title { font-size: 1.125rem; font-weight: 700; color: #191c1e; letter-spacing: -0.01563rem; display: block; margin-bottom: 1rem; }
+.section-title { font-size: 1.125rem; font-weight: 700; color: $on-surface; letter-spacing: -0.01563rem; display: block; margin-bottom: 1rem; }
 .section-header .section-title { margin-bottom: 0; }
-.section-badge { font-size: 0.625rem; font-weight: 700; color: #630ed4; padding: 0.25rem 0.75rem; background: rgba(99, 14, 212, 0.1); border-radius: 31.21875rem; }
+.section-badge { font-size: 0.625rem; font-weight: 700; color: $primary; padding: 0.25rem 0.75rem; background: rgba($primary, 0.10); border-radius: 31.21875rem; }
 
 .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
 .quick-large { background: #fff; padding: 1.25rem; border-radius: 0.75rem; display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 1; }
@@ -251,43 +255,42 @@ function handleServiceClick(item: ServiceItem) {
 .quick-row { flex: 1; background: #fff; padding: 1rem; border-radius: 0.75rem; display: flex; align-items: center; gap: 0.75rem; }
 .quick-row:active { transform: scale(0.98); }
 .quick-icon { font-size: 1.5rem; }
-.quick-label { font-size: 0.875rem; font-weight: 700; color: #191c1e; }
+.quick-label { font-size: 0.875rem; font-weight: 700; color: $on-surface; }
 .quick-wide { background: #fff; padding: 1.25rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: space-between; }
 .quick-wide:active { transform: scale(0.98); }
 .quick-wide-left { display: flex; align-items: center; gap: 1rem; }
 
-.campus-grid { background: #f2f4f6; border-radius: 0.75rem; padding: 1.5rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem 0.5rem; }
+.campus-grid { background: $surface-container-low; border-radius: $radius-md; padding: 1.5rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem 0.5rem; }
 .campus-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
 .campus-item:active .campus-icon-box { transform: scale(0.9); }
 .campus-icon-box { width: 3rem; height: 3rem; border-radius: 1rem; background: #fff; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
-.campus-icon { font-size: 1.5rem; color: #630ed4; }
-.campus-label { font-size: 0.6875rem; font-weight: 700; color: #4a4455; text-align: center; line-height: 1.3; }
+.campus-icon { font-size: 1.5rem; color: $primary; }
+.campus-label { font-size: 0.6875rem; font-weight: 700; color: $on-surface; text-align: center; line-height: 1.3; }
 
 .query-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 .query-card { background: #fff; padding: 1rem; border-radius: 0.75rem; display: flex; align-items: center; gap: 0.75rem; }
 .query-card:active { transform: scale(0.95); }
 .query-icon-box { width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; }
 .query-info { display: flex; flex-direction: column; gap: 0.125rem; }
-.query-name { font-size: 0.875rem; font-weight: 700; color: #191c1e; }
-.query-meta { font-size: 0.625rem; color: #4a4455; }
+.query-name { font-size: 0.875rem; font-weight: 700; color: $on-surface; }
+.query-meta { font-size: 0.625rem; color: $on-surface; }
 
 .personal-list { background: #fff; border-radius: 0.75rem; overflow: hidden; }
 .personal-item { padding: 1.25rem; display: flex; justify-content: space-between; align-items: center; }
-.personal-item:active { background: #e6e8ea; }
-.border-bottom { border-bottom: 0.0625rem solid #eceef0; }
+.personal-item:active { background: $surface; }
 .personal-left { display: flex; align-items: center; gap: 1rem; }
-.personal-name { font-size: 0.875rem; font-weight: 700; color: #191c1e; }
+.personal-name { font-size: 0.875rem; font-weight: 700; color: $on-surface; }
 .personal-right { display: flex; align-items: center; gap: 0.5rem; }
 
-.text-primary { color: #630ed4; }
-.text-secondary { color: #6e3aca; }
-.text-tertiary { color: #a15100; }
-.text-error { color: #ba1a1a; }
-.text-outline-variant { color: #ccc3d8; }
-.bg-primary-light { background: rgba(99, 14, 212, 0.1); }
-.bg-secondary-light { background: rgba(110, 58, 202, 0.1); }
-.bg-tertiary-light { background: rgba(161, 81, 0, 0.1); }
-.bg-error-light { background: rgba(186, 26, 26, 0.1); }
+.text-primary         { color: $primary; }
+.text-secondary       { color: $secondary; }
+.text-tertiary        { color: $tertiary; }
+.text-error           { color: $error; }
+.text-outline-variant { color: $outline-variant; }
+.bg-primary-light     { background: rgba($primary, 0.10); }
+.bg-secondary-light   { background: rgba($secondary, 0.10); }
+.bg-tertiary-light    { background: rgba($tertiary, 0.10); }
+.bg-error-light       { background: rgba($error, 0.10); }
 
 .bottom-safe { height: 5rem; }
 </style>

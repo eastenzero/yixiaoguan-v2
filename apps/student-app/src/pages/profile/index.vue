@@ -199,7 +199,7 @@ function handleLogout() {
 
 .profile-page {
   min-height: 100vh;
-  background: #f7f9fb;
+  background: $surface;
   font-family: $font-family-sans;
   color: $text-primary;
   padding-bottom: calc(env(safe-area-inset-bottom) + 6rem);
@@ -263,7 +263,7 @@ function handleLogout() {
   position: relative;
   overflow: hidden;
   border-radius: $radius-lg;
-  background: linear-gradient(135deg, #630ed4 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #5b21b6 0%, #b28cff 100%);
   color: $text-inverse;
   padding: $space-8;
   margin-bottom: $space-8;
@@ -313,7 +313,7 @@ function handleLogout() {
   width: 24px;
   height: 24px;
   border-radius: $radius-full;
-  border: 2px solid #630ed4;
+  border: 2px solid #5b21b6;
   background: #ffffff;
   display: flex;
   align-items: center;
@@ -535,7 +535,7 @@ function handleLogout() {
   width: 84%;
   height: 100%;
   border-radius: $radius-full;
-  background: linear-gradient(90deg, $primary 0%, #7c3aed 100%);
+  background: linear-gradient(90deg, $primary 0%, #b28cff 100%);
 }
 
 .ai-card {
@@ -621,7 +621,7 @@ function handleLogout() {
   width: 40px;
   height: 40px;
   border-radius: $radius-full;
-  background: #f1f5f9;
+  background: $surface-container-low;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -629,7 +629,7 @@ function handleLogout() {
 
 .settings-icon {
   font-size: 22px;
-  color: #64748b;
+  color: $on-surface-variant;
 }
 
 .settings-label {
@@ -640,7 +640,7 @@ function handleLogout() {
 
 .chevron-icon {
   font-size: 22px;
-  color: #cbd5e1;
+  color: $outline-variant;
 }
 
 .logout-section {

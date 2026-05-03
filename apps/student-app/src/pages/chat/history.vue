@@ -111,34 +111,36 @@ function formatDate(dateStr: string): string {
 }
 </script>
 
-<style scoped>
-.history-page { display: flex; flex-direction: column; height: 100vh; background: #f8fafc; }
-.top-nav { display: flex; align-items: center; padding: calc(env(safe-area-inset-top) + 1rem) 1.5rem 1rem; background: rgba(248,250,252,0.8); backdrop-filter: blur(20px); z-index: 50; }
+<style scoped lang="scss">
+@import '@/styles/tokens.scss';
+
+.history-page { display: flex; flex-direction: column; height: 100vh; background: $surface; }
+.top-nav { display: flex; align-items: center; padding: calc(env(safe-area-inset-top) + 1rem) 1.5rem 1rem; background: rgba(250,245,251,0.80); backdrop-filter: $backdrop-bar; -webkit-backdrop-filter: $backdrop-bar; z-index: 50; }
 .nav-left { display: flex; align-items: center; gap: 0.75rem; }
-.nav-back-icon { font-size: 1.5rem; color: #630ed4; }
-.nav-title { font-size: 1.25rem; font-weight: 700; color: #0f172a; }
+.nav-back-icon { font-size: 1.5rem; color: $primary; }
+.nav-title { font-size: 1.25rem; font-weight: 700; color: $on-surface; }
 
 .list-container { flex: 1; padding: 0 1rem 1rem; }
 
 .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 6rem; }
-.empty-icon { font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem; }
-.empty-text { font-size: 0.875rem; color: #94a3b8; }
+.empty-icon { font-size: 3rem; color: $outline-variant; margin-bottom: 1rem; }
+.empty-text { font-size: 0.875rem; color: $on-surface-variant; }
 
-.conv-card { background: #fff; border-radius: 0.75rem; padding: 1rem 1.25rem; margin-bottom: 0.75rem; box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.03); }
-.conv-card:active { opacity: 0.8; }
+.conv-card { background: $surface-container-lowest; border-radius: $radius-md; padding: 1rem 1.25rem; margin-bottom: 0.75rem; transition: background 0.2s ease; }
+.conv-card:active { background: $surface-container-low; }
 .conv-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.375rem; }
-.conv-title { font-size: 0.9375rem; font-weight: 600; color: #0f172a; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 0.5rem; }
-.status-badge { padding: 0.125rem 0.5rem; border-radius: 1rem; font-size: 0.6875rem; }
-.status-ai_serving { background: #ede9fe; color: #7c3aed; }
-.status-pending_teacher { background: #fef3c7; color: #d97706; }
-.status-teacher_serving { background: #d1fae5; color: #059669; }
-.status-resolved { background: #f1f5f9; color: #64748b; }
-.status-closed { background: #f1f5f9; color: #94a3b8; }
-.status-text { font-weight: 600; }
-.conv-time { font-size: 0.75rem; color: #94a3b8; }
+.conv-title { font-size: 0.9375rem; font-weight: 600; color: $on-surface; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 0.5rem; }
+.status-badge { padding: 0.125rem 0.5rem; border-radius: $radius-full; font-size: 0.6875rem; font-weight: 700; }
+.status-ai_serving { background: rgba($primary-container, 0.30); color: $on-primary-container; }
+.status-pending_teacher { background: rgba($tertiary-container, 0.30); color: $on-tertiary-container; }
+.status-teacher_serving { background: rgba($success, 0.15); color: $success; }
+.status-resolved { background: $surface-container; color: $on-surface-variant; }
+.status-closed { background: $surface-container; color: $outline; }
+.status-text { font-weight: 700; }
+.conv-time { font-size: 0.75rem; color: $on-surface-variant; }
 
 .loading-indicator { display: flex; justify-content: center; padding: 1rem 0; }
-.loading-text { font-size: 0.75rem; color: #94a3b8; }
+.loading-text { font-size: 0.75rem; color: $on-surface-variant; }
 .no-more { display: flex; justify-content: center; padding: 1rem 0; }
-.no-more-text { font-size: 0.75rem; color: #cbd5e1; }
+.no-more-text { font-size: 0.75rem; color: $outline-variant; }
 </style>

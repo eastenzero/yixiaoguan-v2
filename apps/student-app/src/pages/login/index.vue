@@ -114,25 +114,25 @@ async function handleLogin() {
 .bg-decor { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 .decor-circle { position: absolute; border-radius: 50%; }
 .decor-1 { top: -10%; left: -10%; width: 40%; height: 40%; background: rgba(255,255,255,0.05); filter: blur(50px); }
-.decor-2 { top: 60%; right: -5%; width: 30%; height: 30%; background: rgba(124,58,237,0.1); filter: blur(40px); }
+.decor-2 { top: 60%; right: -5%; width: 30%; height: 30%; background: rgba(178,140,255,0.20); filter: blur(40px); }
 
 .main-container { width: 100%; max-width: 25rem; z-index: 1; }
-.login-card { background: $bg-card; border-radius: 1.5rem; padding: 2.5rem 1.75rem; box-shadow: 0 1.25rem 3.125rem rgba(37,0,90,0.2); }
+.login-card { background: $surface-container-lowest; border-radius: $radius-lg; padding: 2.5rem 1.75rem; box-shadow: $shadow-fab; }
 .header { display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem; }
-.logo-box { width: 4rem; height: 4rem; background: rgba(124,58,237,0.1); border-radius: 1rem; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
+.logo-box { width: 4rem; height: 4rem; background: rgba($primary-container, 0.30); border-radius: $radius-md; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
 .logo-icon { font-size: 2.25rem; color: $secondary; }
 .app-title { font-size: 1.875rem; font-weight: 800; color: $text-primary; margin-bottom: 0.25rem; }
 .app-subtitle { font-size: 0.875rem; font-weight: 500; color: $text-secondary; letter-spacing: 0.125rem; opacity: 0.7; }
 
 .form .form-group { margin-bottom: 1.25rem; }
 .label { font-size: 0.75rem; font-weight: 700; color: $text-secondary; margin-bottom: 0.5rem; margin-left: 0.25rem; display: block; }
-.input-wrapper { position: relative; display: flex; align-items: center; background: $border; border-radius: 0.75rem; padding: 0 1rem; height: 3.25rem; }
+.input-wrapper { position: relative; display: flex; align-items: center; background: $surface-container-high; border-radius: $radius-md; padding: 0 1rem; height: 3.25rem; }
 .input { flex: 1; height: 100%; background: transparent; border: none; padding-left: 1.75rem; font-size: 0.875rem; color: $text-primary; font-weight: 500; }
 .ph-color { color: $text-muted; }
 .input-icon { font-size: 1.25rem; color: $text-muted; position: absolute; left: 1rem; }
 .right-icon { font-size: 1.25rem; color: $text-muted; position: absolute; right: 1rem; }
 
-.submit-btn { width: 100%; height: 3.5rem; background: linear-gradient(135deg, $primary, $secondary); border-radius: 1.75rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1.75rem; box-shadow: 0 0.5rem 1rem rgba(124,58,237,0.3); }
+.submit-btn { width: 100%; height: 3.5rem; background: linear-gradient(135deg, $primary, $primary-container); border-radius: $radius-full; display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1.75rem; box-shadow: $shadow-fab; }
 .submit-btn:active { transform: scale(0.95); }
 .submit-btn[disabled] { opacity: 0.7; }
 .btn-text { color: $text-inverse; font-size: 1rem; font-weight: 700; }
