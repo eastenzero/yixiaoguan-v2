@@ -220,7 +220,8 @@ function handleServiceClick(item: ServiceItem) {
 
 .main-content {
   height: 100vh;
-  padding: calc(var(--status-bar-height, 44px) + 3rem) 1.5rem 6.25rem;
+  padding: calc(var(--status-bar-height, 44px) + 3rem) 1.5rem 0;
+  /* 底部空间由 .bottom-safe spacer 通过 var(--tabbar-safe) 提供 */
   box-sizing: border-box;
 }
 
@@ -292,5 +293,5 @@ function handleServiceClick(item: ServiceItem) {
 .bg-tertiary-light    { background: rgba($tertiary, 0.10); }
 .bg-error-light       { background: rgba($error, 0.10); }
 
-.bottom-safe { height: 5rem; }
+.bottom-safe { height: calc(var(--tabbar-safe) + $space-2); }  /* tab bar + 8px breathing room */
 </style>

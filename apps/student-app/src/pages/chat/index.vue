@@ -636,7 +636,7 @@ function scrollToBottom() {
 .nav-title { font-size: 1.25rem; font-weight: 700; color: #5b21b6; }
 .nav-back-icon, .nav-history-icon { font-size: 1.5rem; color: #5b21b6; }
 
-.welcome-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 1.5rem 7.5rem; }
+.welcome-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 1.5rem; padding-bottom: calc(var(--tabbar-safe) + 2rem); }
 .welcome-content { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 2.5rem; }
 .welcome-input-area { width: 100%; max-width: 20rem; }
 .empty-icon { width: 3.75rem; height: 3.75rem; background: linear-gradient(135deg, #5b21b6, #b28cff); border-radius: 1.875rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; box-shadow: 0 0.5rem 1.5rem rgba(91,33,182,0.20); }
@@ -680,9 +680,22 @@ function scrollToBottom() {
 .cursor { display: inline-block; color: #5b21b6; animation: blink 1s infinite; margin-left: 0.125rem; }
 @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
 
-.bottom-spacer { height: 10rem; }
+/* 预留 input-bar 自身 ~4.5rem + tab bar(var) 的滚动空间 */
+.bottom-spacer { height: calc(var(--tabbar-safe) + 4.5rem); }
 
-.bottom-area { position: fixed; bottom: 3.5rem; left: 0; right: 0; z-index: 40; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); padding: 0.75rem 1rem; padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)); }
+/* input bar 停在 tab bar 正上方 — 通过 var(--tabbar-safe) 消费 tokens.scss
+   的单一源, 不再硬编码 3.5rem 这类会脱节的值 */
+.bottom-area {
+  position: fixed;
+  bottom: var(--tabbar-safe);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: rgba(250, 245, 251, 0.80);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  padding: 0.75rem 1rem;
+}
 .call-menu-overlay { position: absolute; bottom: 100%; left: 0; right: 0; display: flex; justify-content: flex-end; padding: 0 1rem 0.5rem; z-index: 50; }
 .call-menu { background: #fff; border-radius: 0.75rem; box-shadow: 0 0.25rem 1.5rem rgba(0,0,0,0.12); overflow: hidden; min-width: 8rem; }
 .call-menu-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; }

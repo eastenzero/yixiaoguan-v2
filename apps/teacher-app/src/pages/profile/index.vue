@@ -174,7 +174,7 @@ const handleLogout = () => {
 .profile-page {
   min-height: 100vh;
   background: $background;
-  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+  padding-bottom: calc(var(--tabbar-safe) + $space-6);  /* tab bar + 24px */
 }
 
 .main-content {

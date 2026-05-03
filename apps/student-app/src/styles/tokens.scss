@@ -167,6 +167,16 @@ $radius-xl: 3rem; //  48px — 全屏 hero / modal sheet
 $radius-full: 9999px; //       — pills, avatars, indicators
 
 // ─────────────────────────────────────────────────────────
+// 5.5 Layout — Bottom Nav Bar 高度 (single source of truth)
+//     规则: 任何 fixed 元素 (chat input, FAB) 需停在 nav 上方时
+//           一律使用 var(--tabbar-safe); 任何滚动页的底 padding
+//           一律使用 calc(var(--tabbar-safe) + <breathing-room>)
+//     禁止: 页面内硬编码 bottom: 3.5rem / padding-bottom: 6rem
+//           这会在 nav bar 高度调整时造成脱节 (遮挡 / 空白)
+// ─────────────────────────────────────────────────────────
+$tabbar-h: 76px; // nav bar 内容高度 (不含 safe-area-inset-bottom)
+
+// ─────────────────────────────────────────────────────────
 // 6. Shadow — NO-SHADOW-AS-DEFAULT
 //    仅用于悬浮元素；一律使用 primary 折射色，禁止中性灰
 // ─────────────────────────────────────────────────────────
@@ -260,6 +270,10 @@ $info: #3b82f6;
   --radius-lg: #{$radius-lg};
   --radius-xl: #{$radius-xl};
   --radius-full: #{$radius-full};
+
+  // Layout — 所有 fixed/padding-bottom 引用同一个源, 避免脱节
+  --tabbar-h: #{$tabbar-h};
+  --tabbar-safe: calc(#{$tabbar-h} + env(safe-area-inset-bottom, 0px));
 
   // Legacy
   --color-primary: #{$primary};

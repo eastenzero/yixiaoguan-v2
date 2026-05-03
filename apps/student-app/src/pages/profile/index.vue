@@ -202,7 +202,7 @@ function handleLogout() {
   background: $surface;
   font-family: $font-family-sans;
   color: $text-primary;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 6rem);
+  padding-bottom: calc(var(--tabbar-safe) + $space-6);  /* tab bar + breathing room */
 }
 
 .top-bar {

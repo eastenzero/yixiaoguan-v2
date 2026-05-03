@@ -31,16 +31,20 @@ function switchTab(tab: { path: string; key: string }) {
 @import '@/styles/tokens.scss';
 
 // Aether Academic BottomNavBar — 1:1 复刻 stitch home_page/code.html
+// Single source of truth: 高度由 tokens.scss 的 $tabbar-h + env(safe-area)
+// 决定, 总高 = var(--tabbar-safe)。页面通过同一变量消费, 不再估算。
 .tab-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 50;
+  box-sizing: border-box;
+  height: var(--tabbar-safe);                         // 76px + safe-area
+  padding: $space-2 $space-4 env(safe-area-inset-bottom, 0);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: $space-2 $space-4 calc(env(safe-area-inset-bottom, 0) + $space-6);
   background: $glass-bg;                              // white/80
   backdrop-filter: $backdrop-bar;                     // blur(20px) saturate(180%)
   -webkit-backdrop-filter: $backdrop-bar;

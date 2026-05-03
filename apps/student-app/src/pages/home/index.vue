@@ -237,7 +237,7 @@ function showToastSoon() {
   background: $surface;           // #faf5fb ivory canvas (L0)
   color: $on-surface;
   font-family: $font-body;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 8rem);
+  padding-bottom: calc(var(--tabbar-safe) + $space-8);  /* tab bar + breathing room */
 }
 
 // ── TopAppBar (fixed glass; No-Line) ──

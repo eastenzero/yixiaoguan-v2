@@ -67,8 +67,8 @@ const handleTabClick = (index: number) => {
   left: 0;
   right: 0;
   z-index: 9999;
-  height: calc(76px + env(safe-area-inset-bottom));
-  padding-bottom: env(safe-area-inset-bottom);
+  height: var(--tabbar-safe);                      // tokens.scss single source of truth
+  padding-bottom: env(safe-area-inset-bottom, 0);
   display: flex;
   align-items: center;
   justify-content: space-around;

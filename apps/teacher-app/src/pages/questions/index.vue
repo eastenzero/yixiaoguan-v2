@@ -205,7 +205,7 @@ onUnmounted(() => {
 .questions-page {
   min-height: 100vh;
   background: $background;
-  padding-bottom: 112px;
+  padding-bottom: calc(var(--tabbar-safe) + $space-6);  /* tab bar + 24px */
 }
 
 .main-content {

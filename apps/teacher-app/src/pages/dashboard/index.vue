@@ -263,7 +263,7 @@ onShow(() => {
 .dashboard-page {
   min-height: 100vh;
   background: $background;
-  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  padding-bottom: calc(var(--tabbar-safe) + $space-2);  /* tab bar + 8px */
 }
 
 // 自定义顶栏

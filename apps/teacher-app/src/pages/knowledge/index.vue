@@ -476,7 +476,7 @@ onShow(() => loadData())
 <style lang="scss" scoped>
 .knowledge-page {
   min-height: 100vh;
-  padding-bottom: 112px;
+  padding-bottom: calc(var(--tabbar-safe) + $space-6);  /* tab bar + 24px */
   background: $background;
 }
 
