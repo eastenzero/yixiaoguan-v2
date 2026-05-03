@@ -91,7 +91,7 @@
 
         <!-- 刷新按钮（处理中时显示） -->
         <view v-if="escalation.status === 'teacher_serving'" class="refresh-bar" @click="loadMessages">
-          <text class="refresh-text">{{ refreshing ? '刷新中...' : '↻ 点击刷新（已启用实时推送）' }}</text>
+          <text class="refresh-text">{{ refreshing ? '刷新中...' : '↻ 点击刷新消息' }}</text>
         </view>
       </template>
 
@@ -204,16 +204,20 @@ const loadMessages = async () => {
 
 // WebSocket: 监听新消息
 // dispatch 传入 msg.data（内层），直接访问字段
+// 使用 dedup 防止乐观更新与 WS 推送重复
 const onNewMessage = (data: any) => {
   if (data?.conv_id === convId.value) {
-    conversationMessages.value.push({
-      id: data.id,
-      conversation_id: data.conv_id,
-      sender_type: data.sender_type,
-      sender_id: data.sender_id,
-      content: data.content,
-      created_at: data.created_at,
-    })
+    const exists = conversationMessages.value.some(m => m.id === data.id)
+    if (!exists) {
+      conversationMessages.value.push({
+        id: data.id,
+        conversation_id: data.conv_id,
+        sender_type: data.sender_type,
+        sender_id: data.sender_id,
+        content: data.content,
+        created_at: data.created_at,
+      })
+    }
   }
 }
 
@@ -238,6 +242,7 @@ const handleAssign = async () => {
   try {
     const res = await acceptConversation(convId.value)
     escalation.value = res
+    await loadMessages()
     uni.showToast({ title: '接单成功', icon: 'success' })
   } catch (e: any) {
     uni.showToast({ title: e?.message || '接单失败', icon: 'none' })
@@ -246,7 +251,7 @@ const handleAssign = async () => {
   }
 }
 
-// 仅回复（不结案）
+// 仅回复（不结案）— 乐观更新：API 返回消息后立即追加
 const handleReplyOnly = async () => {
   if (!replyText.value.trim()) {
     uni.showToast({ title: '请输入回复内容', icon: 'none' })
@@ -255,9 +260,14 @@ const handleReplyOnly = async () => {
   if (submitting.value) return
   submitting.value = true
   try {
-    await sendMessage(convId.value, replyText.value)
-    uni.showToast({ title: '回复已发送', icon: 'success' })
+    const msg = await sendMessage(convId.value, replyText.value)
+    // 乐观更新：直接追加到列表（WS 回推时 dedup 会跳过）
+    const exists = conversationMessages.value.some(m => m.id === msg.id)
+    if (!exists) {
+      conversationMessages.value.push(msg)
+    }
     replyText.value = ''
+    uni.showToast({ title: '回复已发送', icon: 'success' })
   } catch (e: any) {
     uni.showToast({ title: e?.message || '回复失败', icon: 'none' })
   } finally {
@@ -265,7 +275,7 @@ const handleReplyOnly = async () => {
   }
 }
 
-// 回复并解决
+// 回复并解决 — 乐观更新：发送后立即显示消息
 const handleResolve = async () => {
   if (!replyText.value.trim()) {
     uni.showToast({ title: '请输入回复内容', icon: 'none' })
@@ -274,11 +284,15 @@ const handleResolve = async () => {
   if (submitting.value) return
   submitting.value = true
   try {
-    await sendMessage(convId.value, replyText.value)
+    const msg = await sendMessage(convId.value, replyText.value)
+    const exists = conversationMessages.value.some(m => m.id === msg.id)
+    if (!exists) {
+      conversationMessages.value.push(msg)
+    }
     const res = await resolveConversation(convId.value)
     escalation.value = res
-    uni.showToast({ title: '已解决', icon: 'success' })
     replyText.value = ''
+    uni.showToast({ title: '已解决', icon: 'success' })
   } catch (e: any) {
     uni.showToast({ title: e?.message || '操作失败', icon: 'none' })
   } finally {

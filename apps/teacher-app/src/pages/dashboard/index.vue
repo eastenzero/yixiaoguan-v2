@@ -20,7 +20,7 @@
       <view class="welcome-banner animate-fade-up">
         <view class="welcome-content">
           <view class="welcome-text">
-            <text class="welcome-greeting">早上好，{{ displayName }} 👋</text>
+            <text class="welcome-greeting">{{ greeting }}，{{ displayName }} 👋</text>
             <text class="welcome-subtitle">今天有 {{ pendingCount }} 条待处理提问</text>
           </view>
           <view class="avatar-placeholder"></view>
@@ -174,6 +174,16 @@ import { wsManager } from '@/utils/websocket'
 const userStore = useUserStore()
 const displayName = computed(() => userStore.displayName)
 const isAdmin = computed(() => userStore.isAdmin)
+const greeting = computed(() => {
+  const h = new Date().getHours()
+  if (h < 6) return '夜深了'
+  if (h < 9) return '早上好'
+  if (h < 12) return '上午好'
+  if (h < 14) return '中午好'
+  if (h < 18) return '下午好'
+  if (h < 22) return '晚上好'
+  return '夜深了'
+})
 
 // 统计数据
 const stats = ref({
@@ -406,7 +416,7 @@ onUnmounted(() => {
 .welcome-banner {
   position: relative;
   overflow: hidden;
-  background: $gradient-hero;                   // pastel primary-container → tertiary-container
+  background: $gradient-hero;                      // pastel: primary-container → secondary-container
   border-radius: $radius-lg;                    // 2rem per DESIGN.md 大半径
   padding: $space-6;
   box-shadow: $shadow-fab;                      // 紫色折射 hero 允许

@@ -76,7 +76,7 @@ class WsManager {
       })
 
       this.task.onOpen(() => {
-        console.log('[WS] connected')
+        // silent: WS connected
         this._isConnected = true
         this.reconnectCount = 0
         this.startHeartbeat()
@@ -97,7 +97,7 @@ class WsManager {
       })
 
       this.task.onClose(() => {
-        console.log('[WS] disconnected')
+        // silent: WS disconnected
         this._isConnected = false
         this.stopHeartbeat()
         this.emit('_disconnected', {})
@@ -105,10 +105,10 @@ class WsManager {
       })
 
       this.task.onError((err: any) => {
-        console.error('[WS] error', err)
+        // silent: WS errors are expected during reconnect
       })
     } catch (e) {
-      console.error('[WS] connect failed', e)
+      // silent: connect failure triggers reconnect
       this.scheduleReconnect()
     }
   }
@@ -149,7 +149,7 @@ class WsManager {
     if (this.reconnectCount >= this.maxReconnect) return
     const delay = Math.min(1000 * Math.pow(2, this.reconnectCount), 30000)
     this.reconnectCount++
-    console.log(`[WS] reconnect #${this.reconnectCount} in ${delay}ms`)
+    // silent: reconnecting
     this.reconnectTimer = setTimeout(() => this.doConnect(), delay)
   }
 
