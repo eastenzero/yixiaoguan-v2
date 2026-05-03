@@ -30,6 +30,14 @@ async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
     return TokenResponse(access_token=token, centrifugo_token=ct)
 
 
+@router.get("/centrifugo-token")
+async def get_centrifugo_token(current_user: User = Depends(get_current_user)):
+    """返回新的 Centrifugo 连接 JWT（用于前端 init 重连和 SDK getToken 回调）"""
+    if not settings.centrifugo_secret:
+        raise HTTPException(status_code=503, detail="Centrifugo not configured")
+    return {"token": build_centrifugo_token(current_user)}
+
+
 @router.get("/me", response_model=UserInfo)
 async def me(current_user: User = Depends(get_current_user)):
     return UserInfo(

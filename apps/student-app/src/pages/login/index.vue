@@ -58,7 +58,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useUserStore } from '@/stores/user'
-import { login, getMe } from '@/api/auth'
+import { login, getMe, getCentrifugoToken } from '@/api/auth'
 import { wsManager } from '@/utils/websocket'
 import { centrifugeManager } from '@/utils/centrifuge'
 
@@ -92,7 +92,10 @@ async function handleLogin() {
 
     wsManager.connect(res.access_token)
     if (res.centrifugo_token) {
-      centrifugeManager.connect(res.centrifugo_token)
+      centrifugeManager.connect(res.centrifugo_token, async () => {
+        const r = await getCentrifugoToken()
+        return r.token
+      })
     }
 
     uni.showToast({ title: '登录成功', icon: 'success', duration: 1000 })

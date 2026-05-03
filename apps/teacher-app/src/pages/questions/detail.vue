@@ -89,10 +89,7 @@
           </view>
         </view>
 
-        <!-- 刷新按钮（处理中时显示） -->
-        <view v-if="escalation.status === 'teacher_serving'" class="refresh-bar" @click="loadMessages">
-          <text class="refresh-text">{{ refreshing ? '刷新中...' : '↻ 点击刷新消息' }}</text>
-        </view>
+        <!-- 刷新按钮已移除：Centrifugo 实时推送已启用 -->
       </template>
 
       <!-- Bottom padding for fixed action bar -->

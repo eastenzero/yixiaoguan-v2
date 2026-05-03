@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
+import { useUserStore } from '@/stores/user'
+import { useWsStore } from '@/stores/websocket'
 
 onLaunch(() => {
   console.log("Teacher App Launch");
+  const userStore = useUserStore()
+  userStore.init()
+  if (userStore.token) {
+    const wsStore = useWsStore()
+    wsStore.init(userStore.token)
+  }
 });
 onShow(() => {
   console.log("Teacher App Show");

@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { wsManager } from '@/utils/websocket'
+import { centrifugeManager } from '@/utils/centrifuge'
+import { getCentrifugoToken } from '@/api/auth'
 
 export interface UserInfo {
   id: number
@@ -30,6 +32,15 @@ export const useUserStore = defineStore('user', () => {
         try { userInfo.value = JSON.parse(storedInfo) } catch { /* ignore */ }
       }
       wsManager.connect(storedToken)
+      // Centrifugo: 获取新 token 并连接
+      getCentrifugoToken()
+        .then(res => {
+          centrifugeManager.connect(res.token, async () => {
+            const r = await getCentrifugoToken()
+            return r.token
+          })
+        })
+        .catch(() => { /* centrifugo unavailable, degrade silently */ })
     }
   }
 
@@ -49,6 +60,7 @@ export const useUserStore = defineStore('user', () => {
     uni.removeStorageSync(TOKEN_KEY)
     uni.removeStorageSync(USER_INFO_KEY)
     wsManager.disconnect()
+    centrifugeManager.disconnect()
   }
 
   return { token, userInfo, isLoggedIn, init, setToken, setUserInfo, logout }

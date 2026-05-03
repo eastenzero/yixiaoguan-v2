@@ -244,6 +244,7 @@ import { useUserStore } from '@/stores/user'
 import { createConversation, getConversation, getMessages, escalate } from '@/api/chat'
 import { fetchSSE } from '@/utils/sse'
 import { wsManager } from '@/utils/websocket'
+import { centrifugeManager } from '@/utils/centrifuge'
 import CustomTabBar from '@/components/CustomTabBar.vue'
 import type { Message, Source, ConversationStatus, MessageResponse } from '@/types/chat'
 
@@ -306,12 +307,14 @@ onShow(() => {
   registerWsListeners()
   if (conversationId.value) {
     wsManager.send({ type: 'join_room', data: { conv_id: conversationId.value } })
+    centrifugeManager.joinConversation(conversationId.value)
   }
 })
 
 onHide(() => {
   if (conversationId.value) {
     wsManager.send({ type: 'leave_room', data: { conv_id: conversationId.value } })
+    centrifugeManager.leaveConversation(conversationId.value)
   }
   unregisterWsListeners()
 })
@@ -364,10 +367,14 @@ function onStatusChanged(data: any) {
 function registerWsListeners() {
   wsManager.on('new_message', onNewMessage)
   wsManager.on('status_changed', onStatusChanged)
+  centrifugeManager.on('new_message', onNewMessage)
+  centrifugeManager.on('status_changed', onStatusChanged)
 }
 function unregisterWsListeners() {
   wsManager.off('new_message', onNewMessage)
   wsManager.off('status_changed', onStatusChanged)
+  centrifugeManager.off('new_message', onNewMessage)
+  centrifugeManager.off('status_changed', onStatusChanged)
 }
 
 // ============ 加载会话 ============
@@ -378,6 +385,7 @@ async function loadConversation() {
     conversationStatus.value = (conv.status as ConversationStatus) || 'ai_serving'
     await loadHistory()
     wsManager.send({ type: 'join_room', data: { conv_id: conversationId.value } })
+    centrifugeManager.joinConversation(conversationId.value)
   } catch (e) {
     console.error('加载会话失败:', e)
   }
@@ -422,6 +430,7 @@ async function sendMessage() {
       conversationId.value = conv.id
       conversationStatus.value = 'ai_serving'
       wsManager.send({ type: 'join_room', data: { conv_id: conv.id } })
+      centrifugeManager.joinConversation(conv.id)
     } catch (e) {
       console.error('创建会话失败:', e)
       uni.showToast({ title: '创建会话失败', icon: 'none' })

@@ -15,6 +15,9 @@ class CentrifugeManager {
   get isConnected() { return this._isConnected }
 
   connect(centrifugoToken: string, getToken?: () => Promise<string>) {
+    if (this.client) {
+      this.disconnect()
+    }
     const wsUrl = location.protocol === 'https:'
       ? `wss://${location.host}/centrifugo/connection/websocket`
       : `ws://${location.host}/centrifugo/connection/websocket`

@@ -2,6 +2,12 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { wsManager } from '@/utils/websocket'
 import { centrifugeManager } from '@/utils/centrifuge'
+import { getCentrifugoToken } from '@/api/auth'
+
+const _getToken = async () => {
+  const r = await getCentrifugoToken()
+  return r.token
+}
 
 export const useWsStore = defineStore('websocket', () => {
   const isConnected = ref(false)
@@ -13,7 +19,12 @@ export const useWsStore = defineStore('websocket', () => {
       isConnected.value = wsManager.isConnected
     })
     if (centrifugoToken) {
-      centrifugeManager.connect(centrifugoToken)
+      centrifugeManager.connect(centrifugoToken, _getToken)
+    } else {
+      // 刷新页面时无 centrifugoToken，从 API 获取
+      getCentrifugoToken()
+        .then(res => centrifugeManager.connect(res.token, _getToken))
+        .catch(() => { /* centrifugo unavailable, degrade silently */ })
     }
   }
 

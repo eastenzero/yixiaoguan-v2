@@ -18,3 +18,7 @@ export function login(staff_id: string, password: string): Promise<LoginResponse
 export function getMe(): Promise<UserInfo> {
   return request<UserInfo>({ url: '/api/auth/me' })
 }
+
+export function getCentrifugoToken(): Promise<{ token: string }> {
+  return request<{ token: string }>({ url: '/api/auth/centrifugo-token' })
+}

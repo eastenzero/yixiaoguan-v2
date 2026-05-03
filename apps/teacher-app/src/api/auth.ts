@@ -41,3 +41,10 @@ export function login(params: {
 export function getUserInfo(): Promise<UserInfoResult> {
   return get<UserInfoResult>('/api/auth/me')
 }
+
+/**
+ * 获取 Centrifugo 连接 token（用于 init 重连和 SDK getToken 回调）
+ */
+export function getCentrifugoToken(): Promise<{ token: string }> {
+  return get<{ token: string }>('/api/auth/centrifugo-token')
+}
