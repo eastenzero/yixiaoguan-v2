@@ -9,6 +9,7 @@ import { post, get } from '@/utils/request'
 
 export interface LoginResult {
   access_token: string
+  centrifugo_token: string
   token_type: string
 }
 

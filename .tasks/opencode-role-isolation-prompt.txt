@@ -1,0 +1,76 @@
+你是一个 FastAPI + uni-app 全栈工程师。请你实现"账号角色隔离"功能，防止不同角色的用户登录到不对应的客户端。
+
+## 背景
+
+当前 `/api/auth/login` 只校验 staff_id + password，完全不检查角色。导致：
+- Admin 可以登录学生端
+- 教师可以登录学生端
+- 学生可以登录教师端
+这是一个致命的安全问题。
+
+## 需要修改的文件
+
+### 后端 (services/gateway/)
+
+1. **app/schemas/auth.py** — `LoginRequest` schema 加 `expected_role` 可选字段
+   - 类型: `Optional[str]` 或 `Optional[list[str]]`
+   - 学生端传 `"student"`
+   - 教师端传 `"teacher"` 或 `["teacher", "admin"]`（教师端允许管理员也登录）
+
+2. **app/services/auth_service.py** — `authenticate_user` 函数增加角色校验
+   - 新增参数 `expected_role: str | list[str] | None = None`
+   - 如果传了 expected_role，校验 user.role 是否匹配
+   - 不匹配时返回 None（让上层统一处理），或者你可以自定义异常以便区分"密码错误"和"角色不匹配"
+
+3. **app/routers/auth.py** — login 路由传递 expected_role
+   - 从 LoginRequest 取 expected_role 传给 authenticate_user
+   - 角色不匹配时返回 403 + 友好提示："该账号不属于此客户端，请使用正确的客户端登录"
+
+### 前端-学生端 (apps/student-app/)
+
+4. **src/api/auth.ts** — login 请求体加 `expected_role: 'student'`
+
+5. **src/pages/login.vue** 或对应登录页 — 登录成功后调 getMe()，二次校验 role
+   - 如果 role !== 'student'，清除 token，弹出提示并退出
+
+### 前端-教师端 (apps/teacher-app/)
+
+6. **src/api/auth.ts** — login 请求体加 `expected_role: 'teacher'`
+   - 注意：教师端同时允许 teacher 和 admin 登录
+
+7. **src/pages/login.vue** 或对应登录页 — 登录成功后二次校验
+   - 如果 role 不是 'teacher' 也不是 'admin'，清除 token，弹出提示
+
+## 技术要求
+
+1. `expected_role` 设为可选字段，确保向后兼容（旧客户端不传该字段时仍可登录）
+2. 后端做主拦截（403），前端做二次校验 + 友好提示
+3. 不要破坏现有的 JWT token 生成逻辑
+4. 角色枚举定义在 `app/models/user.py` 的 `UserRole` 中：student, teacher, admin
+5. 前端提示用中文
+
+## Git 规范
+
+**重要**：修改前先创建新分支，修改完提交 commit。
+
+```bash
+git checkout -b fix/role-isolation
+# ... 修改代码 ...
+git add -A
+git commit -m "fix: 实现账号角色隔离，防止跨端登录
+
+- 后端 LoginRequest 增加 expected_role 可选字段
+- auth_service.authenticate_user 增加角色校验
+- 角色不匹配返回 403 + 友好提示
+- 学生端 login 传 expected_role='student'
+- 教师端 login 传 expected_role='teacher'
+- 前端 getMe() 后二次校验角色"
+```
+
+## 约束
+
+- 只修改上述文件，不要碰其他文件
+- 不要修改数据库模型或迁移
+- 不要添加新的 Python 依赖
+- 保持现有代码风格（中文注释、4 空格缩进等）
+- 确保代码可直接运行，不要引入语法错误

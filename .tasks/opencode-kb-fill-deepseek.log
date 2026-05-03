@@ -1,0 +1,131 @@
+﻿opencode.cmd : [0m
+At line:1 char:192
++ ... ding UTF8 | & $opencode run -m deepseek/deepseek-v4-pro --dangerously ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([0m:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+> build · deepseek-v4-pro
+[0m
+[0m$ [0mif (-not (Test-Path kb-supplement)) { New-Item -ItemType Directory -Path kb-supplement }; ls kb-supplement
+目录: F:\Documents\code\yixiaoguan-v2
+
+
+Mode                 LastWriteTime         Length Name                                                                 
+----                 -------------         ------ ----                                                                 
+d-----          2026/5/4      4:22                kb-supplement
+[0m
+[0m✗ [0mglob failed
+[91m[1mError: [0mripgrep failed with code 255
+[0m
+[0m# [0mTodos
+[ ] 创建 P0-1: VPN 使用指南 (KB-V2-C06-043)
+[ ] 创建 P0-2: 学校概况 FAQ (KB-V2-C12-048)
+[ ] 创建 P1-3: 食堂位置与用餐指南 (KB-V2-C02-051)
+[ ] 创建 P1-4: 学生报销指南 (KB-V2-C03-025)
+[ ] 创建 P1-5: 毕业证与学位证发放时间表 (KB-V2-C05-078)
+[ ] 创建 P1-6: 国际交流合作院校清单 (KB-V2-C09-030)
+[ ] 创建 P1-7: 外国留学生校内服务指南 (KB-V2-C09-031)
+[ ] Git add & commit kb-supplement/
+[0m
+[0m← [0mWrite F:\Documents\code\yixiaoguan-v2\kb-supplement\KB-V2-C06-043.md
+Wrote file successfully.
+[0m
+[0m← [0mWrite F:\Documents\code\yixiaoguan-v2\kb-supplement\KB-V2-C12-048.md
+Wrote file successfully.
+[0m
+[0m← [0mWrite F:\Documents\code\yixiaoguan-v2\kb-supplement\KB-V2-C02-051.md
+Wrote file successfully.
+[0m
+[0m← [0mWrite F:\Documents\code\yixiaoguan-v2\kb-supplement\KB-V2-C03-025.md
+Wrote file successfully.
+[0m
+[0m← [0mWrite F:\Documents\code\yixiaoguan-v2\kb-supplement\KB-V2-C05-078.md
+Wrote file successfully.
+[0m
+[0m← [0mWrite F:\Documents\code\yixiaoguan-v2\kb-supplement\KB-V2-C09-030.md
+Wrote file successfully.
+[0m
+[0m← [0mWrite F:\Documents\code\yixiaoguan-v2\kb-supplement\KB-V2-C09-031.md
+Wrote file successfully.
+[0m
+[0m# [0mTodos
+[x] 创建 P0-1: VPN 使用指南 (KB-V2-C06-043)
+[x] 创建 P0-2: 学校概况 FAQ (KB-V2-C12-048)
+[x] 创建 P1-3: 食堂位置与用餐指南 (KB-V2-C02-051)
+[x] 创建 P1-4: 学生报销指南 (KB-V2-C03-025)
+[x] 创建 P1-5: 毕业证与学位证发放时间表 (KB-V2-C05-078)
+[x] 创建 P1-6: 国际交流合作院校清单 (KB-V2-C09-030)
+[x] 创建 P1-7: 外国留学生校内服务指南 (KB-V2-C09-031)
+[ ] Git add & commit kb-supplement/
+[0m
+[0m$ [0mls kb-supplement/
+目录: F:\Documents\code\yixiaoguan-v2\kb-supplement
+
+
+Mode                 LastWriteTime         Length Name                                                                 
+----                 -------------         ------ ----                                                                 
+-a----          2026/5/4      4:24           4062 KB-V2-C02-051.md                                                     
+-a----          2026/5/4      4:25           7230 KB-V2-C03-025.md                                                     
+-a----          2026/5/4      4:26           6568 KB-V2-C05-078.md                                                     
+-a----          2026/5/4      4:23           6655 KB-V2-C06-043.md                                                     
+-a----          2026/5/4      4:27           6709 KB-V2-C09-030.md                                                     
+-a----          2026/5/4      4:28           9119 KB-V2-C09-031.md                                                     
+-a----          2026/5/4      4:24           6078 KB-V2-C12-048.md
+[0m
+[0m$ [0mgit add kb-supplement/
+warning: in the working copy of 'kb-supplement/KB-V2-C02-051.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'kb-supplement/KB-V2-C03-025.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'kb-supplement/KB-V2-C05-078.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'kb-supplement/KB-V2-C06-043.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'kb-supplement/KB-V2-C09-030.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'kb-supplement/KB-V2-C09-031.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'kb-supplement/KB-V2-C12-048.md', LF will be replaced by CRLF the next time Git touches it
+[0m
+[0m$ [0mgit diff --cached --stat
+kb-supplement/KB-V2-C02-051.md | 111 +++++++++++++++++++
+ kb-supplement/KB-V2-C03-025.md | 179 ++++++++++++++++++++++++++++++
+ kb-supplement/KB-V2-C05-078.md | 162 ++++++++++++++++++++++++++++
+ kb-supplement/KB-V2-C06-043.md | 149 +++++++++++++++++++++++++
+ kb-supplement/KB-V2-C09-030.md | 175 ++++++++++++++++++++++++++++++
+ kb-supplement/KB-V2-C09-031.md | 240 +++++++++++++++++++++++++++++++++++++++++
+ kb-supplement/KB-V2-C12-048.md | 155 ++++++++++++++++++++++++++
+ 7 files changed, 1171 insertions(+)
+[0m
+[0m$ [0mgit commit -m "docs(kb): 补充检索缺口文档 (VPN/学校概况/食堂/报销/毕业证/国际交流/留学生)" -m "- P0: VPN 使用指南 (KB-V2-C06-043)" -m "- P0: 学校概况 FAQ (KB-V2-C12-048)" -m "- P1: 食堂位置与用餐指南 (KB-V2-C02-051)" -m "- P1: 学生
+报销指南 (KB-V2-C03-025)" -m "- P1: 毕业证发放时间表 (KB-V2-C05-078)" -m "- P1: 国际交流合作院校清单 (KB-V2-C09-030)" -m "- P1: 外国留学生服务指南 (KB-V2-C09-031)"
+[kb/fill-gaps-deepseek b7743f4] docs(kb): 补充检索缺口文档 (VPN/学校概况/食堂/报销/毕业证/国际交流/留学生)
+ 7 files changed, 1171 insertions(+)
+ create mode 100644 kb-supplement/KB-V2-C02-051.md
+ create mode 100644 kb-supplement/KB-V2-C03-025.md
+ create mode 100644 kb-supplement/KB-V2-C05-078.md
+ create mode 100644 kb-supplement/KB-V2-C06-043.md
+ create mode 100644 kb-supplement/KB-V2-C09-030.md
+ create mode 100644 kb-supplement/KB-V2-C09-031.md
+ create mode 100644 kb-supplement/KB-V2-C12-048.md
+[0m
+[0m# [0mTodos
+[x] 创建 P0-1: VPN 使用指南 (KB-V2-C06-043)
+[x] 创建 P0-2: 学校概况 FAQ (KB-V2-C12-048)
+[x] 创建 P1-3: 食堂位置与用餐指南 (KB-V2-C02-051)
+[x] 创建 P1-4: 学生报销指南 (KB-V2-C03-025)
+[x] 创建 P1-5: 毕业证与学位证发放时间表 (KB-V2-C05-078)
+[x] 创建 P1-6: 国际交流合作院校清单 (KB-V2-C09-030)
+[x] 创建 P1-7: 外国留学生校内服务指南 (KB-V2-C09-031)
+[x] Git add & commit kb-supplement/
+[0m
+已完成全部 7 篇知识库文档的创建并提交。概览：
+
+| 优先级 | doc_id | 标题 | 文件 | 大小 |
+|-------|--------|------|------|------|
+| P0 | KB-V2-C06-043 | VPN 使用指南 | `KB-V2-C06-043.md` | 6.7 KB |
+| P0 | KB-V2-C12-048 | 学校概况 FAQ | `KB-V2-C12-048.md` | 6.1 KB |
+| P1 | KB-V2-C02-051 | 食堂位置与用餐指南 | `KB-V2-C02-051.md` | 4.1 KB |
+| P1 | KB-V2-C03-025 | 学生报销指南 | `KB-V2-C03-025.md` | 7.2 KB |
+| P1 | KB-V2-C05-078 | 毕业证与学位证发放时间表 | `KB-V2-C05-078.md` | 6.6 KB |
+| P1 | KB-V2-C09-030 | 国际交流合作院校清单 | `KB-V2-C09-030.md` | 6.7 KB |
+| P1 | KB-V2-C09-031 | 外国留学生校内服务指南 | `KB-V2-C09-031.md` | 9.1 KB |
+
+- **格式**：全部遵循 KB-SPEC v2.0（YAML front matter + 标准分类 + 小节划分）
+- **人工确认标记**：所有无法核实的信息（VPN 地址、电话、食堂名称、合作院校等）均已标注 `[待核实]`
+- **Git 提交**：`b7743f4`，7 个文件，1171 行新增

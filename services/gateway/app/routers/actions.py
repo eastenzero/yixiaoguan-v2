@@ -11,6 +11,7 @@ from app.schemas.conversation import ConversationResponse
 from app.services.conversation_service import can_access_conversation
 from app.services.state_machine import InvalidTransition, transition
 from app.services.ws_manager import manager
+from app.services.centrifugo_client import centrifugo
 from app.utils.deps import get_current_user
 
 logger = logging.getLogger(__name__)
@@ -54,19 +55,19 @@ async def _notify_college_teachers(
     teacher_ids = list(result.scalars().all())
     if not teacher_ids:
         return
-    await manager.broadcast_to_college_teachers(
-        current_user.college_id,
-        teacher_ids,
-        {
-            "type": "escalation_notify",
-            "data": {
-                "conv_id": conv.id,
-                "student_id": conv.student_id,
-                "title": conv.title,
-                "status": conv.status.value,
-                "created_at": conv.created_at.isoformat(),
-            },
+    _notify_data = {
+        "type": "escalation_notify",
+        "data": {
+            "conv_id": conv.id,
+            "student_id": conv.student_id,
+            "title": conv.title,
+            "status": conv.status.value,
+            "created_at": conv.created_at.isoformat(),
         },
+    }
+    await centrifugo.broadcast([f"user#{tid}" for tid in teacher_ids], _notify_data)
+    await manager.broadcast_to_college_teachers(
+        current_user.college_id, teacher_ids, _notify_data,
     )
 
 
@@ -90,10 +91,9 @@ async def escalate(
         await _notify_college_teachers(db, conv, current_user)
     except Exception as exc:
         logger.warning("Failed to notify college teachers for conv=%s: %s", conv_id, exc)
-    await manager.broadcast_to_room(
-        f"conv:{conv_id}",
-        {"type": "status_changed", "data": {"conv_id": conv_id, "status": "pending_teacher"}}
-    )
+    _esc_data = {"type": "status_changed", "data": {"conv_id": conv_id, "status": "pending_teacher"}}
+    await centrifugo.publish(f"conv:{conv_id}", _esc_data)
+    await manager.broadcast_to_room(f"conv:{conv_id}", _esc_data)
     return conv
 
 
@@ -111,11 +111,10 @@ async def accept(
         await transition(db, conv, "accept", actor=current_user)
     except InvalidTransition as e:
         raise HTTPException(status_code=409, detail=str(e))
-    await manager.broadcast_to_room(
-        f"conv:{conv_id}",
-        {"type": "status_changed", "data": {"conv_id": conv_id, "status": "teacher_serving",
-                                             "teacher_id": current_user.id, "teacher_name": current_user.name}}
-    )
+    _accept_data = {"type": "status_changed", "data": {"conv_id": conv_id, "status": "teacher_serving",
+                                                        "teacher_id": current_user.id, "teacher_name": current_user.name}}
+    await centrifugo.publish(f"conv:{conv_id}", _accept_data)
+    await manager.broadcast_to_room(f"conv:{conv_id}", _accept_data)
     return conv
 
 
@@ -135,10 +134,9 @@ async def resolve(
         await transition(db, conv, "resolve", actor=current_user)
     except InvalidTransition as e:
         raise HTTPException(status_code=409, detail=str(e))
-    await manager.broadcast_to_room(
-        f"conv:{conv_id}",
-        {"type": "status_changed", "data": {"conv_id": conv_id, "status": "resolved"}}
-    )
+    _resolve_data = {"type": "status_changed", "data": {"conv_id": conv_id, "status": "resolved"}}
+    await centrifugo.publish(f"conv:{conv_id}", _resolve_data)
+    await manager.broadcast_to_room(f"conv:{conv_id}", _resolve_data)
     return conv
 
 
@@ -154,8 +152,7 @@ async def close(
         await transition(db, conv, "close", actor=current_user)
     except InvalidTransition as e:
         raise HTTPException(status_code=409, detail=str(e))
-    await manager.broadcast_to_room(
-        f"conv:{conv_id}",
-        {"type": "status_changed", "data": {"conv_id": conv_id, "status": "closed"}}
-    )
+    _close_data = {"type": "status_changed", "data": {"conv_id": conv_id, "status": "closed"}}
+    await centrifugo.publish(f"conv:{conv_id}", _close_data)
+    await manager.broadcast_to_room(f"conv:{conv_id}", _close_data)
     return conv

@@ -16,6 +16,7 @@ from app.services.conversation_service import (
 from app.services.state_machine import transition
 from app.services.dify_client import dify_client
 from app.services.ws_manager import manager
+from app.services.centrifugo_client import centrifugo
 from app.services.announcement_service import (
     get_active_announcements_for_user,
     mark_announcement_read,
@@ -73,13 +74,12 @@ async def chat_send(
 
     if conv.status == ConversationStatus.resolved:
         await transition(db, conv, "reactivate", actor=current_user)
-        await manager.broadcast_to_room(
-            f"conv:{conv.id}",
-            {
-                "type": "status_changed",
-                "data": {"conv_id": conv.id, "status": "ai_serving", "previous_status": "resolved"},
-            },
-        )
+        _status_data = {
+            "type": "status_changed",
+            "data": {"conv_id": conv.id, "status": "ai_serving", "previous_status": "resolved"},
+        }
+        await centrifugo.publish(f"conv:{conv.id}", _status_data)
+        await manager.broadcast_to_room(f"conv:{conv.id}", _status_data)
 
     # 状态检查
     if conv.status not in (
@@ -96,10 +96,9 @@ async def chat_send(
     )
 
     # 2. WS 广播学生消息
-    await manager.broadcast_to_room(
-        f"conv:{conv.id}",
-        build_message_broadcast_event(student_msg, conv_id=conv.id),
-    )
+    _student_event = build_message_broadcast_event(student_msg, conv_id=conv.id)
+    await centrifugo.publish(f"conv:{conv.id}", _student_event)
+    await manager.broadcast_to_room(f"conv:{conv.id}", _student_event)
 
     # 3. 根据状态路由
     if conv.status == ConversationStatus.ai_serving:
@@ -217,14 +216,9 @@ async def _stream_ai_response(db, conv, user, query: str):
         await db.commit()
 
     # WS 广播 AI 消息
-    await manager.broadcast_to_room(
-        f"conv:{conv.id}",
-        build_message_broadcast_event(
-            ai_msg,
-            conv_id=conv.id,
-            metadata={"sources": sources},
-        ),
-    )
+    _ai_event = build_message_broadcast_event(ai_msg, conv_id=conv.id, metadata={"sources": sources})
+    await centrifugo.publish(f"conv:{conv.id}", _ai_event)
+    await manager.broadcast_to_room(f"conv:{conv.id}", _ai_event)
 
     # 发送 message_end
     yield f"event: message_end\ndata: {json.dumps({'full_content': full_answer, 'sources': sources, 'message_id': ai_msg.id}, ensure_ascii=False)}\n\n"

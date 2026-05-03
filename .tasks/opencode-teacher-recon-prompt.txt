@@ -1,0 +1,66 @@
+任务：探查医小管 v2 项目的教师端功能现状，评估工单处理和知识入库两个模块的完整度。约 10 分钟。
+
+## 背景
+医小管 v2 是一个高校智能问答 + 事务导办平台。当前仓库在 F:\Documents\code\yixiaoguan-v2。
+项目分为：
+- 后端 gateway: services/gateway/ (FastAPI + SQLAlchemy + PostgreSQL + WebSocket)
+- 学生端: apps/student-app/ (uni-app Vue 3)
+- 教师端: apps/teacher-app/ (uni-app Vue 3)
+
+由于多次冲突和版本覆盖，部分功能可能丢失或不完整。
+
+## 你必须做的事情
+
+### Part 1: 后端 gateway 功能审计
+请仔细读以下文件并分析：
+1. `services/gateway/app/main.py` — 看哪些 router 被挂载了
+2. `services/gateway/app/routers/` — 列出所有 router 文件，逐个检查端点
+3. `services/gateway/app/routers/conversations.py` — 工单/对话路由，特别关注：
+   - 教师发送消息的端点
+   - 会话状态流转（ai_serving → pending_teacher → teacher_serving → resolved）
+   - WebSocket 相关逻辑
+4. `services/gateway/app/routers/knowledge.py` — 知识入库路由，特别关注：
+   - unanswered-top (高频未答问题)
+   - drafts (教师草稿提交)
+   - reviews (管理员审核)
+5. `services/gateway/app/services/conversation_service.py` — 对话服务核心逻辑
+6. `services/gateway/app/services/knowledge_service.py` — 知识入库服务
+7. `services/gateway/app/routers/ws.py` — WebSocket hub
+
+### Part 2: 教师端前端审计
+请仔细读以下文件：
+1. `apps/teacher-app/src/pages/questions/index.vue` — 工单列表页
+2. `apps/teacher-app/src/pages/questions/detail.vue` — 工单详情/对话页
+3. `apps/teacher-app/src/pages/knowledge/index.vue` — 知识库管理页
+4. `apps/teacher-app/src/pages/knowledge/detail.vue` — 知识条目详情
+5. `apps/teacher-app/src/pages/dashboard/index.vue` — 数据看板（可能是占位符）
+6. `apps/teacher-app/src/api/` — 所有 API 调用文件
+7. `apps/teacher-app/src/types/api.ts` — 类型定义
+
+### Part 3: 在 V1 项目中寻找参考信息
+请在 `C:\Users\Administrator\Documents\code\yixiaoguan\` 目录中搜索：
+1. `docs/product-research/` — 看看有没有提到 ByteDesk 或其他成熟参考项目
+2. `_references/` — 参考资料
+3. `.tasks/` 或 `.kimi/` — 可能有之前的讨论记录
+4. 搜索关键词: "bytedesk", "工单", "客服", "ticket", "helpdesk", "chatwoot"
+
+## 严格规则
+- 不要修改任何文件
+- 不要运行任何命令（除了文件搜索）
+- Windows PowerShell 环境
+- 只做分析和报告
+
+## 输出要求
+请生成一份报告到 `.tasks/reports/teacher-module-recon-report.md`，包含：
+
+1. **功能完整度矩阵**：每个端点/页面标注 ✅完整 / ⚠️部分 / ❌缺失
+2. **工单处理流程评估**：当前 WebSocket 实时对话的实现质量
+3. **知识入库流程评估**：draft → review → publish 流程的完整度
+4. **V1 参考发现**：找到的所有关于成熟参考项目的信息
+5. **关键问题清单**：按优先级排列需要修复的问题
+6. **架构建议**：是继续修补还是引入成熟方案
+
+完成后请总结：
+1. 你做了什么
+2. 关键发现
+3. 遇到的阻塞

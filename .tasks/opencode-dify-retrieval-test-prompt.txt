@@ -1,0 +1,88 @@
+你是一个 RAG 质量评估专家。请你对线上 HK Dify 和内网 Dify 的知识库检索质量进行对比测试。
+
+## 测试目标
+
+使用同一组测试查询，分别调用两个 Dify 实例的检索 API，对比 Top-1 命中率和检索得分。
+
+## 环境信息
+
+### HK 线上 Dify
+- API 地址: https://dify.xiaoguan.site/v1
+- Dataset API Key: app-IUx6xbcFXgkAh2dJUOgVUmal
+- Dataset ID: c2363fef-405b-48ab-a0e2-9274a4186cef
+- Chat App API Key: app-0zqUgdeR2dQ1vJkPeoitneQ6
+
+### 内网 Dify (192.168.100.165)
+- API 地址: http://192.168.100.165:3000/v1
+- 如果无法直接访问内网，跳过内网测试，只测 HK
+
+## 测试查询集（27 条，覆盖全 12 分类）
+
+请使用以下查询进行测试：
+
+1. 怎么选课
+2. 转专业需要什么条件
+3. 宿舍报修怎么操作
+4. 食堂在哪里
+5. 学费怎么交
+6. 报销流程是什么
+7. 国家奖学金申请条件
+8. 助学贷款怎么申请
+9. 校园招聘在哪里看
+10. 毕业证什么时候发
+11. 图书馆开放时间
+12. VPN 怎么连
+13. 心理咨询怎么预约
+14. 医保怎么报销
+15. 研究生推免条件
+16. 考研调剂流程
+17. 出国交换项目有哪些
+18. 留学生服务在哪
+19. 学科竞赛怎么报名
+20. 大创项目怎么申报
+21. 学生证丢了怎么补办
+22. 处分怎么申诉
+23. 学校有几个校区
+24. 各学院联系方式
+25. 校园卡丢了怎么办
+26. 勤工助学岗位怎么申请
+27. 实验室安全规定是什么
+
+## 测试方法
+
+对每个查询调用 Dify 的 chat-messages API（SSE 模式），记录：
+1. AI 回复的前 200 字
+2. 回复中是否包含具体、可操作的信息（而非泛泛而谈）
+3. 回复质量评分（0-3）：0=完全无关, 1=部分相关, 2=基本正确, 3=精准回答
+
+API 调用方式：
+```bash
+curl -X POST '{API_URL}/chat-messages' \
+  -H 'Authorization: Bearer {APP_API_KEY}' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "inputs": {},
+    "query": "查询内容",
+    "response_mode": "blocking",
+    "conversation_id": "",
+    "user": "test-audit-20260504"
+  }'
+```
+
+## 输出要求
+
+生成测试报告到 C:\Users\Administrator\Documents\code\yixiaoguan-v2\.tasks\reports\dify-retrieval-quality-test.md，包含：
+
+1. 测试环境信息
+2. 逐条查询的结果表（查询 | 回复摘要 | 质量评分 | 是否命中）
+3. 按分类汇总的命中率
+4. 总体 Top-1 命中率
+5. 与内网 97.3% 基线的对比（如果能测内网的话）
+6. 发现的问题和改进建议
+
+## 约束
+
+- 不要修改任何文件（只读操作 + 写报告）
+- 每个查询之间间隔 2-3 秒，避免触发速率限制
+- 如果某个 API 调用失败，记录错误信息继续下一条
+- 使用 blocking 模式而非 streaming，便于解析结果

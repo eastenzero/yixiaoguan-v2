@@ -149,6 +149,7 @@ import TopAppBar from '../../components/TopAppBar.vue'
 import { getConversation, listMessages, sendMessage, acceptConversation, resolveConversation } from '@/api/conversations'
 import { getStatusText } from '@/utils/status-map'
 import { wsManager } from '@/utils/websocket'
+import { centrifugeManager } from '@/utils/centrifuge'
 
 const escalation = ref<any>(null)
 const loading = ref(false)
@@ -297,16 +298,25 @@ onLoad((options: any) => {
     wsManager.on('new_message', onNewMessage)
     wsManager.on('status_changed', onStatusChange)
     wsManager.on('escalation_notify', onEscalationNotify)
+    // Centrifugo dual-subscribe
+    centrifugeManager.joinConversation(convId.value)
+    centrifugeManager.on('new_message', onNewMessage)
+    centrifugeManager.on('status_changed', onStatusChange)
+    centrifugeManager.on('escalation_notify', onEscalationNotify)
   }
 })
 
 onUnmounted(() => {
   if (convId.value) {
     wsManager.leaveRoom(convId.value)
+    centrifugeManager.leaveConversation(convId.value)
   }
   wsManager.off('new_message', onNewMessage)
   wsManager.off('status_changed', onStatusChange)
   wsManager.off('escalation_notify', onEscalationNotify)
+  centrifugeManager.off('new_message', onNewMessage)
+  centrifugeManager.off('status_changed', onStatusChange)
+  centrifugeManager.off('escalation_notify', onEscalationNotify)
 })
 </script>
 
