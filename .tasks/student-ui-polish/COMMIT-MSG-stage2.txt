@@ -1,0 +1,98 @@
+feat(student-ui): stage 2 polish — home, services, profile rewrite
+
+Stage 2 — navigation shell pages, all three migrated to the shared
+TopAppBar + global tokens system established in stage 0+1.
+
+pages/home/index.vue
+- Brand-bar replaced with `<TopAppBar brand>` (left-aligned primary
+  logo + right-side notifications action with auto badge).
+- Greeting line gains time-of-day awareness (早上/中午/下午/晚上/夜深了).
+- All sections animate-fade-up with delay-1..5 stagger.
+- search-pill: token-tinted shadow, primary border, :active scale.
+- search-action upgraded from grey pill to primary gradient CTA with
+  primary-tinted shadow — makes the "提问" call-to-action obvious.
+- tag-chip :active goes to primary-soft + scale + primary text.
+- bento-large: 3-stop gradient (primary → secondary → primary-hover)
+  + outer primary shadow + :active scale.
+- bento-small: full primary-tinted elevation system; brand badge
+  recolored from $tertiary (pink) to $warning (amber) to keep the
+  page in a single primary-violet tonal family while still flagging
+  "HOT".
+- service-row :active uses primary-soft + scale; notice-banner
+  gains :active feedback.
+- Every rgba(255,255,255,...) → rgba($bg-card, ...); bottom-spacer
+  now uses $space-12.
+
+pages/services/index.vue (heaviest rewrite)
+- Bespoke ~36-44px top-app-bar replaced with TopAppBar (56px
+  standard).
+- Removed the parallel utility-class system (.text-primary /
+  .text-secondary / .text-tertiary / .text-error /
+  .text-outline-variant / .bg-*-light) that conflicted with the
+  canonical tokens; everything now styled via SCSS modifiers.
+- Hero card: tri-color violet gradient (primary → primary-hover →
+  primary-10) + dual hero-glow + filled bg-icon + primary shadow.
+- Quick links section restructured:
+  - quick-large gets icon-wrap + title/meta two-line body.
+  - quick-row uses status icon-wrap (primary-soft / success-tinted).
+  - quick-wide adds a meta sub-line for context.
+  - All three share the same elevation + :active scale ladder.
+- Campus grid wrapped in a soft-card surface; each item icon-wrap
+  fills with $primary on :active and the icon inverts to white —
+  gives a clear tap affordance.
+- Query cards (academic) given 4 different status tints (primary /
+  warning / success / info) for visual differentiation while staying
+  within the design-token color set.
+- Personal list cards now have icon-wrap + chevron-icon, both
+  primary-tinted; rows use primary-soft :active + transition.
+- All cards now follow the unified elevation pattern: base
+  shadow($text-primary alpha) + soft primary glow shadow + thin
+  primary-alpha border + transform/shadow lift on :active.
+- Sections animate-fade-up with delay-1..4 stagger.
+
+pages/profile/index.vue
+- Top-bar replaced with TopAppBar; the legacy goHome ("back to
+  home") action was dropped because profile is a tab page and the
+  back-arrow conflicts with tab navigation semantics.
+- Hero card gradient migrated from hard-coded #630ed4 → #7c3aed to
+  $primary → $primary-hover → $primary-10 (matches services hero).
+- Verified badge border switched to $primary; avatar shadow uses
+  rgba($primary-hover, 0.30) instead of the magic rgba(44,0,120,0.20).
+- Every rgba(255,255,255,...) inside the hero / identity-chip /
+  hero-glow / week-pill rewritten as rgba($bg-card, ...).
+- Progress-fill gradient: $primary → $primary-hover (was mixed
+  token + #7c3aed hex).
+- settings-icon-wrap → $primary-soft, settings-icon → $primary with
+  Material Symbols FILL 1 / wght 500 variation for a more polished
+  monoline → filled feel.
+- chevron-icon → $text-muted; settings-row :active → $primary-soft.
+- settings-group gains an elevation matching the rest of the design
+  system (subtle text-primary base + primary glow + thin primary
+  border).
+- stat-card and ai-card both gain :active scale + shadow lift.
+- Every section animates in via animate-fade-up + delay-1..5.
+
+Spec compliance (stage 2):
+- Zero hard-coded violet hex anywhere in the student-app source
+  tree (verified by grep `#630ed4|#7c3aed|#702ae1|#191c1e|#4a4455`
+  → no matches).
+- All colours, spacings, radii, shadows, font sizes, font weights,
+  font families resolved through the token system.
+- safe-area-inset-* respected on every fixed bar.
+- :active feedback present on every clickable card and CTA.
+- TopAppBar adopted on all four scroll pages (chat / history /
+  services / profile) and home (in brand mode); login intentionally
+  retains its bespoke immersive top because it's a full-bleed page.
+
+Plan + spec at .tasks/student-ui-polish/PLAN.md fully ticks stages
+0, 1, 2. Stage 3 (teacher-app T1-T4: icon unification, token split,
+layout token, dashboard stat-card A/B) remains for follow-up.
+
+Out of scope:
+- Sass @import deprecation warnings will appear in dev server — the
+  whole repo (both teacher and student app) uses @import; migrating
+  to @use/@forward is a separate workspace-wide effort.
+- "记住我" checkbox on login — would require auth-store changes,
+  not a pure-UI scope item.
+- Notifications unread badge on profile — needs the same
+  getUnreadSummary wiring already used by home; trivial follow-up.

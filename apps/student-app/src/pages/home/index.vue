@@ -1,23 +1,21 @@
 <template>
   <view class="home-page">
-    <!-- 1. Brand bar + greeting -->
-    <view class="brand-bar">
-      <text class="brand-logo">医小管</text>
-      <view class="brand-actions">
-        <view class="notif-btn" @click="goNotifications">
-          <text class="material-symbols-outlined notif-btn-icon">notifications</text>
-          <view v-if="totalUnread > 0" class="notif-badge">{{ totalUnread > 99 ? '99+' : totalUnread }}</view>
-        </view>
-      </view>
-    </view>
+    <TopAppBar
+      brand
+      title="医小管"
+      action-icon="notifications"
+      :action-badge="totalUnread"
+      action-accent
+      @action="goNotifications"
+    />
 
-    <view class="greeting-section">
-      <text class="greeting-sub">下午好，{{ displayName }}</text>
+    <view class="greeting-section animate-fade-up">
+      <text class="greeting-sub">{{ greetingPrefix }}，{{ displayName }}</text>
       <text class="greeting-title">智慧校园助理</text>
     </view>
 
     <!-- 2. Search pill (links to chat) -->
-    <view class="search-pill" @click="goChat()">
+    <view class="search-pill animate-fade-up delay-1" @click="goChat()">
       <view class="search-icon-box">
         <text class="material-symbols-outlined search-icon">auto_awesome</text>
       </view>
@@ -28,7 +26,7 @@
     </view>
 
     <!-- 3. Horizontal category tags -->
-    <scroll-view scroll-x class="tag-scroll" show-scrollbar="false">
+    <scroll-view scroll-x class="tag-scroll animate-fade-up delay-2" show-scrollbar="false">
       <view class="tag-list">
         <view v-for="t in tags" :key="t.id" class="tag-chip" @click="onTagClick(t)">
           <text class="tag-text">{{ t.label }}</text>
@@ -37,7 +35,7 @@
     </scroll-view>
 
     <!-- 4. Bento grid of quick services -->
-    <view class="bento-grid">
+    <view class="bento-grid animate-fade-up delay-3">
       <view class="bento-card bento-large" @click="goChat()">
         <view class="bento-large-top">
           <view class="bento-large-icon-wrap">
@@ -79,7 +77,7 @@
     </view>
 
     <!-- 5. Service list / cards -->
-    <view class="service-section">
+    <view class="service-section animate-fade-up delay-4">
       <view class="service-section-header">
         <text class="section-title">常用服务</text>
         <text class="section-more" @click="showToastSoon">查看全部</text>
@@ -96,7 +94,7 @@
     </view>
 
     <!-- 6. Notification banner -->
-    <view v-if="notice" class="notice-banner" @click="goNotifications">
+    <view v-if="notice" class="notice-banner animate-fade-up delay-5" @click="goNotifications">
       <view class="notice-left">
         <view class="notice-icon-wrap">
           <text class="material-symbols-outlined notice-icon">campaign</text>
@@ -117,11 +115,21 @@ import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import { getUnreadSummary } from '@/api/notification'
 import CustomTabBar from '@/components/CustomTabBar.vue'
+import TopAppBar from '@/components/TopAppBar.vue'
 
 const userStore = useUserStore()
 
 const displayName = computed(() => userStore.userInfo?.name || userStore.userInfo?.staff_id || '同学')
 const totalUnread = ref(0)
+
+const greetingPrefix = computed(() => {
+  const h = new Date().getHours()
+  if (h < 6) return '夜深了'
+  if (h < 11) return '早上好'
+  if (h < 13) return '中午好'
+  if (h < 18) return '下午好'
+  return '晚上好'
+})
 
 // Static placeholder data for new sections
 const tags = ref([
@@ -213,71 +221,22 @@ function showToastSoon() {
 
 <style lang="scss" scoped>
 @import '@/styles/tokens.scss';
+@import '@/styles/theme.scss';
+
+$top-bar-h: 56px;
+$tab-bar-h: 64px;
 
 .home-page {
   min-height: 100vh;
-  padding: 0 $space-4 calc(env(safe-area-inset-bottom) + 5rem);
-  padding-top: 64px;
+  padding: calc(env(safe-area-inset-top) + #{$top-bar-h} + #{$space-3}) $space-4
+    calc(env(safe-area-inset-bottom) + #{$tab-bar-h} + #{$space-6});
   background: $bg-page;
   font-family: $font-family-sans;
 }
 
-/* 1. Brand bar */
-.brand-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: calc(env(safe-area-inset-top) + $space-4);
-  padding-bottom: $space-3;
-  padding-left: $space-4;
-  padding-right: $space-4;
-  background: rgba(249, 250, 251, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.brand-logo {
-  font-size: $font-size-xl;
-  font-weight: $font-weight-bold;
-  color: $primary;
-}
-
-.notif-btn {
-  position: relative;
-  padding: $space-2;
-  color: $text-secondary;
-}
-
-.notif-btn-icon {
-  font-size: 20px;
-}
-
-.notif-badge {
-  position: absolute;
-  top: 4px;
-  right: 2px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 5px;
-  box-sizing: border-box;
-  border-radius: $radius-full;
-  background: $danger;
-  color: #fff;
-  font-size: 10px;
-  font-weight: $font-weight-bold;
-  line-height: 16px;
-  text-align: center;
-  box-shadow: 0 0 0 2px $bg-page;
-}
-
 /* Greeting */
 .greeting-section {
-  margin-bottom: $space-4;
+  margin-bottom: $space-5;
 }
 
 .greeting-sub {
@@ -303,9 +262,17 @@ function showToastSoon() {
   background: $bg-card;
   border-radius: $radius-full;
   padding: $space-1;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba($border, 0.10);
+  box-shadow: 0 10px 30px -8px rgba($primary, 0.10),
+              0 1px 2px rgba($text-primary, 0.04);
+  border: 1px solid rgba($primary, 0.06);
   margin-bottom: $space-5;
+  transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
+}
+
+.search-pill:active {
+  transform: scale(0.99);
+  box-shadow: 0 6px 20px -8px rgba($primary, 0.14),
+              0 1px 2px rgba($text-primary, 0.06);
 }
 
 .search-icon-box {
@@ -340,15 +307,17 @@ function showToastSoon() {
 
 .search-action {
   flex-shrink: 0;
-  background: $surface-container-high;
-  color: $text-secondary;
+  background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
   border-radius: $radius-full;
   padding: $space-2 $space-4;
+  box-shadow: 0 4px 12px -4px rgba($primary, 0.40);
 }
 
 .search-action-text {
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
+  color: $text-inverse;
+  letter-spacing: 0.02em;
 }
 
 /* 3. Horizontal tags */
@@ -378,6 +347,18 @@ function showToastSoon() {
   background: $surface-container-low;
   border-radius: $radius-full;
   padding: $space-2 $space-5;
+  border: 1px solid transparent;
+  transition: background 0.18s ease-out, border-color 0.18s ease-out, transform 0.18s ease-out;
+}
+
+.tag-chip:active {
+  background: $primary-soft;
+  border-color: rgba($primary, 0.20);
+  transform: scale(0.96);
+
+  .tag-text {
+    color: $primary;
+  }
 }
 
 .tag-text {
@@ -405,11 +386,18 @@ function showToastSoon() {
 
 .bento-large {
   grid-row: span 2;
-  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+  background: linear-gradient(135deg, $primary 0%, $secondary 60%, $primary-hover 100%);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: $space-5;
+  box-shadow: 0 8px 24px -8px rgba($primary, 0.40);
+  transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
+}
+
+.bento-large:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 16px -8px rgba($primary, 0.50);
 }
 
 .bento-large-top {
@@ -421,8 +409,9 @@ function showToastSoon() {
   width: 48px;
   height: 48px;
   border-radius: $radius-md;
-  background: rgba(255, 255, 255, 0.20);
+  background: rgba($bg-card, 0.20);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -445,7 +434,7 @@ function showToastSoon() {
 .bento-large-desc {
   display: block;
   font-size: $font-size-sm;
-  color: rgba(255, 255, 255, 0.90);
+  color: rgba($bg-card, 0.90);
   line-height: $line-height-relaxed;
 }
 
@@ -471,7 +460,7 @@ function showToastSoon() {
   width: 96px;
   height: 96px;
   border-radius: $radius-full;
-  background: rgba(255, 255, 255, 0.10);
+  background: rgba($bg-card, 0.10);
   filter: blur(16px);
 }
 
@@ -487,12 +476,21 @@ function showToastSoon() {
 }
 
 .bento-small {
-  background: $surface-container-lowest;
+  background: $bg-card;
   padding: $space-4;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 4px 20px rgba($primary, 0.04);
+  box-shadow: 0 1px 2px rgba($text-primary, 0.04),
+              0 4px 16px -4px rgba($primary, 0.06);
+  border: 1px solid rgba($primary, 0.04);
+  transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
+}
+
+.bento-small:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 4px rgba($text-primary, 0.06),
+              0 6px 18px -4px rgba($primary, 0.14);
 }
 
 .bento-small-header {
@@ -505,7 +503,7 @@ function showToastSoon() {
   width: 40px;
   height: 40px;
   border-radius: $radius-md;
-  background: rgba($tertiary, 0.10);
+  background: rgba($warning, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -513,16 +511,18 @@ function showToastSoon() {
 
 .bento-small-icon {
   font-size: 20px;
-  color: $tertiary;
+  color: $warning;
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 
 .bento-badge {
   font-size: 10px;
   font-weight: $font-weight-bold;
-  color: $tertiary;
-  background: rgba($tertiary, 0.10);
+  color: $warning;
+  background: rgba($warning, 0.14);
   padding: 2px 8px;
   border-radius: $radius-full;
+  letter-spacing: 0.05em;
 }
 
 .bento-small-title {
@@ -583,13 +583,15 @@ function showToastSoon() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: $surface-container-lowest;
+  background: $bg-card;
   border-radius: $radius-md;
   padding: $space-4;
+  transition: background 0.18s ease-out, transform 0.18s ease-out;
 }
 
 .service-row:active {
-  background: rgba($primary-soft, 0.30);
+  background: $primary-soft;
+  transform: scale(0.99);
 }
 
 .service-row-left {
@@ -634,6 +636,12 @@ function showToastSoon() {
   border-radius: $radius-lg;
   padding: $space-4;
   margin-bottom: $space-6;
+  transition: background 0.18s ease-out, transform 0.18s ease-out;
+}
+
+.notice-banner:active {
+  background: rgba($primary, 0.10);
+  transform: scale(0.99);
 }
 
 .notice-left {
@@ -669,6 +677,6 @@ function showToastSoon() {
 }
 
 .bottom-spacer {
-  height: 5rem;
+  height: $space-12;
 }
 </style>

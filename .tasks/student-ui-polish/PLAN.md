@@ -62,11 +62,40 @@
   - [x] footer 链接全大写 + 0.10em letter-spacing
   - 备注：未加"记住我"复选框（避免改登录逻辑），可作为后续可选增强
 
-### 阶段 2：导航壳页（下次对话）
+### 阶段 2：导航壳页
 
-- [ ] **2.1** `pages/home/index.vue`（已较新但需 token 收敛 + 入场动画）
-- [ ] **2.2** `pages/services/index.vue`（重灾区：删平行工具类、TopAppBar 替换、token 化）
-- [ ] **2.3** `pages/profile/index.vue`（hero 渐变 token 化、settings icon 颜色 token 化、TopAppBar 替换）
+- [x] **2.1** `pages/home/index.vue`
+  - [x] brand-bar 改用 `<TopAppBar brand title="医小管" actionIcon="notifications" actionAccent />`
+  - [x] greeting / search-pill / tag-scroll / bento-grid / service-section / notice-banner 全部 animate-fade-up + delay 阶梯
+  - [x] greeting 增加时段感知（早上/中午/下午/晚上/夜深了）
+  - [x] search-action 从灰底 token 升级为主色 CTA（紫色渐变 + 阴影）
+  - [x] search-pill 加 :active 反馈
+  - [x] tag-chip :active 主色软背景 + scale
+  - [x] bento-large 三色渐变（primary → secondary → primary-hover）+ :active scale + 阴影增强
+  - [x] bento-small 紫色调 elevation 体系，强调色从 $tertiary（粉）改 $warning（琥珀）
+  - [x] service-row :active 主色软背景 + scale；notice-banner :active 反馈
+  - [x] 所有 rgba(255,255,255,...) / rgba(0,0,0,...) 改用 token；bottom-spacer 用 $space-12
+- [x] **2.2** `pages/services/index.vue`（重灾区，最大改动）
+  - [x] 顶栏改 TopAppBar
+  - [x] 删除平行工具类 .text-primary/.text-secondary/.text-tertiary/.text-error/.text-outline-variant/.bg-*-light（与 token 命名冲突）
+  - [x] hero-card 三色渐变 + glow 双层 + 阴影；hero-icon-bg filled
+  - [x] quick-grid 重构：quick-large 用 icon-wrap + body 双列；quick-row 多个状态色 icon-wrap；quick-wide 加 meta 副文案
+  - [x] campus-grid 容器卡片化（4×N 网格 in 圆角 surface card）；icon-wrap :active 主色填充 + icon 反白
+  - [x] query-card 4 张分别 primary/warning/success/info 强调色
+  - [x] personal-list 卡片化 + icon-wrap 主色软背景 + token 化 chevron
+  - [x] 所有卡片统一 elevation 体系（双层阴影 + 浅紫边框 + :active scale + 阴影增强）
+  - [x] 全部 animate-fade-up delay-1..4 阶梯
+- [x] **2.3** `pages/profile/index.vue`
+  - [x] 顶栏改 TopAppBar（删除多余的 goHome 返回按钮 — tab 页不应有 back）
+  - [x] hero-card 渐变 token 化（primary → primary-hover → primary-10 violet-950）+ 紫色阴影
+  - [x] verified-badge 边框 token、avatar-image 阴影 rgba($primary-hover) token
+  - [x] 全部 rgba(255,255,255,...) → rgba($bg-card, ...)
+  - [x] progress-fill 渐变 token化
+  - [x] settings-icon-wrap 改 $primary-soft；settings-icon 改 $primary（filled FILL 1）
+  - [x] chevron-icon 改 $text-muted；settings-row :active 改 $primary-soft + transition
+  - [x] settings-group 加 elevation；settings-row border 改 $divider
+  - [x] stat-card / ai-card 加 :active scale + 阴影增强
+  - [x] hero / stats / feature / settings / logout 各加 animate-fade-up + delay-1..5
 
 ### 阶段 3：教师端同步精进（下次对话或并行）
 

@@ -1,18 +1,14 @@
 <template>
   <view class="profile-page">
-    <view class="top-bar">
-      <view class="top-action" @click="goHome">
-        <text class="material-symbols-outlined top-icon">arrow_back</text>
-      </view>
-      <text class="top-title">我的</text>
-      <view class="top-action" @click="showComingSoon">
-        <text class="material-symbols-outlined top-icon">notifications</text>
-        <view class="notify-dot" />
-      </view>
-    </view>
+    <TopAppBar
+      title="我的"
+      action-icon="notifications"
+      action-accent
+      @action="showComingSoon"
+    />
 
     <view class="profile-content">
-      <view class="hero-card">
+      <view class="hero-card animate-fade-up">
         <view class="hero-main">
           <view class="avatar-wrap">
             <image
@@ -40,7 +36,7 @@
         <view class="hero-glow hero-glow-left" />
       </view>
 
-      <view class="stats-grid">
+      <view class="stats-grid animate-fade-up delay-1">
         <view class="stat-card" @click="goChatHistory">
           <view class="stat-icon-wrap primary-soft">
             <text class="material-symbols-outlined stat-icon primary-icon">forum</text>
@@ -57,7 +53,7 @@
         </view>
       </view>
 
-      <view class="feature-grid">
+      <view class="feature-grid animate-fade-up delay-2">
         <view class="progress-card">
           <view class="progress-head">
             <view>
@@ -92,7 +88,7 @@
         </view>
       </view>
 
-      <view class="settings-group">
+      <view class="settings-group animate-fade-up delay-3">
         <view
           v-for="item in primarySettings"
           :key="item.label"
@@ -109,7 +105,7 @@
         </view>
       </view>
 
-      <view class="settings-group">
+      <view class="settings-group animate-fade-up delay-4">
         <view
           v-for="item in secondarySettings"
           :key="item.label"
@@ -126,7 +122,7 @@
         </view>
       </view>
 
-      <view class="logout-section">
+      <view class="logout-section animate-fade-up delay-5">
         <button class="logout-btn" @click="handleLogout">
           <text class="logout-text">退出登录</text>
         </button>
@@ -142,6 +138,7 @@
 import { computed } from 'vue'
 import { useUserStore } from '@/stores/user'
 import CustomTabBar from '@/components/CustomTabBar.vue'
+import TopAppBar from '@/components/TopAppBar.vue'
 
 const userStore = useUserStore()
 
@@ -168,10 +165,6 @@ const studentMeta = computed(() => {
   return staffId ? `临床医学系 · ${staffId}` : '临床医学系 · 2021级本科'
 })
 
-function goHome() {
-  uni.switchTab({ url: '/pages/home/index' })
-}
-
 function goChatHistory() {
   uni.navigateTo({ url: '/pages/chat/history' })
 }
@@ -196,77 +189,32 @@ function handleLogout() {
 
 <style lang="scss" scoped>
 @import '@/styles/tokens.scss';
+@import '@/styles/theme.scss';
+
+$top-bar-h: 56px;
+$tab-bar-h: 64px;
 
 .profile-page {
   min-height: 100vh;
-  background: #f7f9fb;
+  background: $bg-page;
   font-family: $font-family-sans;
   color: $text-primary;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 6rem);
-}
-
-.top-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: calc(env(safe-area-inset-top) + $space-4) $space-6 $space-4;
-  background: rgba(247, 249, 251, 0.82);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-.top-action {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  border-radius: $radius-full;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.top-action:active {
-  background: rgba($primary, 0.08);
-}
-
-.top-icon {
-  font-size: 24px;
-  color: $primary;
-}
-
-.top-title {
-  font-size: $font-size-lg;
-  font-weight: $font-weight-bold;
-  color: $primary;
-}
-
-.notify-dot {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 8px;
-  height: 8px;
-  border-radius: $radius-full;
-  background: $danger;
+  padding-bottom: calc(env(safe-area-inset-bottom) + #{$tab-bar-h} + #{$space-6});
 }
 
 .profile-content {
-  padding: 88px $space-6 0;
+  padding: calc(env(safe-area-inset-top) + #{$top-bar-h} + #{$space-4}) $space-6 0;
 }
 
 .hero-card {
   position: relative;
   overflow: hidden;
   border-radius: $radius-lg;
-  background: linear-gradient(135deg, #630ed4 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, $primary 0%, $primary-hover 60%, $primary-10 100%);
   color: $text-inverse;
   padding: $space-8;
   margin-bottom: $space-8;
+  box-shadow: 0 12px 32px -8px rgba($primary, 0.40);
 }
 
 .hero-main {
@@ -289,15 +237,15 @@ function handleLogout() {
   width: 80px;
   height: 80px;
   border-radius: $radius-full;
-  border: 4px solid rgba(255, 255, 255, 0.30);
-  box-shadow: 0 8px 18px rgba(44, 0, 120, 0.20);
+  border: 4px solid rgba($bg-card, 0.30);
+  box-shadow: 0 8px 18px rgba($primary-hover, 0.30);
 }
 
 .avatar-fallback {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba($bg-card, 0.18);
 }
 
 .avatar-initial {
@@ -313,8 +261,8 @@ function handleLogout() {
   width: 24px;
   height: 24px;
   border-radius: $radius-full;
-  border: 2px solid #630ed4;
-  background: #ffffff;
+  border: 2px solid $primary;
+  background: $bg-card;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -344,7 +292,7 @@ function handleLogout() {
   margin-top: $space-1;
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba($bg-card, 0.82);
 }
 
 .identity-chip {
@@ -352,8 +300,8 @@ function handleLogout() {
   margin-top: $space-3;
   padding: $space-1 $space-3;
   border-radius: $radius-full;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.20);
+  border: 1px solid rgba($bg-card, 0.12);
+  background: rgba($bg-card, 0.20);
 }
 
 .identity-text {
@@ -368,7 +316,7 @@ function handleLogout() {
   width: 192px;
   height: 192px;
   border-radius: $radius-full;
-  background: rgba(255, 255, 255, 0.10);
+  background: rgba($bg-card, 0.10);
   filter: blur(30px);
 }
 
@@ -394,10 +342,16 @@ function handleLogout() {
   background: $bg-card;
   border-radius: $radius-lg;
   padding: $space-5;
+  box-shadow: 0 1px 2px rgba($text-primary, 0.04),
+              0 4px 12px -4px rgba($primary, 0.06);
+  border: 1px solid rgba($primary, 0.04);
+  transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
 }
 
 .stat-card:active {
-  background: $surface-container-high;
+  transform: scale(0.97);
+  box-shadow: 0 2px 4px rgba($text-primary, 0.06),
+              0 6px 18px -4px rgba($primary, 0.16);
 }
 
 .stat-icon-wrap {
@@ -497,7 +451,7 @@ function handleLogout() {
   border-radius: $radius-full;
   padding: $space-1 $space-3;
   border: 1px solid rgba($primary, 0.10);
-  background: rgba(255, 255, 255, 0.80);
+  background: rgba($bg-card, 0.80);
 }
 
 .week-text {
@@ -535,12 +489,21 @@ function handleLogout() {
   width: 84%;
   height: 100%;
   border-radius: $radius-full;
-  background: linear-gradient(90deg, $primary 0%, #7c3aed 100%);
+  background: linear-gradient(90deg, $primary 0%, $primary-hover 100%);
 }
 
 .ai-card {
   background: $bg-card;
-  box-shadow: 0 -10px 40px rgba(124, 58, 237, 0.08);
+  border: 1px solid rgba($primary, 0.06);
+  box-shadow: 0 1px 2px rgba($text-primary, 0.04),
+              0 4px 16px -4px rgba($primary, 0.10);
+  transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
+}
+
+.ai-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 4px rgba($text-primary, 0.06),
+              0 6px 18px -4px rgba($primary, 0.18);
 }
 
 .ai-head {
@@ -597,12 +560,16 @@ function handleLogout() {
   border-radius: $radius-lg;
   background: $bg-card;
   margin-bottom: $space-6;
+  box-shadow: 0 1px 2px rgba($text-primary, 0.04),
+              0 4px 12px -4px rgba($primary, 0.06);
+  border: 1px solid rgba($primary, 0.04);
 }
 
 .settings-row {
   min-height: 64px;
   padding: 0 $space-6;
-  border-bottom: 1px solid $surface-container-low;
+  border-bottom: 1px solid $divider;
+  transition: background 0.18s ease-out;
 }
 
 .settings-row:last-child {
@@ -610,7 +577,7 @@ function handleLogout() {
 }
 
 .settings-row:active {
-  background: $surface-container-high;
+  background: $primary-soft;
 }
 
 .settings-left {
@@ -621,7 +588,7 @@ function handleLogout() {
   width: 40px;
   height: 40px;
   border-radius: $radius-full;
-  background: #f1f5f9;
+  background: $primary-soft;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -629,7 +596,8 @@ function handleLogout() {
 
 .settings-icon {
   font-size: 22px;
-  color: #64748b;
+  color: $primary;
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 
 .settings-label {
@@ -640,7 +608,7 @@ function handleLogout() {
 
 .chevron-icon {
   font-size: 22px;
-  color: #cbd5e1;
+  color: $text-muted;
 }
 
 .logout-section {
