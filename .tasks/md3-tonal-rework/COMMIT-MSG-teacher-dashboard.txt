@@ -1,0 +1,21 @@
+feat(teacher-ui): dashboard + bottom nav MD3 strict pass
+
+严守 Ametrine Scholar DESIGN.md 的 No-Line / No-Shadow-as-default
+规则，把 dashboard 和 BottomNavBar 升到 strict pass。
+
+pages/dashboard/index.vue:
+- welcome-banner: border-radius 24px → $radius-lg (2rem),
+  box-shadow 从 $elevation-3 统一到 $shadow-fab (紫色折射)
+- welcome-decoration: filter blur 30px → 48px 更柔和
+- stat-card: 删掉 $elevation-1 阴影 (No-Shadow-as-default);
+  padding/gap 全部改 $space-* token
+- question-card: 删掉 $elevation-1 / $elevation-2 阴影, hover
+  改 transform scale(0.99) + container tint 往上抬一层
+- admin-card: 删掉 1px solid rgba border (No-Line), 渐变背景
+  改 $surface-container-low tonal tier;  半径统一 $radius-md
+
+components/BottomNavBar.vue:
+- active icon color 硬编码 #702ae1 → #5b21b6 (匹配 $primary 覆盖值)
+- bg rgba(255,255,255,0.98) → $glass-bg (white/80) 更贴 DESIGN.md 20% blur
+- border-radius 16px → $radius-lg (2rem) 符合 stitch rounded-t-3xl
+- box-shadow 0 -4px 20px rgba(99,14,212,0.05) → $shadow-nav token

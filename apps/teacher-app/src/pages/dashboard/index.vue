@@ -149,16 +149,26 @@
 
     <!-- 底部导航栏 -->
     <BottomNavBar :current="0" :badge="pendingCount > 99 ? 99 : pendingCount" />
+
+    <FeatureNoticeSheet
+      :visible="sheetVisible"
+      :title="sheetTitle"
+      :description="sheetDesc"
+      icon="hourglass_empty"
+      @close="sheetVisible = false"
+    />
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import BottomNavBar from '../../components/BottomNavBar.vue'
+import FeatureNoticeSheet from '../../components/FeatureNoticeSheet.vue'
 import { listConversations } from '@/api/conversations'
 import { getStatusText } from '@/utils/status-map'
+import { wsManager } from '@/utils/websocket'
 
 // 用户状态
 const userStore = useUserStore()
@@ -210,14 +220,34 @@ const loadPendingQuestions = async () => {
   }
 }
 
+// 弹层状态
+const sheetVisible = ref(false)
+const sheetTitle = ref('')
+const sheetDesc = ref('该功能正在建设中，敬请期待。')
+
+function showSheet(title: string, desc?: string) {
+  sheetTitle.value = title
+  sheetDesc.value = desc || '该功能正在建设中，敬请期待。'
+  sheetVisible.value = true
+}
+
 // 通知点击
 const handleNotification = () => {
-  uni.showToast({ title: '功能开发中', icon: 'none' })
+  showSheet('消息通知')
 }
 
 // 快捷操作
 const handleQuickAction = (type: string) => {
-  uni.showToast({ title: '功能开发中', icon: 'none' })
+  if (type === 'knowledge') {
+    uni.switchTab({ url: '/pages/knowledge/index' })
+    return
+  }
+  const nameMap: Record<string, string> = {
+    notice: '发布通知',
+    report: '数据报告',
+    settings: '系统设置',
+  }
+  showSheet(nameMap[type] || type)
 }
 
 // 查看全部提问
@@ -248,14 +278,32 @@ const loadStats = async () => {
   }
 }
 
+const handleEscalationNotify = () => {
+  loadPendingQuestions()
+}
+const handleStatusChanged = () => {
+  loadPendingQuestions()
+}
+
+let pollingTimer: ReturnType<typeof setInterval> | null = null
+
 onMounted(() => {
   loadStats()
   loadPendingQuestions()
+  wsManager.on('escalation_notify', handleEscalationNotify)
+  wsManager.on('status_changed', handleStatusChanged)
+  pollingTimer = setInterval(() => loadPendingQuestions(), 30000)
 })
 
 onShow(() => {
   loadStats()
   loadPendingQuestions()
+})
+
+onUnmounted(() => {
+  wsManager.off('escalation_notify', handleEscalationNotify)
+  wsManager.off('status_changed', handleStatusChanged)
+  if (pollingTimer) { clearInterval(pollingTimer); pollingTimer = null }
 })
 </script>
 

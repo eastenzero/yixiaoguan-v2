@@ -2,7 +2,7 @@
   <view class="services-page">
     <view class="top-app-bar">
       <view class="bar-left">
-        <text class="bar-title">服务大厅</text>
+        <text class="bar-title">服务指南</text>
       </view>
     </view>
 
@@ -10,8 +10,8 @@
       <view class="hero-card">
         <view class="hero-inner">
           <text class="hero-label">CAMPUS SERVICES</text>
-          <text class="hero-title">校园服务中心</text>
-          <text class="hero-subtitle">便捷办事 · 智慧生活</text>
+          <text class="hero-title">校园服务指南</text>
+          <text class="hero-subtitle">常见事务 · 流程咨询 · 入口导航</text>
         </view>
         <view class="hero-blur" />
         <view class="hero-bg-icon">
@@ -25,22 +25,27 @@
           <text class="section-badge">QUICK LINKS</text>
         </view>
         <view class="quick-grid">
-          <view class="quick-large" @click="openUrl('https://www.sdfmu.edu.cn')">
+          <view class="quick-large" @click="openExternal('https://www.sdfmu.edu.cn')">
             <text class="material-symbols-outlined quick-icon text-primary">home</text>
-            <text class="quick-label">校主页</text>
+            <view class="quick-label-row">
+              <text class="quick-label">校主页</text>
+              <text class="material-symbols-outlined meta-external">open_in_new</text>
+            </view>
           </view>
           <view class="quick-stack">
-            <view class="quick-row" @click="openUrl('http://portal.sdfmu.edu.cn')">
+            <view class="quick-row" @click="openExternal('http://portal.sdfmu.edu.cn')">
               <text class="material-symbols-outlined quick-icon text-secondary">gate</text>
               <text class="quick-label">信息门户</text>
+              <text class="material-symbols-outlined meta-external">open_in_new</text>
             </view>
-            <view class="quick-row" @click="openUrl('http://portal.sdfmu.edu.cn')">
+            <view class="quick-row" @click="openExternal('http://portal.sdfmu.edu.cn')">
               <text class="material-symbols-outlined quick-icon text-tertiary">cloud_done</text>
               <text class="quick-label">服务大厅</text>
+              <text class="material-symbols-outlined meta-external">open_in_new</text>
             </view>
           </view>
         </view>
-        <view class="quick-wide" @click="showDevToast">
+        <view class="quick-wide" @click="handleComingSoon('统一消息平台', '我在哪里查看学校通知和老师回复？')">
           <view class="quick-wide-left">
             <text class="material-symbols-outlined quick-icon text-primary">message</text>
             <text class="quick-label">统一消息平台</text>
@@ -60,6 +65,7 @@
           >
             <view class="campus-icon-box">
               <text class="material-symbols-outlined campus-icon">{{ item.icon }}</text>
+              <text v-if="item.url" class="material-symbols-outlined badge-external">open_in_new</text>
             </view>
             <text class="campus-label">{{ item.label }}</text>
           </view>
@@ -69,40 +75,40 @@
       <view class="section">
         <text class="section-title">学业</text>
         <view class="query-grid">
-          <view class="query-card" @click="showDevToast">
+          <view class="query-card" @click="handleAiQuestion('学生课表在哪里查看？')">
             <view class="query-icon-box bg-secondary-light">
               <text class="material-symbols-outlined text-secondary">calendar_month</text>
             </view>
             <view class="query-info">
               <text class="query-name">学生课表</text>
-              <text class="query-meta">本学期</text>
+              <text class="query-meta">问医小管</text>
             </view>
           </view>
-          <view class="query-card" @click="openUrl('http://jwc.sdfmu.edu.cn')">
+          <view class="query-card" @click="openExternal('http://jwc.sdfmu.edu.cn')">
             <view class="query-icon-box bg-tertiary-light">
               <text class="material-symbols-outlined text-tertiary">grade</text>
             </view>
             <view class="query-info">
               <text class="query-name">成绩查询</text>
-              <text class="query-meta">教务系统</text>
+              <text class="query-meta">教务系统 <text class="material-symbols-outlined meta-external">open_in_new</text></text>
             </view>
           </view>
-          <view class="query-card" @click="openUrl('http://202.194.232.127/index.html')">
+          <view class="query-card" @click="openExternal('http://202.194.232.127/index.html')">
             <view class="query-icon-box bg-primary-light">
               <text class="material-symbols-outlined text-primary">library_books</text>
             </view>
             <view class="query-info">
               <text class="query-name">图书馆</text>
-              <text class="query-meta">借阅状态</text>
+              <text class="query-meta">借阅状态 <text class="material-symbols-outlined meta-external">open_in_new</text></text>
             </view>
           </view>
-          <view class="query-card" @click="openUrl('https://mail.sdfmu.edu.cn/')">
+          <view class="query-card" @click="openExternal('https://mail.sdfmu.edu.cn/')">
             <view class="query-icon-box bg-error-light">
               <text class="material-symbols-outlined text-error">mail</text>
             </view>
             <view class="query-info">
               <text class="query-name">学生邮箱</text>
-              <text class="query-meta">收件箱</text>
+              <text class="query-meta">收件箱 <text class="material-symbols-outlined meta-external">open_in_new</text></text>
             </view>
           </view>
         </view>
@@ -111,14 +117,14 @@
       <view class="section">
         <text class="section-title">个人</text>
         <view class="personal-list">
-          <view class="personal-item border-bottom" @click="showDevToast">
+          <view class="personal-item border-bottom" @click="handleComingSoon('个人日程', '学校重要日程在哪里查看？')">
             <view class="personal-left">
               <text class="material-symbols-outlined text-primary">event_note</text>
               <text class="personal-name">个人日程</text>
             </view>
             <text class="material-symbols-outlined text-outline-variant">chevron_right</text>
           </view>
-          <view class="personal-item" @click="showDevToast">
+          <view class="personal-item" @click="goChatHistory">
             <view class="personal-left">
               <text class="material-symbols-outlined text-primary">help_center</text>
               <text class="personal-name">我的提问</text>
@@ -134,55 +140,54 @@
     </scroll-view>
 
     <CustomTabBar current="services" />
+    <FeatureNoticeSheet />
   </view>
 </template>
 
 <script setup lang="ts">
 import CustomTabBar from '@/components/CustomTabBar.vue'
+import FeatureNoticeSheet from '@/components/FeatureNoticeSheet.vue'
+import { openAiQuestion, openExternal, showComingSoon } from '@/composables/useServiceNavigation'
 
 interface ServiceItem {
   icon: string
   label: string
   url?: string
-  wechatOnly?: boolean
+  aiQuestion?: string
+  comingSoon?: boolean
 }
 
 const campusServices: ServiceItem[] = [
-  { icon: 'meeting_room', label: '空教室申请', url: undefined },
-  { icon: 'assignment', label: '我的申请', url: undefined },
+  { icon: 'meeting_room', label: '空教室申请', aiQuestion: '我想申请空教室，办理流程是什么？' },
+  { icon: 'assignment', label: '我的申请', comingSoon: true, aiQuestion: '我想查看或跟进自己的校园事务申请，应该去哪里？' },
   { icon: 'handyman', label: '网上报修', url: 'https://metc.sdfmu.edu.cn/info/1073/1954.htm' },
-  { icon: 'feedback', label: '接诉即办', wechatOnly: true },
+  { icon: 'feedback', label: '接诉即办', aiQuestion: '我想反馈校园问题或投诉建议，应该怎么提交？' },
   { icon: 'wifi', label: '校园网', url: 'http://vpnportal.sdfmu.edu.cn' },
-  { icon: 'local_hospital', label: '校医院', url: undefined },
-  { icon: 'directions_bus', label: '班车查询', wechatOnly: true },
-  { icon: 'more_horiz', label: '更多', url: undefined },
+  { icon: 'local_hospital', label: '校医院', aiQuestion: '校医院就诊流程和开放时间是什么？' },
+  { icon: 'directions_bus', label: '班车查询', aiQuestion: '班车时刻表在哪里查询？' },
+  { icon: 'more_horiz', label: '更多', aiQuestion: '医小管可以帮我做什么？' },
 ]
-
-function openUrl(url: string) {
-  // #ifdef H5
-  window.open(url, '_blank')
-  // #endif
-  // #ifndef H5
-  uni.navigateTo({ url: `/pages/services/webview?url=${encodeURIComponent(url)}` })
-  // #endif
-}
-
-function wechatOnlyToast() {
-  uni.showToast({ title: '请在山一大企业微信中使用', icon: 'none', duration: 2000 })
-}
-
-function showDevToast() {
-  uni.showToast({ title: '功能开发中，敬请期待', icon: 'none', duration: 2000 })
-}
 
 function handleServiceClick(item: ServiceItem) {
   if (item.url) {
-    openUrl(item.url)
-  } else if (item.wechatOnly) {
-    wechatOnlyToast()
-  } else {
-    showDevToast()
+    openExternal(item.url)
+  } else if (item.comingSoon) {
+    showComingSoon(item.label, item.aiQuestion)
+  } else if (item.aiQuestion) {
+    openAiQuestion(item.aiQuestion)
   }
+}
+
+function handleAiQuestion(question: string) {
+  openAiQuestion(question)
+}
+
+function handleComingSoon(name: string, question?: string) {
+  showComingSoon(name, question)
+}
+
+function goChatHistory() {
+  uni.navigateTo({ url: '/pages/chat/history' })
 }
 </script>
 
@@ -257,6 +262,7 @@ function handleServiceClick(item: ServiceItem) {
 .quick-row:active { transform: scale(0.98); }
 .quick-icon { font-size: 1.5rem; }
 .quick-label { font-size: 0.875rem; font-weight: 700; color: $on-surface; }
+.quick-label-row { display: flex; align-items: center; gap: 4px; }
 .quick-wide { background: #fff; padding: 1.25rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: space-between; }
 .quick-wide:active { transform: scale(0.98); }
 .quick-wide-left { display: flex; align-items: center; gap: 1rem; }
@@ -264,7 +270,24 @@ function handleServiceClick(item: ServiceItem) {
 .campus-grid { background: $surface-container-low; border-radius: $radius-md; padding: 1.5rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem 0.5rem; }
 .campus-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
 .campus-item:active .campus-icon-box { transform: scale(0.9); }
-.campus-icon-box { width: 3rem; height: 3rem; border-radius: 1rem; background: #fff; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+.campus-icon-box { position: relative; width: 3rem; height: 3rem; border-radius: 1rem; background: #fff; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+
+.badge-external {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  font-size: 12px;
+  color: $outline;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+}
+
+.meta-external {
+  font-size: 10px;
+  color: $outline;
+  vertical-align: middle;
+  margin-left: 2px;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+}
 .campus-icon { font-size: 1.5rem; color: $primary; }
 .campus-label { font-size: 0.6875rem; font-weight: 700; color: $on-surface; text-align: center; line-height: 1.3; }
 

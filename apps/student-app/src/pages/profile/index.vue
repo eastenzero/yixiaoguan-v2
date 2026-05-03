@@ -5,7 +5,7 @@
         <text class="material-symbols-outlined top-icon">arrow_back</text>
       </view>
       <text class="top-title">我的</text>
-      <view class="top-action" @click="showComingSoon">
+      <view class="top-action" @click="goChatHistory">
         <text class="material-symbols-outlined top-icon">notifications</text>
         <view class="notify-dot" />
       </view>
@@ -45,48 +45,29 @@
           <view class="stat-icon-wrap primary-soft">
             <text class="material-symbols-outlined stat-icon primary-icon">forum</text>
           </view>
-          <text class="stat-value">128</text>
-          <text class="stat-label">问答历史</text>
+          <text class="stat-value">{{ conversationCount }}</text>
+          <text class="stat-label">咨询记录</text>
         </view>
-        <view class="stat-card" @click="showComingSoon">
+        <view class="stat-card" @click="goChatHistory">
           <view class="stat-icon-wrap secondary-soft">
-            <text class="material-symbols-outlined stat-icon secondary-icon">assignment</text>
+            <text class="material-symbols-outlined stat-icon secondary-icon">mark_chat_read</text>
           </view>
-          <text class="stat-value">12</text>
-          <text class="stat-label">我的申请</text>
+          <text class="stat-value">{{ totalUnread }}</text>
+          <text class="stat-label">未读消息</text>
         </view>
       </view>
 
       <view class="feature-grid">
-        <view class="progress-card">
-          <view class="progress-head">
-            <view>
-              <text class="card-title">学期进度</text>
-              <text class="card-subtitle">2023-2024 秋季学期</text>
-            </view>
-            <view class="week-pill">
-              <text class="week-text">第 14 周</text>
-            </view>
-          </view>
-          <view class="progress-numbers">
-            <text class="progress-percent">84%</text>
-            <text class="progress-days">剩余 23 天</text>
-          </view>
-          <view class="progress-track">
-            <view class="progress-fill" />
-          </view>
-        </view>
-
-        <view class="ai-card" @click="goChatHistory">
+        <view class="ai-card" @click="goChat">
           <view class="ai-head">
             <view class="ai-icon-wrap">
               <text class="material-symbols-outlined ai-icon">smart_toy</text>
             </view>
-            <text class="card-title">AI 助手</text>
+            <text class="card-title">AI 智慧助手</text>
           </view>
-          <text class="ai-preview">“关于《病理生理学》期末考点的总结已经为您准备好了...”</text>
+          <text class="ai-preview">校园事务、办事流程、政策查询…有问题随时问我。</text>
           <view class="ai-action">
-            <text class="ai-action-text">查看对话记录</text>
+            <text class="ai-action-text">开始咨询</text>
             <text class="material-symbols-outlined ai-action-icon">arrow_forward</text>
           </view>
         </view>
@@ -97,7 +78,7 @@
           v-for="item in primarySettings"
           :key="item.label"
           class="settings-row"
-          @click="showComingSoon"
+          @click="handleSettingClick(item)"
         >
           <view class="settings-left">
             <view class="settings-icon-wrap">
@@ -114,7 +95,7 @@
           v-for="item in secondarySettings"
           :key="item.label"
           class="settings-row"
-          @click="showComingSoon"
+          @click="handleSettingClick(item)"
         >
           <view class="settings-left">
             <view class="settings-icon-wrap">
@@ -135,25 +116,40 @@
     </view>
 
     <CustomTabBar current="profile" />
+    <FeatureNoticeSheet />
   </view>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
+import { listConversations } from '@/api/chat'
+import { getUnreadSummary } from '@/api/notification'
+import { openAiQuestion, showComingSoon } from '@/composables/useServiceNavigation'
 import CustomTabBar from '@/components/CustomTabBar.vue'
+import FeatureNoticeSheet from '@/components/FeatureNoticeSheet.vue'
 
 const userStore = useUserStore()
+const conversationCount = ref(0)
+const totalUnread = ref(0)
 
-const primarySettings = [
-  { label: '消息通知', icon: 'notifications' },
-  { label: '系统设置', icon: 'settings' },
+interface SettingItem {
+  label: string
+  icon: string
+  action: 'comingSoon' | 'aiQuestion' | 'about'
+  aiQuestion?: string
+}
+
+const primarySettings: SettingItem[] = [
+  { label: '消息通知', icon: 'notifications', action: 'comingSoon' },
+  { label: '系统设置', icon: 'settings', action: 'comingSoon' },
 ]
 
-const secondarySettings = [
-  { label: '意见反馈', icon: 'rate_review' },
-  { label: '帮助中心', icon: 'help' },
-  { label: '关于 医小管', icon: 'info' },
+const secondarySettings: SettingItem[] = [
+  { label: '意见反馈', icon: 'rate_review', action: 'aiQuestion', aiQuestion: '我想反馈医小管使用问题，应该怎么说？' },
+  { label: '帮助中心', icon: 'help', action: 'aiQuestion', aiQuestion: '医小管可以帮我做什么？' },
+  { label: '关于 医小管', icon: 'info', action: 'about' },
 ]
 
 const displayName = computed(() => userStore.userInfo?.name || '未登录')
@@ -165,7 +161,7 @@ const avatarInitial = computed(() => {
 
 const studentMeta = computed(() => {
   const staffId = userStore.userInfo?.staff_id
-  return staffId ? `临床医学系 · ${staffId}` : '临床医学系 · 2021级本科'
+  return staffId ? `学号 ${staffId}` : '学生'
 })
 
 function goHome() {
@@ -176,9 +172,35 @@ function goChatHistory() {
   uni.navigateTo({ url: '/pages/chat/history' })
 }
 
-function showComingSoon() {
-  uni.showToast({ title: '即将上线', icon: 'none' })
+function goChat() {
+  uni.switchTab({ url: '/pages/chat/index' })
 }
+
+function handleSettingClick(item: SettingItem) {
+  if (item.action === 'aiQuestion' && item.aiQuestion) {
+    openAiQuestion(item.aiQuestion)
+  } else if (item.action === 'about') {
+    uni.showModal({
+      title: '关于医小管',
+      content: '医小管 v1.0.0\n校园事务 AI 咨询与人工兑底平台',
+      showCancel: false,
+      confirmText: '知道了',
+    })
+  } else {
+    showComingSoon(item.label)
+  }
+}
+
+onShow(async () => {
+  try {
+    const res = await listConversations(1, 1)
+    conversationCount.value = res.total || 0
+  } catch { conversationCount.value = 0 }
+  try {
+    const unread = await getUnreadSummary()
+    totalUnread.value = unread.total_unread || 0
+  } catch { totalUnread.value = 0 }
+})
 
 function handleLogout() {
   uni.showModal({

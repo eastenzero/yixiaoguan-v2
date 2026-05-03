@@ -1,0 +1,38 @@
+feat(student-ui): home + tab bar 1:1 per aether_academic home_page
+
+按 docs/design/ui-references/student-app-stitch/stitch_yixiaoguan_
+campus_assistant/home_page/code.html 的 DOM 结构重写学生端首页和
+底部 tab bar，严守 Aether Academic DESIGN.md 的 No-Line、
+No-Shadow-as-default、wght 300、大半径规则。
+
+pages/home/index.vue:
+- TopAppBar: fixed glass (ivory/80 + blur 20), brand font-black,
+  通知按钮 round-full 40x40, error-dot ring-2 ring-surface
+- Greeting: text-3xl 30px, tracking -0.02em, letter-spacing -0.01
+- Search pill: 圆形浮起 (pure white on ivory, 仅极浅 ambient shadow,
+  无任何 border — No-Line)
+  · icon box 从 $primary 改 $primary-container (pastel lavender,
+    与 stitch 一致)
+  · action 按钮用 $surface-container-high 软质背景
+- Tag chips: $surface-container-low 默认, 按下 $primary-container
+- Bento grid:
+  · Large 保留 primary → secondary 渐变 (stitch: from-primary to-secondary)
+  · Large icon wrap: rgba 255/0.20 + backdrop-blur (glass)
+  · Glow 层改用 rgba($secondary-container, 0.20) + blur(48px)
+  · Small 1 (空教室): tertiary tint (与 stitch 对齐)
+  · Small 2 (我的申请): 从 tertiary 改为 primary tint (与 stitch 对齐)
+- Service list: L1 ($surface-container-low) 套 L3 白卡, 按下 primary-fixed/30
+- Notice banner: 去掉 border (No-Line), 改用 rgba(primary,0.05) bg,
+  icon wrap 改 rgba($primary-container, 0.20)
+- 所有 section 加 .animate-fade-up .delay-N (1-6 阶梯 50ms)
+- 底 padding 8rem 避开新 tab bar
+- Typography: 系统化用 $body-md-size / $label-md-size / $font-headline
+
+components/CustomTabBar.vue:
+- 容器: bg white/80 + backdrop blur 20 saturate 180, rounded-t 2rem,
+  shadow 0 -10px 40px rgba(124,58,237,0.08) 紫色折射
+- Active pill: rgba($primary, 0.10) tint + rounded-[24px] + px-5 py-2
+- Active icon: FILL 1 wght 400 (stitch pattern)
+- Inactive: $outline (slate-400 等价), 10px font-bold 标签
+
+下一步: services/chat/history/profile/login 按各自 code.html 1:1

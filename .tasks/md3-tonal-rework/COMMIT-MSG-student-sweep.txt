@@ -1,0 +1,41 @@
+feat(student-ui): services + history + profile + login MD3 sweep
+
+对剩余 4 个学生端页面做 MD3 tonal palette 对齐与 No-Line 清理。
+每页都由硬编码 hex → MD3 token 引用, <style scoped> → lang="scss".
+
+pages/services/index.vue:
+- 背景 #f7f9fb (cool white) → $surface (#faf5fb ivory)
+- top-app-bar: rgba(247,249,251,0.9) → rgba(250,245,251,0.90) ivory/90
+  + backdrop-filter: $backdrop-bar (blur 20 saturate 180)
+- hero-card: border-radius 1rem → $radius-lg (2rem); 加 $shadow-fab
+- campus-grid: $surface-container-low L1 tonal 层
+- 所有 #630ed4/#7c3aed 硬编码 → tokens
+- 所有 utility class (.text-primary 等) 改用 $token 变量
+- personal-item border-bottom 1px solid → 去掉 (No-Line)
+
+pages/chat/history.vue:
+- cool-gray #f8fafc → $surface ivory
+- nav color #630ed4 → $primary
+- status badges: ad-hoc hex (#ede9fe/#fef3c7 等) → 全部改 MD3
+  container tier alpha: primary-container/30, tertiary-container/30,
+  success/15, surface-container etc.
+- slate-300/400/900 → $outline-variant/$on-surface-variant/$on-surface
+
+pages/profile/index.vue:
+- 页面背景 #f7f9fb → $surface
+- hero-card 渐变 #630ed4 → #b28cff → primary → primary-container
+- verified-badge 边框 #630ed4 → #5b21b6
+- progress-fill 渐变尾色 #7c3aed → #b28cff
+- settings-icon-wrap 背景 #f1f5f9 → $surface-container-low
+- settings-icon 色 #64748b → $on-surface-variant
+- chevron-icon 色 #cbd5e1 → $outline-variant
+
+pages/login/index.vue:
+- login-card: radius 1.5rem → $radius-lg (2rem), shadow 硬编码 → $shadow-fab
+- logo-box: rgba(124,58,237,0.1) → rgba($primary-container, 0.30)
+  pastel tint, radius 1rem → $radius-md
+- input-wrapper: background $border (轮廓色) → $surface-container-high;
+  radius 0.75rem → $radius-md
+- submit-btn: 渐变尾色 $secondary → $primary-container 更 on-brand;
+  radius 1.75rem → $radius-full (pill); shadow → $shadow-fab
+- decor-2: 旧 rgba(124,58,237,0.1) → rgba(178,140,255,0.20) pastel glow

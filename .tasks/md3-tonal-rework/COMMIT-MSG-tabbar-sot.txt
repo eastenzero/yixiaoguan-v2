@@ -1,0 +1,49 @@
+fix(ui): tab bar 高度统一为 single-source-of-truth, 杜绝输入栏被遮挡
+
+## 根因
+学生端 chat 页的 input bar 被底部 tab bar 遮住, 是因为两处硬编码高度
+脱节：
+- `CustomTabBar.vue`: padding 底部 = env + $space-6, 总高 ≈ 80px + safe
+- `chat/index.vue`: `.bottom-area { bottom: 3.5rem }` (56px), 假设
+  tab bar 只有 56px → 差 ~24px + safe
+
+本质问题：**tab bar 实际高度** 和 **消费者 (input-bar / page padding)** 
+没有共享变量; 任何一边改了, 另一边就会脱节。之前多次修复都复发就是
+因为这个结构性漏洞没堵。
+
+## 修复 (single source of truth)
+### tokens.scss (两端同步)
+- 新增 `$tabbar-h: 76px` Sass 常量
+- `:root` 暴露 `--tabbar-h` + `--tabbar-safe` (calc 含 env safe-area)
+- 规则注释明确: 任何 fixed / padding-bottom 消费 tab bar 高度的地方
+  必须用 `var(--tabbar-safe)`, 禁止硬编码 3.5rem / 6rem / 112px 这类
+  魔法数
+
+### 学生端
+- `CustomTabBar.vue`: 容器 `height: var(--tabbar-safe)`, padding-bottom
+  env safe-area; 总高固定 = 76px + safe
+- `chat/index.vue`:
+  - `.bottom-area bottom: 3.5rem` → `var(--tabbar-safe)` 
+  - `.bottom-spacer height: 10rem` → `calc(var(--tabbar-safe) + 4.5rem)`
+    (含 input bar 自身 ~4.5rem)
+  - `.welcome-center padding: 0 1.5rem 7.5rem` → padding-bottom 改用
+    `calc(var(--tabbar-safe) + 2rem)`
+  - 顺带把 top-nav rgba(247,249,251,0.8) 换成 ivory/80 + saturate blur
+- `home/index.vue`: padding-bottom `calc(env + 8rem)` → `calc(var + $space-8)`
+- `profile/index.vue`: padding-bottom `calc(env + 6rem)` → `calc(var + $space-6)`
+- `services/index.vue`: `.bottom-safe 5rem` → `calc(var + $space-2)`;
+  `.main-content padding-bottom: 6.25rem` 去掉 (与 bottom-safe 重复)
+
+### 教师端
+- `BottomNavBar.vue`: `height: calc(76px + env(safe))` → `var(--tabbar-safe)`
+- `dashboard/index.vue`: `calc(80px + env)` → `calc(var + $space-2)`
+- `questions/index.vue`: `112px` → `calc(var + $space-6)`
+- `knowledge/index.vue`: `112px` → `calc(var + $space-6)`
+- `profile/index.vue`: `calc(100px + env)` → `calc(var + $space-6)`
+
+## 效果
+- 改 tab bar 高度 (比如未来想做成 64px 或 84px) 只改 `$tabbar-h` 一处,
+  两端 12 个页面自动跟随; 再也不会出现「tab bar 涨高了 input bar 没跟上」
+- 在小屏 / 大屏 / iPhone 有 notch / Android 无 notch 环境下, safe-area
+  由 env() 动态注入, 始终贴合
+- HMR 验证: 两端 dev server 均已 hot-update, 无编译错误

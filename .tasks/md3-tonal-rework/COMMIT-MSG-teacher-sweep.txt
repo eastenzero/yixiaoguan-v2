@@ -1,0 +1,38 @@
+feat(teacher-ui): questions/knowledge/login/profile MD3 strict sweep
+
+对教师端 6 个页面做 No-Line / No-Shadow-as-default 收尾清理。
+
+pages/login/index.vue:
+- 硬编码 primaryColor #702ae1 → #5b21b6 匹配 $primary 覆盖
+- login-card: border 1px solid rgba(255,255,255,0.2) → 去掉 (No-Line)
+  radius 24px → $radius-lg, box-shadow 中性灰 → $shadow-fab 紫色折射
+
+pages/questions/index.vue:
+- question-card: 去掉 $elevation-1 默认阴影 (No-Shadow-as-default)
+  去掉 $elevation-2 active 阴影, 改用 transform + container tint
+- radius 24px → $radius-md (1rem MD3 DEFAULT)
+
+pages/questions/detail.vue:
+- ai-bubble: 去掉 border 1px solid rgba($error, 0.2), 改用 border-left
+  4px 单侧强调 (No-Line strict pass)
+- teacher-bubble: 去掉 border 1px solid rgba($primary, 0.2), 完全靠
+  $primary-container 30% alpha pastel tint 分区
+
+pages/knowledge/index.vue:
+- knowledge-card: 去掉 $elevation-1 / $elevation-2 默认阴影
+- radius 24px → $radius-md
+
+pages/knowledge/detail.vue:
+- 底部 action bar: box-shadow 中性灰 (0 -8px 30px rgba(0,0,0,0.04))
+  → $shadow-nav (紫色折射)
+- action-btn--outline: 去掉 border 1px solid $outline-variant
+  改用 $surface-container-high tonal 容器 (No-Line)
+
+pages/profile/index.vue:
+- hero-bg: radius 24px → $radius-lg (2rem), shadow $elevation-3
+  → $shadow-fab 统一; 保留 hero 紫色折射氛围
+- stat-item: 去掉 $elevation-1 默认阴影, 靠 $surface-container-low
+  L1 tonal 承担层次
+
+注：管理员专用页 (admin/users.vue, admin/import.vue) 不在 stitch
+设计范围内 (Ametrine Scholar 未覆盖), 本次不处理。

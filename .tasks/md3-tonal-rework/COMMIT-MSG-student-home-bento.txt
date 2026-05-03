@@ -1,0 +1,26 @@
+feat(student/home): bento 小卡片换成真实入口, 去掉死链
+
+背景:
+  首页 bento 网格 2 个小卡片 (空教室预约 / 我的申请) 对应功能未开发,
+  route 为空字符串, 点击仅 toast "即将上线", 属于死链入口, 误导用户.
+
+变更:
+  - 小卡片 1: 空教室预约 → 对话历史
+      icon:  calendar_month → history
+      route: ''             → /pages/chat/history   (navigateTo)
+      desc:  可预约 12 间   → 回顾过往提问
+
+  - 小卡片 2: 我的申请 → 校园服务
+      icon:  assignment → grid_view
+      route: ''         → /pages/services/index     (switchTab)
+      desc:  2 项进行中 → 一站式办事入口
+      去掉 .bento-small-desc-active 高亮变体, 统一用 .bento-small-desc
+      (静态文案不再需要 primary 色高亮)
+
+  - 小卡片 1 去掉 HOT 徽章和 .bento-small-top 包裹层, 两个小卡片结构对齐.
+
+onBentoClick 的 tabBarPaths 判断已就位, 会自动把 chat/history 走 navigateTo,
+把 services/index 走 switchTab, 无需改 JS.
+
+pages.json 已注册 /pages/chat/history 和 /pages/services/index,
+跳转不会空转.

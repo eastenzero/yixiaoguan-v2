@@ -1,0 +1,27 @@
+feat(design-tokens): land MD3 67-token tonal palette (shared)
+
+核心方向修正 (stage 1+2 已 revert)：主色保留 #5b21b6，落地 dashboard/code.html 的完整 Material Design 3 tonal palette。
+
+两端共享 tokens：
+- 51 个 MD3 tokens 逐字复刻自 teacher-app-stitch/stitch_/dashboard/code.html
+  (tailwind.config.colors)
+- 仅 $primary 覆盖为 #5b21b6 (保留现状)；surface-tint 跟随
+- primary-container / on-primary / surface-container-* 保留 dashboard pastel
+
+新增 MD3 type scale：display-md 2.75rem/800、title-lg 1.375rem/700、
+body-md 0.875rem、label-md 0.75rem；注入为 utility class 供页面直接用。
+
+Radius：DEFAULT 1rem、lg 2rem、xl 3rem (符合 DESIGN.md 大半径要求)。
+
+规则注释沉淀到文件头：
+- No-Line (禁 1px solid 边框，靠 container tint 分层)
+- No-Shadow-as-default (仅 FAB / Nav，紫色折射)
+- Material Symbols wght 300 (细腻笔画)
+
+backward-compat aliases 保留 ($bg-page, $text-primary, $primary-soft
+等) → 映射到新 MD3 token 值；现有 .vue 文件无需一次性改完。
+
+Student-app 新增 global.scss (与 teacher-app 同构): animate-fade-up、
+delay-1..10、no-scrollbar、pb-safe、line-clamp-1..3。
+
+后续页面按各自 code.html 渲染图 1:1 复刻结构，分 commit 交付。

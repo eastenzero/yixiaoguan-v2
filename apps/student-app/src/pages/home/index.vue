@@ -4,7 +4,7 @@
     <view class="top-app-bar">
       <text class="brand-logo">医小管</text>
       <view class="top-actions">
-        <view class="notif-btn" @click="goNotifications">
+        <view class="notif-btn" @click="goHistory">
           <text class="material-symbols-outlined notif-icon">notifications</text>
           <view v-if="totalUnread > 0" class="notif-dot" />
         </view>
@@ -75,7 +75,7 @@
           </view>
           <view class="bento-small-body">
             <text class="bento-small-title">校园服务</text>
-            <text class="bento-small-desc">一站式办事入口</text>
+            <text class="bento-small-desc">流程咨询与入口导航</text>
           </view>
         </view>
       </view>
@@ -97,18 +97,44 @@
               <text class="material-symbols-outlined service-icon">{{ svc.icon }}</text>
               <text class="service-label">{{ svc.label }}</text>
             </view>
+            <text v-if="svc.url" class="material-symbols-outlined service-external">open_in_new</text>
+            <text v-else class="material-symbols-outlined service-arrow">chevron_right</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 6. 最近咨询 -->
+      <view v-if="recentConversations.length" class="service-section animate-fade-up delay-6">
+        <view class="service-header">
+          <text class="section-title">最近咨询</text>
+          <text class="section-more" @click="goHistory">全部记录</text>
+        </view>
+        <view class="service-list">
+          <view
+            v-for="conv in recentConversations"
+            :key="conv.id"
+            class="service-row"
+            @click="goConversation(conv.id)"
+          >
+            <view class="service-row-left">
+              <text class="material-symbols-outlined service-icon">{{ getConvIcon(conv.status) }}</text>
+              <view class="conv-info">
+                <text class="service-label">{{ conv.title || '未命名对话' }}</text>
+                <text class="conv-status">{{ getStatusLabel(conv.status) }}</text>
+              </view>
+            </view>
             <text class="material-symbols-outlined service-arrow">chevron_right</text>
           </view>
         </view>
       </view>
 
-      <!-- 6. Notification Banner -->
-      <view v-if="notice" class="notice-banner animate-fade-up delay-6" @click="goNotifications">
+      <!-- 7. Notification Banner -->
+      <view v-if="totalUnread > 0" class="notice-banner animate-fade-up delay-6" @click="goHistory">
         <view class="notice-left">
           <view class="notice-icon-wrap">
             <text class="material-symbols-outlined notice-icon">campaign</text>
           </view>
-          <text class="notice-text">{{ notice }}</text>
+          <text class="notice-text">你有 {{ totalUnread }} 条未读消息</text>
         </view>
         <text class="material-symbols-outlined notice-arrow">arrow_forward</text>
       </view>
@@ -124,19 +150,26 @@ import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import { getUnreadSummary } from '@/api/notification'
+import { listConversations } from '@/api/chat'
+import { openExternal } from '@/composables/useServiceNavigation'
 import CustomTabBar from '@/components/CustomTabBar.vue'
+import type { ConversationResponse } from '@/types/chat'
 
 const userStore = useUserStore()
 
 const displayName = computed(() => userStore.userInfo?.name || userStore.userInfo?.staff_id || '同学')
 const totalUnread = ref(0)
+const recentConversations = ref<ConversationResponse[]>([])
 
-// Static placeholder data for new sections
 const tags = ref([
-  { id: 't1', label: '奖学金政策' },
-  { id: 't2', label: '选课指南' },
-  { id: 't3', label: '图书馆开放' },
-  { id: 't4', label: '校园卡充值' },
+  { id: 't1', label: '宿舍电费怎么交？' },
+  { id: 't2', label: '奖学金怎么评？' },
+  { id: 't3', label: '图书馆几点开？' },
+  { id: 't4', label: '校园网怎么连？' },
+  { id: 't5', label: '报修在哪里办？' },
+  { id: 't6', label: '成绩怎么查？' },
+  { id: 't7', label: '请假流程是什么？' },
+  { id: 't8', label: '怎么联系辅导员？' },
 ])
 
 const bentoItems = ref([
@@ -153,10 +186,9 @@ const services = ref([
   { id: 's4', label: '学校官网', icon: 'language', url: 'https://www.sdfmu.edu.cn' },
 ])
 
-const notice = ref('你有 3 条未读通知')
-
 onShow(() => {
   refreshUnreadSummary()
+  loadRecentConversations()
 })
 
 async function refreshUnreadSummary() {
@@ -193,25 +225,52 @@ function onBentoClick(item: { id: string; label: string; icon: string; route: st
   }
 }
 
-function openUrl(url: string) {
-  // #ifdef H5
-  window.open(url, '_blank')
-  // #endif
-  // #ifndef H5
-  uni.navigateTo({ url: `/pages/services/webview?url=${encodeURIComponent(url)}` })
-  // #endif
-}
-
 function onServiceClick(svc: { id: string; label: string; icon: string; url?: string }) {
   if (svc.url) {
-    openUrl(svc.url)
+    openExternal(svc.url)
   } else {
     uni.showToast({ title: '功能开发中', icon: 'none' })
   }
 }
 
-function goNotifications() {
-  uni.showToast({ title: '即将上线', icon: 'none' })
+async function loadRecentConversations() {
+  try {
+    const res = await listConversations(1, 3)
+    recentConversations.value = res.items || []
+  } catch {
+    recentConversations.value = []
+  }
+}
+
+function goHistory() {
+  uni.navigateTo({ url: '/pages/chat/history' })
+}
+
+function goConversation(id: number) {
+  uni.setStorageSync('pendingConversationId', String(id))
+  uni.switchTab({ url: '/pages/chat/index' })
+}
+
+function getConvIcon(status: string): string {
+  const map: Record<string, string> = {
+    ai_serving: 'auto_awesome',
+    pending_teacher: 'hourglass_top',
+    teacher_serving: 'support_agent',
+    resolved: 'check_circle',
+    closed: 'cancel',
+  }
+  return map[status] || 'chat'
+}
+
+function getStatusLabel(status: string): string {
+  const map: Record<string, string> = {
+    ai_serving: 'AI 解答中',
+    pending_teacher: '等待老师接入',
+    teacher_serving: '老师服务中',
+    resolved: '已解决',
+    closed: '已关闭',
+  }
+  return map[status] || status
 }
 
 function showToastSoon() {
@@ -694,6 +753,12 @@ function showToastSoon() {
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
+.service-external {
+  font-size: 16px;
+  color: $outline;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+}
+
 // 6. Notification banner
 .notice-banner {
   display: flex;
@@ -739,6 +804,19 @@ function showToastSoon() {
 .notice-arrow {
   font-size: 14px;
   color: $primary;
+}
+
+// Recent conversations
+.conv-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.conv-status {
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  color: $on-surface-variant;
 }
 
 .bottom-spacer {

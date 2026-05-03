@@ -1,0 +1,29 @@
+feat(student-ui): chat page MD3 pass (ai_chat_page 对齐)
+
+参照 aether_academic/ai_chat_page/code.html 把聊天页升到 MD3 tonal
+palette + 严守 No-Line / No-Shadow 规则。
+
+核心改动:
+- <style scoped> → <style scoped lang="scss"> + @import tokens.scss
+- 所有硬编码 #630ed4 (旧 stitch primary) → #5b21b6 (保留的 $primary)
+- 所有 #7c3aed → #b28cff ($primary-container pastel)
+- 所有 #191c1e → #2f2e32 ($on-surface, 保紫色调和)
+- 所有 #f7f9fb → #faf5fb (surface ivory)
+- 所有 #e6e8ea → #e5e1e8 ($surface-container-high)
+- 所有 #f2f4f6 → #f4eff5 ($surface-container-low)
+- 所有 #6e3aca → #7742a6 ($secondary)
+- rgba(99,14,212,X) 分解形式 → rgba(91,33,182,X) 匹配新 primary
+
+样式规则 (严守两份 DESIGN.md):
+- top-nav: rgba(247,249,251,0.8) → rgba(250,245,251,0.80) ivory/80 + blur 20 saturate 180
+- user-bubble: 0.75rem radius → 1rem (MD3 DEFAULT), padding 加到 1rem 1.25rem
+  font-size 0.875 → 0.9375rem, line-height 1.6 → 1.7 (editorial 呼吸感)
+- ai-bubble / teacher-bubble: 同 radius / padding / 字号升级
+- suggestion-chip: No-Line 规则 — 删掉 1px solid #e9d5ff 边框,
+  改用 rgba($primary, 0.05) tonal tint + rounded-full pill
+- source-popup-header: 删 border-bottom 1px solid (No-Line)
+
+视觉效果对齐 stitch:
+- 气泡圆角更大更现代 (editorial 感)
+- 所有紫色从深紫 #630ed4 统一到品牌 #5b21b6 + 柔和 #b28cff
+- 建议问题 chip 去掉硬边框, 改成 pill 紫色 tint 气泡
