@@ -15,7 +15,8 @@
         "force_recovery": true,
         "presence": true,
         "join_leave": false,
-        "allow_publish_for_client": true
+        "allow_publish_for_client": true,
+        "allow_subscribe_for_client": true
       }
     ]
   }
