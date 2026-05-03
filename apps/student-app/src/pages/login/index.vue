@@ -60,6 +60,7 @@ import { reactive, ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { login, getMe } from '@/api/auth'
 import { wsManager } from '@/utils/websocket'
+import { centrifugeManager } from '@/utils/centrifuge'
 
 const userStore = useUserStore()
 
@@ -90,6 +91,9 @@ async function handleLogin() {
     userStore.setUserInfo(me)
 
     wsManager.connect(res.access_token)
+    if (res.centrifugo_token) {
+      centrifugeManager.connect(res.centrifugo_token)
+    }
 
     uni.showToast({ title: '登录成功', icon: 'success', duration: 1000 })
     setTimeout(() => {

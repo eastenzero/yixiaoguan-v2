@@ -1,0 +1,13 @@
+services:
+  centrifugo:
+    image: centrifugal/centrifugo:v6
+    container_name: yxg-centrifugo
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./centrifugo-config.json:/centrifugo/config.json:ro
+    environment:
+      - CENTRIFUGO_TOKEN_HMAC_SECRET_KEY=${CENTRIFUGO_SECRET}
+      - CENTRIFUGO_API_KEY=${CENTRIFUGO_API_KEY}
+    command: centrifugo -c config.json

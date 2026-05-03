@@ -27,6 +27,7 @@ from app.services.conversation_service import (
 )
 from app.services.state_machine import transition
 from app.services.ws_manager import manager
+from app.services.centrifugo_client import centrifugo
 
 router = APIRouter()
 
@@ -135,17 +136,12 @@ async def send_message(
             raise HTTPException(status_code=403, detail="会话已关闭，无法发送消息")
         if conv.status == ConversationStatus.resolved:
             await transition(db, conv, "reactivate", actor=current_user)
-            await manager.broadcast_to_room(
-                f"conv:{conv_id}",
-                {
-                    "type": "status_changed",
-                    "data": {
-                        "conv_id": conv_id,
-                        "status": "ai_serving",
-                        "previous_status": "resolved",
-                    },
-                },
-            )
+            _reactivate_data = {
+                "type": "status_changed",
+                "data": {"conv_id": conv_id, "status": "ai_serving", "previous_status": "resolved"},
+            }
+            await centrifugo.publish(f"conv:{conv_id}", _reactivate_data)
+            await manager.broadcast_to_room(f"conv:{conv_id}", _reactivate_data)
         if conv.status not in (
             ConversationStatus.ai_serving,
             ConversationStatus.pending_teacher,
@@ -171,8 +167,7 @@ async def send_message(
         db, conv_id, sender_type, body.content, sender_id=current_user.id
     )
     # WS 广播新消息
-    await manager.broadcast_to_room(
-        f"conv:{conv_id}",
-        build_message_broadcast_event(msg, conv_id=conv_id)
-    )
+    _msg_event = build_message_broadcast_event(msg, conv_id=conv_id)
+    await centrifugo.publish(f"conv:{conv_id}", _msg_event)
+    await manager.broadcast_to_room(f"conv:{conv_id}", _msg_event)
     return msg

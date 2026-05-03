@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     dify_global_dataset_id: str = ""
     dify_dataset_api_key: str = ""
 
+    # -- Centrifugo --
+    centrifugo_api_url: str = "http://127.0.0.1:8000"
+    centrifugo_api_key: str = ""
+    centrifugo_secret: str = ""  # 用于签发 Centrifugo JWT，可与 jwt_secret 相同
+
     # -- 微信（P1 阶段） --
     wechat_mp_appid: str = ""
     wechat_mp_secret: str = ""

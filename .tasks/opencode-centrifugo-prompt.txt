@@ -1,0 +1,625 @@
+你是一个 FastAPI + uni-app 全栈工程师。请你实现从自建 WebSocket 迁移到 Centrifugo 的改造。
+
+## 概述
+
+当前系统用 `services/gateway/app/services/ws_manager.py` 的内存 dict 管理 WebSocket 连接，存在多 worker 不共享、断线丢消息、不可扩展等问题。改为使用 Centrifugo（独立 Go 实时消息服务器），后端通过 HTTP API 发布消息，前端用 centrifuge-js SDK 订阅。
+
+## 改造范围
+
+### Phase 1: 后端新增文件
+
+#### 1.1 新增 `services/gateway/app/config.py` 配置项
+
+在现有 Settings 类中新增 3 个配置项：
+
+```python
+# -- Centrifugo --
+centrifugo_api_url: str = "http://127.0.0.1:8000"
+centrifugo_api_key: str = ""
+centrifugo_secret: str = ""  # 用于签发 Centrifugo JWT，可与 jwt_secret 相同
+```
+
+#### 1.2 新增 `services/gateway/app/services/centrifugo_client.py`
+
+```python
+import os
+import time
+import logging
+import httpx
+from jose import jwt
+from app.config import settings
+from app.models.user import User, UserRole
+
+logger = logging.getLogger(__name__)
+
+
+class CentrifugoClient:
+    """Centrifugo Server API 客户端"""
+
+    def __init__(self):
+        self.api_url = settings.centrifugo_api_url.rstrip("/")
+        self.api_key = settings.centrifugo_api_key
+
+    async def publish(self, channel: str, data: dict) -> bool:
+        """向指定频道发布消息"""
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.post(
+                    f"{self.api_url}/api/publish",
+                    json={"channel": channel, "data": data},
+                    headers={"Authorization": f"apikey {self.api_key}"},
+                    timeout=5.0,
+                )
+                if resp.status_code != 200:
+                    logger.error("Centrifugo publish failed: %s %s", resp.status_code, resp.text)
+                    return False
+                return True
+        except Exception as e:
+            logger.error("Centrifugo publish error: %s", e)
+            return False
+
+    async def broadcast(self, channels: list[str], data: dict) -> bool:
+        """向多个频道广播同一消息"""
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.post(
+                    f"{self.api_url}/api/broadcast",
+                    json={"channels": channels, "data": data},
+                    headers={"Authorization": f"apikey {self.api_key}"},
+                    timeout=5.0,
+                )
+                return resp.status_code == 200
+        except Exception as e:
+            logger.error("Centrifugo broadcast error: %s", e)
+            return False
+
+
+def build_centrifugo_token(user: User) -> str:
+    """生成 Centrifugo 连接 JWT"""
+    now = int(time.time())
+    channels = [f"user#{user.id}"]
+    if user.role in (UserRole.teacher, UserRole.admin):
+        channels.append("$teachers")
+    payload = {
+        "sub": str(user.id),
+        "exp": now + 3600,
+        "info": {"name": user.name, "role": user.role.value},
+        "channels": channels,
+    }
+    return jwt.encode(payload, settings.centrifugo_secret, algorithm="HS256")
+
+
+# 全局单例
+centrifugo = CentrifugoClient()
+```
+
+#### 1.3 新增 Centrifugo 配置文件 `deploy/centrifugo-config.json`
+
+```json
+{
+  "admin": false,
+  "allowed_origins": [
+    "https://yxg.xiaoguan.site",
+    "https://teacher.xiaoguan.site",
+    "http://localhost:*"
+  ],
+  "namespaces": [
+    {
+      "name": "conv",
+      "history_size": 100,
+      "history_ttl": "5m",
+      "force_recovery": true,
+      "presence": true,
+      "join_leave": false,
+      "allow_publish_for_client": true
+    }
+  ]
+}
+```
+
+#### 1.4 新增 Docker Compose `deploy/docker-compose.centrifugo.yml`
+
+```yaml
+services:
+  centrifugo:
+    image: centrifugal/centrifugo:v6
+    container_name: yxg-centrifugo
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./centrifugo-config.json:/centrifugo/config.json:ro
+    environment:
+      - CENTRIFUGO_TOKEN_HMAC_SECRET_KEY=${CENTRIFUGO_SECRET}
+      - CENTRIFUGO_API_KEY=${CENTRIFUGO_API_KEY}
+    command: centrifugo -c config.json
+```
+
+### Phase 2: 后端改造现有文件
+
+#### 2.1 `services/gateway/app/schemas/auth.py` — TokenResponse 加 centrifugo_token
+
+当前代码（第 11-13 行）：
+```python
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+```
+
+改为：
+```python
+class TokenResponse(BaseModel):
+    access_token: str
+    centrifugo_token: str = ""
+    token_type: str = "bearer"
+```
+
+#### 2.2 `services/gateway/app/routers/auth.py` — login 返回 centrifugo_token
+
+当前代码（第 26-27 行）：
+```python
+    token = issue_token(user)
+    return TokenResponse(access_token=token)
+```
+
+改为：
+```python
+    from app.services.centrifugo_client import build_centrifugo_token
+    token = issue_token(user)
+    ct = build_centrifugo_token(user) if settings.centrifugo_secret else ""
+    return TokenResponse(access_token=token, centrifugo_token=ct)
+```
+
+需要在文件顶部 import settings：`from app.config import settings`
+
+#### 2.3 `services/gateway/app/routers/chat.py` — 替换 3 处 manager 调用
+
+**第 18 行** import 替换：
+```python
+# 旧
+from app.services.ws_manager import manager
+# 新（追加，保留旧的用于双写）
+from app.services.centrifugo_client import centrifugo
+```
+
+**第 76-82 行** (resolved → reactivate 广播)：
+```python
+# 旧
+        await manager.broadcast_to_room(
+            f"conv:{conv.id}",
+            {
+                "type": "status_changed",
+                "data": {"conv_id": conv.id, "status": "ai_serving", "previous_status": "resolved"},
+            },
+        )
+# 新（双写：centrifugo + 旧 WS）
+        _status_data = {
+            "type": "status_changed",
+            "data": {"conv_id": conv.id, "status": "ai_serving", "previous_status": "resolved"},
+        }
+        await centrifugo.publish(f"conv:{conv.id}", _status_data)
+        await manager.broadcast_to_room(f"conv:{conv.id}", _status_data)
+```
+
+**第 99-102 行** (学生消息广播)：
+```python
+# 旧
+    await manager.broadcast_to_room(
+        f"conv:{conv.id}",
+        build_message_broadcast_event(student_msg, conv_id=conv.id),
+    )
+# 新
+    _student_event = build_message_broadcast_event(student_msg, conv_id=conv.id)
+    await centrifugo.publish(f"conv:{conv.id}", _student_event)
+    await manager.broadcast_to_room(f"conv:{conv.id}", _student_event)
+```
+
+**第 220-227 行** (AI 消息广播)：
+```python
+# 旧
+    await manager.broadcast_to_room(
+        f"conv:{conv.id}",
+        build_message_broadcast_event(
+            ai_msg,
+            conv_id=conv.id,
+            metadata={"sources": sources},
+        ),
+    )
+# 新
+    _ai_event = build_message_broadcast_event(ai_msg, conv_id=conv.id, metadata={"sources": sources})
+    await centrifugo.publish(f"conv:{conv.id}", _ai_event)
+    await manager.broadcast_to_room(f"conv:{conv.id}", _ai_event)
+```
+
+#### 2.4 `services/gateway/app/routers/conversations.py` — 替换 2 处
+
+**第 29 行** 追加 import：
+```python
+from app.services.centrifugo_client import centrifugo
+```
+
+**第 138-148 行** (reactivate 广播)：
+```python
+# 旧
+            await manager.broadcast_to_room(
+                f"conv:{conv_id}",
+                {
+                    "type": "status_changed",
+                    "data": {
+                        "conv_id": conv_id,
+                        "status": "ai_serving",
+                        "previous_status": "resolved",
+                    },
+                },
+            )
+# 新
+            _reactivate_data = {
+                "type": "status_changed",
+                "data": {"conv_id": conv_id, "status": "ai_serving", "previous_status": "resolved"},
+            }
+            await centrifugo.publish(f"conv:{conv_id}", _reactivate_data)
+            await manager.broadcast_to_room(f"conv:{conv_id}", _reactivate_data)
+```
+
+**第 174-177 行** (新消息广播)：
+```python
+# 旧
+    await manager.broadcast_to_room(
+        f"conv:{conv_id}",
+        build_message_broadcast_event(msg, conv_id=conv_id)
+    )
+# 新
+    _msg_event = build_message_broadcast_event(msg, conv_id=conv_id)
+    await centrifugo.publish(f"conv:{conv_id}", _msg_event)
+    await manager.broadcast_to_room(f"conv:{conv_id}", _msg_event)
+```
+
+#### 2.5 `services/gateway/app/routers/actions.py` — 替换 5 处
+
+**第 13 行** 追加 import：
+```python
+from app.services.centrifugo_client import centrifugo
+```
+
+**第 57-70 行** (_notify_college_teachers)：
+```python
+# 旧
+    await manager.broadcast_to_college_teachers(
+        current_user.college_id,
+        teacher_ids,
+        {
+            "type": "escalation_notify",
+            "data": {
+                "conv_id": conv.id,
+                "student_id": conv.student_id,
+                "title": conv.title,
+                "status": conv.status.value,
+                "created_at": conv.created_at.isoformat(),
+            },
+        },
+    )
+# 新
+    _notify_data = {
+        "type": "escalation_notify",
+        "data": {
+            "conv_id": conv.id,
+            "student_id": conv.student_id,
+            "title": conv.title,
+            "status": conv.status.value,
+            "created_at": conv.created_at.isoformat(),
+        },
+    }
+    await centrifugo.broadcast([f"user#{tid}" for tid in teacher_ids], _notify_data)
+    await manager.broadcast_to_college_teachers(current_user.college_id, teacher_ids, _notify_data)
+```
+
+**第 93-96 行** (escalate 广播)：
+```python
+# 旧
+    await manager.broadcast_to_room(
+        f"conv:{conv_id}",
+        {"type": "status_changed", "data": {"conv_id": conv_id, "status": "pending_teacher"}}
+    )
+# 新
+    _esc_data = {"type": "status_changed", "data": {"conv_id": conv_id, "status": "pending_teacher"}}
+    await centrifugo.publish(f"conv:{conv_id}", _esc_data)
+    await manager.broadcast_to_room(f"conv:{conv_id}", _esc_data)
+```
+
+**第 114-118 行** (accept 广播)：
+```python
+# 旧
+    await manager.broadcast_to_room(
+        f"conv:{conv_id}",
+        {"type": "status_changed", "data": {"conv_id": conv_id, "status": "teacher_serving",
+                                             "teacher_id": current_user.id, "teacher_name": current_user.name}}
+    )
+# 新
+    _accept_data = {"type": "status_changed", "data": {"conv_id": conv_id, "status": "teacher_serving",
+                                                        "teacher_id": current_user.id, "teacher_name": current_user.name}}
+    await centrifugo.publish(f"conv:{conv_id}", _accept_data)
+    await manager.broadcast_to_room(f"conv:{conv_id}", _accept_data)
+```
+
+**第 138-141 行** (resolve 广播)：
+```python
+# 旧
+    await manager.broadcast_to_room(
+        f"conv:{conv_id}",
+        {"type": "status_changed", "data": {"conv_id": conv_id, "status": "resolved"}}
+    )
+# 新
+    _resolve_data = {"type": "status_changed", "data": {"conv_id": conv_id, "status": "resolved"}}
+    await centrifugo.publish(f"conv:{conv_id}", _resolve_data)
+    await manager.broadcast_to_room(f"conv:{conv_id}", _resolve_data)
+```
+
+**第 157-160 行** (close 广播)：
+```python
+# 旧
+    await manager.broadcast_to_room(
+        f"conv:{conv_id}",
+        {"type": "status_changed", "data": {"conv_id": conv_id, "status": "closed"}}
+    )
+# 新
+    _close_data = {"type": "status_changed", "data": {"conv_id": conv_id, "status": "closed"}}
+    await centrifugo.publish(f"conv:{conv_id}", _close_data)
+    await manager.broadcast_to_room(f"conv:{conv_id}", _close_data)
+```
+
+### Phase 3: 前端改造
+
+#### 3.1 安装依赖
+
+在 `apps/teacher-app/` 和 `apps/student-app/` 都执行：
+```bash
+npm install centrifuge@^5
+```
+记住在两个 app 的 package.json 中添加依赖。
+
+#### 3.2 新增 `apps/teacher-app/src/utils/centrifuge.ts`
+
+```typescript
+/**
+ * Centrifugo 客户端管理器 — 替代旧 websocket.ts
+ * API 与旧 wsManager 兼容，方便平滑切换
+ */
+import { Centrifuge, Subscription } from 'centrifuge'
+
+type EventHandler = (data: any) => void
+
+class CentrifugeManager {
+  private client: Centrifuge | null = null
+  private subscriptions: Map<string, Subscription> = new Map()
+  private handlers: Map<string, Set<EventHandler>> = new Map()
+  private _isConnected = false
+
+  get isConnected() { return this._isConnected }
+
+  connect(centrifugoToken: string, getToken?: () => Promise<string>) {
+    const wsUrl = location.protocol === 'https:'
+      ? `wss://${location.host}/centrifugo/connection/websocket`
+      : `ws://${location.host}/centrifugo/connection/websocket`
+
+    this.client = new Centrifuge(wsUrl, {
+      token: centrifugoToken,
+      getToken,
+    })
+
+    // 服务端订阅频道的消息通过顶层事件分发
+    this.client.on('publication', (ctx) => {
+      const msg = ctx.data
+      this.dispatch(msg?.type || 'unknown', msg?.data || msg)
+    })
+
+    this.client.on('connected', () => {
+      console.log('[Centrifuge] connected')
+      this._isConnected = true
+      this.dispatch('_connected', {})
+    })
+
+    this.client.on('disconnected', (ctx) => {
+      console.log('[Centrifuge] disconnected', ctx.reason)
+      this._isConnected = false
+      this.dispatch('_disconnected', { reason: ctx.reason })
+    })
+
+    this.client.connect()
+  }
+
+  disconnect() {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
+    this.subscriptions.clear()
+    this.client?.disconnect()
+    this.client = null
+    this._isConnected = false
+  }
+
+  joinConversation(convId: number) {
+    const channel = `conv:${convId}`
+    if (this.subscriptions.has(channel)) return
+
+    const sub = this.client!.newSubscription(channel, {
+      recoverable: true,
+    })
+
+    sub.on('publication', (ctx) => {
+      const msg = ctx.data
+      this.dispatch(msg?.type || 'unknown', msg?.data || msg)
+    })
+
+    sub.subscribe()
+    this.subscriptions.set(channel, sub)
+  }
+
+  leaveConversation(convId: number) {
+    const channel = `conv:${convId}`
+    const sub = this.subscriptions.get(channel)
+    if (sub) {
+      sub.unsubscribe()
+      this.subscriptions.delete(channel)
+    }
+  }
+
+  sendTyping(convId: number, userId: number, role: string) {
+    const channel = `conv:${convId}`
+    const sub = this.subscriptions.get(channel)
+    sub?.publish({ type: 'typing', user_id: userId, role })
+  }
+
+  on(type: string, handler: EventHandler) {
+    if (!this.handlers.has(type)) this.handlers.set(type, new Set())
+    this.handlers.get(type)!.add(handler)
+  }
+
+  off(type: string, handler: EventHandler) {
+    this.handlers.get(type)?.delete(handler)
+  }
+
+  private dispatch(type: string, data: any) {
+    this.handlers.get(type)?.forEach(h => {
+      try { h(data) } catch (e) { console.error('[Centrifuge dispatch]', e) }
+    })
+  }
+}
+
+export const centrifugeManager = new CentrifugeManager()
+```
+
+#### 3.3 复制同样的 centrifuge.ts 到学生端
+
+将 `apps/teacher-app/src/utils/centrifuge.ts` 完整复制到 `apps/student-app/src/utils/centrifuge.ts`（内容完全一致）。
+
+#### 3.4 修改 `apps/teacher-app/src/stores/websocket.ts`
+
+当前代码：
+```typescript
+import { wsManager } from '@/utils/websocket'
+
+export const useWsStore = defineStore('websocket', () => {
+  // ...
+  function init(token: string) {
+    wsManager.connect(token)
+    // ...
+  }
+  function destroy() {
+    wsManager.disconnect()
+    // ...
+  }
+  // ...
+})
+```
+
+改为：
+```typescript
+import { wsManager } from '@/utils/websocket'
+import { centrifugeManager } from '@/utils/centrifuge'
+
+export const useWsStore = defineStore('websocket', () => {
+  // ...
+  function init(token: string, centrifugoToken?: string) {
+    wsManager.connect(token)
+    if (centrifugoToken) {
+      centrifugeManager.connect(centrifugoToken)
+    }
+  }
+  function destroy() {
+    wsManager.disconnect()
+    centrifugeManager.disconnect()
+    // ...
+  }
+  // ...
+})
+```
+
+#### 3.5 修改教师端登录页 — 传递 centrifugoToken
+
+找到教师端 login 成功后调用 wsStore.init 的地方，改为同时传递 centrifugoToken：
+
+```typescript
+// 旧
+wsStore.init(res.access_token)
+// 新
+wsStore.init(res.access_token, res.centrifugo_token)
+```
+
+#### 3.6 修改教师端 `pages/questions/detail.vue` — 使用 centrifugeManager
+
+在已有的 `wsManager` 调用旁边追加 `centrifugeManager` 调用（双写模式）：
+
+```typescript
+import { centrifugeManager } from '@/utils/centrifuge'
+
+// onLoad 中追加
+centrifugeManager.joinConversation(convId.value)
+centrifugeManager.on('new_message', onNewMessage)
+centrifugeManager.on('status_changed', onStatusChange)
+centrifugeManager.on('escalation_notify', onEscalationNotify)
+
+// onUnmounted 中追加
+centrifugeManager.leaveConversation(convId.value)
+centrifugeManager.off('new_message', onNewMessage)
+centrifugeManager.off('status_changed', onStatusChange)
+centrifugeManager.off('escalation_notify', onEscalationNotify)
+```
+
+注意：保留旧 wsManager 的代码不删，实现双写。
+
+#### 3.7 学生端类似改造
+
+`apps/student-app/src/pages/chat/index.vue` 中同样追加 centrifugeManager 的调用。
+学生端 login 成功后也传 centrifugoToken。
+
+### Phase 4: Nginx 配置模板
+
+新增 `deploy/nginx-centrifugo.conf`：
+
+```nginx
+# Centrifugo WebSocket 反代 — 添加到 yxg-student-domain 和 yxg-teacher-domain 两个 vhost 中
+location /centrifugo/ {
+    proxy_pass http://127.0.0.1:8000/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_read_timeout 3600s;
+    proxy_send_timeout 3600s;
+}
+```
+
+## Git 规范
+
+```bash
+git checkout -b feat/centrifugo-integration
+# ... 所有修改 ...
+git add -A
+git commit -m "feat: 集成 Centrifugo 实时消息服务器 (双写模式)
+
+Phase 2 后端:
+- 新增 centrifugo_client.py (publish/broadcast/JWT)
+- config.py 新增 Centrifugo 配置项
+- auth.py login 返回 centrifugo_token
+- chat.py / conversations.py / actions.py 12 处双写
+
+Phase 3 前端:
+- 新增 centrifuge.ts SDK 封装 (两端共用)
+- stores/websocket.ts 双初始化
+- detail.vue / chat/index.vue 双写订阅
+
+Phase 4 部署:
+- deploy/centrifugo-config.json
+- deploy/docker-compose.centrifugo.yml
+- deploy/nginx-centrifugo.conf"
+```
+
+## 约束
+
+1. **双写模式**：所有 manager.xxx 调用保留不删，在其上方追加 centrifugo.xxx 调用
+2. 不要删除 `ws.py` 或 `ws_manager.py`
+3. 不要修改数据库模型
+4. `centrifugo_secret` 和 `centrifugo_api_key` 设为空字符串默认值，没配置时不影响现有功能
+5. 保持现有代码风格
+6. 前端 centrifuge.ts 的事件 API (on/off) 与旧 wsManager 完全兼容

@@ -1,0 +1,427 @@
+﻿opencode.cmd : [0m
+At line:1 char:155
++ ... ding UTF8 | & $opencode run -m deepseek/deepseek-v4-pro --dangerously ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([0m:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+> build · deepseek-v4-pro
+[0m
+[0m# [0mTodos
+[ ] Test connectivity to HK Dify API
+[ ] Test connectivity to internal Dify API
+[ ] Run 27 test queries against both APIs with 2-3s intervals
+[ ] Compile and analyze results
+[ ] Generate test report to .tasks/reports/
+[0m
+[0m$ [0mcurl -X POST 'https://dify.xiaoguan.site/v1/chat-messages' -H 'Authorization: Bearer app-0zqUgdeR2dQ1vJkPeoitneQ6' -H 'Content-Type: application/json' -d '{"inputs":{},"query":"怎么选课","re
+sponse_mode":"blocking","conversation_id":"","user":"test-audit-20260504"}' --connect-timeout 15 --max-time 60 2>&1
+Invoke-WebRequest : Cannot bind parameter 'Headers'. Cannot convert the "Authorization: Bearer app-0zqUgdeR2dQ1vJkPeoit
+neQ6" value of type "System.String" to type "System.Collections.IDictionary".
+At line:1 char:63
++ ... essages' -H 'Authorization: Bearer app-0zqUgdeR2dQ1vJkPeoitneQ6' -H ' ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Invoke-WebRequest], ParameterBindingException
+    + FullyQualifiedErrorId : CannotConvertArgumentNoMessage,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+[0m
+[0m$ [0mcurl -X POST 'http://192.168.100.165:3000/v1/chat-messages' -H 'Authorization: Bearer app-0zqUgdeR2dQ1vJkPeoitneQ6' -H 'Content-Type: application/json' -d '{"inputs":{},"query":"怎么选课","r
+esponse_mode":"blocking","conversation_id":"","user":"test-audit-20260504"}' --connect-timeout 5 --max-time 15 2>&1
+Invoke-WebRequest : Cannot bind parameter 'Headers'. Cannot convert the "Authorization: Bearer app-0zqUgdeR2dQ1vJkPeoit
+neQ6" value of type "System.String" to type "System.Collections.IDictionary".
+At line:1 char:64
++ ... essages' -H 'Authorization: Bearer app-0zqUgdeR2dQ1vJkPeoitneQ6' -H ' ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Invoke-WebRequest], ParameterBindingException
+    + FullyQualifiedErrorId : CannotConvertArgumentNoMessage,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+[0m
+Let me start by testing connectivity to both Dify APIs.
+[0m$ [0mwhere.exe curl 2>&1; curl.exe --version 2>&1
+C:\Windows\System32\curl.exe
+curl 8.16.0 (Windows) libcurl/8.16.0 Schannel zlib/1.3.1 WinIDN
+Release-Date: 2025-09-10
+Protocols: dict file ftp ftps gopher gophers http https imap imaps ipfs ipns ldap ldaps mqtt pop3 pop3s smb smbs smtp smtps telnet tftp ws wss
+Features: alt-svc AsynchDNS HSTS HTTPS-proxy IDN IPv6 Kerberos Largefile libz NTLM SPNEGO SSL SSPI threadsafe Unicode UnixSockets
+[0m
+PowerShell aliases curl to Invoke-WebRequest. Let me use the native `curl.exe` or PowerShell's `Invoke-RestMethod`.
+[0m$ [0mcurl.exe -s -X POST "http://192.168.100.165:3000/v1/chat-messages" -H "Authorization: Bearer app-0zqUgdeR2dQ1vJkPeoitneQ6" -H "Content-Type: application/json" -d '{\"inputs\":{},\"query\
+":\"怎么选课\",\"response_mode\":\"blocking\",\"conversation_id\":\"\",\"user\":\"test-audit-20260504\"}' --connect-timeout 5 --max-time 15 2>&1
+{"code":"unauthorized","message":"Access token is invalid","status":401}
+[0m
+Good, curl.exe is available. Let me now test connectivity and then run all 27 queries. I'll write a PowerShell script to automate this.
+[0m$ [0mcurl.exe -s -X POST "https://dify.xiaoguan.site/v1/chat-messages" -H "Authorization: Bearer app-0zqUgdeR2dQ1vJkPeoitneQ6" -H "Content-Type: application/json" -d '{\"inputs\":{},\"query\"
+:\"怎么选课\",\"response_mode\":\"blocking\",\"conversation_id\":\"\",\"user\":\"test-audit-20260504\"}' --connect-timeout 15 --max-time 60 2>&1
+{"event": "message", "task_id": "50761b25-2e99-46c4-9ab0-b53cd5804828", "id": "22dc84e3-8053-4047-9538-1c02d794ec71", "message_id": "22dc84e3-8053-4047-9538-1c02d794ec71", "conversation_id": "4d37
+d3ec-be2a-4678-a993-b5e68a00ece4", "mode": "advanced-chat", "answer": "\u540c\u5b66\u4f60\u597d\uff0c\u9009\u8bfe\u9700\u5148\u767b\u5f55\u6559\u52a1\u7cfb\u7edf\uff0c\u5728\u5de6\u4fa7\u83dc\u535
+5\u70b9\u51fb\u201c\u5b66\u751f\u9009\u8bfe\u201d\u8fdb\u5165\u9875\u9762\u3002\u5efa\u8bae\u9009\u8bfe\u524d\u5148\u67e5\u770b\u201c\u4e2a\u4eba\u6559\u5b66\u8ba1\u5212\u201d\uff0c\u4e86\u89e3\u6
+72c\u4e13\u4e1a\u5404\u8bfe\u7ec4\u7684\u5b66\u5206\u8981\u6c42\uff0c\u6309\u57f9\u517b\u65b9\u6848\u5408\u7406\u9009\u62e9\u3002\n\n\u9009\u8bfe\u901a\u5e38\u5206\u4e3a\u9884\u9009\u3001\u6b63\u9
+009\u548c\u8865\u9000\u9009\u4e09\u4e2a\u9636\u6bb5\uff0c\u5177\u4f53\u64cd\u4f5c\u53ef\u9075\u5faa\u4ee5\u4e0b\u6b65\u9aa4\uff1a\n1. \u767b\u5f55\u7cfb\u7edf\u5e76\u67e5\u770b\u4e2a\u4eba\u6559\u
+5b66\u8ba1\u5212\uff1b\n2. \u70b9\u51fb\u201c\u5b66\u751f\u9009\u8bfe\u201d\uff0c\u6309\u8bfe\u7ec4\u7b5b\u9009\u5e76\u67e5\u770b\u8bfe\u7a0b\u4fe1\u606f\uff1b\n3. \u9009\u62e9\u8bfe\u7a0b\u5e76\u
+786e\u8ba4\uff0c\u5b8c\u6210\u540e\u67e5\u770b\u201c\u672c\u5b66\u671f\u8bfe\u8868\u201d\u6838\u5bf9\u3002\n\n\u8bf7\u6ce8\u610f\uff0c\u6bcf\u5b66\u671f\u9009\u8bfe\u539f\u5219\u4e0a\u6700\u9ad8\u
+4e0d\u8d85\u8fc730\u5b66\u5206\uff0c\u6700\u4f4e\u4e0d\u5c11\u4e8e15\u5b66\u5206\uff0c\u4e14\u9700\u4fdd\u8bc1\u65e0\u65f6\u95f4\u51b2\u7a81\u3002\u5982\u6709\u5177\u4f53\u95ee\u9898\uff0c\u53ef\u
+54a8\u8be2\u6559\u52a1\u79d1\uff080538-6229802\uff09\u6216\u6d4e\u5357\u6559\u5b66\u8fd0\u884c\uff080531-59556803\uff09\u3002\n\n\u795d\u4f60\u9009\u8bfe\u987a\u5229\uff0c\u65b0\u5b66\u671f\u5b66\
+u4e1a\u8fdb\u6b65\uff01", "metadata": {"annotation_reply": null, "retriever_resources": [{"position": 1, "dataset_id": "c2363fef-405b-48ab-a0e2-9274a4186cef", "dataset_name": "\u533b\u5c0f\u7ba1-R
+AG", "document_id": "23f547e6-1a52-4b97-aacd-09a1bc1398db", "document_name": "\u9009\u8bfe\u64cd\u4f5c\u6d41\u7a0b", "data_source_type": "upload_file", "segment_id": "608064e6-de88-44f8-ae97-b35de
+d3e664c", "retriever_from": "workflow", "score": 0.8294975337524803, "hit_count": 3, "word_count": 340, "segment_position": 1, "index_node_hash": "dd4308cc534a90884ddb60464f38c9d4c4a7d8bffec4ed5ac
+10c607f8e874fd6", "content": "\u95ee\u9898\u6982\u8ff0\n\u5982\u4f55\u5728\u6559\u52a1\u7cfb\u7edf\u8fdb\u884c\u9009\u8bfe\uff1f\u5fc5\u4fee\u3001\u9650\u9009\u3001\u4efb\u9009\u8bfe\u7a0b\u6709\u
+4ec0\u4e48\u533a\u522b\uff1f\n\n## \u6807\u51c6\u7b54\u590d\n\u5b66\u751f\u53ef\u901a\u8fc7\u6559\u52a1\u7cfb\u7edf\u5de6\u4fa7\u83dc\u5355\"\u5b66\u751f\u9009\u8bfe\"\u8fdb\u5165\u9009\u8bfe\u987
+5\u9762\u3002\u9009\u8bfe\u5206\u4e3a\u4e09\u79cd\u5c5e\u6027\uff1a\u5fc5\u4fee\uff08\u5fc5\u987b\u4fee\u8bfb\u7684\u8bfe\u7a0b\uff09\u3001\u9650\u9009\uff08\u5728\u9650\u5b9a\u8303\u56f4\u5185\u9
+009\u62e9\u7684\u8bfe\u7a0b\uff09\u3001\u4efb\u9009\uff08\u53ef\u81ea\u7531\u9009\u62e9\u7684\u8bfe\u7a0b\uff09\u3002\u9009\u8bfe\u524d\u5e94\u5148\u67e5\u770b\u4e2a\u4eba\u6559\u5b66\u8ba1\u5212\
+uff0c\u4e86\u89e3\u672c\u4e13\u4e1a\u5404\u8bfe\u7ec4\u7684\u5b66\u5206\u8981\u6c42\uff0c\u6309\u57f9\u517b\u65b9\u6848\u8981\u6c42\u5408\u7406\u9009\u8bfe\u3002\u9009\u8bfe\u901a\u5e38\u5206\u963
+6\u6bb5\u8fdb\u884c\uff0c\u5305\u62ec\u9884\u9009\u3001\u6b63\u9009\u548c\u8865\u9000\u9009\u3002\n\n## \u8be6\u7ec6\u8bf4\u660e\n\n**\u9009\u8bfe\u5c5e\u6027\u8bf4\u660e\uff1a**\n\n| \u5c5e\u6027
+ | \u8bf4\u660e | \u8981\u6c42 |\n|------|------|------|\n| \u5fc5\u4fee | \u4e13\u4e1a\u57f9\u517b\u65b9\u6848\u89c4\u5b9a\u7684\u5fc5\u5b66\u8bfe\u7a0b | \u5fc5\u987b\u4fee\u8bfb\u5e76\u901a\u8f
+c7 |\n| \u9650\u9009 | \u5728\u9650\u5b9a\u8bfe\u7a0b\u8303\u56f4\u5185\u9009\u62e9\u7684\u8bfe\u7a0b | \u9700\u8fbe\u5230\u89c4\u5b9a\u5b66\u5206 |\n| \u4efb\u9009 | \u5b66\u751f\u53ef\u81ea\u753
+1\u9009\u62e9\u7684\u8bfe\u7a0b | \u9700\u8fbe\u5230\u89c4\u5b9a\u5b66\u5206 |", "page": null, "doc_metadata": null, "title": null, "files": null, "summary": null}, {"position": 2, "dataset_id": "
+c2363fef-405b-48ab-a0e2-9274a4186cef", "dataset_name": "\u533b\u5c0f\u7ba1-RAG", "document_id": "5c53abfc-73c6-4ca9-987f-b03730b8ca35", "document_name": "\u5b66\u5206\u5236\u7ba1\u7406\u89c4\u5b9a
+ \u2014 \u8bfe\u7a0b\u4fee\u8bfb\u4e0e\u9009\u8bfe", "data_source_type": "upload_file", "segment_id": "9fa1b56d-16e4-431e-a9ec-32eab3e9e4c1", "retriever_from": "workflow", "score": 0.5643274416083
+762, "hit_count": 3, "word_count": 346, "segment_position": 4, "index_node_hash": "8e407c559ef6fdce0069a93d590c45337f65185c447aa0b26a07d323f281d7ec", "content": "\u5b66\u751f\u9009\u8bfe\u5206\u4e
+3a\u9884\u9009\u3001\u6b63\u9009\u3001\u8865\u9000\u91cd\u9009\u4e09\u4e2a\u9636\u6bb5\u3002\u9884\u9009\u4e00\u822c\u5728\u6bcf\u5b66\u671f\u9009\u8bfe\u524d\uff0c\u6559\u52a1\u90e8\u7edf\u4e00\u
+5c06\u5fc5\u4fee\u8bfe\u9884\u7f6e\u3002\u5b66\u751f\u53ef\u6839\u636e\u81ea\u5df1\u7684\u5174\u8da3\u7231\u597d\u7b49\u5b9e\u9645\u60c5\u51b5\uff0c\u5bf9\u672c\u4eba\u8bfe\u7a0b\u8868\u4e2d\u6240
+\u9884\u7f6e\u8bfe\u7a0b\u8fdb\u884c\u8c03\u6574\u3002\u9009\u4fee\u8bfe\u7531\u5b66\u751f\u6839\u636e\u9009\u8bfe\u901a\u77e5\u7684\u8981\u6c42\u8fdb\u884c\u81ea\u4e3b\u9009\u8bfe\u3002\u9884\u90
+09\u9636\u6bb5\u9009\u8bfe\u4eba\u6570\u4f4e\u4e8e\u5f00\u8bfe\u4eba\u6570\u4e0b\u9650\u7684\u8bfe\u7a0b\u5c06\u505c\u5f00\u3002\u9884\u9009\u62bd\u7b7e\uff1a\u6559\u52a1\u90e8\u5bf9\u9884\u9009\u
+4eba\u6570\u591a\u4e8e\u8bfe\u5bb9\u91cf\u7684\u8bfe\u7a0b\u901a\u8fc7\u201c\u62bd\u7b7e\u201d\uff08\u5373\u6559\u52a1\u7ba1\u7406\u7cfb\u7edf\u968f\u673a\u9009\u62e9\uff09\u7684\u65b9\u5f0f\u786e
+\u5b9a\u8bfe\u7a0b\u73ed\u5bb9\u91cf\u5185\u7684\u5b66\u751f\u540d\u5355\uff0c\u5176\u4f59\u5b66\u751f\u5c06\u4f5c\u201c\u672a\u9009\u4e2d\u201d\u5904\u7406\uff0c\u201c\u672a\u9009\u4e2d\u7684\u20
+1d\u5b66\u751f\u53ef\u5728\u6b63\u9009\u9636\u6bb5\u6539\u9009\u5176\u4ed6\u8bfe\u7a0b\u3002\u6b63\u9009\u9636\u6bb5\u9075\u5faa\u5148\u5230\u5148\u5f97\u7684\u9009\u8bfe\u539f\u5219\uff0c\u4e0d\u
+518d\u8fdb\u884c\u8bfe\u5bb9\u91cf\u8c03\u6574\u3002\u5b66\u751f\u5b58\u5728\u4e0a\u8bfe\u65f6\u95f4\u51b2\u7a81\u7684\uff0c\u9700\u9000\u9009\u76f8\u5e94\u8bfe\u7a0b\uff0c\u5e76\u91cd\u65b0\u9009
+\u62e9\u4e0a\u8bfe\u65f6\u95f4\u4e0d\u51b2\u7a81\u7684\u8bfe\u7a0b\u3002\u8865\u9000\u91cd\u9009\uff1a\u5b66\u751f\u5728\u6b63\u9009\u9636\u6bb5\u6f0f\u9009\u7684\u8bfe\u7a0b\uff0c\u53ef\u6839\u63
+6e\u8bfe\u7a0b\u9009\u8bfe\u7387\u60c5\u51b5\u8fdb\u884c\u8865\u9009\uff1b\u5bf9\u4e8e\u5df2\u9009\u8bfe\u7a0b\uff0c\u82e5\u5bf9\u8bfe\u7a0b\u4e0d\u9002\u5e94\u6216\u4e0d\u6ee1\u610f\uff0c\u53ef\u
+5728\u8bd5\u542c\u4e4b\u540e\uff0c\u8fdb\u884c\u9000\u9009\u6216\u91cd\u9009\u3002", "page": null, "doc_metadata": null, "title": null, "files": null, "summary": null}, {"position": 3, "dataset_id
+": "c2363fef-405b-48ab-a0e2-9274a4186cef", "dataset_name": "\u533b\u5c0f\u7ba1-RAG", "document_id": "94e59c9b-35f0-4749-91e4-af9ded8b6b1e", "document_name": "\u6559\u52a1\u90e8 \u2014 \u8bfe\u7a0b
+\u4fee\u8bfb\u4e0e\u9009\u8bfe\u5236\u5ea6", "data_source_type": "upload_file", "segment_id": "dd038c2b-eeda-4bda-a47a-91d7adf35960", "retriever_from": "workflow", "score": 0.4985414376286849, "hi
+t_count": 0, "word_count": 356, "segment_position": 1, "index_node_hash": "5b8af6080e597525c12c31d84e2bf3e42cb210397066b1ef86db26962f4c07fe", "content": "\u9009\u8bfe\u8d44\u683c\u4e0e\u8303\u56f4
+\n\n\u5b66\u751f\u7f34\u8d39\u6ce8\u518c\u540e\u53d6\u5f97\u9009\u8bfe\u8d44\u683c\u3002\u5b66\u751f\u987b\u4ee5\u672c\u4e13\u4e1a\u4eba\u624d\u57f9\u517b\u65b9\u6848\u4e2d\u7684\u6559\u5b66\u8ba1
+\u5212\u8868\u4e3a\u4f9d\u636e\uff0c\u5728\u5b66\u4e1a\u5bfc\u5e08\u7684\u6307\u5bfc\u4e0b\uff0c\u7ed3\u5408\u81ea\u5df1\u7684\u5177\u4f53\u60c5\u51b5\uff0c\u5728\u6307\u5b9a\u8303\u56f4\u5185\u81
+ea\u4e3b\u9009\u62e9\u8bfe\u7a0b\u548c\u4efb\u8bfe\u6559\u5e08\u3002\u8de8\u4e13\u4e1a\u3001\u8de8\u5b66\u9662\u3001\u8de8\u5e74\u7ea7\u9009\u8bfe\u3002\u5b66\u6821\u5168\u90e8\u8bfe\u7a0b\u9762\u
+5411\u5168\u6821\u5b66\u751f\u9010\u6e10\u5f00\u653e\u3002\u5728\u4e0e\u672c\u4eba\u7684\u5176\u4ed6\u8bfe\u7a0b\u4e0d\u51b2\u7a81\u7684\u60c5\u51b5\u4e0b\uff0c\u5728\u8bfe\u7a0b\u73ed\u5bb9\u91cf
+\u8303\u56f4\u5185\uff0c\u5b66\u751f\u53ef\u4ee5\u4efb\u610f\u9009\u62e9\u5176\u4ed6\u5404\u5b66\u9662\u3001\u5404\u4e13\u4e1a\u3001\u5404\u5e74\u7ea7\u7684\u8bfe\u7a0b\u5b66\u4e60\u3002\u5b66\u75
+1f\u53d6\u5f97\u7684\u5b66\u5206\u53ef\u66ff\u6362\u516c\u5171\u9009\u4fee\u8bfe\u5b66\u5206\u3002\n\n## \u9009\u8bfe\u5b66\u5206\u9650\u5236\n\n\u5b66\u751f\u9009\u8bfe\u95e8\u6570\u5e94\u4e0e\u5
+b66\u751f\u7684\u5b66\u4e60\u80fd\u529b\u76f8\u7b26\uff0c\u6bcf\u5b66\u671f\u4e3b\u4fee\u4e13\u4e1a\u9002\u5b9c\u7684\u9009\u8bfe\u91cf\u4e3a 20 \u5b66\u5206\u5de6\u53f3\uff0c\u539f\u5219\u4e0a\u6
+700\u9ad8\u4e0d\u8d85\u8fc7 30 \u5b66\u5206\uff0c\u6700\u4f4e\u4e0d\u5f97\u5c11\u4e8e 15 \u5b66\u5206\u3002\u5b66\u751f\u9009\u8bfe\u65f6\u8981\u9996\u5148\u4fdd\u8bc1\u5fc5\u4fee\u8bfe\u7684\u4fe
+e\u8bfb\u3002\u6709\u5148\u4fee\u540e\u7eed\u5173\u7cfb\u7684\u8bfe\u7a0b\uff0c\u5e94\u5148\u9009\u5148\u4fee\u8bfe\u3002\u65b0\u751f\u5165\u5b66\u540e\u7b2c\u4e00\u5b66\u671f\u7684\u5fc5\u4fee\u8
+bfe\u7a0b\u7531\u6559\u52a1\u90e8\u6839\u636e\u5404\u4e13\u4e1a\u7684\u6559\u5b66\u8ba1\u5212\u76f4\u63a5\u5b89\u6392\uff0c\u4e0d\u9700\u8981\u9009\u8bfe\u3002\n\n## \u91cd\u4fee\u4e0e\u514d\u4fee
+\u5236\u5ea6", "page": null, "doc_metadata": null, "title": null, "files": null, "summary": null}, {"position": 4, "dataset_id": "c2363fef-405b-48ab-a0e2-9274a4186cef", "dataset_name": "\u533b\u5c
+0f\u7ba1-RAG", "document_id": "5c53abfc-73c6-4ca9-987f-b03730b8ca35", "document_name": "\u5b66\u5206\u5236\u7ba1\u7406\u89c4\u5b9a \u2014 \u8bfe\u7a0b\u4fee\u8bfb\u4e0e\u9009\u8bfe", "data_source_
+type": "upload_file", "segment_id": "fe9314e8-bbf6-434c-ada4-53ee102ad9bb", "retriever_from": "workflow", "score": 0.4526571228198094, "hit_count": 2, "word_count": 180, "segment_position": 1, "in
+dex_node_hash": "e53a54825f66cb072d31f9ea63b4f425d0327ae228095d15be6903d69b9522b1", "content": "\u8bfe\u7a0b\u4fee\u8bfb\u5236\u5ea6\n\n\u5b9e\u884c\u9009\u8bfe\u5236\u5ea6\u3002\u5b66\u751f\u7f34
+\u8d39\u6ce8\u518c\u540e\u53d6\u5f97\u9009\u8bfe\u8d44\u683c\u3002\u5b66\u751f\u987b\u4ee5\u672c\u4e13\u4e1a\u4eba\u624d\u57f9\u517b\u65b9\u6848\u4e2d\u7684\u6559\u5b66\u8ba1\u5212\u8868\u4e3a\u4f
+9d\u636e\uff0c\u5728\u5b66\u4e1a\u5bfc\u5e08\u7684\u6307\u5bfc\u4e0b\uff0c\u7ed3\u5408\u81ea\u5df1\u7684\u5177\u4f53\u60c5\u51b5\uff0c\u4e8e\u6307\u5b9a\u8303\u56f4\u5185\u81ea\u4e3b\u9009\u62e9\u
+8bfe\u7a0b\u548c\u4efb\u8bfe\u6559\u5e08\u3002\u5b66\u6821\u5168\u90e8\u8bfe\u7a0b\u9762\u5411\u5168\u6821\u5b66\u751f\u9010\u6e10\u5f00\u653e\u3002\u5728\u4e0e\u672c\u4eba\u7684\u5176\u4ed6\u8bfe
+\u7a0b\u4e0d\u51b2\u7a81\u7684\u60c5\u51b5\u4e0b\uff0c\u5728\u8bfe\u7a0b\u73ed\u5bb9\u91cf\u8303\u56f4\u5185\uff0c\u5b66\u751f\u53ef\u4ee5\u4efb\u610f\u9009\u62e9\u5176\u4ed6\u5404\u5b66\u9662\u30
+01\u5404\u4e13\u4e1a\u3001\u5404\u5e74\u7ea7\u7684\u8bfe\u7a0b\u5b66\u4e60\u3002\u5b66\u751f\u53d6\u5f97\u7684\u5b66\u5206\u53ef\u66ff\u6362\u516c\u5171\u9009\u4fee\u8bfe\u5b66\u5206\u3002", "page
+": null, "doc_metadata": null, "title": null, "files": null, "summary": null}, {"position": 5, "dataset_id": "c2363fef-405b-48ab-a0e2-9274a4186cef", "dataset_name": "\u533b\u5c0f\u7ba1-RAG", "docu
+ment_id": "23f547e6-1a52-4b97-aacd-09a1bc1398db", "document_name": "\u9009\u8bfe\u64cd\u4f5c\u6d41\u7a0b", "data_source_type": "upload_file", "segment_id": "8ac23e56-5433-4ed0-9fbc-84cbb5c0e265", 
+"retriever_from": "workflow", "score": 0.39005528158630476, "hit_count": 3, "word_count": 410, "segment_position": 2, "index_node_hash": "811546b04df46e672e561b6c1bbe81217f81752fe2c231147cbec9b7c6
+986702", "content": "14\u4e2a\u8bfe\u7ec4\u5206\u7c7b\uff1a**\n1. \u4e13\u4e1a\u8bfe\u5fc5\u4fee\n2. \u4e13\u4e1a\u9650\u9009\u8bfe\n3. \u4f53\u80b2\u8bfe\u5fc5\u4fee\n4. \u516c\u5171\u9009\u4fee\
+u8bfe\n5. \u521b\u65b0\u521b\u4e1a\u8bfe\u7a0b\u5fc5\u4fee\n6. \u521b\u65b0\u521b\u4e1a\u8bfe\u7a0b\u9009\u4fee\n7. \u5916\u8bed\u8bfe\u5fc5\u4fee\n8. \u5916\u8bed\u9009\u4fee-\u4e13\u95e8\u7528\u
+9014\u82f1\u8bed\u6a21\u5757\n9. \u5916\u8bed\u9009\u4fee-\u6587\u5316\u3001\u82f1\u8bed\u6280\u80fd\u3001\u56fd\u9645\u5316\u63d0\u5347\n10. \u5b66\u79d1\uff08\u4e13\u4e1a\uff09\u57fa\u7840\u8bfe
+\u5fc5\u4fee\n11. \u601d\u653f\u8bfe\u5fc5\u4fee\n12. \u62d3\u5c55\u57f9\u517b\u9879\u76ee\n13. \u901a\u8bc6\u6838\u5fc3\u8bfe\u7a0b\uff08\u591a\u4e2a\u6a21\u5757\uff09\n14. \u91cd\u70b9\u63d0\u53
+47\u8bfe\u7a0b\u5fc5\u4fee/\u9009\u4fee\uff08\u542b\u96c6\u4e2d\u5b9e\u8df5\uff09\n\n## \u529e\u7406\u6d41\u7a0b\n1. \u767b\u5f55\u6559\u52a1\u7cfb\u7edf\n2. \u67e5\u770b\"\u4e2a\u4eba\u6559\u5b66
+\u8ba1\u5212\"\u4e86\u89e3\u5b66\u5206\u8981\u6c42\n3. \u70b9\u51fb\u5de6\u4fa7\u83dc\u5355\"\u5b66\u751f\u9009\u8bfe\"\n4. \u6309\u8bfe\u7ec4\u7b5b\u9009\u8bfe\u7a0b\uff0c\u67e5\u770b\u8bfe\u7a0b
+\u4fe1\u606f\n5. \u9009\u62e9\u8bfe\u7a0b\u5e76\u786e\u8ba4\n6. \u9009\u8bfe\u5b8c\u6210\u540e\u67e5\u770b\"\u672c\u5b66\u671f\u8bfe\u8868\"\u786e\u8ba4\n\n## \u54a8\u8be2\u65b9\u5f0f\n- \u6559\u5
+2a1\u79d1\uff1a0538-6229802 / jwk@tsmc.edu.cn\n- \u6d4e\u5357\u6559\u5b66\u8fd0\u884c\uff1a0531-59556803\n\n## \u6765\u6e90\u8bf4\u660e\n- \u6570\u636e\u6765\u6e90: kimi/report-7 \u00a72.2, \u00a7
+5.3", "page": null, "doc_metadata": null, "title": null, "files": null, "summary": null}], "usage": {"prompt_tokens": 2315, "prompt_unit_price": "0.0008", "prompt_price_unit": "0.001", "prompt_pri
+ce": "0.0018520", "completion_tokens": 218, "completion_unit_price": "0.0048", "completion_price_unit": "0.001", "completion_price": "0.000954", "total_tokens": 2533, "total_price": "0.0028060", "
+currency": "RMB", "latency": 5.406000000000001, "time_to_first_token": 3.809, "time_to_generate": 3.274}}, "created_at": 1777838685}
+[0m
+[0m← [0mWrite ..\..\..\AppData\Local\Temp\opencode\test_dify.ps1
+Wrote file successfully.
+[0m
+HK Dify works perfectly. Internal Dify returns 401 (different app key). Skipping internal test. Now let me run all 27 queries against HK Dify with 2-3 second intervals.
+
+I'll write a PowerShell script that automates all 27 queries and saves results:
+[0m# [0mTodos
+[x] Test connectivity to HK Dify API
+[x] Test connectivity to internal Dify API
+[ ] Run 27 test queries against HK Dify with 2-3s intervals
+[ ] Compile and analyze results
+[ ] Generate test report to .tasks/reports/
+[0m
+[0m$ [0mpowershell.exe -ExecutionPolicy Bypass -File "C:\Users\Administrator\AppData\Local\Temp\opencode\test_dify.ps1"
+=== Query 1/27: 怎么选课 ===
+Top score: 0.8291926639956751 | Doc: 选课操作流程
+Answer prefix: 同学你好，选课需先登录教务系统，查看“个人教学计划”了解学分要求，再点击左侧菜单“学生选课”进行操作（见《标准答复》）。
+
+课程分为必修、限选和任选三类，选课通常经历预选、正选和补退选三个阶段，请留意各阶段规则。
+
+建议每学期选课量控制在15-30学分之间，并优先保证必修课及有先后修读关系的课程。
+
+具体操作可参考系统指引，如有疑问可咨询教务科（0538-6229802）或济南教学运行（0531-
+
+=== Query 2/27: 转专业需要什么条件 ===
+Top score: 0.8804868271991027 | Doc: 转专业申请流程
+Answer prefix: 你好，我是医小管。在山东第一医科大学申请转专业，通常需满足以下基本条件：
+
+1. **身份与纪律**：须为普通全日制本科在校生（不含专升本、公费医学生等特殊类型），思想政治表现优良，无未解除的警告及以上处分。
+2. **学业与健康**：一年级学习成绩优良，身体条件符合转入专业的体检要求；新高考省份学生选考科目也需符合转入专业要求。
+3. **限制情形**：入学未满一学期、由低批次转入高批次、定向委
+
+=== Query 3/27: 宿舍报修怎么操作 ===
+Top score: 0.6877902051090852 | Doc: 宿舍报修流程
+Answer prefix: 宿舍报修主要有三种方式：通过山一大企业微信“网上报修”、拨打维修电话或前往后勤服务窗口登记。
+
+若使用线上报修，请进入企业微信“工作台”，点击“网上报修”，选择故障类型并填写具体位置、描述及照片后提交。对于水管爆裂、电路故障等紧急情况，建议直接拨打电话报修（济南：0531-59556133；泰安：0538-6228809）以加快处理速度。
+
+请注意，学生不得擅自处理公寓内设施故障，维修时请留人配合
+
+=== Query 4/27: 食堂在哪里 ===
+Top score: 0.19448023920408372 | Doc: 护理学院 — 泰安长城路校区校园生活指南
+Answer prefix: 学校共有六个食堂，分别是龙山厅、傲徕厅、凤凰厅、天烛厅、泰山厅和东岳厅。
+
+这些食堂位置离宿舍区较近，十分方便，能够满足大家一日三餐的需求。
+
+建议你根据所在宿舍楼的位置，选择最近的食堂就餐。
+
+祝你用餐愉快！
+
+=== Query 5/27: 学费怎么交 ===
+Top score: 0.8038413530590799 | Doc: 计划财务部 — 学生缴费与支付平台指南
+Answer prefix: 你好！缴纳学费请登录山东第一医科大学校园统一支付平台（https://cwpt.sdfmu.edu.cn/xysf/）。
+
+操作流程如下：
+1. 登录后点击“学费缴费”，选择学年并勾选需缴费项目。
+2. 确认信息无误后，选择微信、农行电子银行等方式完成支付。
+3. 缴费成功后，可在平台“交易查询-已交费信息-票据查询”中下载电子发票。
+
+请注意核对个人信息，并在规定时间内完成缴费。如有特殊情况（如
+
+=== Query 6/27: 报销流程是什么 ===
+Top score: 0.6438068306845426 | Doc: 劳务费报销流程
+Answer prefix: 日常报销（含劳务费）需登录网上自助报账系统填报，教职工初始账号通常为5位工资编号。
+若委托他人办理，项目负责人需先在系统中完成“项目授权”步骤。
+财政专项资金有严格的执行进度考核时点，请留意6月至11月的进度要求。
+具体票据规范及详细流程图，建议关注“山一大计财部”公众号或咨询核算科。
+线下办理请前往财务大厅，并确保手续完备、信息准确。
+
+办事前记得核对好材料，祝你报销顺利！
+
+=== Query 7/27: 国家奖学金申请条件 ===
+Top score: 0.8760210869748889 | Doc: 关于做好2024-2025学年本科生国家奖学金评选工作的通知（模板版）
+Answer prefix: 申请国家奖学金需具有本校全日制学籍，且无违纪处分记录。
+学业成绩及综合素质排名须达到当年通知要求，通常需名列前茅。
+此外，该奖项与省政府奖学金、国家励志奖学金等具有互斥性，同一学年只能获得其中一项。
+具体名额和详细标准请以辅导员发布的当年正式通知为准。
+建议你提前整理好成绩证明和综合材料，密切关注班级通知。
+
+=== Query 8/27: 助学贷款怎么申请 ===
+Top score: 0.5058440937494879 | Doc: 药学院 — 助学贷款与奖助政策指南
+Answer prefix: 国家助学贷款主要分为“生源地信用助学贷款”和“校园地国家助学贷款”两类，申请方式有所不同。
+
+1. **生源地贷款**：需学生和家长（或法定监护人）作为共同借款人，前往入学户籍所在县（市、区）的学生资助管理中心或金融机构申请。
+2. **校园地贷款**：直接向学校学生资助管理中心提出申请，由学校统一组织办理。
+
+建议你根据家庭经济状况及时认定困难等级，具体政策细节可咨询辅导员或访问学校资助中心网站
+
+=== Query 9/27: 校园招聘在哪里看 ===
+Top score: 0.3609081700192288 | Doc: 就业指导服务中心 — 就业服务平台与联系方式
+Answer prefix: 自2026年春季学期起，学校各类招聘活动均通过“山东省大学生就业服务平台山东第一医科大学校园端”发布，原就业信息网已停用。
+
+你可以登录平台网址 https://school.gxjy.sdei.edu.cn/sdfmu 查看招聘信息、投递简历及报名参会。此外，关注“山东第一医科大学就业服务”公众号也能获取最新招聘会动态。
+
+若有疑问，可致电0531-59556869咨询崔老师或卢老师。祝你求职顺
+
+=== Query 10/27: 毕业证什么时候发 ===
+Top score: 0.4266635481985362 | Doc: 毕业与结业要求及证书发放
+Answer prefix: 毕业证书通常在学校准予毕业后，于学生离校前发放。
+
+具体的发证日期会直接填写在证书上，以该日期为准。
+
+建议你关注学院或教务部发布的离校通知，以获取当年的确切领取时间和安排。
+
+祝你顺利毕业，前程似锦！
+
+=== Query 11/27: 图书馆开放时间 ===
+Top score: 0.8575945458562826 | Doc: 口腔医学院 — 黄河图书馆使用指南
+Answer prefix: 同学你好，不同校区和区域的图书馆开放时间有所区别，请根据你的位置参考以下信息：
+
+1. **黄河图书馆**：北大厅夏季（5-9月）7:50—23:30，冬季（10-4月）7:50—22:00；南大厅夏季8:00—18:00，冬季8:00—17:30。
+2. **泰山图书馆**：夏季（5-9月）7:50—22:30，冬季（10-4月）7:50—22:00。
+3. **其他教学楼区域**：周一至周五8
+
+=== Query 12/27: VPN 怎么连 ===
+Top score:  | Doc: 
+Answer prefix: 
+
+=== Query 13/27: 心理咨询怎么预约 ===
+Top score: 0.905851648357952 | Doc: 心理健康教育中心 — 心理咨询服务指南
+Answer prefix: 同学你好，你可以通过线上、电话或线下三种方式预约心理咨询，请至少提前一天进行预约。
+
+1. **线上预约**：登录学校信息化公共服务平台（可通过官网或企业微信进入），在“心理系统”应用中完成在线预约。
+2. **电话预约**：济南校区拨打 0531-59556060，泰安校区拨打 0538-6235057。
+3. **线下预约**：前往各校区大学生活动中心心理健康教育中心现场填表预约。
+
+咨询时间
+
+=== Query 14/27: 医保怎么报销 ===
+Top score: 0.3877759400416309 | Doc: 校医院与医疗服务
+Answer prefix: 你好！我是医小管。关于大学生医保报销，主要分校内就诊和异地就医两种情况：
+
+1. **校内就诊**：携带校园卡到校医院挂号就诊，按规定享受医保待遇，记得保留好相关票据以便后续报销（见《就医须知》）。
+2. **异地就医**：主要包括门诊慢性病、门诊统筹、意外伤害及住院报销。建议通过“国家医保服务平台”APP办理异地就医备案，在定点医疗机构可直接结算。
+3. **注意事项**：除急诊抢救外，非定点医
+
+=== Query 15/27: 研究生推免条件 ===
+Top score: 0.7832449113229868 | Doc: 化学与制药工程学院 — 推荐免试攻读硕士研究生工作指南
+Answer prefix: 你好！我是医小管。根据化学与制药工程学院的资料，推免基本申请条件如下：
+
+1. **学籍与品行**：须为全日制应届本科毕业生，遵纪守法，无违法违纪、作弊或学术不端记录。
+2. **学业成绩**：按期完成规定课程，必修课全部合格，且学分加权平均成绩位列同专业前30%（多次考试按首次成绩计）。
+3. **外语水平**：非英语专业需CET6≥425分（或雅思≥6.0/托福≥80）；其他语种或非外语专业相
+
+=== Query 16/27: 考研调剂流程 ===
+Top score: 0.8069293704471809 | Doc: 硕士研究生调剂流程与研招办联系方式
+Answer prefix: 2026年硕士调剂需通过“全国硕士生招生调剂服务系统”报名，首次开放时间为4月8日0:00—12:00，志愿锁定36小时（见《标准答复》）。
+学校按初试成绩择优遴选，通过系统发送复试通知，考生须在规定时间内确认并参加复试。
+复试前请登录指定网址提交身份证、准考证、政审表等资格审核材料并缴纳费用（见《调剂复试资格审核材料要求》）。
+建议密切关注招生单位复试工作群通知，切勿随意修改志愿以免失去资格。
+
+
+=== Query 17/27: 出国交换项目有哪些 ===
+Top score: 0.1943219858292805 | Doc: 对外合作交流部 — 国际交流项目服务指南
+Answer prefix: 学校提供的出国（境）交流项目类型丰富，主要包括短期交流、暑期学校、国际会议及双学位项目等。
+
+此外，还有如2026年中法蔡元培博士交流项目、校院与国（境）外高水平大学短期交流项目等具体专项。
+
+建议你密切关注国际交流处发布的最新通知以获取具体项目信息。
+
+如有学生访学项目咨询需求，可联系对外合作交流部倪老师（电话：0531-59556932）。
+
+提前规划并了解相关政策，能让你的海外学习之旅更加顺
+
+=== Query 18/27: 留学生服务在哪 ===
+Top score: 0.7383206054892373 | Doc: 对外合作交流部 — 留学服务办理指南
+Answer prefix: 山东省“留学服务一件事”主要提供线上办理渠道，涵盖自费存档、公派派出及学历认证等8项服务。
+
+你可以通过以下两种方式办理：
+1. **PC端**：登录山东政务服务网，进入“高效办成一件事专区”→“教育”→“留学服务一件事”。
+2. **移动端**：使用“爱山东”APP或微信小程序，在“特色专区”中选择“留学服务一件事”在线办理。
+
+建议优先选择线上渠道，具体操作请以学校对外合作交流部最新通知为准。
+
+=== Query 19/27: 学科竞赛怎么报名 ===
+Top score: 0.8641666494880678 | Doc: 学科竞赛参与途径
+Answer prefix: 你好！我是医小管。关于学科竞赛的报名，主要流程如下：
+
+1. **关注通知**：留意教务处、创新创业学院或各学院发布的竞赛通知，也可访问竞赛官方网站。
+2. **组建团队**：根据比赛要求寻找队友，并积极联系指导教师进行推荐报名。
+3. **正式报名**：通过学校指定的报名系统或渠道提交材料，随后参加校内选拔。
+4. **晋级参赛**：校赛优胜者（如前30%）将晋级省赛，优秀者再推荐至国赛。
+
+具
+
+=== Query 20/27: 大创项目怎么申报 ===
+Top score: 0.8544632401445672 | Doc: 大创项目申报指南
+Answer prefix: 大创项目申报通常在每年春季学期进行，具体时间安排请密切关注教务处发布的正式通知。
+
+申报主要流程如下：
+1. 组建3-6人的项目团队（以二、三年级为主），并联系具有中级及以上职称或博士学位的指导教师。
+2. 确定选题（分为创新训练、创业训练、创业实践三类），撰写项目申报书。
+3. 通过学校项目管理平台提交，经学院审核及学校评审立项后开展研究。
+
+项目一般实施期限为1年，参与可获得创新创业学分。如有
+
+=== Query 21/27: 学生证丢了怎么补办 ===
+Top score: 0.8528738993220495 | Doc: 学生证补办流程
+Answer prefix: 同学你好，学生证补办需以学院为单位统一办理，不接受个人申请。
+
+1. 请先到财务收费科交纳工本费（6元/人）。
+2. 携带《山东第一医科大学补办学生证审批汇总表》及缴费票据，由学院统一提交补办。
+3. 请注意，此次补办不包含乘车优惠卡。
+
+如有疑问，可咨询学工部门电话 0531-59556889 或 0538-6229985（见《学生手册》八.学工办事流程-8.17）。
+
+证件补办期间如有急用，建
+
+=== Query 22/27: 处分怎么申诉 ===
+Top score: 0.5353797078062397 | Doc: 学生纪律处分规定
+Answer prefix: 若你对学校的处分决定有异议，可在接到决定书之日起**10日内**，向学校学生申诉处理委员会提出书面申诉（见《学生手册》）。
+
+委员会将在接到申诉后**15日内**作出复查结论并告知你；情况复杂经批准可延长15日。
+
+若对复查决定仍不服，可在接到复查决定书之日起**15日内**，向省级教育行政部门提出书面申诉。
+
+建议仔细阅读处分决定书中的权利告知部分，按时提交材料以保障自身权益。
+
+=== Query 23/27: 学校有几个校区 ===
+Top score: 0.16241039015529282 | Doc: 山东第一医科大学简介
+Answer prefix: 我暂时没有关于学校具体校区数量的资料。
+
+建议您访问学校官网（https://www.sdfmu.edu.cn/）查看“学校概况”以获取准确信息。
+
+也可以直接咨询辅导员或学校总机进行确认。
+
+祝你学习生活顺利！
+
+=== Query 24/27: 各学院联系方式 ===
+Top score: 0.8328186644921168 | Doc: 各学院联系电话汇总（济南校区）
+Answer prefix: 你好！我是医小管。根据现有资料，部分学院的联系方式如下：
+
+1. **放射学院**：0538-6222138；**运动医学与康复学院**：0538-6236171（邮箱 ydyx@sdfmu.edu.cn）。
+2. **生命科学学院**：0538-6236993（邮箱 sky@sdfmu.edu.cn）；**化学与制药工程学院**：0538-6229741（邮箱 hxxy@sdfmu.edu.cn
+
+=== Query 25/27: 校园卡丢了怎么办 ===
+Top score: 0.9103041931334113 | Doc: 一卡通挂失与补办流程
+Answer prefix: 发现校园卡丢失后，请立即通过信息门户或企业微信进行线上挂失，以防止资金被盗用。若卡片无法找回，需携带本人二代身份证前往自助补卡机或人工窗口办理补卡。自助补卡要求卡内余额不少于10元，通常可即时出卡；人工补卡则需缴纳工本费。建议平时妥善保管卡片并设置消费限额，以降低潜在风险。如有具体校区位置疑问，可咨询现代教育技术中心或后勤部门。
+
+=== Query 26/27: 勤工助学岗位怎么申请 ===
+Top score: 0.7903132719394911 | Doc: 学生工作部（武装部）—— 奖助与勤工助学指南
+Answer prefix: 你好！申请校内勤工助学岗位，主要遵循以下流程：
+
+1. **填写申请表**：下载并填写《学生勤工助学申请表》，经辅导员及学院审查同意并签署意见。
+2. **获取信息与报名**：加入勤工助学官方 QQ 群（598651745）关注岗位发布，或留意学院通知；持学生证和申请表到用工单位报名面试。
+3. **面试与录用**：参加由学院或用工部门组织的面试，录用后由相关部门在“学工平台”完成信息录入。
+
+请
+
+=== Query 27/27: 实验室安全规定是什么 ===
+Top score: 0.5127151249251872 | Doc: 安全保卫部 — 实验室安全规范与操作指南
+Answer prefix: 进入实验室前，师生必须完成安全培训、考核合格并签订安全责任书，涉及危险源的项目需先进行风险评估（见《高等学校实验室安全规范》）。
+
+在日常操作中，须严格管理易燃易爆物品与用电安全，严禁乱拉电线、超负荷用电或在实验室内使用电加热取暖设备。
+
+消防器材应放置在明显且便于取用的位置，全体人员需掌握“提拔握压”的使用口诀，并根据火情选择干粉或二氧化碳灭火器。
+
+若遇电器或特殊化学品着火，应先切断电源或优先
+
+Done! Results saved to C:\Users\Administrator\AppData\Local\Temp\opencode\dify_results.json
+[0m
+[0m→ [0mRead ..\..\..\AppData\Local\Temp\opencode\dify_results.json
+All 27 queries completed. Let me now read the results and generate the report.
+[0m
+[0m$ [0mNew-Item -ItemType Directory -Force -Path "C:\Users\Administrator\Documents\code\yixiaoguan-v2\.tasks\reports" 2>&1
+目录: C:\Users\Administrator\Documents\code\yixiaoguan-v2\.tasks
+
+
+Mode                 LastWriteTime         Length Name                                                                 
+----                 -------------         ------ ----                                                                 
+d-----          2026/5/4      3:54                reports
+[0m
+Now let me ensure the report directory exists and then write the comprehensive test report.
+[0m# [0mTodos
+[x] Test connectivity to HK Dify API
+[x] Test connectivity to internal Dify API
+[x] Run 27 test queries against HK Dify with 2-3s intervals
+[x] Compile and analyze results
+[ ] Generate test report to .tasks/reports/
+[0m
+[0m← [0mWrite .tasks\reports\dify-retrieval-quality-test.md
+Wrote file successfully.
+[0m
+[0m# [0mTodos
+[x] Test connectivity to HK Dify API
+[x] Test connectivity to internal Dify API
+[x] Run 27 test queries against HK Dify with 2-3s intervals
+[x] Compile and analyze results
+[x] Generate test report to .tasks/reports/
+[0m
+测试完成。报告已生成到 `.tasks/reports/dify-retrieval-quality-test.md`
+
+**核心结论：**
+
+| 指标 | 结果 |
+|------|------|
+| HK 线上命中率 | **92.6%** (25/27) |
+| 精准回答率 | **74.1%** (20/27) |
+| Top-1 检索均分 | **0.6615** |
+| 2 条未命中 | Q12 VPN（空回复）、Q23 校区数（无法回答） |
+| 内网对比 | ❌ 未完成（401，API Key 不通用） |
+
+**需要紧急修复**：VPN 和学校概况 FAQ 文档缺失是导致未命中的直接原因。

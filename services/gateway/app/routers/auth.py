@@ -3,8 +3,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.schemas.auth import LoginRequest, TokenResponse, UserInfo
 from app.services.auth_service import authenticate_user, issue_token, RoleMismatchError
+from app.services.centrifugo_client import build_centrifugo_token
 from app.utils.deps import get_current_user
 from app.models.user import User
+from app.config import settings
 
 router = APIRouter()
 
@@ -24,7 +26,8 @@ async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
             detail="学号或密码错误",
         )
     token = issue_token(user)
-    return TokenResponse(access_token=token)
+    ct = build_centrifugo_token(user) if settings.centrifugo_secret else ""
+    return TokenResponse(access_token=token, centrifugo_token=ct)
 
 
 @router.get("/me", response_model=UserInfo)

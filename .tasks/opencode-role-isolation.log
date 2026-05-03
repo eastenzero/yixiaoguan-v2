@@ -1,0 +1,417 @@
+﻿opencode.cmd : [0m
+At line:1 char:150
++ ... ding UTF8 | & $opencode run -m deepseek/deepseek-v4-pro --dangerously ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([0m:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+> build · deepseek-v4-pro
+[0m
+[0m# [0mTodos
+[ ] Read existing backend files to understand current code structure
+[ ] Backend: Add expected_role to LoginRequest schema
+[ ] Backend: Add role validation in authenticate_user
+[ ] Backend: Pass expected_role in login router
+[ ] Frontend: Student app api/auth.ts and login page
+[ ] Frontend: Teacher app api/auth.ts and login page
+[ ] Create branch, commit changes
+[0m
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\services\gateway\app\schemas\auth.py
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\services\gateway\app\services\auth_service.py
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\services\gateway\app\routers\auth.py
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\services\gateway\app\models\user.py
+Let me first read the existing backend files to understand the current code structure.
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\student-app\src\api\auth.ts
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\api\auth.ts
+[0m✗ [0mglob failed
+[91m[1mError: [0mripgrep failed with code 255
+[0m✗ [0mglob failed
+[91m[1mError: [0mripgrep failed with code 255
+Now let me read the frontend API and login files for both apps.
+[0m✗ [0mglob failed
+[91m[1mError: [0mripgrep failed with code 255
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\student-app\src\pages
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\pages
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\student-app\src\pages\login
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\pages\login
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\student-app\src\pages\login\index.vue
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\pages\login\index.vue
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\student-app\src\stores\user.ts
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\stores\user.ts
+Let me also quickly check the user stores to understand the `setUserInfo` types.
+[0m✗ [0mgrep failed
+[91m[1mError: [0minvalid ripgrep output
+[0m✗ [0mglob failed
+[91m[1mError: [0mripgrep failed with code 255
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\types
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\types\api.ts
+[0m
+[0m$ [0mgit checkout -b fix/role-isolation
+Switched to a new branch 'fix/role-isolation'
+[0m
+Now I have a full picture of the codebase. Let me create the branch and implement all changes.
+[0m# [0mTodos
+[x] Read existing backend files to understand current code structure
+[ ] Backend: Add expected_role to LoginRequest schema
+[ ] Backend: Add role validation in authenticate_user
+[ ] Backend: Pass expected_role in login router (handle 403)
+[ ] Frontend: Student app api/auth.ts and login page
+[ ] Frontend: Teacher app api/auth.ts and login page
+[ ] Create branch, commit changes
+[0m
+[0m← [0mEdit F:\Documents\code\yixiaoguan-v2\services\gateway\app\schemas\auth.py
+Index: F:\Documents\code\yixiaoguan-v2\services\gateway\app\schemas\auth.py
+===================================================================
+--- F:\Documents\code\yixiaoguan-v2\services\gateway\app\schemas\auth.py
++++ F:\Documents\code\yixiaoguan-v2\services\gateway\app\schemas\auth.py
+@@ -1,10 +1,12 @@
++from typing import Optional
+ from pydantic import BaseModel
+ 
+ 
+ class LoginRequest(BaseModel):
+     staff_id: str          # 学号或工号
+     password: str
++    expected_role: Optional[str] = None  # 期望角色：student / teacher，用于角色隔离
+ 
+ 
+ class TokenResponse(BaseModel):
+     access_token: str
+
+[0m
+[0m← [0mEdit F:\Documents\code\yixiaoguan-v2\services\gateway\app\services\auth_service.py
+Index: F:\Documents\code\yixiaoguan-v2\services\gateway\app\services\auth_service.py
+===================================================================
+--- F:\Documents\code\yixiaoguan-v2\services\gateway\app\services\auth_service.py
++++ F:\Documents\code\yixiaoguan-v2\services\gateway\app\services\auth_service.py
+@@ -4,17 +4,30 @@
+ from app.models.user import User
+ from app.utils.jwt import create_access_token
+ 
+ 
+-async def authenticate_user(db: AsyncSession, staff_id: str, password: str) -> User | None:
+-    """验证学号+密码，返回 User 或 None"""
++class RoleMismatchError(Exception):
++    """角色不匹配异常，由调用方捕获并返回 403"""
++    pass
++
++
++async def authenticate_user(db: AsyncSession, staff_id: str, password: str, expected_role: str | None = None) -> User | None:
++    """验证学号+密码+角色，返回 User 或 None；角色不匹配时抛出 RoleMismatchError"""
+     stmt = select(User).where(User.staff_id == staff_id, User.is_active == True)
+     result = await db.execute(stmt)
+     user = result.scalar_one_or_none()
+     if not user:
+         return None
+     if not bcrypt.verify(password, user.password_hash):
+         return None
++    # 角色隔离校验
++    if expected_role is not None:
++        allowed_roles = [expected_role]
++        # 教师端允许管理员也登录
++        if expected_role == 'teacher':
++            allowed_roles.append('admin')
++        if user.role.value not in allowed_roles:
++            raise RoleMismatchError()
+     return user
+ 
+ 
+ def build_jwt_payload(user: User) -> dict:
+
+[0m
+[0m← [0mEdit F:\Documents\code\yixiaoguan-v2\services\gateway\app\routers\auth.py
+Index: F:\Documents\code\yixiaoguan-v2\services\gateway\app\routers\auth.py
+===================================================================
+--- F:\Documents\code\yixiaoguan-v2\services\gateway\app\routers\auth.py
++++ F:\Documents\code\yixiaoguan-v2\services\gateway\app\routers\auth.py
+@@ -1,18 +1,24 @@
+ from fastapi import APIRouter, Depends, HTTPException, status
+ from sqlalchemy.ext.asyncio import AsyncSession
+ from app.database import get_db
+ from app.schemas.auth import LoginRequest, TokenResponse, UserInfo
+-from app.services.auth_service import authenticate_user, issue_token
++from app.services.auth_service import authenticate_user, issue_token, RoleMismatchError
+ from app.utils.deps import get_current_user
+ from app.models.user import User
+ 
+ router = APIRouter()
+ 
+ 
+ @router.post("/login", response_model=TokenResponse)
+ async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
+-    user = await authenticate_user(db, body.staff_id, body.password)
++    try:
++        user = await authenticate_user(db, body.staff_id, body.password, body.expected_role)
++    except RoleMismatchError:
++        raise HTTPException(
++            status_code=status.HTTP_403_FORBIDDEN,
++            detail="该账号不属于此客户端，请使用正确的客户端登录",
++        )
+     if not user:
+         raise HTTPException(
+             status_code=status.HTTP_401_UNAUTHORIZED,
+             detail="学号或密码错误",
+
+[0m
+Now let me implement all the changes. Starting with the backend.
+[0m# [0mTodos
+[x] Read existing backend files to understand current code structure
+[x] Backend: Add expected_role to LoginRequest schema
+[x] Backend: Add role validation in authenticate_user
+[x] Backend: Pass expected_role in login router (handle 403)
+[ ] Frontend: Student app api/auth.ts and login page
+[ ] Frontend: Teacher app api/auth.ts and login page
+[ ] Create branch, commit changes
+[0m
+[0m← [0mEdit F:\Documents\code\yixiaoguan-v2\apps\student-app\src\api\auth.ts
+Index: F:\Documents\code\yixiaoguan-v2\apps\student-app\src\api\auth.ts
+===================================================================
+--- F:\Documents\code\yixiaoguan-v2\apps\student-app\src\api\auth.ts
++++ F:\Documents\code\yixiaoguan-v2\apps\student-app\src\api\auth.ts
+@@ -9,9 +9,9 @@
+ export function login(staff_id: string, password: string): Promise<LoginResponse> {
+   return request<LoginResponse>({
+     url: '/api/auth/login',
+     method: 'POST',
+-    data: { staff_id, password },
++    data: { staff_id, password, expected_role: 'student' },
+   })
+ }
+ 
+ export function getMe(): Promise<UserInfo> {
+
+[0m
+[0m← [0mEdit F:\Documents\code\yixiaoguan-v2\apps\student-app\src\pages\login\index.vue
+Index: F:\Documents\code\yixiaoguan-v2\apps\student-app\src\pages\login\index.vue
+===================================================================
+--- F:\Documents\code\yixiaoguan-v2\apps\student-app\src\pages\login\index.vue
++++ F:\Documents\code\yixiaoguan-v2\apps\student-app\src\pages\login\index.vue
+@@ -80,8 +80,14 @@
+ const res = await login(form.staffId.trim(), form.password)
+ userStore.setToken(res.access_token)
+ 
+ const me = await getMe()
++// 二次校验：确认返回角色为 student
++if (me.role !== 'student') {
++  userStore.logout()
++  uni.showToast({ title: '该账号不属于学生端，请使用正确的客户端登录', icon: 'none' })
++  return
++}
+ userStore.setUserInfo(me)
+ 
+ wsManager.connect(res.access_token)
+ 
+
+[0m
+Now updating frontend files. Student app first:
+[0m← [0mEdit F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\api\auth.ts
+Index: F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\api\auth.ts
+===================================================================
+--- F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\api\auth.ts
++++ F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\api\auth.ts
+@@ -30,9 +30,9 @@
+ export function login(params: {
+   staff_id: string
+   password: string
+ }): Promise<LoginResult> {
+-  return post<LoginResult>('/api/auth/login', params)
++  return post<LoginResult>('/api/auth/login', { ...params, expected_role: 'teacher' })
+ }
+ 
+ /**
+  * 获取当前用户信息
+
+[0m
+[0m← [0mEdit F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\pages\login\index.vue
+Index: F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\pages\login\index.vue
+===================================================================
+--- F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\pages\login\index.vue
++++ F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\pages\login\index.vue
+@@ -164,8 +164,14 @@
+ userStore.setToken(loginRes.access_token)
+ 
+ // 获取用户信息
+ const userInfo = await getUserInfo()
++// 二次校验：确认返回角色为 teacher 或 admin
++if (userInfo.role !== 'teacher' && userInfo.role !== 'admin') {
++  userStore.clearAuth()
++  uni.showToast({ title: '该账号不属于教师端，请使用正确的客户端登录', icon: 'none' })
++  return
++}
+ userStore.setUserInfo(userInfo as any)
+ 
+ // 建立 WebSocket 连接
+ wsStore.init(loginRes.access_token)
+
+[0m
+Now teacher app:
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\services\gateway\app\schemas\auth.py
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\services\gateway\app\services\auth_service.py
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\services\gateway\app\routers\auth.py
+All edits applied. Let me verify the final state of each file.
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\student-app\src\api\auth.ts
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\student-app\src\pages\login\index.vue[90m [offset=70, limit=30][0m
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\api\auth.ts
+[0m→ [0mRead F:\Documents\code\yixiaoguan-v2\apps\teacher-app\src\pages\login\index.vue[90m [offset=150, limit=35][0m
+[0m
+[0m$ [0mpython -m py_compile services/gateway/app/schemas/auth.py; if ($?) { python -m py_compile services/gateway/app/services/auth_service.py; if ($?) { python -m py_compile services/gateway/a
+pp/routers/auth.py } }
+(no output)
+[0m
+All files look correct. Let me run a quick Python syntax check to make sure nothing is broken.
+[0m# [0mTodos
+[x] Read existing backend files to understand current code structure
+[x] Backend: Add expected_role to LoginRequest schema
+[x] Backend: Add role validation in authenticate_user
+[x] Backend: Pass expected_role in login router (handle 403)
+[x] Frontend: Student app api/auth.ts and login page
+[x] Frontend: Teacher app api/auth.ts and login page
+[ ] Commit changes
+[0m
+No syntax errors. Now let me commit all changes.
+[0m$ [0mgit add -A
+warning: in the working copy of 'apps/student-app/src/api/auth.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/teacher-app/src/api/auth.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/teacher-app/src/pages/login/index.vue', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'services/gateway/app/routers/auth.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'services/gateway/app/schemas/auth.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'services/gateway/app/services/auth_service.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.tasks/master-plan-20260504.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.tasks/opencode-dify-retrieval-test-prompt.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.tasks/opencode-kb-data-audit-prompt.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.tasks/opencode-role-isolation-prompt.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.tasks/opencode-teacher-recon-prompt.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.tasks/remote-ui-handoff.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.tasks/reports/kb-data-audit-report.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.tasks/reports/teacher-module-assessment.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.tasks/reports/teacher-module-recon-report.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.tasks/tmp-dify-audit.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.tasks/tmp-dify-check.sh', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.tasks/tmp-dify-fix.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/cli-dispatch-guide.md', LF will be replaced by CRLF the next time Git touches it
+[0m
+[0m$ [0mgit diff --cached --stat
+.tasks/master-plan-20260504.md                 |  132 +++
+ .tasks/opencode-dify-retrieval-test-prompt.txt |   88 ++
+ .tasks/opencode-dify-retrieval-test.log        |  137 +++
+ .tasks/opencode-kb-data-audit-prompt.txt       |   50 +
+ .tasks/opencode-kb-data-audit.log              | 1236 ++++++++++++++++++++++++
+ .tasks/opencode-role-isolation-prompt.txt      |   76 ++
+ .tasks/opencode-role-isolation.log             |   61 ++
+ .tasks/opencode-teacher-recon-prompt.txt       |   66 ++
+ .tasks/opencode-teacher-recon.log              |  231 +++++
+ .tasks/remote-ui-handoff.md                    |  160 +++
+ .tasks/reports/kb-data-audit-report.md         |  351 +++++++
+ .tasks/reports/teacher-module-assessment.md    |  263 +++++
+ .tasks/reports/teacher-module-recon-report.md  |  293 ++++++
+ .tasks/tmp-dify-audit.py                       |  117 +++
+ .tasks/tmp-dify-check.sh                       |   57 ++
+ .tasks/tmp-dify-fix.py                         |  195 ++++
+ apps/student-app/src/api/auth.ts               |    2 +-
+ apps/student-app/src/pages/login/index.vue     |    6 +
+ apps/teacher-app/src/api/auth.ts               |    2 +-
+ apps/teacher-app/src/pages/login/index.vue     |    6 +
+ docs/cli-dispatch-guide.md                     |  435 +++++++++
+ services/gateway/app/routers/auth.py           |   10 +-
+ services/gateway/app/schemas/auth.py           |    2 +
+ services/gateway/app/services/auth_service.py  |   17 +-
+ 24 files changed, 3987 insertions(+), 6 deletions(-)
+[0m
+[0m$ [0mgit log --oneline -5
+e376e4d feat: prelaunch UI/UX rework  custom FeatureNoticeSheet, external link icons, expectation alignment
+c9ba9d2 feat(student/home): bento 小卡片换成真实入口, 去掉死链
+c4856b6 fix(ui): tab bar 高度统一为 single-source-of-truth, 杜绝输入栏被遮挡
+ee5e263 feat(teacher-ui): questions/knowledge/login/profile MD3 strict sweep
+076ca7d feat(student-ui): services + history + profile + login MD3 sweep
+[0m
+[0m$ [0mgit reset HEAD
+Unstaged changes after reset:
+M	apps/student-app/src/api/auth.ts
+M	apps/student-app/src/pages/login/index.vue
+M	apps/teacher-app/src/api/auth.ts
+M	apps/teacher-app/src/pages/login/index.vue
+M	services/gateway/app/routers/auth.py
+M	services/gateway/app/schemas/auth.py
+M	services/gateway/app/services/auth_service.py
+[0m
+There are extra files staged that aren't related to our change. Let me stage only the relevant files.
+[0m$ [0mgit add apps/student-app/src/api/auth.ts apps/student-app/src/pages/login/index.vue apps/teacher-app/src/api/auth.ts apps/teacher-app/src/pages/login/index.vue services/gateway/app/route
+rs/auth.py services/gateway/app/schemas/auth.py services/gateway/app/services/auth_service.py
+warning: in the working copy of 'apps/student-app/src/api/auth.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/teacher-app/src/api/auth.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/teacher-app/src/pages/login/index.vue', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'services/gateway/app/routers/auth.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'services/gateway/app/schemas/auth.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'services/gateway/app/services/auth_service.py', LF will be replaced by CRLF the next time Git touches it
+[0m
+[0m$ [0mgit commit -m "fix: 实现账号角色隔离，防止跨端登录
+
+- 后端 LoginRequest 增加 expected_role 可选字段
+- auth_service.authenticate_user 增加角色校验
+- 角色不匹配返回 403 + 友好提示
+- 学生端 login 传 expected_role='student'
+- 教师端 login 传 expected_role='teacher'
+- 前端 getMe() 后二次校验角色"
+[fix/role-isolation 23a9401] fix: 实现账号角色隔离，防止跨端登录
+ 7 files changed, 39 insertions(+), 6 deletions(-)
+[0m
+[0m$ [0mgit status
+On branch fix/role-isolation
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.tasks/master-plan-20260504.md
+	.tasks/opencode-dify-retrieval-test-prompt.txt
+	.tasks/opencode-dify-retrieval-test.log
+	.tasks/opencode-kb-data-audit-prompt.txt
+	.tasks/opencode-kb-data-audit.log
+	.tasks/opencode-role-isolation-prompt.txt
+	.tasks/opencode-role-isolation.log
+	.tasks/opencode-teacher-recon-prompt.txt
+	.tasks/opencode-teacher-recon.log
+	.tasks/remote-ui-handoff.md
+	.tasks/reports/kb-data-audit-report.md
+	.tasks/reports/teacher-module-assessment.md
+	.tasks/reports/teacher-module-recon-report.md
+	.tasks/tmp-dify-audit.py
+	.tasks/tmp-dify-check.sh
+	.tasks/tmp-dify-fix.py
+	docs/cli-dispatch-guide.md
+
+nothing added to commit but untracked files present (use "git add" to track)
+[0m
+[0m# [0mTodos
+[x] Read existing backend files to understand current code structure
+[x] Backend: Add expected_role to LoginRequest schema
+[x] Backend: Add role validation in authenticate_user
+[x] Backend: Pass expected_role in login router (handle 403)
+[x] Frontend: Student app api/auth.ts and login page
+[x] Frontend: Teacher app api/auth.ts and login page
+[x] Commit changes
+[0m
+已提交。以下是修改摘要：
+
+### 修改的文件 (7 files, +39/-6)
+
+**后端 — 主拦截 (403)**
+- `services/gateway/app/schemas/auth.py:8` — `LoginRequest` 增加 `expected_role: Optional[str] = None`
+- `services/gateway/app/services/auth_service.py:8-30` — 新增 `RoleMismatchError` 异常；`authenticate_user` 增加 `expected_role` 参数，`teacher` 自动包含 `admin`
+- `services/gateway/app/routers/auth.py:14-20` — 捕获 `RoleMismatchError` 返回 403；401 保留给密码错误
+
+**前端-学生端 — 双保险**
+- `apps/student-app/src/api/auth.ts:13` — login 请求体加 `expected_role: 'student'`
+- `apps/student-app/src/pages/login/index.vue:84-89` — `getMe()` 后校验 `role === 'student'`，不匹配则 logout + 提示
+
+**前端-教师端 — 双保险**
+- `apps/teacher-app/src/api/auth.ts:34` — login 请求体加 `expected_role: 'teacher'`
+- `apps/teacher-app/src/pages/login/index.vue:168-173` — `getUserInfo()` 后校验 `role` 为 `teacher` 或 `admin`，不匹配则 clearAuth + 提示
+
+**行为表：**
+
+| 场景 | 后端响应 | 前端行为 |
+|------|---------|---------|
+| 学生用学生端登录 | 200 ✓ | 通过 |
+| 教师用教师端登录 | 200 ✓ | 通过 |
+| 管理员用教师端登录 | 200 ✓ | 通过 |
+| 学生用教师端登录 | **403** | toast 提示 |
+| 教师用学生端登录 | **403** | toast 提示 |
+| 旧客户端(不传 `expected_role`) | 200 ✓ | 无二次校验 |

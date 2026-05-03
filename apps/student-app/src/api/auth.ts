@@ -3,6 +3,7 @@ import type { UserInfo } from '@/stores/user'
 
 interface LoginResponse {
   access_token: string
+  centrifugo_token: string
   token_type: string
 }
 

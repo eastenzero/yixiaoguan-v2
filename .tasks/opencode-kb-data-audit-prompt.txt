@@ -1,0 +1,50 @@
+你是一个数据审计专家。请你详细审计以下两个版本知识库数据的现状，为后续的融合决策提供依据。
+
+## 审计目标
+
+1. 统计 V1 旧知识库（yixiaoguan/knowledge-base/entries/）的条目数量、分类分布、格式规范
+2. 统计 kb-pipeline 产出（04-output/merged/ 和 04-output/final-merged/）的条目数量、分类分布
+3. 分析 V1 与 V2 之间的分类映射关系（V1 有 31 个分类，V2 只有 12 个）
+4. 评估 V1 数据中是否有 V2 没有覆盖的内容（即 V1 独有的知识）
+5. 检查线上 Dify 配置（yixiaoguan-v2/services/gateway/.env 中的 DIFY_GLOBAL_DATASET_ID）与 kb-pipeline 产出的 Dataset ID 是否一致
+
+## 需要审查的文件和目录
+
+### V1 旧数据
+- C:\Users\Administrator\Documents\code\yixiaoguan\knowledge-base\entries\ — V1 知识条目（约 874 个文件）
+- C:\Users\Administrator\Documents\code\yixiaoguan\knowledge-base\templates\ — V1 模板
+- C:\Users\Administrator\Documents\code\yixiaoguan\knowledge-base\README.md
+
+### kb-pipeline（KP 工作区）数据处理中心
+- C:\Users\Administrator\Documents\code\kb-pipeline\README.md — 项目说明
+- C:\Users\Administrator\Documents\code\kb-pipeline\KB-SPEC.md — V2 知识库规范（分类体系、字段定义）
+- C:\Users\Administrator\Documents\code\kb-pipeline\KB-MERGE-SPEC.md — 合并入库规范
+- C:\Users\Administrator\Documents\code\kb-pipeline\KB-MIGRATION-PLAN.md — 迁移计划
+- C:\Users\Administrator\Documents\code\kb-pipeline\04-output\FINAL-REPORT.md — W2+W3 合并交付报告
+- C:\Users\Administrator\Documents\code\kb-pipeline\04-output\W1-FINAL-REPORT.md — W1 交付报告
+- C:\Users\Administrator\Documents\code\kb-pipeline\04-output\merged\ — 合并后的 KB（约 800 文件）
+- C:\Users\Administrator\Documents\code\kb-pipeline\04-output\final-merged\ — 最终合并版本（约 835 文件）
+- C:\Users\Administrator\Documents\code\kb-pipeline\04-output\retrieval-test-v2.md — 检索测试报告
+- C:\Users\Administrator\Documents\code\kb-pipeline\04-output\upload-report.csv — Dify 上传记录
+
+### V2 线上配置
+- C:\Users\Administrator\Documents\code\yixiaoguan-v2\services\gateway\.env — 查看 DIFY_GLOBAL_DATASET_ID
+- C:\Users\Administrator\Documents\code\yixiaoguan-v2\services\gateway\app\services\dify_client.py — Dify 集成代码
+
+## 输出要求
+
+请生成一份审计报告到 C:\Users\Administrator\Documents\code\yixiaoguan-v2\.tasks\reports\kb-data-audit-report.md，包含：
+
+1. V1 旧 KB 条目统计（分类 × 数量矩阵）
+2. V2 新 KB（kb-pipeline 产出）条目统计（分类 × 数量矩阵）
+3. V1 → V2 分类映射对照表
+4. V1 独有内容分析（V2 未覆盖的知识领域或条目）
+5. 数据融合建议（是否有必要融合、融合策略、风险评估）
+6. Dify 线上 Dataset 与本地数据的一致性分析
+
+## 约束
+
+- 不要修改任何文件
+- 不要执行任何网络请求
+- 只做文件读取和分析
+- 如果某些目录的文件量太大，可以抽样分析（每个分类抽 2-3 个文件）

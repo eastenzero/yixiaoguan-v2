@@ -174,7 +174,7 @@ const handleLogin = async () => {
     userStore.setUserInfo(userInfo as any)
     
     // 建立 WebSocket 连接
-    wsStore.init(loginRes.access_token)
+    wsStore.init(loginRes.access_token, loginRes.centrifugo_token)
     
     uni.switchTab({ url: '/pages/dashboard/index' })
   } catch (e: any) {
