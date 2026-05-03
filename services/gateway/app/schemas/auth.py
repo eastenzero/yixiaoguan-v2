@@ -1,9 +1,11 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
 class LoginRequest(BaseModel):
     staff_id: str          # 学号或工号
     password: str
+    expected_role: Optional[str] = None  # 期望角色：student / teacher，用于角色隔离
 
 
 class TokenResponse(BaseModel):

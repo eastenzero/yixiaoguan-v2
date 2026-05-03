@@ -31,7 +31,7 @@ export function login(params: {
   staff_id: string
   password: string
 }): Promise<LoginResult> {
-  return post<LoginResult>('/api/auth/login', params)
+  return post<LoginResult>('/api/auth/login', { ...params, expected_role: 'teacher' })
 }
 
 /**
