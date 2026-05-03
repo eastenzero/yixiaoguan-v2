@@ -1,14 +1,16 @@
 <template>
   <view class="login-page">
     <view class="bg-decor">
-      <view class="decor-circle decor-1" />
-      <view class="decor-circle decor-2" />
+      <view class="orb orb-1" />
+      <view class="orb orb-2" />
+      <view class="orb orb-3" />
     </view>
+
     <view class="main-container">
-      <view class="login-card">
+      <view class="login-card animate-fade-up">
         <view class="header">
           <view class="logo-box">
-            <text class="material-symbols-outlined logo-icon" style="font-variation-settings: 'FILL' 1">school</text>
+            <text class="material-symbols-outlined logo-icon">school</text>
           </view>
           <text class="app-title">医小管</text>
           <text class="app-subtitle">智慧校园服务平台</text>
@@ -16,25 +18,40 @@
 
         <view class="form">
           <view class="form-group">
-            <text class="label">学号</text>
+            <text class="label">学号 / STUDENT ID</text>
             <view class="input-wrapper">
               <text class="material-symbols-outlined input-icon">person</text>
-              <input class="input" type="text" v-model="form.staffId" placeholder="请输入您的学号" placeholder-class="ph-color" />
+              <input
+                class="input"
+                type="text"
+                v-model="form.staffId"
+                placeholder="请输入您的学号"
+                placeholder-class="ph-color"
+              />
             </view>
           </view>
 
           <view class="form-group">
-            <text class="label">密码</text>
+            <text class="label">密码 / PASSWORD</text>
             <view class="input-wrapper">
               <text class="material-symbols-outlined input-icon">lock</text>
-              <input class="input" :type="showPwd ? 'text' : 'password'" v-model="form.password" placeholder="请输入密码" placeholder-class="ph-color" @confirm="handleLogin" />
-              <text class="material-symbols-outlined right-icon" @click="showPwd = !showPwd">{{ showPwd ? 'visibility' : 'visibility_off' }}</text>
+              <input
+                class="input"
+                :type="showPwd ? 'text' : 'password'"
+                v-model="form.password"
+                placeholder="请输入密码"
+                placeholder-class="ph-color"
+                @confirm="handleLogin"
+              />
+              <view class="right-action" @click="showPwd = !showPwd">
+                <text class="material-symbols-outlined right-icon">{{ showPwd ? 'visibility' : 'visibility_off' }}</text>
+              </view>
             </view>
           </view>
 
           <button class="submit-btn" :disabled="loading" @click="handleLogin">
-            <text class="btn-text">{{ loading ? '登录中...' : '登录' }}</text>
-            <text class="material-symbols-outlined btn-icon">arrow_forward</text>
+            <text class="btn-text">{{ loading ? '登录中...' : '立即登录' }}</text>
+            <text v-if="!loading" class="material-symbols-outlined btn-icon">arrow_forward</text>
           </button>
         </view>
 
@@ -43,11 +60,11 @@
         </view>
       </view>
 
-      <view class="footer-box">
+      <view class="footer-box animate-fade-up delay-2">
         <text class="footer-hint">初始密码与学号相同</text>
         <view class="footer-links">
           <text class="link-text">隐私政策</text>
-          <view class="dot" />
+          <view class="link-dot" />
           <text class="link-text">服务协议</text>
         </view>
       </view>
@@ -99,51 +116,305 @@ async function handleLogin() {
 
 <style scoped lang="scss">
 @import '@/styles/tokens.scss';
+@import '@/styles/theme.scss';
 
 .login-page {
-  min-height: 100vh;
-  background: linear-gradient(135deg, $primary, $secondary);
   position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $space-6;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, $primary 0%, $primary-hover 50%, $primary-10 100%);
   overflow: hidden;
+}
+
+// ── Decorative orbs ──────────────────────────────────
+.bg-decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: $radius-full;
+  filter: blur(60px);
+}
+
+.orb-1 {
+  top: -10%;
+  left: -10%;
+  width: 60%;
+  aspect-ratio: 1;
+  background: rgba($bg-card, 0.18);
+}
+
+.orb-2 {
+  bottom: -15%;
+  right: -10%;
+  width: 65%;
+  aspect-ratio: 1;
+  background: rgba($primary-60, 0.30); // violet-400 alpha
+}
+
+.orb-3 {
+  top: 35%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  aspect-ratio: 1;
+  background: rgba($primary-70, 0.10); // violet-300 alpha
+  filter: blur(80px);
+}
+
+// ── Container ────────────────────────────────────────
+.main-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+// ── Glass card ───────────────────────────────────────
+.login-card {
+  background: rgba($bg-card, 0.96);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-radius: $radius-xl;
+  padding: $space-10 $space-6 $space-8;
+  box-shadow: 0 32px 64px -12px rgba($text-primary, 0.20),
+              0 0 0 1px rgba($bg-card, 0.40) inset;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: $space-8;
+}
+
+.logo-box {
+  width: 88px;
+  height: 88px;
+  background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
+  border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
-  box-sizing: border-box;
+  margin-bottom: $space-5;
+  box-shadow: 0 16px 32px -8px rgba($primary, 0.50),
+              0 4px 12px -2px rgba($primary, 0.30);
+  transform: rotate(3deg);
 }
-.bg-decor { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
-.decor-circle { position: absolute; border-radius: 50%; }
-.decor-1 { top: -10%; left: -10%; width: 40%; height: 40%; background: rgba(255,255,255,0.05); filter: blur(50px); }
-.decor-2 { top: 60%; right: -5%; width: 30%; height: 30%; background: rgba(124,58,237,0.1); filter: blur(40px); }
 
-.main-container { width: 100%; max-width: 25rem; z-index: 1; }
-.login-card { background: $bg-card; border-radius: 1.5rem; padding: 2.5rem 1.75rem; box-shadow: 0 1.25rem 3.125rem rgba(37,0,90,0.2); }
-.header { display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem; }
-.logo-box { width: 4rem; height: 4rem; background: rgba(124,58,237,0.1); border-radius: 1rem; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
-.logo-icon { font-size: 2.25rem; color: $secondary; }
-.app-title { font-size: 1.875rem; font-weight: 800; color: $text-primary; margin-bottom: 0.25rem; }
-.app-subtitle { font-size: 0.875rem; font-weight: 500; color: $text-secondary; letter-spacing: 0.125rem; opacity: 0.7; }
+.logo-icon {
+  font-size: 44px;
+  color: $text-inverse;
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+  transform: rotate(-3deg);
+}
 
-.form .form-group { margin-bottom: 1.25rem; }
-.label { font-size: 0.75rem; font-weight: 700; color: $text-secondary; margin-bottom: 0.5rem; margin-left: 0.25rem; display: block; }
-.input-wrapper { position: relative; display: flex; align-items: center; background: $border; border-radius: 0.75rem; padding: 0 1rem; height: 3.25rem; }
-.input { flex: 1; height: 100%; background: transparent; border: none; padding-left: 1.75rem; font-size: 0.875rem; color: $text-primary; font-weight: 500; }
-.ph-color { color: $text-muted; }
-.input-icon { font-size: 1.25rem; color: $text-muted; position: absolute; left: 1rem; }
-.right-icon { font-size: 1.25rem; color: $text-muted; position: absolute; right: 1rem; }
+.app-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: $text-primary;
+  letter-spacing: -0.02em;
+  margin-bottom: $space-2;
+}
 
-.submit-btn { width: 100%; height: 3.5rem; background: linear-gradient(135deg, $primary, $secondary); border-radius: 1.75rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1.75rem; box-shadow: 0 0.5rem 1rem rgba(124,58,237,0.3); }
-.submit-btn:active { transform: scale(0.95); }
-.submit-btn[disabled] { opacity: 0.7; }
-.btn-text { color: $text-inverse; font-size: 1rem; font-weight: 700; }
-.btn-icon { font-size: 1.125rem; color: $text-inverse; }
+.app-subtitle {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $text-secondary;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
 
-.forgot-box { margin-top: 1.5rem; display: flex; justify-content: center; }
-.forgot-text { font-size: 0.75rem; color: $primary; font-weight: 600; text-decoration: underline; }
+// ── Form ─────────────────────────────────────────────
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+}
 
-.footer-box { margin-top: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-.footer-hint { font-size: 0.875rem; color: rgba(255,255,255,0.6); font-weight: 500; }
-.footer-links { display: flex; align-items: center; gap: 1.5rem; }
-.link-text { font-size: 0.75rem; color: rgba(255,255,255,0.4); }
-.dot { width: 0.25rem; height: 0.25rem; background: rgba(255,255,255,0.2); border-radius: 50%; }
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  color: $text-secondary;
+  letter-spacing: 0.10em;
+  margin-left: $space-2;
+  text-transform: uppercase;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: $surface-container-low;
+  border-radius: $radius-md;
+  padding: 0 $space-4;
+  height: 56px;
+  border: 1px solid transparent;
+  transition: border-color 0.18s ease-out, background 0.18s ease-out, box-shadow 0.18s ease-out;
+}
+
+.input-wrapper:focus-within {
+  background: $bg-card;
+  border-color: rgba($primary, 0.35);
+  box-shadow: 0 0 0 4px rgba($primary, 0.10);
+}
+
+.input {
+  flex: 1;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding-left: 32px;
+  font-size: $font-size-base;
+  font-family: $font-family-sans;
+  font-weight: $font-weight-medium;
+  color: $text-primary;
+}
+
+.ph-color {
+  color: $text-muted;
+}
+
+.input-icon {
+  font-size: 20px;
+  color: $text-muted;
+  position: absolute;
+  left: $space-4;
+}
+
+.right-action {
+  position: absolute;
+  right: $space-2;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-full;
+  transition: background 0.18s ease-out;
+}
+
+.right-action:active {
+  background: rgba($primary, 0.10);
+}
+
+.right-icon {
+  font-size: 20px;
+  color: $text-muted;
+}
+
+// ── Submit ───────────────────────────────────────────
+.submit-btn {
+  width: 100%;
+  height: 56px;
+  margin-top: $space-3;
+  background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
+  border-radius: $radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  border: none;
+  box-shadow: 0 12px 24px -8px rgba($primary, 0.50),
+              0 4px 8px -2px rgba($primary, 0.25);
+  transition: transform 0.18s ease-out, box-shadow 0.18s ease-out, opacity 0.18s ease-out;
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 8px 16px -6px rgba($primary, 0.45);
+}
+
+.submit-btn[disabled] {
+  opacity: 0.65;
+  box-shadow: 0 4px 12px -4px rgba($primary, 0.20);
+}
+
+.submit-btn::after {
+  border: none;
+}
+
+.btn-text {
+  color: $text-inverse;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.02em;
+}
+
+.btn-icon {
+  font-size: 20px;
+  color: $text-inverse;
+}
+
+// ── Forgot link ──────────────────────────────────────
+.forgot-box {
+  margin-top: $space-5;
+  display: flex;
+  justify-content: center;
+}
+
+.forgot-text {
+  font-size: $font-size-xs;
+  color: $primary;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.02em;
+}
+
+// ── Footer ───────────────────────────────────────────
+.footer-box {
+  margin-top: $space-8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+}
+
+.footer-hint {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: rgba($bg-card, 0.75);
+  letter-spacing: 0.05em;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+}
+
+.link-text {
+  font-size: 11px;
+  color: rgba($bg-card, 0.55);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  font-weight: $font-weight-semibold;
+}
+
+.link-dot {
+  width: 4px;
+  height: 4px;
+  background: rgba($bg-card, 0.30);
+  border-radius: $radius-full;
+}
 </style>

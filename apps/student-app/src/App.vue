@@ -11,6 +11,7 @@ onLaunch(() => {
 <style lang="scss">
 @import '@/styles/tokens.scss';
 @import '@/styles/theme.scss';
+@import '@/styles/global.scss';
 
 @font-face {
   font-family: 'Manrope';
