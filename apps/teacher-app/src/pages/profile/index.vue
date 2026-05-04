@@ -310,7 +310,7 @@ const handleLogout = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  // No-Shadow-as-default: 靠 container tint 承担层次
+  box-shadow: $elevation-1;                    // [CA957F5] 双层紫折射, 提升"悬浮卡片"观感
 }
 
 .stat-value {

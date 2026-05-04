@@ -626,12 +626,13 @@ onShow(() => loadData())
   background: $surface-container-lowest;
   border-radius: $radius-md;                   // 1rem MD3 DEFAULT
   padding: 24px;
-  transition: background 0.2s ease, transform 0.2s ease;
-  // No-Shadow-as-default: 靠 container tint 差异承担层次
+  box-shadow: $elevation-1;                    // [CA957F5] 双层紫折射, 让 card 悬浮
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 
   &:active {
     transform: scale(0.98);
     background: $surface-container-low;
+    box-shadow: $elevation-2;                  // [CA957F5] 按下时抬一层
   }
 }
 

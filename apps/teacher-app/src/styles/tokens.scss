@@ -35,29 +35,29 @@ $inverse-primary: #a476ff;
 // ── Secondary tier ──
 $secondary: #7742a6;
 $secondary-dim: #6a3599;
-$secondary-container: #e6c5ff;
+$secondary-container: #ddd6fe; // [CA957F5] tailwind violet-200 (ca957f5 淑淑 pastel)
 $on-secondary: #fbefff;
-$on-secondary-container: #612c90;
-$secondary-fixed: #e6c5ff;
-$secondary-fixed-dim: #ddb3ff;
+$on-secondary-container: #4c1d95; // [CA957F5] tailwind violet-900 (上体阅读对比)
+$secondary-fixed: #ddd6fe;
+$secondary-fixed-dim: #c4b5fd;
 $on-secondary-fixed: #4d137b;
 $on-secondary-fixed-variant: #6b369a;
 
 // ── Tertiary tier ──
-$tertiary: #9e3657;
-$tertiary-dim: #8e294c;
-$tertiary-container: #ff8eac;
+$tertiary: #be185d;
+$tertiary-dim: #9d174d;
+$tertiary-container: #fbcfe8; // [CA957F5] tailwind pink-200 (ca957f5 淑 pastel)
 $on-tertiary: #ffeff1;
-$on-tertiary-container: #64042d;
-$tertiary-fixed: #ff8eac;
-$tertiary-fixed-dim: #f77c9e;
+$on-tertiary-container: #701a36; // [CA957F5] (深粉紫, 对比 pink-200)
+$tertiary-fixed: #fbcfe8;
+$tertiary-fixed-dim: #f9a8d4;
 $on-tertiary-fixed: #380016;
 $on-tertiary-fixed-variant: #711036;
 
 // ── Error tier ──
-$error: #b41340;
+$error: #dc2626; // [CA957F5] tailwind red-600
 $error-dim: #a70138;
-$error-container: #f74b6d;
+$error-container: #fee2e2; // [CA957F5] tailwind red-100 (淑 pastel, 用于警告背景)
 $on-error: #ffefef;
 $on-error-container: #510017;
 
@@ -88,11 +88,16 @@ $outline: #78767b;
 $outline-variant: #afacb1;
 
 // ─────────────────────────────────────────────────────────
-// 2. Gradients · signature hero/CTA (from DESIGN.md rules)
-//    hero: primary-container → tertiary-container @ 135° (pastel, matches production)
-//    cta:  primary           → primary-container   @ 135° (signature)
+// 2. Gradients · signature hero/CTA
+//    hero: 像素级复刻 ca957f5 commit (2026-05-02 用户截图时 HK 线上版本)
+//          tailwind legacy 色系: violet-800 → violet-100 → pink-200 @ 135°
+//          #5b21b6 0% → #ede9fe 60% → #fbcfe8 100%
+//          中段 #ede9fe / 末端 #fbcfe8 都极淡几乎白,
+//          形成"左上深紫色块 + 大片近白磨砂高光"的玻璃效果
+//          MD3 rework (11123ae) 把 $primary-container 换成 #b28cff 破坏了高光
+//    cta:  primary → primary-container @ 135° (signature)
 // ─────────────────────────────────────────────────────────
-$gradient-hero: linear-gradient(135deg, $primary-container 0%, $tertiary-container 100%);
+$gradient-hero: linear-gradient(135deg, #5b21b6 0%, #ede9fe 60%, #fbcfe8 100%);
 $gradient-cta: linear-gradient(135deg, $primary 0%, $primary-container 100%);
 $gradient-primary: $gradient-cta; // legacy alias
 $gradient-btn: $gradient-cta; // legacy alias
@@ -187,9 +192,11 @@ $shadow-nav: 0 -4px 20px rgba(91, 33, 182, 0.05); // bottom nav lift
 $shadow-sm: none;
 $shadow-md: none;
 $shadow-lg: $shadow-fab;
-$elevation-1: $shadow-nav;
-$elevation-2: $shadow-fab;
-$elevation-3: $shadow-fab;
+// [CA957F5] elevation 1/2/3 双层紫折射公式 (rgba 91,33,182 = violet-800)
+//         MD3 rework 上绿把这三条全 alias 到 $shadow-fab, 破坏了 stat/question card 有层次
+$elevation-1: 0 1px 3px rgba(91, 33, 182, 0.06), 0 4px 8px -2px rgba(91, 33, 182, 0.08);
+$elevation-2: 0 2px 6px rgba(91, 33, 182, 0.08), 0 8px 24px -4px rgba(91, 33, 182, 0.12);
+$elevation-3: 0 4px 12px rgba(91, 33, 182, 0.10), 0 16px 40px -8px rgba(91, 33, 182, 0.16);
 
 // ─────────────────────────────────────────────────────────
 // 7. Glassmorphism (nav bars; surface-container-lowest @ 80%)

@@ -413,13 +413,20 @@ onUnmounted(() => {
 }
 
 // 欢迎横幅
+// 像素级复刻 ca957f5 commit (2026-05-02 用户截图时 HK 线上部署版本):
+//   - background: $gradient-hero 已改成 tailwind violet/pink legacy 色系
+//   - box-shadow: ca957f5 的 $elevation-3 = 双层 rgba(91, 33, 182, ...) 紫折射
+//     (rgb 值对应 violet-800 #5b21b6, 不是 v1 的 #702ae1/rgb 112,42,225)
+//   - border-radius: 24px (ca957f5 值, 非 $radius-lg 32px)
 .welcome-banner {
   position: relative;
   overflow: hidden;
-  background: $gradient-hero;                      // pastel: primary-container → secondary-container
-  border-radius: $radius-lg;                    // 2rem per DESIGN.md 大半径
+  background: $gradient-hero;
+  border-radius: 24px;
   padding: $space-6;
-  box-shadow: $shadow-fab;                      // 紫色折射 hero 允许
+  box-shadow:
+    0 4px 12px rgba(91, 33, 182, 0.10),
+    0 16px 40px -8px rgba(91, 33, 182, 0.16);
 }
 
 .welcome-content {
@@ -464,9 +471,9 @@ onUnmounted(() => {
   bottom: -16px;
   width: 128px;
   height: 128px;
-  background: rgba(255, 255, 255, 0.10);
-  border-radius: $radius-full;
-  filter: blur(48px);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  filter: blur(30px);                          // v1 原值 (MD3 rework 错误放大到 48px 把高光糊掉了)
 }
 
 // 快捷操作
@@ -526,7 +533,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: $space-2;
-  // No-Shadow-as-default: 层次由 container tint 的 alpha 差异承担
+  box-shadow: $elevation-1;                     // [CA957F5] 双层紫折射, 让色块悬浮于底板
 }
 
 .stat-card-1 {
@@ -640,12 +647,12 @@ onUnmounted(() => {
   background: $surface-container-low;
   border-radius: $radius-md;                    // 1rem — MD3 DEFAULT
   padding: $space-4;
-  transition: background 0.2s ease, transform 0.2s ease;
-  // No-Shadow-as-default: hover 靠 container tint 往上抬一层
+  box-shadow: $elevation-1;                     // [CA957F5] 双层紫折射
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 
   &:active {
     background: $surface-container;
-    transform: scale(0.99);
+    box-shadow: $elevation-2;                   // [CA957F5] 按下时抬一层
   }
 }
 
