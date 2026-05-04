@@ -15,6 +15,7 @@ from app.routers.chat import router as chat_router
 from app.routers.knowledge import router as knowledge_router
 from app.routers.announcements import router as announcements_router
 from app.routers.admin import router as admin_router
+from app.routers.analytics import router as analytics_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -80,3 +81,4 @@ app.include_router(chat_router, prefix="/api/chat", tags=["chat"])
 app.include_router(knowledge_router, prefix="/api/v1/knowledge", tags=["knowledge"])
 app.include_router(announcements_router, prefix="/api/v1/announcements", tags=["announcements"])
 app.include_router(admin_router, prefix="/api/admin", tags=["admin"])
+app.include_router(analytics_router)  # self-prefixed /api/analytics

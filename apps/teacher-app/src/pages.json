@@ -62,6 +62,13 @@
         "navigationStyle": "custom",
         "navigationBarTitleText": "批量导入"
       }
+    },
+    {
+      "path": "pages/analytics/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "数据看板"
+      }
     }
   ],
   "globalStyle": {

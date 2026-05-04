@@ -252,9 +252,12 @@ const handleQuickAction = (type: string) => {
     uni.switchTab({ url: '/pages/knowledge/index' })
     return
   }
+  if (type === 'report') {
+    uni.navigateTo({ url: '/pages/analytics/index' })
+    return
+  }
   const nameMap: Record<string, string> = {
     notice: '发布通知',
-    report: '数据报告',
     settings: '系统设置',
   }
   showSheet(nameMap[type] || type)
