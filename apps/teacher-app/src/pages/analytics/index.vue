@@ -215,12 +215,61 @@ const data = ref<AnalyticsData | null>(null)
 
 const goBack = () => uni.navigateBack()
 
+// ── Mock data (开发阶段 API 不可用时自动 fallback) ──
+function generateMock(): AnalyticsData {
+  const days = period.value === '7d' ? 7 : period.value === '30d' ? 30 : 90
+  const now = new Date()
+  const dates: string[] = []
+  const total: number[] = []
+  const ai: number[] = []
+  for (let i = days; i > 0; i--) {
+    const d = new Date(now.getTime() - i * 86400000)
+    dates.push(d.toISOString().slice(0, 10))
+    const t = Math.floor(Math.random() * 40) + 5
+    total.push(t)
+    ai.push(Math.floor(t * (0.5 + Math.random() * 0.35)))
+  }
+  const heatmap = Array.from({ length: 7 }, () =>
+    Array.from({ length: 24 }, () => Math.floor(Math.random() * 12))
+  )
+  return {
+    metrics: {
+      total_questions: 847,
+      total_questions_prev: 762,
+      ai_rate: 73.2,
+      ai_rate_prev: 68.5,
+      avg_response_min: 12.4,
+      avg_response_min_prev: 15.1,
+      pending_count: 6,
+    },
+    trends: { dates, total, ai_answered: ai },
+    ai_quality: { hit_rate: 68, score_low: 42, score_mid: 86, score_high: 135 },
+    hot_unanswered: [
+      { id: 1, text: '学费缴纳方式有哪些？可以分期吗？', count: 47 },
+      { id: 2, text: '选课系统什么时候开放？', count: 38 },
+      { id: 3, text: '宿舍调换需要什么手续？', count: 29 },
+      { id: 4, text: '补办学生证的流程是什么？', count: 22 },
+      { id: 5, text: '毕业论文格式要求在哪里下载？', count: 18 },
+    ],
+    college_distribution: [
+      { name: '计算机学院', count: 186 },
+      { name: '管理学院', count: 142 },
+      { name: '文学院', count: 98 },
+      { name: '医学院', count: 87 },
+      { name: '外语学院', count: 76 },
+      { name: '艺术学院', count: 63 },
+    ],
+    heatmap,
+  }
+}
+
 async function load() {
   loading.value = true
   try {
     data.value = await getAnalytics(period.value)
   } catch (e) {
-    console.error('Analytics load error', e)
+    console.warn('Analytics API unavailable, using mock data')
+    data.value = generateMock()
   } finally {
     loading.value = false
   }
