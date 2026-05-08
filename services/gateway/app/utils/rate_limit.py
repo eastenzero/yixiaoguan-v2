@@ -1,8 +1,8 @@
 import logging
 from typing import Any
 
-import jwt as pyjwt
 from fastapi import Request
+from jose import JWTError, jwt as jose_jwt
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -16,7 +16,7 @@ def _get_user_id_or_ip(request: Request) -> str:
     if auth.lower().startswith("bearer "):
         token = auth.split(" ", 1)[1].strip()
         try:
-            payload: dict[str, Any] = pyjwt.decode(
+            payload: dict[str, Any] = jose_jwt.decode(
                 token,
                 settings.jwt_secret,
                 algorithms=["HS256"],
@@ -25,8 +25,10 @@ def _get_user_id_or_ip(request: Request) -> str:
             sub = payload.get("sub")
             if sub:
                 return f"user:{sub}"
-        except Exception as exc:
+        except JWTError as exc:
             logger.debug("rate_limit JWT decode failed: %s", exc)
+        except Exception as exc:  # belt-and-suspenders for malformed tokens
+            logger.debug("rate_limit unexpected JWT error: %s", exc)
     return f"ip:{get_remote_address(request)}"
 
 

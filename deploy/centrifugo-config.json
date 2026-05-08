@@ -6,8 +6,11 @@
       "http://localhost:*"
     ]
   },
-  "proxy_subscribe_endpoint": "http://host.docker.internal:8100/api/internal/centrifugo/subscribe?secret=CHANGE_ME_SYNC_WITH_CENTRIFUGO_PROXY_SECRET",
+  "proxy_subscribe_endpoint": "http://host.docker.internal:8100/api/internal/centrifugo/subscribe",
   "proxy_subscribe_timeout": "2s",
+  "proxy_static_http_headers": {
+    "X-Auth": "CHANGE_ME_SYNC_WITH_CENTRIFUGO_PROXY_SECRET"
+  },
   "channel": {
     "namespaces": [
       {
