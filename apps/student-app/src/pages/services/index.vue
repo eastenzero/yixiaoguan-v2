@@ -161,19 +161,26 @@ interface ServiceItem {
 }
 
 const campusServices: ServiceItem[] = [
-  { icon: 'meeting_room', label: '空教室申请', aiQuestion: '我想申请空教室，办理流程是什么？' },
-  // { icon: 'assignment', label: '我的申请', comingSoon: true, aiQuestion: '我想查看或跟进自己的校园事务申请，应该去哪里？' }, // 暂无对接 URL，暂时隐藏
+  // 行 1：最高频学生事务（教务/团委）
+  { icon: 'meeting_room', label: '空教室申请', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=383' },
+  { icon: 'feedback', label: '接诉即办', url: 'https://ehall.sdfmu.edu.cn/v2/matter/start?id=378' },
   { icon: 'handyman', label: '网上报修', url: 'https://metc.sdfmu.edu.cn/info/1073/1954.htm' },
-  { icon: 'feedback', label: '接诉即办', url: 'https://ehall.sdfmu.edu.cn/v2/site/appGroup?id=3' },
+  { icon: 'school', label: '学籍办理', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=369' },
+  // 行 2：学生工作部申请类
+  { icon: 'home_work', label: '校外住宿', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=394' },
+  { icon: 'volunteer_activism', label: '困难补助', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=417' },
+  { icon: 'groups', label: '活动室预约', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=445' },
+  { icon: 'credit_card', label: '校园卡服务', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=443' },
+  // 行 3：校园生活与公共资源
   { icon: 'wifi', label: '校园网', url: 'http://vpnportal.sdfmu.edu.cn' },
-  { icon: 'local_hospital', label: '校医院', aiQuestion: '校医院就诊流程和开放时间是什么？' },
-  { icon: 'directions_bus', label: '班车查询', aiQuestion: '班车时刻表在哪里查询？' },
   { icon: 'podium', label: '学术讲座', url: 'http://academic.sdfmu.edu.cn/index.php?redirect=apply/showlist' },
   { icon: 'event_available', label: '预约中心', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=3' },
+  { icon: 'qr_code', label: '访客预约', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=2' },
+  // 行 4：证件采集 + 媒体 + 应用中心兜底
   { icon: 'face_retouching_natural', label: '人脸采集', url: 'https://fpc.sdfmu.edu.cn/#/home' },
   { icon: 'photo_camera', label: '证件照采集', url: 'https://ppu.sdfmu.edu.cn' },
   { icon: 'live_tv', label: '直播山一大', url: 'https://qjjern.vnet.weizan.cn/live/channelpage-253967?v=1764637917204' },
-  { icon: 'more_horiz', label: '更多', aiQuestion: '医小管可以帮我做什么？' },
+  { icon: 'apps', label: '更多服务', url: 'https://ehall.sdfmu.edu.cn/v2/site/serviceList' },
 ]
 
 onShow(() => {
