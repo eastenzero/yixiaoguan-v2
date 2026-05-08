@@ -1,10 +1,24 @@
 # R11 内测访客模式部署清单
 
-适用 commit 范围：`94a3c29..HEAD`（R11 G1 → 全部）
+适用 commit 范围：`94a3c29..HEAD`（R11 G1 → 全部，11 个 commit）
+
+## 0. 165 上的实际路径（已实测）
+
+- 仓库目录：`/home/easten/dev/yixiaoguan-v2`
+- gateway systemd 服务：`yixiaoguan-gateway.service`（已运行）
+- nginx 站点配置：`/etc/nginx/sites-enabled/yixiaoguan`
+- **Centrifugo 当前未部署**（无容器、无 nginx location），本次部署需要**首次启动**
+
+后续命令默认在仓库目录下执行：
+```bash
+ssh ub
+cd ~/dev/yixiaoguan-v2
+git pull
+```
 
 ## 1. 后端 .env 新增变量
 
-在 165 服务器（gateway .env，路径示例 `/home/easten/.../services/gateway/.env`）追加：
+在 `services/gateway/.env` 追加：
 
 ```dotenv
 # Pilot 内测匿名模式开关（不开则 /api/auth/pilot-anonymous 返回 403）
@@ -16,25 +30,70 @@ CENTRIFUGO_PROXY_SECRET=<生成32位随机串，例 openssl rand -hex 16>
 
 如果 settings 字段读环境变量名不一致（例如 pydantic v2 自动 upper），实际看 `app/config.py` 里的字段名，按它的 alias 决定 env 名。
 
-## 2. Centrifugo 配置改动
+## 2. Centrifugo 首次启动
 
-修改 `deploy/centrifugo-config.json`：
-- 文件已被 G4 / Review-Fix commit 修改，TX 拉取后该文件自动是新版
-- secret 现在通过 `proxy_static_http_headers.X-Auth` 传递，**不在 URL query 里**（避免日志泄露）
-- 把 `CHANGE_ME_SYNC_WITH_CENTRIFUGO_PROXY_SECRET` 占位替换成与 gateway `.env` 中 `CENTRIFUGO_PROXY_SECRET` 同样的随机串
-- **更安全的做法**：直接通过环境变量注入（不修改 git 里的 config.json）：
-  ```bash
-  export CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS='{"X-Auth": "<actual_random_secret>"}'
-  ```
-  并把 docker-compose.yml 里 centrifugo 服务的 environment 加这一项。这种情况下 config.json 里的 X-Auth 值可以保持占位。
-- 拉取后 restart centrifugo 即可
+165 上 centrifugo 之前没部过，本次需要**首次启动**容器并把 nginx location 接入。
+
+### 2.1 准备 deploy/.env（centrifugo compose 用）
+
+`deploy/.env` 用于 docker-compose.centrifugo.yml 读取。如果文件不存在，按 `.env.example` 创建：
+```bash
+cd ~/dev/yixiaoguan-v2/deploy
+cp .env.example .env  # 如已有则跳过
+```
+
+编辑 `deploy/.env`，至少包含：
+```dotenv
+CENTRIFUGO_SECRET=<生成32位随机串，用于 client JWT HMAC>
+CENTRIFUGO_API_KEY=<生成32位随机串，用于 server API>
+# proxy 静态 header 注入（强烈推荐，避免改 git 里的 config.json）
+CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS={"X-Auth": "<同 gateway .env 的 CENTRIFUGO_PROXY_SECRET>"}
+```
+
+注意 `CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS` 是 JSON 字符串，等号后面**不要加引号**。
+
+### 2.2 让 docker-compose.centrifugo.yml 透传 PROXY HEADERS env
+
+检查 `deploy/docker-compose.centrifugo.yml`，确认 `environment` 块包含 `CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS=${CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS}`。如果当前还没有该行，需要追加：
+```yaml
+    environment:
+      - CENTRIFUGO_CLIENT_TOKEN_HMAC_SECRET_KEY=${CENTRIFUGO_SECRET}
+      - CENTRIFUGO_HTTP_API_KEY=${CENTRIFUGO_API_KEY}
+      - CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS=${CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS}
+```
+（如果 R11 review-fix commit 已加，则跳过；TX 拉取后自查一下。）
+
+### 2.3 启动容器
+
+```bash
+cd ~/dev/yixiaoguan-v2/deploy
+docker compose -f docker-compose.centrifugo.yml up -d
+
+# 看启动日志
+docker logs --tail 50 yxg-centrifugo
+# 确认无 panic / config error；预期看到 listening on :8000 + subscribe_proxy enabled
+```
+
+### 2.4 接入 nginx
+
+把 `deploy/nginx-centrifugo.conf` 的 location 块加到 `/etc/nginx/sites-enabled/yixiaoguan` 中**所有 server block**（学生端 `yxg.xiaoguan.site` + 教师端 `teacher.xiaoguan.site`）：
+```bash
+# 编辑
+sudo vim /etc/nginx/sites-enabled/yixiaoguan
+# 在每个 server { ... } 中追加 deploy/nginx-centrifugo.conf 的 location /centrifugo/ 块
+
+# 测试 + reload
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+### 2.5 备选方案：把 secret 写到 config.json（不推荐）
+
+如果不想用 env 注入，也可以直接编辑 `deploy/centrifugo-config.json`：把 `proxy_static_http_headers.X-Auth` 的占位替换成与 gateway `.env` 中 `CENTRIFUGO_PROXY_SECRET` 同样的随机串。但配置写到 git 跟踪的文件里有泄露风险，**优先选 §2.1 的 env 注入**。
 
 ## 3. 数据库 migration
 
-在 gateway 目录下：
 ```bash
-ssh ub
-cd ~/yixiaoguan-v2/services/gateway
+cd ~/dev/yixiaoguan-v2/services/gateway
 source venv/bin/activate
 alembic upgrade head
 ```
@@ -52,21 +111,19 @@ requirements.txt 加了 `slowapi>=0.1.9`，TX 拉取后：
 pip install -r requirements.txt
 ```
 
-## 5. 重启服务（顺序很重要）
+## 5. 重启 gateway
 
 ```bash
-# Step 1: 先重启 gateway（让新 endpoint + 新 model 生效）
 sudo systemctl restart yixiaoguan-gateway
 
 # 健康检查
 curl http://localhost:8100/health
 
-# Step 2: 再重启 centrifugo（让 proxy 配置生效）
-docker compose -f deploy/docker-compose.yml restart centrifugo
-
-# 看 centrifugo 日志确认有 "subscribe proxy" 字样
-docker logs --tail 30 deploy_centrifugo_1 2>&1 | grep -i proxy
+# 看启动日志确认无 ImportError / 配置错误
+sudo journalctl -u yixiaoguan-gateway -n 50 --no-pager
 ```
+
+注意 centrifugo 在 §2 已启动；如果改了 deploy/.env 里的 secret，需要 `docker compose -f deploy/docker-compose.centrifugo.yml restart` 让新 env 生效。
 
 ## 6. 烟囱测试（pilot 流程端到端）
 
@@ -140,7 +197,7 @@ pnpm build:h5
 1. 关 pilot 模式：`PILOT_MODE_ENABLED=false` 后重启 gateway —— 阻止新 pilot 用户进入
 2. 拉 commit `8a4cebe` checkout：`git checkout 8a4cebe -- services/gateway` —— 回滚后端代码
 3. alembic downgrade：`alembic downgrade b2e7a91c4d80` —— 回滚两个 R11 migration
-4. centrifugo 配置恢复：`git checkout 8a4cebe -- deploy/centrifugo-config.json`，如果你用了 `CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS` 环境变量注入，也要同步移除/恢复该环境变量；然后再 `docker compose restart centrifugo`
+4. centrifugo 配置恢复：`git checkout 8a4cebe -- deploy/centrifugo-config.json`；如果用了 `CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS` 环境变量注入，也要同步移除该 env；然后 `docker compose -f deploy/docker-compose.centrifugo.yml down`（彻底关掉这个容器，因为 8a4cebe 之前没部署过）
 
 注意：alembic downgrade 会 drop 表，**会丢失 R11 期间收集的反馈数据**。如果想保留：
 - 先 SQL 备份：`pg_dump -t feedbacks -t unanswered_user_feedback -t events ... > r11-data.sql`
