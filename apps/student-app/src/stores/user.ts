@@ -83,6 +83,12 @@ export const useUserStore = defineStore('user', () => {
   }
 
   function _connectRealtime(nextToken: string): void {
+    // R11 pilot 用户没有真实师生关系（无 college/class），实时通道（教师答复推送等）
+    // 在 pilot 模式下永远不会有消息，连接只会产生持续的 WS 报错噪音 —— 直接跳过。
+    const staffId = userInfo.value?.staff_id || ''
+    if (staffId.startsWith('pilot:')) {
+      return
+    }
     wsManager.connect(nextToken)
     void import('@/api/auth')
       .then(({ getCentrifugoToken }) => getCentrifugoToken())
