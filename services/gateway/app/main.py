@@ -18,6 +18,8 @@ from app.routers.announcements import router as announcements_router
 from app.routers.admin import router as admin_router
 from app.routers.analytics import router as analytics_router
 from app.routers import college as college_router
+from app.routers import feedback as feedback_router
+from app.routers import track as track_router
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
@@ -94,3 +96,5 @@ app.include_router(admin_router, prefix="/api/admin", tags=["admin"])
 app.include_router(internal_router.router, prefix="/api/internal", tags=["internal"])
 app.include_router(analytics_router)  # self-prefixed /api/analytics
 app.include_router(college_router.router, prefix="/api", tags=["college"])
+app.include_router(feedback_router.router, prefix="/api/feedback", tags=["feedback"])
+app.include_router(track_router.router, prefix="/api/track", tags=["track"])
