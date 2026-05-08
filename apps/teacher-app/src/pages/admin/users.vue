@@ -39,6 +39,15 @@
         </view>
       </view>
 
+      <view class="filter-row filter-row--pilot animate-fade-up delay-1">
+        <view class="filter-toggle" @click="showPilot = !showPilot">
+          <text class="material-symbols-outlined toggle-icon" :class="{ active: showPilot }">
+            {{ showPilot ? 'check_box' : 'check_box_outline_blank' }}
+          </text>
+          <text class="toggle-text">显示内测访客（{{ pilotCount }}）</text>
+        </view>
+      </view>
+
       <!-- 统计 -->
       <view class="count-bar animate-fade-up delay-1">
         <text class="count-text">共 {{ total }} 人</text>
@@ -49,14 +58,14 @@
         <text class="loading-text">加载中...</text>
       </view>
 
-      <view v-else-if="users.length === 0" class="empty-wrap">
+      <view v-else-if="visibleUsers.length === 0" class="empty-wrap">
         <text class="material-symbols-outlined empty-icon">person_off</text>
         <text class="empty-text">暂无用户</text>
       </view>
 
       <view v-else class="user-list">
         <view
-          v-for="u in users"
+          v-for="u in visibleUsers"
           :key="u.id"
           class="user-card animate-fade-up"
         >
@@ -70,7 +79,12 @@
                 <text class="disabled-text">已禁用</text>
               </view>
             </view>
-            <text class="user-staff-id">{{ u.staff_id }}</text>
+            <view class="user-staff-id-row">
+              <text class="user-staff-id">{{ u.staff_id }}</text>
+              <view v-if="isPilotUser(u)" class="pilot-badge">
+                内测
+              </view>
+            </view>
             <text class="user-org">{{ u.college_name || '' }}{{ u.class_name ? ' / ' + u.class_name : '' }}</text>
           </view>
           <view class="user-actions">
@@ -109,6 +123,7 @@ const pageSize = 20
 const total = ref(0)
 const users = ref<AdminUserItem[]>([])
 const loading = ref(false)
+const showPilot = ref(false)
 
 const roleFilters = [
   { label: '全部', value: '' },
@@ -118,6 +133,18 @@ const roleFilters = [
 ]
 
 const totalPages = computed(() => Math.ceil(total.value / pageSize) || 1)
+
+const isPilotUser = (user: Pick<AdminUserItem, 'staff_id'>) =>
+  (user.staff_id || '').toLowerCase().startsWith('pilot:')
+
+const visibleUsers = computed(() => {
+  if (showPilot.value) return users.value
+  return users.value.filter((u) => !isPilotUser(u))
+})
+
+const pilotCount = computed(() =>
+  users.value.filter((u) => isPilotUser(u)).length
+)
 
 const roleLabel = (role: string) => {
   const map: Record<string, string> = { student: '学生', teacher: '教师', admin: '管理员' }
@@ -208,6 +235,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@import '@/styles/tokens.scss';
+
 .admin-users-page { min-height: 100vh; background: #faf5fb; }
 .custom-app-bar { position: sticky; top: 0; z-index: 100; background: rgba(250, 245, 251, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
 .app-bar-content { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; padding-top: calc(env(safe-area-inset-top) + 0.75rem); }
@@ -228,6 +257,12 @@ onMounted(() => {
 .filter-chip--active { background: #702ae1; border-color: #702ae1; }
 .filter-chip--active .chip-text { color: #fff; }
 .chip-text { font-size: 0.75rem; font-weight: 600; color: #64748b; }
+
+.filter-row--pilot { margin-bottom: 0.5rem; }
+.filter-toggle { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.5rem; }
+.toggle-icon { font-size: 1.125rem; color: #999; }
+.toggle-icon.active { color: var(--color-primary, #1976d2); }
+.toggle-text { font-size: 0.8125rem; color: #555; }
 
 .count-bar { margin-bottom: 0.75rem; }
 .count-text { font-size: 0.75rem; color: #94a3b8; }
@@ -252,7 +287,17 @@ onMounted(() => {
 .role-text { font-size: 0.625rem; font-weight: 700; }
 .disabled-badge { padding: 0.125rem 0.5rem; border-radius: 0.5rem; background: #fee2e2; }
 .disabled-text { font-size: 0.625rem; font-weight: 700; color: #dc2626; }
+.user-staff-id-row { display: flex; align-items: center; gap: 0.5rem; }
 .user-staff-id { font-size: 0.75rem; color: #64748b; display: block; }
+.pilot-badge {
+  display: inline-block;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  background: rgba($warning, 0.16);
+  color: $warning;
+  font-size: 0.625rem;
+  line-height: 1;
+}
 .user-org { font-size: 0.6875rem; color: #94a3b8; display: block; margin-top: 0.125rem; }
 
 .user-actions { display: flex; gap: 0.5rem; flex-shrink: 0; margin-left: 0.5rem; }
