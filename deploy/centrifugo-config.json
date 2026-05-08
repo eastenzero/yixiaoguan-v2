@@ -6,15 +6,22 @@
       "http://localhost:*"
     ]
   },
-  "proxy_subscribe_endpoint": "http://host.docker.internal:8100/api/internal/centrifugo/subscribe",
-  "proxy_subscribe_timeout": "2s",
-  "proxy_static_http_headers": {
-    "X-Auth": "CHANGE_ME_SYNC_WITH_CENTRIFUGO_PROXY_SECRET"
-  },
   "channel": {
+    "proxy": {
+      "subscribe": {
+        "endpoint": "http://host.docker.internal:8100/api/internal/centrifugo/subscribe",
+        "timeout": "2s",
+        "http": {
+          "static_headers": {
+            "X-Auth": "CHANGE_ME_SYNC_WITH_CENTRIFUGO_PROXY_SECRET"
+          }
+        }
+      }
+    },
     "namespaces": [
       {
         "name": "conv",
+        "subscribe_proxy_enabled": true,
         "history_size": 100,
         "history_ttl": "5m",
         "force_recovery": true,

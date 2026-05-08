@@ -1,4 +1,4 @@
-# R11 内测访客模式部署清单
+﻿# R11 内测访客模式部署清单
 
 适用 commit 范围：`94a3c29..HEAD`（R11 G1 → 全部，11 个 commit）
 
@@ -47,19 +47,19 @@ cp .env.example .env  # 如已有则跳过
 CENTRIFUGO_SECRET=<生成32位随机串，用于 client JWT HMAC>
 CENTRIFUGO_API_KEY=<生成32位随机串，用于 server API>
 # proxy 静态 header 注入（强烈推荐，避免改 git 里的 config.json）
-CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS={"X-Auth": "<同 gateway .env 的 CENTRIFUGO_PROXY_SECRET>"}
+CENTRIFUGO_CHANNEL_PROXY_SUBSCRIBE_HTTP_STATIC_HEADERS={"X-Auth": "<同 gateway .env 的 CENTRIFUGO_PROXY_SECRET>"}
 ```
 
-注意 `CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS` 是 JSON 字符串，等号后面**不要加引号**。
+注意 `CENTRIFUGO_CHANNEL_PROXY_SUBSCRIBE_HTTP_STATIC_HEADERS` 是 JSON 字符串，等号后面**不要加引号**。
 
 ### 2.2 让 docker-compose.centrifugo.yml 透传 PROXY HEADERS env
 
-检查 `deploy/docker-compose.centrifugo.yml`，确认 `environment` 块包含 `CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS=${CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS}`。如果当前还没有该行，需要追加：
+检查 `deploy/docker-compose.centrifugo.yml`，确认 `environment` 块包含 `CENTRIFUGO_CHANNEL_PROXY_SUBSCRIBE_HTTP_STATIC_HEADERS=${CENTRIFUGO_CHANNEL_PROXY_SUBSCRIBE_HTTP_STATIC_HEADERS}`。如果当前还没有该行，需要追加：
 ```yaml
     environment:
       - CENTRIFUGO_CLIENT_TOKEN_HMAC_SECRET_KEY=${CENTRIFUGO_SECRET}
       - CENTRIFUGO_HTTP_API_KEY=${CENTRIFUGO_API_KEY}
-      - CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS=${CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS}
+      - CENTRIFUGO_CHANNEL_PROXY_SUBSCRIBE_HTTP_STATIC_HEADERS=${CENTRIFUGO_CHANNEL_PROXY_SUBSCRIBE_HTTP_STATIC_HEADERS}
 ```
 （如果 R11 review-fix commit 已加，则跳过；TX 拉取后自查一下。）
 
@@ -197,7 +197,7 @@ pnpm build:h5
 1. 关 pilot 模式：`PILOT_MODE_ENABLED=false` 后重启 gateway —— 阻止新 pilot 用户进入
 2. 拉 commit `8a4cebe` checkout：`git checkout 8a4cebe -- services/gateway` —— 回滚后端代码
 3. alembic downgrade：`alembic downgrade b2e7a91c4d80` —— 回滚两个 R11 migration
-4. centrifugo 配置恢复：`git checkout 8a4cebe -- deploy/centrifugo-config.json`；如果用了 `CENTRIFUGO_PROXY_STATIC_HTTP_HEADERS` 环境变量注入，也要同步移除该 env；然后 `docker compose -f deploy/docker-compose.centrifugo.yml down`（彻底关掉这个容器，因为 8a4cebe 之前没部署过）
+4. centrifugo 配置恢复：`git checkout 8a4cebe -- deploy/centrifugo-config.json`；如果用了 `CENTRIFUGO_CHANNEL_PROXY_SUBSCRIBE_HTTP_STATIC_HEADERS` 环境变量注入，也要同步移除该 env；然后 `docker compose -f deploy/docker-compose.centrifugo.yml down`（彻底关掉这个容器，因为 8a4cebe 之前没部署过）
 
 注意：alembic downgrade 会 drop 表，**会丢失 R11 期间收集的反馈数据**。如果想保留：
 - 先 SQL 备份：`pg_dump -t feedbacks -t unanswered_user_feedback -t events ... > r11-data.sql`
