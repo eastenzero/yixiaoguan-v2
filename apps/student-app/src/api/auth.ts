@@ -15,6 +15,14 @@ export function login(staff_id: string, password: string): Promise<LoginResponse
   })
 }
 
+export function pilotAnonymousLogin(device_id: string): Promise<LoginResponse> {
+  return request<LoginResponse>({
+    url: '/api/auth/pilot-anonymous',
+    method: 'POST',
+    data: { device_id },
+  })
+}
+
 export function getMe(): Promise<UserInfo> {
   return request<UserInfo>({ url: '/api/auth/me' })
 }

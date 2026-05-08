@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { wsManager } from '@/utils/websocket'
 import { centrifugeManager } from '@/utils/centrifuge'
-import { getCentrifugoToken } from '@/api/auth'
 
 export interface UserInfo {
   id: number
@@ -17,13 +16,17 @@ export interface UserInfo {
 const TOKEN_KEY = 'v2-token'
 const USER_INFO_KEY = 'v2-user-info'
 
+type RequestError = Error & {
+  statusCode?: number
+}
+
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>('')
   const userInfo = ref<UserInfo | null>(null)
 
   const isLoggedIn = computed(() => !!token.value)
 
-  function init() {
+  async function init(): Promise<void> {
     const storedToken = uni.getStorageSync(TOKEN_KEY)
     const storedInfo = uni.getStorageSync(USER_INFO_KEY)
     if (storedToken) {
@@ -31,16 +34,32 @@ export const useUserStore = defineStore('user', () => {
       if (storedInfo) {
         try { userInfo.value = JSON.parse(storedInfo) } catch { /* ignore */ }
       }
-      wsManager.connect(storedToken)
-      // Centrifugo: 获取新 token 并连接
-      getCentrifugoToken()
-        .then(res => {
-          centrifugeManager.connect(res.token, async () => {
-            const r = await getCentrifugoToken()
-            return r.token
-          })
-        })
-        .catch(() => { /* centrifugo unavailable, degrade silently */ })
+      _connectRealtime(storedToken)
+      return
+    }
+
+    await tryPilotLogin()
+  }
+
+  async function tryPilotLogin(): Promise<boolean> {
+    try {
+      const [{ pilotAnonymousLogin, getMe }, { getDeviceId }] = await Promise.all([
+        import('@/api/auth'),
+        import('@/utils/device'),
+      ])
+      const deviceId = getDeviceId()
+      const resp = await pilotAnonymousLogin(deviceId)
+
+      setToken(resp.access_token)
+      const info = await getMe()
+      setUserInfo(info)
+      _connectRealtime(resp.access_token)
+      return true
+    } catch (error) {
+      if ((error as RequestError | undefined)?.statusCode === 403) {
+        uni.reLaunch({ url: '/pages/login/index' })
+      }
+      return false
     }
   }
 
@@ -63,5 +82,19 @@ export const useUserStore = defineStore('user', () => {
     centrifugeManager.disconnect()
   }
 
-  return { token, userInfo, isLoggedIn, init, setToken, setUserInfo, logout }
+  function _connectRealtime(nextToken: string): void {
+    wsManager.connect(nextToken)
+    void import('@/api/auth')
+      .then(({ getCentrifugoToken }) => getCentrifugoToken())
+      .then(res => {
+        centrifugeManager.connect(res.token, async () => {
+          const { getCentrifugoToken } = await import('@/api/auth')
+          const refreshed = await getCentrifugoToken()
+          return refreshed.token
+        })
+      })
+      .catch(() => { /* centrifugo unavailable, degrade silently */ })
+  }
+
+  return { token, userInfo, isLoggedIn, init, tryPilotLogin, setToken, setUserInfo, logout }
 })

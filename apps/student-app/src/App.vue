@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { onLaunch } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
+import { trackEvent } from '@/utils/track'
 
 onLaunch(() => {
   const userStore = useUserStore()
-  userStore.init()
+  void userStore.init().then(() => {
+    trackEvent('app_start', {
+      role: userStore.userInfo?.role || 'unknown',
+      is_pilot: (userStore.userInfo?.staff_id || '').startsWith('pilot:'),
+    })
+  })
 })
 </script>
 
@@ -48,6 +54,7 @@ button {
   font: inherit;
   color: inherit;
 }
+
 button::after {
   border: none;
 }
