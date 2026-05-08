@@ -1,7 +1,9 @@
 import logging
-from hashlib import sha256
 import re
 from collections.abc import Iterable
+from decimal import Decimal, InvalidOperation
+from hashlib import sha256
+from typing import TypedDict
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -53,6 +55,17 @@ SYNONYM_REPLACEMENTS = {
     "缴费": "交费",
     "缴": "交",
 }
+
+
+class UsageMetrics(TypedDict, total=False):
+    prompt_tokens: int | None
+    completion_tokens: int | None
+    total_tokens: int | None
+    prompt_price: Decimal | None
+    completion_price: Decimal | None
+    total_price: Decimal | None
+    currency: str | None
+    latency: float | None
 
 
 def normalize_query(raw: str) -> str | None:
@@ -122,6 +135,67 @@ def extract_rag_metrics(metadata: dict | None) -> tuple[float | None, str | None
     return best_score, best_doc_name
 
 
+def extract_usage_metrics(metadata: dict | None) -> UsageMetrics:
+    """Extract Dify message_end metadata.usage fields.
+
+    All keys are optional and malformed values are ignored.
+    """
+    if not isinstance(metadata, dict):
+        return {}
+    usage = metadata.get("usage")
+    if not isinstance(usage, dict):
+        return {}
+
+    out: UsageMetrics = {}
+
+    def _int(key: str) -> int | None:
+        value = usage.get(key)
+        if isinstance(value, (int, float)):
+            return int(value)
+        if isinstance(value, str):
+            try:
+                return int(float(value))
+            except ValueError:
+                return None
+        return None
+
+    def _decimal(key: str) -> Decimal | None:
+        value = usage.get(key)
+        if value is None:
+            return None
+        try:
+            return Decimal(str(value))
+        except (InvalidOperation, TypeError, ValueError):
+            return None
+
+    def _str(key: str, max_len: int) -> str | None:
+        value = usage.get(key)
+        if isinstance(value, str):
+            return value[:max_len]
+        return None
+
+    def _float(key: str) -> float | None:
+        value = usage.get(key)
+        if isinstance(value, (int, float)):
+            return float(value)
+        if isinstance(value, str):
+            try:
+                return float(value)
+            except ValueError:
+                return None
+        return None
+
+    out["prompt_tokens"] = _int("prompt_tokens")
+    out["completion_tokens"] = _int("completion_tokens")
+    out["total_tokens"] = _int("total_tokens")
+    out["prompt_price"] = _decimal("prompt_price")
+    out["completion_price"] = _decimal("completion_price")
+    out["total_price"] = _decimal("total_price")
+    out["currency"] = _str("currency", 10)
+    out["latency"] = _float("latency")
+    return out
+
+
 def judge_is_answered(
     rag_score: float | None,
     response_text: str,
@@ -189,6 +263,7 @@ async def record_chat_analytics(
         rag_score, kb_doc_matched = extract_rag_metrics(dify_metadata)
         query_norm = normalize_query(raw_query)
         is_answered = judge_is_answered(rag_score, response_text)
+        usage = extract_usage_metrics(dify_metadata)
         analytics = ChatAnalytics(
             conversation_id=conv_id,
             user_id=user.id,
@@ -199,6 +274,14 @@ async def record_chat_analytics(
             rag_score=rag_score,
             kb_doc_matched=kb_doc_matched,
             is_answered=is_answered,
+            prompt_tokens=usage.get("prompt_tokens"),
+            completion_tokens=usage.get("completion_tokens"),
+            total_tokens=usage.get("total_tokens"),
+            prompt_price=usage.get("prompt_price"),
+            completion_price=usage.get("completion_price"),
+            total_price=usage.get("total_price"),
+            currency=usage.get("currency"),
+            latency=usage.get("latency"),
         )
         db.add(analytics)
         if not is_answered:

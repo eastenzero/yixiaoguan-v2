@@ -1,6 +1,7 @@
 from datetime import datetime
+from decimal import Decimal
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, String, Text, func
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, Numeric, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -19,4 +20,12 @@ class ChatAnalytics(Base):
     rag_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     kb_doc_matched: Mapped[str | None] = mapped_column(String(512), nullable=True)
     is_answered: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    prompt_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    completion_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    total_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    prompt_price: Mapped[Decimal | None] = mapped_column(Numeric(10, 7), nullable=True)
+    completion_price: Mapped[Decimal | None] = mapped_column(Numeric(10, 7), nullable=True)
+    total_price: Mapped[Decimal | None] = mapped_column(Numeric(10, 7), nullable=True)
+    currency: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    latency: Mapped[float | None] = mapped_column(Float, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=False)

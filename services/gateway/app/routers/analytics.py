@@ -139,6 +139,42 @@ async def get_analytics(
 
     # ─── 3. AI Quality (RAG score buckets) ────────────────
 
+    cost_row = (
+        await db.execute(
+            select(
+                func.sum(ChatAnalytics.total_tokens).label("tokens_sum"),
+                func.sum(ChatAnalytics.total_price).label("price_sum"),
+                func.avg(ChatAnalytics.latency).label("latency_avg"),
+            ).where(
+                and_(
+                    ChatAnalytics.created_at >= start,
+                    ChatAnalytics.total_tokens.isnot(None),
+                )
+            )
+        )
+    ).one()
+
+    daily_cost_rows = await db.execute(
+        select(
+            func.date(ChatAnalytics.created_at).label("d"),
+            func.sum(ChatAnalytics.total_tokens).label("tokens"),
+            func.sum(ChatAnalytics.total_price).label("price"),
+        ).where(ChatAnalytics.created_at >= trend_start)
+        .group_by(text("d")).order_by(text("d"))
+    )
+    daily_cost_map = {
+        str(row.d): {"tokens": int(row.tokens or 0), "price": float(row.price or 0)}
+        for row in daily_cost_rows
+    }
+    cost_by_day = [
+        {
+            "date": dates[i],
+            "tokens": daily_cost_map.get(dates[i], {}).get("tokens", 0),
+            "price": daily_cost_map.get(dates[i], {}).get("price", 0.0),
+        }
+        for i in range(len(dates))
+    ]
+
     dist = (await db.execute(
         select(
             func.sum(case((ChatAnalytics.rag_score < 0.3, 1), else_=0)).label("low"),
@@ -206,6 +242,12 @@ async def get_analytics(
             "dates": dates,
             "total": totals,
             "ai_answered": ais,
+        },
+        "cost_summary": {
+            "total_tokens": int(cost_row.tokens_sum or 0),
+            "total_price": float(cost_row.price_sum or 0),
+            "avg_latency_seconds": float(cost_row.latency_avg or 0),
+            "by_day": cost_by_day,
         },
         "ai_quality": {
             "hit_rate": hit_rate,

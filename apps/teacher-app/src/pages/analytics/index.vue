@@ -78,8 +78,8 @@
               <view class="bar-area">
                 <view v-for="(d, i) in trendItems" :key="i" class="bar-group">
                   <view class="bar-stack">
-                    <view class="bar bar--ai" :style="{ height: barH(d.ai) }"></view>
-                    <view class="bar bar--rest" :style="{ height: barH(d.total - d.ai) }"></view>
+                    <view class="bar bar--ai" :style="{ height: barPx(d.ai) }"></view>
+                    <view class="bar bar--rest" :style="{ height: barPx(d.total - d.ai) }"></view>
                   </view>
                   <text class="bar-date">{{ d.shortDate }}</text>
                 </view>
@@ -192,6 +192,41 @@
           </scroll-view>
         </view>
 
+        <view class="section-card animate-fade-up cost-summary-card">
+          <view class="section-header-row">
+            <text class="section-title">AI 成本概览</text>
+            <text class="cost-summary-hint">按当前周期统计</text>
+          </view>
+          <view class="cost-summary-metrics">
+            <view class="cost-summary-metric">
+              <text class="cost-summary-value">{{ formatInteger(costSummary.total_tokens) }}</text>
+              <text class="cost-summary-label">总 Tokens</text>
+            </view>
+            <view class="cost-summary-metric">
+              <text class="cost-summary-value">{{ formatPrice(costSummary.total_price) }}</text>
+              <text class="cost-summary-label">总价格</text>
+            </view>
+            <view class="cost-summary-metric">
+              <text class="cost-summary-value">{{ formatLatency(costSummary.avg_latency_seconds) }}</text>
+              <text class="cost-summary-label">平均延迟</text>
+            </view>
+          </view>
+          <view v-if="costByDay.length === 0" class="empty-chart">
+            <text class="empty-chart-text">暂无成本数据</text>
+          </view>
+          <scroll-view v-else scroll-x class="cost-scroll" :show-scrollbar="false">
+            <view class="cost-bars">
+              <view v-for="item in costByDay" :key="item.date" class="cost-bar-item">
+                <text class="cost-bar-date">{{ item.shortDate }}</text>
+                <view class="cost-bar-track">
+                  <view class="cost-bar-fill" :style="{ width: costBarWidth(item.tokens) }"></view>
+                </view>
+                <text class="cost-bar-value">{{ formatInteger(item.tokens) }}</text>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+
         <!-- bottom spacer -->
         <view style="height: 40px"></view>
       </template>
@@ -204,6 +239,21 @@ import { ref, computed, onMounted } from 'vue'
 import { getAnalytics } from '@/api/analytics'
 import type { AnalyticsData } from '@/api/analytics'
 
+interface CostByDayItem {
+  date: string
+  tokens: number
+  price: number
+}
+
+interface AnalyticsDashboardData extends AnalyticsData {
+  cost_summary?: {
+    total_tokens: number
+    total_price: number
+    avg_latency_seconds: number
+    by_day: CostByDayItem[]
+  }
+}
+
 const period = ref<'7d' | '30d' | 'all'>('7d')
 const periods = [
   { value: '7d', label: '近 7 天' },
@@ -211,23 +261,35 @@ const periods = [
   { value: 'all', label: '全部' },
 ]
 const loading = ref(false)
-const data = ref<AnalyticsData | null>(null)
+const data = ref<AnalyticsDashboardData | null>(null)
 
 const goBack = () => uni.navigateBack()
 
 // ── Mock data (开发阶段 API 不可用时自动 fallback) ──
-function generateMock(): AnalyticsData {
+function generateMock(): AnalyticsDashboardData {
   const days = period.value === '7d' ? 7 : period.value === '30d' ? 30 : 90
   const now = new Date()
   const dates: string[] = []
   const total: number[] = []
   const ai: number[] = []
+  const costByDay: CostByDayItem[] = []
+  let totalTokens = 0
+  let totalPrice = 0
   for (let i = days; i > 0; i--) {
     const d = new Date(now.getTime() - i * 86400000)
     dates.push(d.toISOString().slice(0, 10))
     const t = Math.floor(Math.random() * 40) + 5
     total.push(t)
     ai.push(Math.floor(t * (0.5 + Math.random() * 0.35)))
+    const tokens = Math.floor(Math.random() * 2400) + 300
+    const price = Number((tokens * 0.0000012).toFixed(4))
+    totalTokens += tokens
+    totalPrice += price
+    costByDay.push({
+      date: d.toISOString().slice(0, 10),
+      tokens,
+      price,
+    })
   }
   const heatmap = Array.from({ length: 7 }, () =>
     Array.from({ length: 24 }, () => Math.floor(Math.random() * 12))
@@ -260,13 +322,19 @@ function generateMock(): AnalyticsData {
       { name: '艺术学院', count: 63 },
     ],
     heatmap,
+    cost_summary: {
+      total_tokens: totalTokens,
+      total_price: Number(totalPrice.toFixed(2)),
+      avg_latency_seconds: 1.4,
+      by_day: costByDay,
+    },
   }
 }
 
 async function load() {
   loading.value = true
   try {
-    data.value = await getAnalytics(period.value)
+    data.value = await getAnalytics(period.value) as AnalyticsDashboardData
   } catch (e) {
     console.warn('Analytics API unavailable, using mock data')
     data.value = generateMock()
@@ -343,12 +411,48 @@ const trendChartWidth = computed(() => {
   return Math.max(count * 44, 300) + 'px'
 })
 
-function barH(val: number): string {
-  if (!val || trendMax.value === 0) return '0%'
-  return (val / trendMax.value * 100) + '%'
+const BAR_MAX_PX = 120
+function barPx(val: number): string {
+  if (!val || trendMax.value === 0) return '0px'
+  return Math.round(val / trendMax.value * BAR_MAX_PX) + 'px'
 }
 
 // ── 3. AI Quality ──
+
+const costSummary = computed(() => data.value?.cost_summary ?? {
+  total_tokens: 0,
+  total_price: 0,
+  avg_latency_seconds: 0,
+  by_day: [] as CostByDayItem[],
+})
+
+const costByDay = computed(() => costSummary.value.by_day.map(item => ({
+  ...item,
+  shortDate: item.date.slice(5),
+})))
+
+const costMaxTokens = computed(() => {
+  const values = costSummary.value.by_day.map(item => item.tokens)
+  return Math.max(...values, 1)
+})
+
+function costBarWidth(tokens: number): string {
+  if (!tokens || costMaxTokens.value === 0) return '0%'
+  return (tokens / costMaxTokens.value * 100) + '%'
+}
+
+function formatInteger(value: number): string {
+  return value.toLocaleString('zh-CN')
+}
+
+function formatPrice(value: number): string {
+  return `¥${value.toFixed(2)}`
+}
+
+function formatLatency(value: number): string {
+  if (!value) return '-'
+  return `${value.toFixed(1)}s`
+}
 
 const ringStyle = computed(() => {
   const pct = data.value?.ai_quality.hit_rate ?? 0
@@ -634,6 +738,87 @@ function heatOpacity(val: number): number {
 // 2. Trend Chart
 // ══════════════════════════════════════
 
+.cost-summary-card {
+  overflow: hidden;
+}
+
+.cost-summary-hint {
+  font-size: 11px;
+  color: $on-surface-variant;
+}
+
+.cost-summary-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.cost-summary-metric {
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(91, 33, 182, 0.08), rgba(91, 33, 182, 0.03));
+}
+
+.cost-summary-value {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  color: $on-surface;
+}
+
+.cost-summary-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: $on-surface-variant;
+}
+
+.cost-scroll {
+  margin-top: 4px;
+}
+
+.cost-bars {
+  display: flex;
+  gap: 12px;
+  min-width: 560px;
+}
+
+.cost-bar-item {
+  width: 92px;
+  flex-shrink: 0;
+}
+
+.cost-bar-date {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 10px;
+  color: $on-surface-variant;
+}
+
+.cost-bar-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 9999px;
+  background: rgba(91, 33, 182, 0.08);
+  overflow: hidden;
+}
+
+.cost-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #7c3aed, #c4b5fd);
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cost-bar-value {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: $on-surface;
+}
+
 .legend-row { display: flex; gap: 12px; }
 .legend-item { display: flex; align-items: center; gap: 4px; }
 .legend-dot {
@@ -685,8 +870,11 @@ function heatOpacity(val: number): number {
 }
 .bar-stack {
   width: 16px;
+  height: 120px;
   display: flex;
   flex-direction: column-reverse;
+  align-items: stretch;
+  justify-content: flex-start;
   border-radius: 4px 4px 0 0;
   overflow: hidden;
 }
