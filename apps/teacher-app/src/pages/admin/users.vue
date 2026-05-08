@@ -234,7 +234,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 @import '@/styles/tokens.scss';
 
 .admin-users-page { min-height: 100vh; background: #faf5fb; }
