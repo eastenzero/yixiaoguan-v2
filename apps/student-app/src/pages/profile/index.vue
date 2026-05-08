@@ -134,6 +134,7 @@ import FeatureNoticeSheet from '@/components/FeatureNoticeSheet.vue'
 import AppDialog from '@/components/AppDialog.vue'
 import FeedbackDrawer from '@/components/FeedbackDrawer.vue'
 import { useDialog } from '@/composables/useDialog'
+import { trackEvent } from '@/utils/track'
 
 const userStore = useUserStore()
 const dialog = useDialog()
@@ -208,6 +209,7 @@ function handleSettingClick(item: SettingItem) {
 }
 
 onShow(async () => {
+  trackEvent('page_view', { path: '/pages/profile/index' })
   try {
     const res = await listConversations(1, 1)
     conversationCount.value = res.total || 0

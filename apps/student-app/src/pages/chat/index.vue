@@ -117,8 +117,8 @@
               v-if="msg.unanswered_invite && !msg.unanswered_invite.dismissed"
               :conv_id="msg.unanswered_invite.conv_id"
               :message_id="msg.unanswered_invite.message_id"
-              @submitted="msg.unanswered_invite.dismissed = true"
-              @dismissed="msg.unanswered_invite.dismissed = true"
+              @submitted="onUnansweredCardClosed(msg, true)"
+              @dismissed="onUnansweredCardClosed(msg, false)"
             />
             <view
               v-if="!msg.isStreaming && isRefusalMsg(msg) && conversationStatus === 'ai_serving'"
@@ -289,8 +289,30 @@ const suggestedQuestions = ref<string[]>([])
 const showCallMenu = ref(false)
 const sourcePopup = reactive({ visible: false, title: '', content: '' })
 const sourceSheetHeight = ref(50)
+const DISMISSED_KEY = 'dismissed_unanswered_msg_ids'
 let sheetTouchStartY = 0
 let sheetHeightAtStart = 50
+
+function loadDismissedSet(): Set<number> {
+  try {
+    const raw = uni.getStorageSync(DISMISSED_KEY) || '[]'
+    const arr = JSON.parse(raw) as number[]
+    return new Set(arr.filter(n => typeof n === 'number'))
+  } catch {
+    return new Set()
+  }
+}
+
+function saveDismissedId(id: number): void {
+  try {
+    const set = loadDismissedSet()
+    set.add(id)
+    const arr = Array.from(set).slice(-500)
+    uni.setStorageSync(DISMISSED_KEY, JSON.stringify(arr))
+  } catch {
+    // silent
+  }
+}
 
 // ============ 计算属性 ============
 const canSend = computed(() => inputMessage.value.trim().length > 0 && !isStreaming.value)
@@ -312,6 +334,7 @@ onMounted(() => {
 })
 
 onShow(() => {
+  trackEvent('page_view', { path: '/pages/chat/index' })
   const pendingId = uni.getStorageSync('pendingConversationId')
   if (pendingId) {
     uni.removeStorageSync('pendingConversationId')
@@ -438,6 +461,17 @@ function mapServerMessage(m: MessageResponse): ChatMessage {
 function goBack() { uni.navigateBack() }
 function goToHistory() { uni.navigateTo({ url: '/pages/chat/history' }) }
 
+function onUnansweredCardClosed(msg: ChatMessage, submitted: boolean) {
+  void submitted
+  if (msg.unanswered_invite) {
+    msg.unanswered_invite.dismissed = true
+    const id = msg.unanswered_invite.message_id
+    if (typeof id === 'number' && id > 0) {
+      saveDismissedId(id)
+    }
+  }
+}
+
 // ============ 发送消息 ============
 async function sendMessage() {
   const content = inputMessage.value.trim()
@@ -537,9 +571,20 @@ async function streamResponse(userContent: string) {
           msg.content = data.full_content || msg.content
           msg.sources = data.sources || []
           msg.isStreaming = false
+          trackEvent('chat_response_ok', {
+            conv_id: conversationId.value,
+            message_id: data.message_id,
+            content_length: (data.full_content || '').length,
+            sources_count: (data.sources || []).length,
+          })
           scrollToBottom()
         },
         onUnansweredInvite: ({ message_id, conv_id }) => {
+          const dismissed = loadDismissedSet()
+          if (dismissed.has(message_id)) {
+            return
+          }
+
           const target =
             messages.value.find(message => message.id === String(message_id)) ||
             messages.value.find(message => message.id === aiMessage.id) ||
@@ -553,7 +598,7 @@ async function streamResponse(userContent: string) {
             }
           }
 
-          trackEvent('unanswered_invite_shown', { conv_id, message_id })
+          trackEvent('unanswered_card_shown', { conv_id, message_id })
         },
         onSuggestions: (questions: string[]) => {
           suggestedQuestions.value = questions
@@ -562,6 +607,10 @@ async function streamResponse(userContent: string) {
         onError: (errMsg: string) => {
           getReactive().content = errMsg || '抱歉，AI 服务暂时不可用。'
           getReactive().isStreaming = false
+          trackEvent('chat_response_error', {
+            conv_id: conversationId.value,
+            error_msg: (errMsg || '').slice(0, 200),
+          })
           scrollToBottom()
         },
       }
@@ -575,6 +624,10 @@ async function streamResponse(userContent: string) {
       msg.isStreaming = false
     }
     scrollToBottom()
+    trackEvent('chat_response_error', {
+      conv_id: conversationId.value,
+      error_msg: String(e?.message || e || '').slice(0, 200),
+    })
   } finally {
     isStreaming.value = false
     isTyping.value = false

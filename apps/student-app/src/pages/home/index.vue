@@ -153,6 +153,7 @@ import { getUnreadSummary } from '@/api/notification'
 import { listConversations } from '@/api/chat'
 import { openExternal } from '@/composables/useServiceNavigation'
 import CustomTabBar from '@/components/CustomTabBar.vue'
+import { trackEvent } from '@/utils/track'
 import type { ConversationResponse } from '@/types/chat'
 
 const userStore = useUserStore()
@@ -200,6 +201,7 @@ const services = ref([
 onShow(() => {
   refreshUnreadSummary()
   loadRecentConversations()
+  trackEvent('page_view', { path: '/pages/home/index' })
 })
 
 async function refreshUnreadSummary() {
@@ -219,6 +221,7 @@ function goChat(query?: string) {
 }
 
 function onTagClick(tag: { id: string; label: string }) {
+  trackEvent('quick_question_click', { label: tag.label })
   uni.setStorageSync('chat_init_query', tag.label)
   uni.switchTab({ url: '/pages/chat/index' })
 }
@@ -237,6 +240,7 @@ function onBentoClick(item: { id: string; label: string; icon: string; route: st
 }
 
 function onServiceClick(svc: { id: string; label: string; icon: string; url?: string }) {
+  trackEvent('service_card_click', { card: svc.label, source: 'home' })
   if (svc.url) {
     openExternal(svc.url)
   } else {

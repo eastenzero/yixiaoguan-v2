@@ -146,9 +146,11 @@
 </template>
 
 <script setup lang="ts">
+import { onShow } from '@dcloudio/uni-app'
 import CustomTabBar from '@/components/CustomTabBar.vue'
 import FeatureNoticeSheet from '@/components/FeatureNoticeSheet.vue'
 import { openAiQuestion, openExternal, showComingSoon } from '@/composables/useServiceNavigation'
+import { trackEvent } from '@/utils/track'
 
 interface ServiceItem {
   icon: string
@@ -174,7 +176,12 @@ const campusServices: ServiceItem[] = [
   { icon: 'more_horiz', label: '更多', aiQuestion: '医小管可以帮我做什么？' },
 ]
 
+onShow(() => {
+  trackEvent('page_view', { path: '/pages/services/index' })
+})
+
 function handleServiceClick(item: ServiceItem) {
+  trackEvent('service_card_click', { card: item.label, source: 'services' })
   if (item.url) {
     openExternal(item.url)
   } else if (item.comingSoon) {

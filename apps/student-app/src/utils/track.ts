@@ -11,6 +11,14 @@ const MAX_BATCH = 50
 let queue: TrackEvent[] = []
 let flushTimer: ReturnType<typeof setTimeout> | null = null
 
+function getStoredToken(): string {
+  try {
+    return uni.getStorageSync('v2-token') || ''
+  } catch {
+    return ''
+  }
+}
+
 async function flush(): Promise<void> {
   if (queue.length === 0) {
     return
@@ -22,13 +30,28 @@ async function flush(): Promise<void> {
   }
 
   const batch = queue.splice(0, MAX_BATCH)
+  const token = getStoredToken()
+
+  if (!token) {
+    if (queue.length > 0) {
+      scheduleFlush()
+    }
+    return
+  }
 
   try {
-    const { request } = await import('@/utils/request')
-    await request({
-      url: '/api/track',
-      method: 'POST',
-      data: { events: batch },
+    await new Promise<void>((resolve) => {
+      uni.request({
+        url: '/api/track',
+        method: 'POST',
+        header: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        data: { events: batch },
+        success: () => resolve(),
+        fail: () => resolve(),
+      })
     })
   } catch {
     // fire-and-forget

@@ -60,7 +60,7 @@ watch(
     if (!visible) return
     content.value = ''
     contact.value = ''
-    trackEvent('feedback_drawer_opened')
+    trackEvent('feedback_form_open')
   }
 )
 
@@ -80,7 +80,7 @@ async function onSubmit() {
       device_id: getDeviceId(),
     })
 
-    trackEvent('feedback_submitted', {
+    trackEvent('feedback_form_submit', {
       has_contact: contact.value.trim().length > 0,
     })
 

@@ -166,7 +166,7 @@ async function onSubmit() {
       note: note.value.trim() || null,
     })
 
-    trackEvent('unanswered_invite_submitted', {
+    trackEvent('unanswered_card_submitted', {
       conv_id: props.conv_id,
       message_id: props.message_id,
       has_college: Boolean(selectedCollegeId.value),
@@ -185,7 +185,7 @@ async function onSubmit() {
 }
 
 function onDismiss() {
-  trackEvent('unanswered_invite_dismissed', {
+  trackEvent('unanswered_card_dismissed', {
     conv_id: props.conv_id,
     message_id: props.message_id,
   })
