@@ -1,0 +1,57 @@
+# Yixiaoguan v2 — yx_postgres + yx_redis 数据层
+# 对齐 165 内网的 docker inspect 参数(pg16-alpine + redis7-alpine + appendonly)
+#
+# 首次启动:
+#   cd deploy
+#   cp .env.example .env   # 填入 YX_POSTGRES_USER/PASSWORD、YX_REDIS_PASSWORD
+#   docker compose -f docker-compose.yxdata.yml up -d
+#
+# 数据卷名是 deploy_postgres_data / deploy_redis_data(与 165 一致,
+# 方便跨机 rsync /var/lib/docker/volumes/ 搬运)。
+#
+# 端口只暴露到 127.0.0.1,gateway systemd 通过 localhost:5432/6379 访问。
+# 旧 165 上是 0.0.0.0:5432 全暴露,TX-NEW 是公网机务必收到 127.0.0.1。
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: yx_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${YX_POSTGRES_USER:-yx_admin}
+      - POSTGRES_PASSWORD=${YX_POSTGRES_PASSWORD:?must be set}
+      - POSTGRES_DB=${YX_POSTGRES_DB:-yixiaoguan}
+      - TZ=Asia/Shanghai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${YX_POSTGRES_USER:-yx_admin}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: yx_redis
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --requirepass
+      - ${YX_REDIS_PASSWORD:?must be set}
+      - --appendonly
+      - "yes"
+    volumes:
+      - redis_data:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${YX_REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
