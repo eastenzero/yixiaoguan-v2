@@ -9,6 +9,7 @@ export interface SSECallbacks {
   onEnd: (data: { full_content: string; sources: Source[]; message_id: number }) => void
   onError: (msg: string) => void
   onSuggestions?: (questions: string[]) => void
+  onUnansweredInvite?: (data: { message_id: number; conv_id: number }) => void
 }
 
 export async function fetchSSE(
@@ -57,6 +58,11 @@ export async function fetchSSE(
               full_content: data.full_content || '',
               sources: data.sources || [],
               message_id: data.message_id || 0,
+            })
+          } else if (currentEvent === 'unanswered_invite') {
+            callbacks.onUnansweredInvite?.({
+              message_id: data.message_id || 0,
+              conv_id: data.conv_id || 0,
             })
           } else if (currentEvent === 'suggestions') {
             callbacks.onSuggestions?.(data.questions || [])

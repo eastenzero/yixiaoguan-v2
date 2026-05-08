@@ -118,6 +118,7 @@
     <CustomTabBar current="profile" />
     <FeatureNoticeSheet />
     <AppDialog />
+    <FeedbackDrawer v-model:visible="feedbackDrawerVisible" />
   </view>
 </template>
 
@@ -131,17 +132,19 @@ import { openAiQuestion, showComingSoon } from '@/composables/useServiceNavigati
 import CustomTabBar from '@/components/CustomTabBar.vue'
 import FeatureNoticeSheet from '@/components/FeatureNoticeSheet.vue'
 import AppDialog from '@/components/AppDialog.vue'
+import FeedbackDrawer from '@/components/FeedbackDrawer.vue'
 import { useDialog } from '@/composables/useDialog'
 
 const userStore = useUserStore()
 const dialog = useDialog()
 const conversationCount = ref(0)
 const totalUnread = ref(0)
+const feedbackDrawerVisible = ref(false)
 
 interface SettingItem {
   label: string
   icon: string
-  action: 'comingSoon' | 'aiQuestion' | 'about'
+  action: 'comingSoon' | 'aiQuestion' | 'about' | 'openFeedbackDrawer'
   aiQuestion?: string
 }
 
@@ -157,6 +160,12 @@ const secondarySettings: SettingItem[] = [
 ]
 
 const displayName = computed(() => userStore.userInfo?.name || '未登录')
+
+const feedbackSetting = secondarySettings.find(item => item.icon === 'rate_review')
+if (feedbackSetting) {
+  feedbackSetting.action = 'openFeedbackDrawer'
+  feedbackSetting.aiQuestion = undefined
+}
 
 const avatarInitial = computed(() => {
   const name = displayName.value.trim()
@@ -181,7 +190,9 @@ function goChat() {
 }
 
 function handleSettingClick(item: SettingItem) {
-  if (item.action === 'aiQuestion' && item.aiQuestion) {
+  if (item.action === 'openFeedbackDrawer') {
+    feedbackDrawerVisible.value = true
+  } else if (item.action === 'aiQuestion' && item.aiQuestion) {
     openAiQuestion(item.aiQuestion)
   } else if (item.action === 'about') {
     dialog.alert({

@@ -113,6 +113,13 @@
             </view>
             <text class="msg-time">{{ formatTime(msg.timestamp) }}</text>
             <!-- 拒答时显示内联呼叫老师按钮 -->
+            <UnansweredInviteCard
+              v-if="msg.unanswered_invite && !msg.unanswered_invite.dismissed"
+              :conv_id="msg.unanswered_invite.conv_id"
+              :message_id="msg.unanswered_invite.message_id"
+              @submitted="msg.unanswered_invite.dismissed = true"
+              @dismissed="msg.unanswered_invite.dismissed = true"
+            />
             <view
               v-if="!msg.isStreaming && isRefusalMsg(msg) && conversationStatus === 'ai_serving'"
               class="inline-call-teacher"
@@ -246,9 +253,21 @@ import { fetchSSE } from '@/utils/sse'
 import { wsManager } from '@/utils/websocket'
 import { centrifugeManager } from '@/utils/centrifuge'
 import CustomTabBar from '@/components/CustomTabBar.vue'
-import type { Message, Source, ConversationStatus, MessageResponse } from '@/types/chat'
+import UnansweredInviteCard from '@/components/UnansweredInviteCard.vue'
+import { trackEvent } from '@/utils/track'
+import type { Message as BaseMessage, Source, ConversationStatus, MessageResponse } from '@/types/chat'
 
 const userStore = useUserStore()
+
+interface UnansweredInviteState {
+  message_id: number
+  conv_id: number
+  dismissed: boolean
+}
+
+type ChatMessage = BaseMessage & {
+  unanswered_invite?: UnansweredInviteState
+}
 
 // ============ Markdown 渲染器 ============
 const md = new MarkdownIt({ html: true, linkify: true, typographer: true })
@@ -258,7 +277,7 @@ function renderMarkdown(content: string): string {
 }
 
 // ============ 响应式状态 ============
-const messages = ref<Message[]>([])
+const messages = ref<ChatMessage[]>([])
 const inputMessage = ref('')
 const isStreaming = ref(false)
 const isTyping = ref(false)
@@ -402,8 +421,8 @@ async function loadHistory() {
   }
 }
 
-function mapServerMessage(m: MessageResponse): Message {
-  const roleMap: Record<string, Message['role']> = {
+function mapServerMessage(m: MessageResponse): ChatMessage {
+  const roleMap: Record<string, BaseMessage['role']> = {
     student: 'user', ai: 'assistant', teacher: 'teacher', system: 'system',
   }
   return {
@@ -438,7 +457,7 @@ async function sendMessage() {
     }
   }
 
-  const userMessage: Message = {
+  const userMessage: ChatMessage = {
     id: `user-${Date.now()}`,
     role: 'user',
     content,
@@ -448,6 +467,10 @@ async function sendMessage() {
   messages.value.push(userMessage)
   inputMessage.value = ''
   scrollToBottom()
+  trackEvent('chat_send', {
+    conv_id: conversationId.value,
+    content_length: content.length,
+  })
 
   if (conversationStatus.value === 'teacher_serving' || conversationStatus.value === 'pending_teacher') {
     await sendToTeacher(content)
@@ -480,7 +503,7 @@ async function streamResponse(userContent: string) {
   isStreaming.value = true
   isTyping.value = true
 
-  const aiMessage: Message = {
+  const aiMessage: ChatMessage = {
     id: `assistant-${Date.now()}`,
     role: 'assistant',
     content: '',
@@ -508,10 +531,29 @@ async function streamResponse(userContent: string) {
         },
         onEnd: (data) => {
           const msg = getReactive()
+          if (data.message_id) {
+            msg.id = String(data.message_id)
+          }
           msg.content = data.full_content || msg.content
           msg.sources = data.sources || []
           msg.isStreaming = false
           scrollToBottom()
+        },
+        onUnansweredInvite: ({ message_id, conv_id }) => {
+          const target =
+            messages.value.find(message => message.id === String(message_id)) ||
+            messages.value.find(message => message.id === aiMessage.id) ||
+            getReactive()
+
+          if (target) {
+            target.unanswered_invite = {
+              message_id,
+              conv_id,
+              dismissed: false,
+            }
+          }
+
+          trackEvent('unanswered_invite_shown', { conv_id, message_id })
         },
         onSuggestions: (questions: string[]) => {
           suggestedQuestions.value = questions
@@ -544,6 +586,10 @@ function handleSourceClick(source: Source) {
   sourcePopup.title = source.title || '参考资料'
   sourcePopup.content = source.content || '暂无详细内容'
   sourceSheetHeight.value = 50
+  trackEvent('kb_doc_clicked', {
+    conv_id: conversationId.value,
+    source_title: source.title || '',
+  })
   sourcePopup.visible = true
 }
 function closeSourcePopup() {
@@ -571,7 +617,7 @@ const REFUSAL_KEYWORDS = [
   '无法为您提供', '没有找到相关', '不在我的服务范围',
   '转人工请求', '转接人工客服', '转人工服务', '转接人工',
 ]
-function isRefusalMsg(msg: Message): boolean {
+function isRefusalMsg(msg: BaseMessage): boolean {
   if (msg.role !== 'assistant' || !msg.content) return false
   if (REFUSAL_KEYWORDS.some(kw => msg.content.includes(kw))) return true
   if (msg.content.includes('抱歉') && (!msg.sources || msg.sources.length === 0)) return true
