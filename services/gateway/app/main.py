@@ -7,6 +7,7 @@ import redis.asyncio as aioredis
 from app.config import settings
 from app.database import get_db
 from app.utils.deps import get_redis
+from app.routers import internal as internal_router
 from app.routers.auth import router as auth_router
 from app.routers.conversations import router as conversation_router
 from app.routers.actions import router as actions_router
@@ -90,5 +91,6 @@ app.include_router(chat_router, prefix="/api/chat", tags=["chat"])
 app.include_router(knowledge_router, prefix="/api/v1/knowledge", tags=["knowledge"])
 app.include_router(announcements_router, prefix="/api/v1/announcements", tags=["announcements"])
 app.include_router(admin_router, prefix="/api/admin", tags=["admin"])
+app.include_router(internal_router.router, prefix="/api/internal", tags=["internal"])
 app.include_router(analytics_router)  # self-prefixed /api/analytics
 app.include_router(college_router.router, prefix="/api", tags=["college"])

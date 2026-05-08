@@ -1,8 +1,15 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
+import json
+import logging
+
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+from jose import JWTError
+from sqlalchemy import select
+
+from app.database import async_session
+from app.models.user import User
+from app.services.conversation_service import get_conversation
 from app.services.ws_manager import manager
 from app.utils.jwt import decode_access_token
-from jose import JWTError
-import json, logging
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -36,10 +43,16 @@ async def websocket_endpoint(
     try:
         payload = decode_access_token(token)
         user_id = int(payload["sub"])
-        user_role = payload.get("role", "student")
     except (JWTError, KeyError, ValueError):
         await ws.close(code=4001, reason="Invalid token")
         return
+
+    async with async_session() as session:
+        user = await session.scalar(select(User).where(User.id == user_id))
+    if not user or not user.is_active:
+        await ws.close(code=4001, reason="Invalid token")
+        return
+    user_role = user.role.value
 
     # 2. 注册连接
     await manager.connect(ws, user_id)
@@ -62,10 +75,25 @@ async def websocket_endpoint(
             elif msg_type == "join_room":
                 conv_id = data.get("conv_id")
                 if conv_id:
-                    manager.join_room(ws, f"conv:{conv_id}")
+                    try:
+                        conv_id_int = int(conv_id)
+                    except (TypeError, ValueError):
+                        continue
+
+                    try:
+                        # R11 G4: avoid arbitrary room joins across conversations.
+                        async with async_session() as session:
+                            conv = await get_conversation(session, conv_id_int, user)
+                            if conv is None:
+                                continue
+                    except Exception as exc:
+                        logger.warning("ws join_room auth check failed: %s", exc)
+                        continue
+
+                    manager.join_room(ws, f"conv:{conv_id_int}")
                     await ws.send_json({
                         "type": "room_joined",
-                        "data": {"conv_id": conv_id}
+                        "data": {"conv_id": conv_id_int}
                     })
 
             elif msg_type == "leave_room":

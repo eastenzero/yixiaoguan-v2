@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     centrifugo_api_url: str = "http://127.0.0.1:8000"
     centrifugo_api_key: str = ""
     centrifugo_secret: str = ""  # 用于签发 Centrifugo JWT，可与 jwt_secret 相同
+    centrifugo_proxy_secret: str = ""  # 与 Centrifugo subscribe proxy 共享的内部鉴权密钥
 
     # -- 微信（P1 阶段） --
     wechat_mp_appid: str = ""
