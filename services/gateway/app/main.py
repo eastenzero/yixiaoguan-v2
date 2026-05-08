@@ -16,6 +16,10 @@ from app.routers.knowledge import router as knowledge_router
 from app.routers.announcements import router as announcements_router
 from app.routers.admin import router as admin_router
 from app.routers.analytics import router as analytics_router
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from app.utils.rate_limit import limiter
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -31,6 +35,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
+
 @app.get("/health")
 async def health(
     db: AsyncSession = Depends(get_db),
@@ -40,7 +48,7 @@ async def health(
 
     # PG check
     try:
-        result = await db.execute(text("SELECT 1"))
+        await db.execute(text("SELECT 1"))
         checks["postgres"] = "ok"
     except Exception as e:
         checks["postgres"] = f"error: {e}"

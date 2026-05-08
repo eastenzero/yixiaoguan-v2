@@ -1,15 +1,20 @@
 import asyncio
 import json
 import logging
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import async_session, get_db
 from app.utils.deps import get_current_user
+from app.utils.rate_limit import limiter
 from app.models.user import User, UserRole
 from app.models.conversation import ConversationStatus, SenderType
 from app.schemas.chat import ChatSendRequest, ChatSendResponse
-from app.services.analytics import record_chat_analytics
+from app.services.analytics import (
+    record_chat_analytics,
+    extract_rag_metrics,
+    judge_is_answered,
+)
 from app.services.conversation_service import (
     get_conversation, add_message, build_message_broadcast_event,
 )
@@ -52,7 +57,9 @@ def _schedule_chat_analytics(
 
 
 @router.post("/send")
+@limiter.limit("10/minute")
 async def chat_send(
+    request: Request,
     body: ChatSendRequest,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -223,6 +230,13 @@ async def _stream_ai_response(db, conv, user, query: str):
     # 发送 message_end
     yield f"event: message_end\ndata: {json.dumps({'full_content': full_answer, 'sources': sources, 'message_id': ai_msg.id}, ensure_ascii=False)}\n\n"
 
+    is_answered = True
+    try:
+        rag_score, _ = extract_rag_metrics(message_end_metadata or {})
+        is_answered = judge_is_answered(rag_score, full_answer)
+    except Exception as e:
+        logger.warning(f"Answer quality evaluation failed for conv={conv.id}: {e}")
+
     # R10: 异步生成关联问题推荐
     try:
         suggestions = await dify_client.generate_suggestions(query, full_answer)
@@ -230,6 +244,15 @@ async def _stream_ai_response(db, conv, user, query: str):
             yield f"event: suggestions\ndata: {json.dumps({'questions': suggestions}, ensure_ascii=False)}\n\n"
     except Exception as e:
         logger.warning(f"Suggestions generation failed for conv={conv.id}: {e}")
+
+    if not is_answered:
+        try:
+            yield (
+                "event: unanswered_invite\n"
+                f"data: {json.dumps({'message_id': ai_msg.id, 'conv_id': conv.id}, ensure_ascii=False)}\n\n"
+            )
+        except Exception as e:
+            logger.warning(f"unanswered_invite emit failed for conv={conv.id}: {e}")
 
     yield "event: done\ndata: {}\n\n"
     _schedule_chat_analytics(
