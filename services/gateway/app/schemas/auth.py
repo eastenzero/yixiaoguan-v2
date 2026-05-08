@@ -1,11 +1,16 @@
 from typing import Optional
+
 from pydantic import BaseModel
 
 
 class LoginRequest(BaseModel):
-    staff_id: str          # 学号或工号
+    staff_id: str
     password: str
-    expected_role: Optional[str] = None  # 期望角色：student / teacher，用于角色隔离
+    expected_role: Optional[str] = None
+
+
+class PilotAnonymousRequest(BaseModel):
+    device_id: str
 
 
 class TokenResponse(BaseModel):
@@ -15,11 +20,10 @@ class TokenResponse(BaseModel):
 
 
 class UserInfo(BaseModel):
-    """GET /api/auth/me 返回体"""
     id: int
     staff_id: str
     name: str
-    role: str              # "student" | "teacher" | "admin"
+    role: str
     college_id: int | None
     class_id: int | None
     avatar_url: str | None

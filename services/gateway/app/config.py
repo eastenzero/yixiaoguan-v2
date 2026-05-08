@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     jwt_secret: str
     jwt_algorithm: str = "HS256"
     jwt_expire_hours: int = 24
+    pilot_mode_enabled: bool = False
 
     # -- Dify --
     dify_api_url: str = "http://localhost:5001/v1"
@@ -53,5 +54,5 @@ def _validate_jwt_secret(secret: str) -> None:
         )
 
 
-settings = Settings()
+settings = Settings()  # type: ignore[call-arg]
 _validate_jwt_secret(settings.jwt_secret)

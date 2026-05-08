@@ -101,6 +101,10 @@ async def batch_import(
 ):
     _require_admin(current_user)
 
+    for user_in in body.users:
+        if (user_in.staff_id or "").lower().startswith("pilot:"):
+            raise HTTPException(400, "staff_id 不能以 'pilot:' 开头（保留前缀）")
+
     # Validate role
     try:
         role_enum = UserRole(body.role)
