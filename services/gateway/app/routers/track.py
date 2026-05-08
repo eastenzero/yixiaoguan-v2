@@ -1,7 +1,7 @@
 """Frontend event tracking endpoint (R11)."""
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Depends
@@ -30,6 +30,15 @@ class TrackRequest(BaseModel):
     events: list[TrackEvent] = Field(default_factory=list, max_length=MAX_EVENTS_PER_REQUEST)
 
 
+def _to_naive_utc(ts: datetime | None) -> datetime | None:
+    """Project schema uses naive datetimes (assumed UTC). Strip tz from aware inputs."""
+    if ts is None:
+        return None
+    if ts.tzinfo is None:
+        return ts
+    return ts.astimezone(timezone.utc).replace(tzinfo=None)
+
+
 @router.post("")
 async def track(
     body: TrackRequest,
@@ -48,7 +57,7 @@ async def track(
                     user_id=current_user.id,
                     event_name=ev.event[:MAX_EVENT_NAME_LEN],
                     props=ev.props or {},
-                    client_ts=ev.client_ts,
+                    client_ts=_to_naive_utc(ev.client_ts),
                 )
             )
             received += 1
