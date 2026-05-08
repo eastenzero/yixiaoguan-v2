@@ -56,7 +56,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import { login, getMe, getCentrifugoToken } from '@/api/auth'
 import { wsManager } from '@/utils/websocket'
@@ -67,6 +68,18 @@ const userStore = useUserStore()
 const form = reactive({ staffId: '', password: '' })
 const showPwd = ref(false)
 const loading = ref(false)
+
+// R11 pilot: App.vue onLaunch 触发 userStore.init() 自动尝试 pilot 登录；
+// 一旦登录态可用立即跳到首页，避免用户看到登录页"卡住"。
+function redirectIfLogged() {
+  if (userStore.isLoggedIn) {
+    uni.switchTab({ url: '/pages/home/index' })
+  }
+}
+onShow(redirectIfLogged)
+watch(() => userStore.isLoggedIn, (logged) => {
+  if (logged) redirectIfLogged()
+})
 
 async function handleLogin() {
   if (!form.staffId.trim()) {
