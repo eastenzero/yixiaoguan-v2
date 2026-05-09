@@ -1,7 +1,12 @@
 #!/bin/bash
 # RUN ON: tx-new (as easten)
 # 阶段 C1 · 起 yx_postgres + yx_redis
-# 先 clone 仓库拿到 deploy/docker-compose.yxdata.yml,再 compose up
+#
+# 前置:仓库已通过 git bundle 中转完成(github 国内 TLS 不稳)
+#   本地 PowerShell:
+#     git bundle create $env:TEMP\repo.bundle --all
+#     scp $env:TEMP\repo.bundle easten@tx-new:/home/easten/repo.bundle
+#     ssh tx-new "cd /home/easten/dev && git clone /home/easten/repo.bundle yixiaoguan-v2 && rm /home/easten/repo.bundle"
 
 set -euo pipefail
 
@@ -11,20 +16,13 @@ warn() { echo -e "\e[33m[WARN]\e[0m $*"; }
 
 REPO=/home/easten/dev/yixiaoguan-v2
 
-log "== 1. 克隆仓库(如不存在) =="
+log "== 1. 仓库信息 =="
 if [ ! -d "$REPO/.git" ]; then
-  mkdir -p /home/easten/dev
-  cd /home/easten/dev
-  git clone https://github.com/eastenzero/yixiaoguan-v2.git
-  ok "仓库已克隆"
-else
-  ok "仓库已存在"
+  echo "[ERR] $REPO 不存在,先按上面注释跑 git bundle 中转"
+  exit 1
 fi
-
 cd "$REPO"
-git fetch origin
-log "当前 HEAD: $(git rev-parse --short HEAD) ($(git log -1 --format='%s'))"
-log "远端 HEAD: $(git rev-parse --short origin/master)"
+git log -1 --oneline
 
 log "== 2. 检查 / 生成 deploy/.env =="
 if [ -f deploy/.env ]; then
@@ -66,8 +64,8 @@ sleep 8
 
 log "== 4. 验证 =="
 docker ps --filter name=yx_postgres --filter name=yx_redis --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
-PGPW=$(grep '^YX_POSTGRES_PASSWORD=' deploy/.env | cut -d= -f2)
-RDPW=$(grep '^YX_REDIS_PASSWORD=' deploy/.env | cut -d= -f2)
+PGPW=$(grep '^YX_POSTGRES_PASSWORD=' "$REPO/deploy/.env" | cut -d= -f2)
+RDPW=$(grep '^YX_REDIS_PASSWORD=' "$REPO/deploy/.env" | cut -d= -f2)
 
 # PG 健康
 docker exec yx_postgres psql -U yx_admin -c '\l' 2>&1 | head -10 \
@@ -86,4 +84,4 @@ redis-cli -h 127.0.0.1 -p 6379 -a "$RDPW" --no-auth-warning ping | grep -q PONG 
 
 ok "阶段 C1 完成"
 echo ""
-echo "下一步: 本地跑 03b-pg-migrate.ps1 从 ub dump yixiaoguan_v2 数据"
+echo "下一步: 把业务库 dump 从 ub scp 到 tx-new:/tmp/yxg_v2.dump,然后跑 03c-pg-restore.sh"
