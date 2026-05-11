@@ -90,6 +90,7 @@ export const useUserStore = defineStore('user', () => {
       return
     }
     wsManager.connect(nextToken)
+    _attachGlobalListeners()
     void import('@/api/auth')
       .then(({ getCentrifugoToken }) => getCentrifugoToken())
       .then(res => {
@@ -100,6 +101,46 @@ export const useUserStore = defineStore('user', () => {
         })
       })
       .catch(() => { /* centrifugo unavailable, degrade silently */ })
+  }
+
+  // —— 全局实时事件分发 ——
+  // 后端（services.conversation_service.notify_conversation_parties）会同时把 new_message /
+  // status_changed 推送到 conv:{id} 和 user#{student_id} 两个 Centrifugo 频道。
+  // 这里在 store 层挂一次 listener，把事件 fanout 到 uni 全局事件总线，
+  // 任何页面（chat / history / home / profile…）都可以通过 uni.$on('rt:new_message') 订阅，
+  // 不再依赖"必须停留在 chat 详情页 + 必须订阅了 conv:{id} channel"才能收到推送。
+  let _globalListenersAttached = false
+  // 去重：后端同时把同一条消息推到 conv:{id} 和 user#{id} 两个频道，
+  // centrifugeManager 的 publication dispatch 是按 type 分发（不区分 channel），
+  // 所以同一条消息会被 dispatch 两次。这里用 type + payload 指纹做幂等。
+  const _seenKeys = new Set<string>()
+  const SEEN_MAX = 500
+
+  function _addSeen(key: string): boolean {
+    if (_seenKeys.has(key)) return false
+    _seenKeys.add(key)
+    if (_seenKeys.size > SEEN_MAX) {
+      const oldest = _seenKeys.values().next().value
+      if (oldest !== undefined) _seenKeys.delete(oldest)
+    }
+    return true
+  }
+
+  function _attachGlobalListeners(): void {
+    if (_globalListenersAttached) return
+    _globalListenersAttached = true
+    const fanout = (type: string) => (data: any) => {
+      let key: string
+      try { key = type + ':' + JSON.stringify(data) } catch { key = type + ':' + Math.random() }
+      if (!_addSeen(key)) return
+      try { uni.$emit('rt:' + type, data) } catch { /* ignore */ }
+    }
+    const onNewMessage = fanout('new_message')
+    const onStatusChanged = fanout('status_changed')
+    wsManager.on('new_message', onNewMessage)
+    wsManager.on('status_changed', onStatusChanged)
+    centrifugeManager.on('new_message', onNewMessage)
+    centrifugeManager.on('status_changed', onStatusChanged)
   }
 
   return { token, userInfo, isLoggedIn, init, tryPilotLogin, setToken, setUserInfo, logout }

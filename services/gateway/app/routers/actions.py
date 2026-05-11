@@ -8,7 +8,7 @@ from app.database import get_db
 from app.models.conversation import Conversation
 from app.models.user import User, UserRole
 from app.schemas.conversation import ConversationResponse
-from app.services.conversation_service import can_access_conversation
+from app.services.conversation_service import can_access_conversation, notify_conversation_parties
 from app.services.state_machine import InvalidTransition, transition
 from app.services.ws_manager import manager
 from app.services.centrifugo_client import centrifugo
@@ -92,8 +92,7 @@ async def escalate(
     except Exception as exc:
         logger.warning("Failed to notify college teachers for conv=%s: %s", conv_id, exc)
     _esc_data = {"type": "status_changed", "data": {"conv_id": conv_id, "status": "pending_teacher"}}
-    await centrifugo.publish(f"conv:{conv_id}", _esc_data)
-    await manager.broadcast_to_room(f"conv:{conv_id}", _esc_data)
+    await notify_conversation_parties(conv, _esc_data, actor_id=current_user.id)
     return conv
 
 
@@ -113,8 +112,7 @@ async def accept(
         raise HTTPException(status_code=409, detail=str(e))
     _accept_data = {"type": "status_changed", "data": {"conv_id": conv_id, "status": "teacher_serving",
                                                         "teacher_id": current_user.id, "teacher_name": current_user.name}}
-    await centrifugo.publish(f"conv:{conv_id}", _accept_data)
-    await manager.broadcast_to_room(f"conv:{conv_id}", _accept_data)
+    await notify_conversation_parties(conv, _accept_data, actor_id=current_user.id)
     return conv
 
 
@@ -135,8 +133,7 @@ async def resolve(
     except InvalidTransition as e:
         raise HTTPException(status_code=409, detail=str(e))
     _resolve_data = {"type": "status_changed", "data": {"conv_id": conv_id, "status": "resolved"}}
-    await centrifugo.publish(f"conv:{conv_id}", _resolve_data)
-    await manager.broadcast_to_room(f"conv:{conv_id}", _resolve_data)
+    await notify_conversation_parties(conv, _resolve_data, actor_id=current_user.id)
     return conv
 
 
@@ -153,6 +150,5 @@ async def close(
     except InvalidTransition as e:
         raise HTTPException(status_code=409, detail=str(e))
     _close_data = {"type": "status_changed", "data": {"conv_id": conv_id, "status": "closed"}}
-    await centrifugo.publish(f"conv:{conv_id}", _close_data)
-    await manager.broadcast_to_room(f"conv:{conv_id}", _close_data)
+    await notify_conversation_parties(conv, _close_data, actor_id=current_user.id)
     return conv

@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,6 +7,48 @@ from sqlalchemy import select, func, or_, update
 from app.models.conversation import Conversation, Message, ConversationStatus, SenderType
 from app.models.user import User, UserRole
 from app.schemas.conversation import UnreadSummaryItem, UnreadSummaryResponse
+from app.services.centrifugo_client import centrifugo
+from app.services.ws_manager import manager as _ws_manager
+
+logger = logging.getLogger(__name__)
+
+
+async def notify_conversation_parties(
+    conv: Conversation,
+    data: dict,
+    *,
+    actor_id: int | None = None,
+) -> None:
+    """统一广播：会话双方都能在任意页面接收到推送。
+
+    路由策略：
+      - 永远推 ``conv:{conv.id}``（维持同一会话内的实时协作，如 typing/presence）。
+      - 同时推 ``user#{student_id}`` 和 ``user#{teacher_id}``（如果存在），但跳过 ``actor_id``——
+        让参与方即便不在 chat 详情页（例如停留在首页或历史页）也能收到 new_message / status_changed。
+      - legacy ws 仍然只推 conv room，避免行为偏离。
+
+    使用 Centrifugo ``broadcast`` API 一次发完，减少往返。
+    """
+    channels: list[str] = [f"conv:{conv.id}"]
+    student_id = getattr(conv, "student_id", None)
+    if student_id is not None and student_id != actor_id:
+        channels.append(f"user#{student_id}")
+    teacher_id = getattr(conv, "teacher_id", None)
+    if teacher_id is not None and teacher_id != actor_id:
+        channels.append(f"user#{teacher_id}")
+
+    try:
+        if len(channels) == 1:
+            await centrifugo.publish(channels[0], data)
+        else:
+            await centrifugo.broadcast(channels, data)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("notify_conversation_parties centrifugo failed conv=%s: %s", conv.id, exc)
+
+    try:
+        await _ws_manager.broadcast_to_room(f"conv:{conv.id}", data)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("notify_conversation_parties legacy ws failed conv=%s: %s", conv.id, exc)
 
 
 def build_message_broadcast_event(

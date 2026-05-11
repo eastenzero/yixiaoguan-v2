@@ -407,16 +407,15 @@ function onStatusChanged(data: any) {
 }
 
 function registerWsListeners() {
-  wsManager.on('new_message', onNewMessage)
-  wsManager.on('status_changed', onStatusChanged)
-  centrifugeManager.on('new_message', onNewMessage)
-  centrifugeManager.on('status_changed', onStatusChanged)
+  // 直接订阅 uni 全局事件总线（store 层在 _attachGlobalListeners 已对 wsManager / centrifugeManager
+  // 做了一次性挂载 + 去重转发）。这样无论后端推送走 conv:{id} 还是 user#{student_id} 频道，
+  // chat 页都能收到，且不会重复触发。
+  uni.$on('rt:new_message', onNewMessage)
+  uni.$on('rt:status_changed', onStatusChanged)
 }
 function unregisterWsListeners() {
-  wsManager.off('new_message', onNewMessage)
-  wsManager.off('status_changed', onStatusChanged)
-  centrifugeManager.off('new_message', onNewMessage)
-  centrifugeManager.off('status_changed', onStatusChanged)
+  uni.$off('rt:new_message', onNewMessage)
+  uni.$off('rt:status_changed', onStatusChanged)
 }
 
 // ============ 加载会话 ============

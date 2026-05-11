@@ -169,6 +169,7 @@ import FeatureNoticeSheet from '../../components/FeatureNoticeSheet.vue'
 import { listConversations } from '@/api/conversations'
 import { getStatusText } from '@/utils/status-map'
 import { wsManager } from '@/utils/websocket'
+import { centrifugeManager } from '@/utils/centrifuge'
 
 // 用户状态
 const userStore = useUserStore()
@@ -305,6 +306,9 @@ onMounted(() => {
   loadPendingQuestions()
   wsManager.on('escalation_notify', handleEscalationNotify)
   wsManager.on('status_changed', handleStatusChanged)
+  // Centrifugo dual-subscribe（legacy ws 已弃用，实际事件由 Centrifugo 推送）
+  centrifugeManager.on('escalation_notify', handleEscalationNotify)
+  centrifugeManager.on('status_changed', handleStatusChanged)
   pollingTimer = setInterval(() => loadPendingQuestions(), 30000)
 })
 
@@ -316,6 +320,8 @@ onShow(() => {
 onUnmounted(() => {
   wsManager.off('escalation_notify', handleEscalationNotify)
   wsManager.off('status_changed', handleStatusChanged)
+  centrifugeManager.off('escalation_notify', handleEscalationNotify)
+  centrifugeManager.off('status_changed', handleStatusChanged)
   if (pollingTimer) { clearInterval(pollingTimer); pollingTimer = null }
 })
 </script>

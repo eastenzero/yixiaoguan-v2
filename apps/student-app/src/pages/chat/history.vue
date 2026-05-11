@@ -39,7 +39,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { listConversations } from '@/api/chat'
 import type { ConversationResponse } from '@/types/chat'
 
@@ -49,7 +50,19 @@ const refreshing = ref(false)
 const page = ref(1)
 const noMore = ref(false)
 
-onMounted(() => { loadData(true) })
+// 收到老师回复 / 状态变化（来自全局 uni event bus）时刷新列表，让最新会话排到顶部、未读状态实时更新
+const onRealtimeRefresh = () => { loadData(true) }
+
+onMounted(() => {
+  loadData(true)
+  uni.$on('rt:new_message', onRealtimeRefresh)
+  uni.$on('rt:status_changed', onRealtimeRefresh)
+})
+onShow(() => { loadData(true) })
+onUnmounted(() => {
+  uni.$off('rt:new_message', onRealtimeRefresh)
+  uni.$off('rt:status_changed', onRealtimeRefresh)
+})
 
 async function loadData(reset = false) {
   if (loading.value) return

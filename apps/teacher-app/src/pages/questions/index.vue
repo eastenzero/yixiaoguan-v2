@@ -96,6 +96,7 @@ import BottomNavBar from '../../components/BottomNavBar.vue'
 import { listConversations } from '@/api/conversations'
 import { getStatusText, getStatusClass } from '@/utils/status-map'
 import { wsManager } from '@/utils/websocket'
+import { centrifugeManager } from '@/utils/centrifuge'
 
 const PENDING_STATUS = 'pending_teacher'
 
@@ -186,6 +187,9 @@ onMounted(() => {
   loadData()
   wsManager.on('escalation_notify', handleEscalationNotify)
   wsManager.on('status_changed', handleStatusChanged)
+  // Centrifugo dual-subscribe（legacy ws 已弃用，实际事件由 Centrifugo 推送）
+  centrifugeManager.on('escalation_notify', handleEscalationNotify)
+  centrifugeManager.on('status_changed', handleStatusChanged)
   // 轮询兜底：30s 一次，防止 WS 事件丢失
   pollingTimer = setInterval(() => loadData(), 30000)
 })
@@ -197,6 +201,8 @@ onShow(() => {
 onUnmounted(() => {
   wsManager.off('escalation_notify', handleEscalationNotify)
   wsManager.off('status_changed', handleStatusChanged)
+  centrifugeManager.off('escalation_notify', handleEscalationNotify)
+  centrifugeManager.off('status_changed', handleStatusChanged)
   if (pollingTimer) { clearInterval(pollingTimer); pollingTimer = null }
 })
 </script>

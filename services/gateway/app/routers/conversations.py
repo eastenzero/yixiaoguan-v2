@@ -19,6 +19,7 @@ from app.services.conversation_service import (
     add_message,
     build_message_broadcast_event,
     create_conversation,
+    notify_conversation_parties,
     get_conversation,
     get_unread_summary,
     list_conversations,
@@ -140,8 +141,7 @@ async def send_message(
                 "type": "status_changed",
                 "data": {"conv_id": conv_id, "status": "ai_serving", "previous_status": "resolved"},
             }
-            await centrifugo.publish(f"conv:{conv_id}", _reactivate_data)
-            await manager.broadcast_to_room(f"conv:{conv_id}", _reactivate_data)
+            await notify_conversation_parties(conv, _reactivate_data, actor_id=current_user.id)
         if conv.status not in (
             ConversationStatus.ai_serving,
             ConversationStatus.pending_teacher,
@@ -166,8 +166,8 @@ async def send_message(
     msg = await add_message(
         db, conv_id, sender_type, body.content, sender_id=current_user.id
     )
-    # WS 广播新消息
+    # WS 广播新消息：除推 conv:{id} 外，对方（student/teacher）的 user# 个人频道也推一份，
+    # 这样接收方即便不在 chat 详情页（如停留在首页、历史页）也能立即收到。
     _msg_event = build_message_broadcast_event(msg, conv_id=conv_id)
-    await centrifugo.publish(f"conv:{conv_id}", _msg_event)
-    await manager.broadcast_to_room(f"conv:{conv_id}", _msg_event)
+    await notify_conversation_parties(conv, _msg_event, actor_id=current_user.id)
     return msg
