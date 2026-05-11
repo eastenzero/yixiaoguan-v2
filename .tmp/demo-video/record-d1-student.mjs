@@ -196,21 +196,16 @@ await snap(page, "home");
 await pause(2000, "服务卡区");
 
 // ─── 16-32s: AI 问答 + 流式回答 ──────────────────────────────────
-// TODO selector: 底部 tab "智能问答"
-await logClick(page, '.tab-item:has-text("智能问答"), [data-tab="chat"]', "底部 Tab: 智能问答");
-await pause(2000, "进入 AI 对话页");
-await snap(page, "chat-empty");
+// 自然演示路径：home 上点击 chip『宿舍电费怎么交？』
+//   → home/index.vue onTagClick 写 localStorage.chat_init_query + switchTab
+//   → chat/index.vue onMounted 自动 fill + sendMessage()（参考 chat/index.vue:327-334）
+// 这比手动 fill + click 更稳定、演示价值更高（观众看到点 chip → 答案涌出）
+await logClick(page, 'text=宿舍电费怎么交', "快捷 chip: 宿舍电费怎么交？");
+await pause(2500, "切到 chat 页 + 自动发问（chat_init_query 消费）");
+await snap(page, "chat-streaming-start");
 
-// 提一个真实问题
-// TODO selector: 输入框
-await logFill(page, 'textarea, .chat-input textarea, input[placeholder*="提问"]', "宿舍电费怎么交", "提问");
-await pause(500);
-// TODO selector: 发送按钮
-await logClick(page, 'button:has-text("发送"), .send-btn', "发送提问");
-await pause(800, "等首字符");
-
-// 镜头跟随：采样答案高度
-await streamingSample(page, '.ai-answer, .message-ai .content', 20000, 1500);
+// 镜头跟随：流答 16s 内采样高度（让 Remotion 后期做平滑滚动跟随）
+await streamingSample(page, '.ai-answer, .message-ai .content, .chat-msg-ai', 20000, 1500);
 await snap(page, "after-stream");
 
 // ─── 32-42s: 来源弹层 + 翻历史 ───────────────────────────────────
@@ -230,12 +225,19 @@ await pause(2500, "历史列表");
 await snap(page, "history");
 
 // ─── 42-54s: 转人工 ──────────────────────────────────────────────
-// 回 chat 提一个复杂问题触发转人工
-await logClick(page, '.tab-item:has-text("智能问答"), [data-tab="chat"]', "回 chat");
-await pause(1500);
-await logFill(page, 'textarea, .chat-input textarea', "我家庭情况比较特殊，奖学金加分政策具体怎么核实？", "提复杂问题");
+// 当前应该已在 chat 页（如果从历史返回过 home，先回 chat）
+// 用底部 Tab『智能问答』回 chat（如果不在 chat），否则直接 fill input
+try {
+  const onChat = await page.locator('.chat-msg-ai, .ai-answer, .message-list').first().isVisible({ timeout: 1500 }).catch(() => false);
+  if (!onChat) {
+    await logClick(page, 'text=智能问答', "底部 Tab: 智能问答");
+    await pause(1500);
+  }
+} catch { /* 不影响主流程 */ }
+
+await logFill(page, 'textarea, .chat-input textarea, [placeholder*="问题"]', "我家庭情况比较特殊，奖学金加分政策具体怎么核实？", "提复杂问题");
 await pause(500);
-await logClick(page, 'button:has-text("发送"), .send-btn', "发送复杂问题");
+await logClick(page, 'button:has-text("发送"), .send-btn, .send-button, [aria-label="发送"]', "发送复杂问题");
 await pause(2000, "等 AI 答复");
 
 // TODO selector: 转人工按钮

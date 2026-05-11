@@ -147,12 +147,27 @@ const stuPage = await stuCtx.newPage();
 const teaPage = await teaCtx.newPage();
 
 // ─── 4. setup：双方就位（这段会被录进视频开头，后期可剪掉） ────────
+// 学生 chat 用 pendingConversationId（不是 URL query），参考 chat/index.vue:336-348。
+// 流程：about:blank → home 着陆（写 localStorage）→ goto chat/index → onShow 消费 key
+// 教师直接 goto dashboard。两端并行启动以最小化 setup 时间。
 const setupStart = Date.now();
-log("phase", "setup: 学生 → chat-with-conv 等待页 + 教师 → 工作台");
-await Promise.all([
-  stuPage.goto(`${STU_BASE}/#/pages/chat/index?convId=${convId}`, { waitUntil: "load" }),
-  teaPage.goto(`${TEA_BASE}/#/pages/dashboard/index`, { waitUntil: "load" }),
-]);
+log("phase", "setup: 学生 pendingConversationId dance + 教师 → 工作台");
+
+const setupStudent = async () => {
+  await stuPage.goto("about:blank");
+  await stuPage.goto(`${STU_BASE}/#/pages/home/index`, { waitUntil: "load", timeout: 20000 });
+  await stuPage.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => { });
+  await stuPage.evaluate((cid) => {
+    localStorage.setItem("pendingConversationId", String(cid));
+  }, convId);
+  await stuPage.goto(`${STU_BASE}/#/pages/chat/index`, { waitUntil: "load", timeout: 20000 });
+};
+
+const setupTeacher = async () => {
+  await teaPage.goto(`${TEA_BASE}/#/pages/dashboard/index`, { waitUntil: "load", timeout: 20000 });
+};
+
+await Promise.all([setupStudent(), setupTeacher()]);
 await sleep(3000); // 等 Centrifugo 连接 + UI settle
 
 // ============================================================
