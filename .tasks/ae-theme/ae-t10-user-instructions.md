@@ -93,40 +93,65 @@ alert 会显示两块内容：
 
 ---
 
-## 步骤 4 · 设 Work Area + 渲染（10-20 分钟）
+## 步骤 4 · 独立渲染 4 个 SCENE 合成（10-15 分钟）
 
-4 个 SCENE 总共约 34 秒，没必要渲染整个 251s 主合成。
+> ⚠️ **关键警告**：**不要**用主合成 (PREVIEW COMPS) 的 Work Area 一次性渲 0-1:32！
+>
+> 主合成里 SCENE_01 → SCENE_13 之间穿插着 **SCENE_02 / SCENE_03 / SCENE_07 / SCENE_11 / SCENE_12** 这 5 个**背面/双背面**SCENE — 它们的手机机身上烘焙了苹果 logo，无法移除。这就是 preview-light-v2.mp4 里看到"一正一反带 logo"的真正原因。
+>
+> 正确做法：**直接打开 4 个 SCENE 合成本身，分别渲染**，跳过中间所有过场。
 
-### 方法 A：分别渲染 4 段（推荐）
+### 4 个 SCENE 的真实参数（来自 ae-scenes-real-structure.json）
 
-每个 SCENE 单独渲染，便于 Remotion 编排时灵活拼接。
+| SCENE 合成名 | 时长 | 屏幕数 | Phone Back | 角色 |
+|---|---|---|---|---|
+| `SCENE_01` | 8.03s | 1 | 0（纯正面）| 学生 home 单屏 |
+| `SCENE_05` | 8.03s | 1 | 0（纯正面）| 学生 chat 流答单屏 |
+| `SCENE_10` | 10.03s | 2 | 0（双正面）| 学生 chat × 教师 dashboard |
+| `SCENE_13` | 8.03s | 2 | 0（双正面）| 学生 services × 教师 analytics |
 
-1. 找到 SCENE_01 在时间轴的起止位置
-2. 拖时间指针到起点，按 **B** 键设入点
-3. 拖到结点，按 **N** 键设出点
-4. 菜单 **Composition > Add to Render Queue**
-5. Render Queue 面板：
-   - Output Module: **H.264**（如没有这选项装 AME 或选 QuickTime + h264 codec）
-   - Output To: `F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\ae-scene-01.mp4`
-6. 点 Render
-7. SCENE_05 / 10 / 13 各重复 5-7 步
+**AE 段总时长 = 8 + 8 + 10 + 8 = 34s**（剧本 04 写 30s，差 4s，T14 编排时给 D1 让 4s 即可，不必动 AE 段）
 
-输出 4 个文件：
-- `ae-scene-01.mp4`（8s）
-- `ae-scene-05.mp4`（8s）
-- `ae-scene-10.mp4`（10s）
-- `ae-scene-13.mp4`（8s）
+### 渲染步骤（4 个 SCENE 各跑一遍）
 
-### 方法 B：一次性渲染整个 0-1:32 段
+对 `SCENE_01` / `SCENE_05` / `SCENE_10` / `SCENE_13` 每个合成：
 
-简单粗暴，渲整段一次性出来，Remotion 编排时再切。
+1. **Project 面板找到合成**：在 Project Panel 里搜 `SCENE_01`（双击打开），它是一个独立 Composition（不是主合成里的图层）
+2. **设为当前合成**：双击使它成为时间轴的当前合成
+3. **菜单**：Composition > Add to Render Queue
+4. **Render Queue 面板**：
+   - **Render Settings**: Best Settings / Full Resolution（如果电脑配置不行可以选 Half）
+   - **Output Module**: H.264 (如没有这选项装 AME 或选 QuickTime + h264 codec)
+   - **Output To**: `F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\ae-scene-01.mp4`
+5. 点 **Render** 按钮
+6. 等 1-3 分钟（每个 SCENE）
 
-1. B 键设入点 0:00
-2. N 键设出点 1:32（覆盖到 SCENE_13 结束）
-3. Render Queue → H.264 → `ae-segment-v2.mp4`
-4. 点 Render
+### 4 段输出
 
-**预估渲染时间**：92 秒视频 × 4K 比 1080p 慢 4-5 倍。**建议先用 HD (1920×1080) 合成渲，不用 4K**。HD 渲约 5-10 min。
+```
+F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\
+├── ae-scene-01.mp4   (8s)
+├── ae-scene-05.mp4   (8s)
+├── ae-scene-10.mp4   (10s)
+└── ae-scene-13.mp4   (8s)
+```
+
+**预估总渲染时间**：4 段各 1-3 min · HD 1920×1080 输出约 10-15 min。如果嫌慢，先用 1080p 渲（不用 4K），Remotion 编排时一致即可。
+
+### 为什么不一次性渲
+
+如果用主合成 Work Area 0-1:32，会包含：
+- ✅ SCENE_01 (0:00-0:08) — 学生 home 单屏
+- ❌ SCENE_02 (0:08-0:16) — **背面 SCENE，logo 出现**
+- ❌ SCENE_03 (0:16-0:24) — **双背面 SCENE，2 个 logo**
+- ✅ SCENE_04 (0:24-0:32) — 单屏正面（但叙事没用）
+- ✅ SCENE_05 (0:32-0:40) — 学生 chat 流答
+- ❌ SCENE_06/07/...（中间还有背面 SCENE）
+- ✅ SCENE_10 (1:06-1:16) — 双正面
+- ❌ SCENE_11/12（背面 SCENE）
+- ✅ SCENE_13 (1:24-1:32) — 双正面
+
+中间那些 ❌ 是用户看到 logo 的来源，**必须跳过**。
 
 ---
 
