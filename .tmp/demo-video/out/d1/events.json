@@ -1,0 +1,207 @@
+{
+  "task": "T11-D1-student",
+  "url": "http://localhost:3001",
+  "viewport": {
+    "width": 393,
+    "height": 852
+  },
+  "fps": 30,
+  "duration_ms": 64803,
+  "student_user_id": 18,
+  "events": [
+    {
+      "time_ms": 10291,
+      "type": "pause",
+      "duration_ms": 1500,
+      "label": "登录页首屏 (token 已预注入，即将 redirect)"
+    },
+    {
+      "time_ms": 12287,
+      "type": "pause",
+      "duration_ms": 800,
+      "label": "home 着陆"
+    },
+    {
+      "time_ms": 13088,
+      "type": "pause",
+      "duration_ms": 2500,
+      "label": "首页 hero + 快捷区"
+    },
+    {
+      "time_ms": 15885,
+      "type": "scroll",
+      "direction": "h",
+      "delta": 120,
+      "label": "chip 横滑"
+    },
+    {
+      "time_ms": 15886,
+      "type": "pause",
+      "duration_ms": 1500,
+      "label": "chip 横滑"
+    },
+    {
+      "time_ms": 17402,
+      "type": "pause",
+      "duration_ms": 1500,
+      "label": "chip 横滑回正"
+    },
+    {
+      "time_ms": 18903,
+      "type": "pause",
+      "duration_ms": 1500,
+      "label": "服务卡区"
+    },
+    {
+      "time_ms": 20440,
+      "type": "tap",
+      "label": "快捷 chip: 宿舍电费怎么交？ \"宿舍电费\"",
+      "selector": ".tag-chip",
+      "x": 103,
+      "y": 271
+    },
+    {
+      "time_ms": 20440,
+      "type": "pause",
+      "duration_ms": 4000,
+      "label": "等 chat 页 mount + onMounted 消费 chat_init_query + AI 流式开始"
+    },
+    {
+      "time_ms": 24745,
+      "type": "ai_streaming_start",
+      "selector": ".msg-bubble.ai-bubble"
+    },
+    {
+      "time_ms": 30484,
+      "type": "ai_streaming_end",
+      "samples": 36,
+      "final_height": 621
+    },
+    {
+      "time_ms": 30816,
+      "type": "pause",
+      "duration_ms": 2500,
+      "label": "浏览 AI 完整答案 + 参考资料"
+    },
+    {
+      "time_ms": 33359,
+      "type": "tap",
+      "label": "点开来源（第一条 citation）",
+      "selector": ".cit-item",
+      "x": 181,
+      "y": 445
+    },
+    {
+      "time_ms": 33360,
+      "type": "pause",
+      "duration_ms": 3500,
+      "label": "查看来源详情（包含文档详情阅读镜头）"
+    },
+    {
+      "time_ms": 37048,
+      "type": "tap",
+      "label": "关闭来源弹层",
+      "selector": ".source-close",
+      "x": 362,
+      "y": 463
+    },
+    {
+      "time_ms": 38279,
+      "type": "tap",
+      "label": "进入历史",
+      "selector": ".nav-right",
+      "x": 356,
+      "y": 32
+    },
+    {
+      "time_ms": 38279,
+      "type": "pause",
+      "duration_ms": 3500,
+      "label": "历史列表（浏览以往 conv）"
+    },
+    {
+      "time_ms": 41956,
+      "type": "tap",
+      "label": "返回 chat",
+      "selector": ".nav-back-icon",
+      "x": 38,
+      "y": 31
+    },
+    {
+      "time_ms": 41956,
+      "type": "pause",
+      "duration_ms": 2200,
+      "label": "回到 chat"
+    },
+    {
+      "time_ms": 44264,
+      "type": "fill",
+      "label": "提复杂问题",
+      "selector": ".bottom-area input.uni-input-input, .welcome-input-area input.uni-input-input",
+      "index": 0,
+      "value": "我家庭情况比较特殊，奖学金加分政策具体怎么核实？",
+      "x": 177,
+      "y": 737
+    },
+    {
+      "time_ms": 45092,
+      "type": "tap",
+      "label": "发送复杂问题",
+      "selector": ".bottom-area .send-btn",
+      "x": 349,
+      "y": 737
+    },
+    {
+      "time_ms": 45092,
+      "type": "pause",
+      "duration_ms": 6500,
+      "label": "等 AI 答复（refusal 或正常）"
+    },
+    {
+      "time_ms": 52538,
+      "type": "longpress",
+      "x": 349,
+      "y": 737,
+      "label": "长按发送按钮",
+      "holdMs": 900,
+      "selector": ".bottom-area .send-btn"
+    },
+    {
+      "time_ms": 52538,
+      "type": "pause",
+      "duration_ms": 800,
+      "label": "等 call-menu 弹起"
+    },
+    {
+      "time_ms": 53370,
+      "type": "tap",
+      "label": "点击 呼叫老师 菜单",
+      "selector": ".call-menu-item",
+      "x": 310,
+      "y": 666
+    },
+    {
+      "time_ms": 53370,
+      "type": "escalate_done",
+      "success": true
+    },
+    {
+      "time_ms": 53370,
+      "type": "pause",
+      "duration_ms": 2500,
+      "label": "转人工 UI settle"
+    },
+    {
+      "time_ms": 56092,
+      "type": "pause",
+      "duration_ms": 5500,
+      "label": "等待老师接单（学生屏幕显示『等待中』）"
+    },
+    {
+      "time_ms": 61796,
+      "type": "pause",
+      "duration_ms": 3000,
+      "label": "buffer 收尾过渡 D2"
+    }
+  ]
+}

@@ -1,0 +1,248 @@
+{
+  "task": "T12-D2-teacher",
+  "url": "http://localhost:5301",
+  "viewport": {
+    "width": 393,
+    "height": 852
+  },
+  "fps": 30,
+  "duration_ms": 59066,
+  "teacher_user_id": 6,
+  "demo_entry_id": 1,
+  "events": [
+    {
+      "time_ms": 4,
+      "type": "pause",
+      "duration_ms": 4000,
+      "label": "工作台 hero + 4 数据卡"
+    },
+    {
+      "time_ms": 4235,
+      "type": "scroll",
+      "deltaY": 300,
+      "label": "看待处理列表"
+    },
+    {
+      "time_ms": 4239,
+      "type": "pause",
+      "duration_ms": 3000,
+      "label": "待处理提问"
+    },
+    {
+      "time_ms": 7350,
+      "type": "scroll",
+      "deltaY": 250,
+      "label": "继续下滚看提问"
+    },
+    {
+      "time_ms": 7353,
+      "type": "pause",
+      "duration_ms": 2000,
+      "label": "看近期提问"
+    },
+    {
+      "time_ms": 9363,
+      "type": "scroll",
+      "deltaY": -550,
+      "label": "回顶部"
+    },
+    {
+      "time_ms": 9365,
+      "type": "pause",
+      "duration_ms": 2000,
+      "label": "回到 hero"
+    },
+    {
+      "time_ms": 11391,
+      "type": "tap",
+      "label": "进入数据看板 \"数据报告\"",
+      "selector": ".quick-action-btn",
+      "x": 199,
+      "y": 238
+    },
+    {
+      "time_ms": 11391,
+      "type": "pause",
+      "duration_ms": 3000,
+      "label": "看板首屏 4 大数据卡"
+    },
+    {
+      "time_ms": 14501,
+      "type": "scroll",
+      "deltaY": 500,
+      "label": "看趋势图 + AI 质量"
+    },
+    {
+      "time_ms": 14503,
+      "type": "pause",
+      "duration_ms": 3500,
+      "label": "趋势 + 圆环"
+    },
+    {
+      "time_ms": 18115,
+      "type": "scroll",
+      "deltaY": 500,
+      "label": "看学院分布"
+    },
+    {
+      "time_ms": 18117,
+      "type": "pause",
+      "duration_ms": 3000,
+      "label": "学院分布 ring"
+    },
+    {
+      "time_ms": 21119,
+      "type": "scroll",
+      "deltaY": 600,
+      "label": "看时段热力 + AI 成本"
+    },
+    {
+      "time_ms": 21121,
+      "type": "pause",
+      "duration_ms": 3500,
+      "label": "24×7 热力 + AI 质量序列"
+    },
+    {
+      "time_ms": 24756,
+      "type": "scroll",
+      "deltaY": -1200,
+      "label": "看板回顶部"
+    },
+    {
+      "time_ms": 26278,
+      "type": "nav_back",
+      "label": "返回 dashboard"
+    },
+    {
+      "time_ms": 26278,
+      "type": "pause",
+      "duration_ms": 2000,
+      "label": "返回工作台（重新看 BottomNavBar）"
+    },
+    {
+      "time_ms": 28437,
+      "type": "tap",
+      "label": "底部 Tab: 知识库 \"知识库\"",
+      "selector": ".tab-item",
+      "x": 246,
+      "y": 814
+    },
+    {
+      "time_ms": 28437,
+      "type": "pause",
+      "duration_ms": 4000,
+      "label": "高频待补卡片列表"
+    },
+    {
+      "time_ms": 32562,
+      "type": "tap",
+      "label": "点击 去补充 \"去补充\"",
+      "selector": ".mini-action-btn",
+      "x": 315,
+      "y": 394
+    },
+    {
+      "time_ms": 32562,
+      "type": "pause",
+      "duration_ms": 4000,
+      "label": "打开 inline composer (textarea + scope)"
+    },
+    {
+      "time_ms": 36679,
+      "type": "type_textarea",
+      "label": "教师答复输入",
+      "ok": true,
+      "classes": "uni-textarea-textarea"
+    },
+    {
+      "time_ms": 36679,
+      "type": "pause",
+      "duration_ms": 3000,
+      "label": "教师答复内容"
+    },
+    {
+      "time_ms": 39795,
+      "type": "tap",
+      "label": "选择 scope: 班级发布 \"班级发布\"",
+      "selector": ".scope-pill",
+      "x": 84,
+      "y": 427
+    },
+    {
+      "time_ms": 39795,
+      "type": "pause",
+      "duration_ms": 2000,
+      "label": "展示 scope 选中状态"
+    },
+    {
+      "time_ms": 41804,
+      "type": "tap",
+      "label": "收起 composer \"收起\"",
+      "selector": ".mini-action-btn",
+      "x": 321,
+      "y": 394
+    },
+    {
+      "time_ms": 41804,
+      "type": "pause",
+      "duration_ms": 1500,
+      "label": "收起 composer"
+    },
+    {
+      "time_ms": 43314,
+      "type": "scroll",
+      "deltaY": 400,
+      "label": "向下看更多 KB 卡片"
+    },
+    {
+      "time_ms": 43317,
+      "type": "pause",
+      "duration_ms": 3000,
+      "label": "看更多卡片"
+    },
+    {
+      "time_ms": 46347,
+      "type": "tap",
+      "label": "底部 Tab: 我的 \"我的\"",
+      "selector": ".tab-item",
+      "x": 188,
+      "y": 173
+    },
+    {
+      "time_ms": 46347,
+      "type": "pause",
+      "duration_ms": 3500,
+      "label": "profile 紫粉 hero"
+    },
+    {
+      "time_ms": 49942,
+      "type": "scroll",
+      "deltaY": 400,
+      "label": "看系统设置"
+    },
+    {
+      "time_ms": 49944,
+      "type": "pause",
+      "duration_ms": 3500,
+      "label": "系统设置区"
+    },
+    {
+      "time_ms": 53540,
+      "type": "scroll",
+      "deltaY": 300,
+      "label": "继续下滚看更多设置"
+    },
+    {
+      "time_ms": 53542,
+      "type": "pause",
+      "duration_ms": 3000,
+      "label": "更多设置项"
+    },
+    {
+      "time_ms": 56556,
+      "type": "pause",
+      "duration_ms": 2500,
+      "label": "收尾过渡 D3"
+    }
+  ]
+}

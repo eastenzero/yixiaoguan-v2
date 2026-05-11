@@ -1,0 +1,19 @@
+{
+  "task": "T13-D3-dual",
+  "conv_id": 162,
+  "student_user_id": 18,
+  "teacher_user_id": 6,
+  "t0_epoch_ms": 1778518376370,
+  "setup_duration_ms": 11230,
+  "total_duration_ms": 45115,
+  "viewport": {
+    "width": 393,
+    "height": 852
+  },
+  "fps": 30,
+  "notes": [
+    "两个 webm 视频从同一 t0 开始（context.newContext 后立刻 setupDurationMs 内）",
+    "Remotion 应用 setup_duration_ms 修剪两端开头",
+    "对齐方法: video.startFrame = round(setup_duration_ms / 1000 * fps)"
+  ]
+}

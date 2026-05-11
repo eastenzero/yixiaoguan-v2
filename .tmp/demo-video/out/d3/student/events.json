@@ -1,0 +1,66 @@
+{
+  "task": "T13-D3-student",
+  "url": "http://localhost:3001",
+  "viewport": {
+    "width": 393,
+    "height": 852
+  },
+  "fps": 30,
+  "duration_ms": 45115,
+  "events": [
+    {
+      "time_ms": 0,
+      "type": "stream_start",
+      "side": "student",
+      "url": "http://localhost:3001/#/pages/chat/index"
+    },
+    {
+      "time_ms": 3011,
+      "type": "waiting_display",
+      "side": "student",
+      "label": "学生屏显示『等待老师』"
+    },
+    {
+      "time_ms": 20738,
+      "type": "recv_msg",
+      "side": "student",
+      "idx": 1,
+      "t_recv": 20738,
+      "latency_ms": 1504
+    },
+    {
+      "time_ms": 26483,
+      "type": "recv_msg",
+      "side": "student",
+      "idx": 2,
+      "t_recv": 26483,
+      "latency_ms": 1506
+    },
+    {
+      "time_ms": 32203,
+      "type": "recv_msg",
+      "side": "student",
+      "idx": 3,
+      "t_recv": 32203,
+      "latency_ms": 1506
+    },
+    {
+      "time_ms": 35432,
+      "type": "send_reply",
+      "side": "student",
+      "content": "谢谢老师！我下周就去提交材料。"
+    },
+    {
+      "time_ms": 44762,
+      "type": "resolved_indicator",
+      "side": "student",
+      "label": "学生屏看到『已解决』状态"
+    },
+    {
+      "time_ms": 45115,
+      "type": "stream_end",
+      "side": "student",
+      "duration_ms": 45115
+    }
+  ]
+}

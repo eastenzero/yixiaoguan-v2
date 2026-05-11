@@ -1,0 +1,169 @@
+{
+  "task": "T13-D3-teacher",
+  "url": "http://localhost:5301",
+  "viewport": {
+    "width": 393,
+    "height": 852
+  },
+  "fps": 30,
+  "duration_ms": 45115,
+  "events": [
+    {
+      "time_ms": 0,
+      "type": "stream_start",
+      "side": "teacher",
+      "url": "http://localhost:5301/#/pages/dashboard/index"
+    },
+    {
+      "time_ms": 3011,
+      "type": "dashboard_red_dot",
+      "side": "teacher",
+      "label": "工作台右上红点出现"
+    },
+    {
+      "time_ms": 6859,
+      "type": "view_pending_card",
+      "side": "teacher",
+      "label": "教师看到待处理卡片"
+    },
+    {
+      "time_ms": 12889,
+      "type": "questions_list_loaded",
+      "side": "teacher",
+      "label": "教师查看待处理列表"
+    },
+    {
+      "time_ms": 12901,
+      "type": "tap_detail_card",
+      "side": "teacher",
+      "x": 197,
+      "y": 223,
+      "label": "点开 detail 卡片"
+    },
+    {
+      "time_ms": 15702,
+      "type": "detail_loaded",
+      "side": "teacher",
+      "label": "看到学生消息"
+    },
+    {
+      "time_ms": 15708,
+      "type": "tap",
+      "side": "teacher",
+      "label": "点击 接单处理",
+      "x": 197,
+      "y": 808,
+      "text": "接单"
+    },
+    {
+      "time_ms": 18224,
+      "type": "fill",
+      "side": "teacher",
+      "label": "教师打字 #1",
+      "selector": "uni-textarea.reply-input textarea",
+      "value": "你好，关于奖学金加分政策，我们这边有专门的核实流程。"
+    },
+    {
+      "time_ms": 19234,
+      "type": "tap",
+      "side": "teacher",
+      "label": "点 仅回复 #1",
+      "x": 108,
+      "y": 812,
+      "text": "仅回复"
+    },
+    {
+      "time_ms": 19234,
+      "type": "send_msg",
+      "side": "teacher",
+      "idx": 1,
+      "t_sent": 19234,
+      "content": "你好，关于奖学金加分政策，我们这边有专门的核实流程。"
+    },
+    {
+      "time_ms": 23957,
+      "type": "fill",
+      "side": "teacher",
+      "label": "教师打字 #2",
+      "selector": "uni-textarea.reply-input textarea",
+      "value": "你需要先在校务系统提交家庭情况说明 + 户籍证明扫描件。"
+    },
+    {
+      "time_ms": 24977,
+      "type": "tap",
+      "side": "teacher",
+      "label": "点 仅回复 #2",
+      "x": 108,
+      "y": 812,
+      "text": "仅回复"
+    },
+    {
+      "time_ms": 24977,
+      "type": "send_msg",
+      "side": "teacher",
+      "idx": 2,
+      "t_sent": 24977,
+      "content": "你需要先在校务系统提交家庭情况说明 + 户籍证明扫描件。"
+    },
+    {
+      "time_ms": 29676,
+      "type": "fill",
+      "side": "teacher",
+      "label": "教师打字 #3",
+      "selector": "uni-textarea.reply-input textarea",
+      "value": "审核周期大概 3 个工作日，结果会通过校园短信通知你。"
+    },
+    {
+      "time_ms": 30697,
+      "type": "tap",
+      "side": "teacher",
+      "label": "点 仅回复 #3",
+      "x": 108,
+      "y": 812,
+      "text": "仅回复"
+    },
+    {
+      "time_ms": 30697,
+      "type": "send_msg",
+      "side": "teacher",
+      "idx": 3,
+      "t_sent": 30697,
+      "content": "审核周期大概 3 个工作日，结果会通过校园短信通知你。"
+    },
+    {
+      "time_ms": 38938,
+      "type": "recv_student_reply",
+      "side": "teacher",
+      "label": "教师端收到学生回复"
+    },
+    {
+      "time_ms": 38942,
+      "type": "fill",
+      "side": "teacher",
+      "label": "教师收尾打字",
+      "selector": "uni-textarea.reply-input textarea",
+      "value": "不客气，材料齐全后随时联系我。已为你标记完成。"
+    },
+    {
+      "time_ms": 39761,
+      "type": "tap",
+      "side": "teacher",
+      "label": "点击 回复并解决",
+      "x": 287,
+      "y": 812,
+      "text": "回复并解决"
+    },
+    {
+      "time_ms": 39761,
+      "type": "mark_resolved",
+      "side": "teacher",
+      "label": "UI 点击 回复并解决"
+    },
+    {
+      "time_ms": 45115,
+      "type": "stream_end",
+      "side": "teacher",
+      "duration_ms": 45115
+    }
+  ]
+}

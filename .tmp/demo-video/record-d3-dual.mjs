@@ -67,6 +67,107 @@ function pushEvent(side, type, extra = {}) {
   return e;
 }
 
+// ─── evaluate-based click/tap — uni-app Web Component 必需 ─────────────────
+async function tapElement(page, result) {
+  try {
+    await page.touchscreen.tap(result.x, result.y);
+    return true;
+  } catch {
+    await page.evaluate(({ sel }) => {
+      const el = document.querySelector(sel);
+      if (el) el.click();
+    }, { sel: result.sel });
+    return true;
+  }
+}
+
+async function clickJS(page, selectors, label, side) {
+  const list = Array.isArray(selectors) ? selectors : [selectors];
+  const result = await page.evaluate(({ list }) => {
+    for (const sel of list) {
+      const nodes = document.querySelectorAll(sel);
+      for (const el of nodes) {
+        const r = el.getBoundingClientRect();
+        if (r.width === 0 || r.height === 0) continue;
+        try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch { }
+        const r2 = el.getBoundingClientRect();
+        return { ok: true, sel, tag: el.tagName, classes: String(el.className || '').slice(0, 60), x: r2.x + r2.width / 2, y: r2.y + r2.height / 2 };
+      }
+    }
+    return { ok: false, reason: 'not_found', tried: list };
+  }, { list });
+  if (!result.ok) {
+    log("warn", `[${side}] clickJS "${label}" failed: ${result.reason}`);
+    if (side) pushEvent(side, "click_failed", { label, reason: result.reason });
+    return false;
+  }
+  await tapElement(page, result);
+  if (side) pushEvent(side, "tap", { label, selector: result.sel, x: Math.round(result.x), y: Math.round(result.y) });
+  log("tap", `[${side}] ${label} @ ${result.tag}.${result.classes} (${Math.round(result.x)},${Math.round(result.y)})`);
+  return true;
+}
+
+async function clickByText(page, text, baseSelector, label, side) {
+  const result = await page.evaluate(({ text, sel }) => {
+    const nodes = document.querySelectorAll(sel);
+    for (const el of nodes) {
+      const tc = el.textContent || "";
+      if (!tc.includes(text)) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) continue;
+      try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch { }
+      const r2 = el.getBoundingClientRect();
+      return { ok: true, sel, tag: el.tagName, classes: String(el.className || '').slice(0, 60), x: r2.x + r2.width / 2, y: r2.y + r2.height / 2 };
+    }
+    return { ok: false, reason: 'no_text_match' };
+  }, { text, sel: baseSelector });
+  if (!result.ok) {
+    log("warn", `[${side}] clickByText "${label}" "${text}" in ${baseSelector} failed`);
+    if (side) pushEvent(side, "click_failed", { label, text, reason: result.reason });
+    return false;
+  }
+  await tapElement(page, result);
+  if (side) pushEvent(side, "tap", { label, x: Math.round(result.x), y: Math.round(result.y), text });
+  log("tap", `[${side}] ${label} "${text}" @ (${Math.round(result.x)},${Math.round(result.y)})`);
+  return true;
+}
+
+// snap helper（写到 student/ 或 teacher/ 子目录）
+async function snapSide(page, side, name) {
+  const dir = join(OUT_DIR, side);
+  const path = join(dir, `${String(now()).padStart(6, "0")}-${name}.png`);
+  try { await page.screenshot({ path }); } catch { }
+}
+
+// uni-app <textarea>/<input> 填值——走内层 native + native value setter + input event
+async function fillTextarea(page, selectors, value, label, side) {
+  const list = Array.isArray(selectors) ? selectors : [selectors];
+  const result = await page.evaluate(({ list, val }) => {
+    for (const sel of list) {
+      const el = document.querySelector(sel);
+      if (!el) continue;
+      el.removeAttribute('disabled');
+      el.disabled = false;
+      const proto = el.tagName === 'TEXTAREA' ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;
+      const desc = Object.getOwnPropertyDescriptor(proto, 'value');
+      if (desc && desc.set) desc.set.call(el, val);
+      else el.value = val;
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      return { ok: true, sel, tag: el.tagName, classes: String(el.className || '').slice(0, 60) };
+    }
+    return { ok: false, reason: 'not_found' };
+  }, { list, val: value });
+  if (!result.ok) {
+    log("warn", `[${side}] fillTextarea "${label}" failed: ${result.reason}`);
+    if (side) pushEvent(side, "fill_failed", { label, reason: result.reason });
+    return false;
+  }
+  if (side) pushEvent(side, "fill", { label, selector: result.sel, value });
+  log("fill", `[${side}] ${label} → ${result.tag}.${result.classes}`);
+  return true;
+}
+
 // ─── API helper ───────────────────────────────────────────────────
 async function api(method, path, token, body) {
   const headers = { "Content-Type": "application/json" };
@@ -180,45 +281,73 @@ log("phase", "=== dual recording start ===");
 
 const setupDurationMs = t0 - setupStart;
 
-// ─── 0-10s: 学生『等待中』 + 教师收红点 ─────────────────────────
-await sleep(2000);
+// ─── 0-10s: 学生『等待中』 + 教师收红点 ─────────────────
+await sleep(3000);
 pushEvent("student", "waiting_display", { label: "学生屏显示『等待老师』" });
 pushEvent("teacher", "dashboard_red_dot", { label: "工作台右上红点出现" });
+await snapSide(stuPage, "student", "00-waiting");
+await snapSide(teaPage, "teacher", "00-dashboard");
 
-await sleep(3000);
+await sleep(3500);
 pushEvent("teacher", "view_pending_card", { label: "教师看到待处理卡片" });
 
-await sleep(3000);
+await sleep(3500);
 
-// ─── 10-22s: 教师点 detail ──────────────────────────────────────
-// TODO selector: 待处理 conv 卡片
-try {
-  const card = teaPage.locator(`[data-conv-id="${convId}"], .conv-card`).first();
-  const box = await card.boundingBox({ timeout: 3000 });
-  if (box) {
-    pushEvent("teacher", "click_detail_card", { x: Math.round(box.x + box.width / 2), y: Math.round(box.y + box.height / 2), label: "点开 detail" });
-    await card.click();
-  } else {
-    // 兜底直接 goto
-    pushEvent("teacher", "goto_detail", { label: "fallback: goto detail URL" });
-    await teaPage.goto(`${TEA_BASE}/#/pages/questions/detail?id=${convId}`);
+// ─── 10-22s: 教师 questions 列表 → 点 detail ──────────────────────
+// 先 goto questions 列表（教师 anjing 是普通老师，需要从工作台 / 学生提问列表点进）
+// 直接 goto questions index，找到包含 convId 的卡片 click
+await teaPage.goto(`${TEA_BASE}/#/pages/questions/index`, { waitUntil: "load" });
+await sleep(2500);
+pushEvent("teacher", "questions_list_loaded", { label: "教师查看待处理列表" });
+
+// questions 列表里找对应 convId 的卡片 — 先按 title 包含 [d3-demo] 匹配，其次拿第一张
+const cardClicked = await teaPage.evaluate((cid) => {
+  const cards = document.querySelectorAll('.question-card');
+  // 1) 优先 title 匹配
+  for (const el of cards) {
+    if (el.textContent && el.textContent.includes('[d3-demo]')) {
+      const r = el.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) {
+        el.scrollIntoView({ block: 'center' });
+        const r2 = el.getBoundingClientRect();
+        return { ok: true, matched: 'title', x: r2.x + r2.width / 2, y: r2.y + r2.height / 2 };
+      }
+    }
   }
-} catch {
-  pushEvent("teacher", "goto_detail_fallback", { label: "fallback after error" });
-  await teaPage.goto(`${TEA_BASE}/#/pages/questions/detail?id=${convId}`);
+  // 2) 兑底：拿第一张可见卡片
+  for (const el of cards) {
+    const r = el.getBoundingClientRect();
+    if (r.width > 0 && r.height > 0) {
+      el.scrollIntoView({ block: 'center' });
+      const r2 = el.getBoundingClientRect();
+      return { ok: true, matched: 'first', x: r2.x + r2.width / 2, y: r2.y + r2.height / 2 };
+    }
+  }
+  return { ok: false };
+}, convId);
+
+if (cardClicked.ok) {
+  await teaPage.touchscreen.tap(cardClicked.x, cardClicked.y);
+  pushEvent("teacher", "tap_detail_card", { x: Math.round(cardClicked.x), y: Math.round(cardClicked.y), label: "点开 detail 卡片" });
+  log("tap", `[teacher] 点开 detail 卡 @ (${Math.round(cardClicked.x)},${Math.round(cardClicked.y)})`);
+} else {
+  // 兜底直接 goto
+  pushEvent("teacher", "goto_detail", { label: "fallback: goto detail URL" });
+  await teaPage.goto(`${TEA_BASE}/#/pages/questions/detail?id=${convId}`, { waitUntil: "load" });
+}
+
+await sleep(2800);
+pushEvent("teacher", "detail_loaded", { label: "看到学生消息" });
+
+// 老师"接单处理"按钮：detail.vue 状态 pending_teacher 时显示 .action-button "接单处理"
+const accepted = await clickByText(teaPage, '接单', '.action-button, .action-text', "点击 接单处理", "teacher");
+if (!accepted) {
+  log("warn", "未能点接单按钮，API fallback");
+  await api("POST", `/api/conversations/${convId}/accept`, teaToken);
+  pushEvent("teacher", "api_accept", { label: "API fallback: accept" });
 }
 
 await sleep(2500);
-pushEvent("teacher", "detail_loaded", { label: "看到学生消息" });
-
-// 老师"接单"操作（如果有 accept 按钮）
-// TODO selector: accept 按钮
-try {
-  await teaPage.locator('button:has-text("接单"), button:has-text("接受")').first().click({ timeout: 2000 });
-  pushEvent("teacher", "click_accept", { label: "点击接单" });
-} catch { /* 可能自动 accept */ }
-
-await sleep(2000);
 
 // ─── 22-37s: 教师打字 + 3 次连发 ────────────────────────────────
 const messages = [
@@ -229,25 +358,34 @@ const messages = [
 
 for (let i = 0; i < messages.length; i++) {
   const msg = messages[i];
-  // TODO selector: 教师端输入框
-  try {
-    await teaPage.locator('textarea, .reply-input textarea').first().fill(msg);
-    pushEvent("teacher", "type_msg", { idx: i + 1, content: msg });
-    await sleep(800);
-    // TODO selector: 发送按钮
-    await teaPage.locator('button:has-text("发送"), .send-btn').first().click({ timeout: 2000 });
-    const sendTs = now();
-    pushEvent("teacher", "send_msg", { idx: i + 1, t_sent: sendTs });
-
-    // 学生端通过 Centrifugo 自动收到 — 这边等 2s 让推送完成 + UI 渲染
-    await sleep(1500);
-    pushEvent("student", "recv_msg", { idx: i + 1, t_recv: now(), latency_ms: now() - sendTs });
-
-    await sleep(2000); // 给观众反应时间
-  } catch (e) {
-    log("err", `send msg ${i + 1} failed: ${e?.message || e}`);
+  // detail.vue teacher_serving 状态：textarea.reply-input （uni-textarea 包内层 native textarea）
+  const filled = await fillTextarea(teaPage, [
+    'uni-textarea.reply-input textarea',
+    '.reply-input textarea',
+    'textarea.reply-input',
+    'textarea',
+  ], msg, `教师打字 #${i + 1}`, "teacher");
+  if (!filled) {
+    log("err", `[teacher] fill msg ${i + 1} 失败 — textarea 找不到`);
     break;
   }
+  await sleep(1000);
+  // 点「仅回复」按钮 .reply-button--secondary
+  const sent = await clickByText(teaPage, '仅回复', '.reply-button, .reply-button--secondary, .action-text-secondary', `点 仅回复 #${i + 1}`, "teacher");
+  if (!sent) {
+    log("err", `[teacher] 点仅回复 #${i + 1} 失败`);
+    break;
+  }
+  const sendTs = now();
+  pushEvent("teacher", "send_msg", { idx: i + 1, t_sent: sendTs, content: msg });
+
+  // 学生端通过 Centrifugo 自动收到 — 这边等 1.5s 让推送完成 + UI 渲染
+  await sleep(1500);
+  pushEvent("student", "recv_msg", { idx: i + 1, t_recv: now(), latency_ms: now() - sendTs });
+  await snapSide(stuPage, "student", `recv-${i + 1}`);
+  await snapSide(teaPage, "teacher", `sent-${i + 1}`);
+
+  await sleep(2800); // 给观众反应时间 + 镜头满帮动画
 }
 
 // ─── 37-50s: 学生回复 + 教师标已解决 ───────────────────────────
@@ -256,21 +394,30 @@ await api("POST", `/api/conversations/${convId}/messages`, stuToken, {
   content: "谢谢老师！我下周就去提交材料。",
 });
 pushEvent("student", "send_reply", { content: "谢谢老师！我下周就去提交材料。" });
-await sleep(2500);
+await sleep(3500);
 pushEvent("teacher", "recv_student_reply", { label: "教师端收到学生回复" });
 
-// 教师标已解决
-// TODO selector: 标记已解决按钮
-try {
-  await teaPage.locator('button:has-text("已解决"), button:has-text("解决"), button:has-text("结束")').first().click({ timeout: 3000 });
-  pushEvent("teacher", "mark_resolved", { label: "标记已解决" });
-} catch {
-  // 兜底用 API
+// 教师标已解决：填一个收尾消息然后点「回复并解决」
+await fillTextarea(teaPage, [
+  'uni-textarea.reply-input textarea',
+  '.reply-input textarea',
+  'textarea.reply-input',
+  'textarea',
+], '不客气，材料齐全后随时联系我。已为你标记完成。', '教师收尾打字', 'teacher');
+await sleep(800);
+const resolved = await clickByText(teaPage, '回复并解决', '.reply-button, .action-text', "点击 回复并解决", "teacher");
+if (resolved) {
+  pushEvent("teacher", "mark_resolved", { label: "UI 点击 回复并解决" });
+} else {
+  log("warn", "未能点回复并解决，API fallback");
   await api("POST", `/api/conversations/${convId}/resolve`, teaToken);
   pushEvent("teacher", "mark_resolved_api", { label: "fallback: API resolve" });
 }
 
-await sleep(3000);
+await sleep(5000);
+pushEvent("student", "resolved_indicator", { label: "学生屏看到『已解决』状态" });
+await snapSide(stuPage, "student", "resolved-end");
+await snapSide(teaPage, "teacher", "resolved-end");
 
 // ============================================================
 // === 录制结束 ===
