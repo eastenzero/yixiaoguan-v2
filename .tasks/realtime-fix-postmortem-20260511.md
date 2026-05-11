@@ -201,6 +201,24 @@ curl -X POST http://127.0.0.1:8000/api \
 → {"result":{"responses":[{"result":{"offset":7,"epoch":"QTTM"}},{"result":{}}]}}
 ```
 
+### 5.4 双端 UI 闭环 e2e（v7）
+
+`test-realtime-v7.mjs` 同时打开 student :3001 + teacher :5301 两个浏览器，**全部通过真 UI 操作**（输入框打字 + 点击发送按钮）：
+
+```
+[ROUND 1] teacher UI textarea + 点 "仅回复" → student UI 实时显示新气泡  ✅ PASS
+[ROUND 2] student UI input + 点 send icon  → teacher UI 实时显示新气泡   ✅ PASS
+[ROUND 3] 再一轮 teacher → student（验证持续工作）                       ✅ PASS
+
+[summary] T1=true T2=true T3=true
+```
+
+**协议层证据**（`stu-ws-frames.json` / `tea-ws-frames.json`）：
+- 学生端：每条老师消息收到 3 个 frame（`user#18` Centrifugo + `conv:73` Centrifugo + legacy WS）
+- 教师端：每条学生消息收到 2 个 frame（`conv:73` Centrifugo + legacy WS）
+
+证明双端"通过 UI 实时聊天"完整闭环工作。
+
 ---
 
 ## 6. 部署状态
@@ -261,12 +279,36 @@ v6 容器是 docker pull 拉下来的，但客户端代码没跟进 API 变更�
 
 ---
 
-## 9. 后续追踪
+## 9. 遗留问题与后续优化
+
+### 9.1 教师端 `user#{teacher_id}` / `$teachers` 频道未自动订阅（非阻塞）
+
+v7 实测时观察到：教师端浏览器从 Centrifugo 收到的 publication 只有 `conv:{id}` 频道，**没有** `user#6` / `$teachers` 频道（`tea user# hits=0`）。
+
+- ✅ **不影响**双端 UI 实时聊天（v7 全 PASS，老师在 detail 页通过 conv 频道收学生消息正常）
+- ⚠️ **可能影响**老师**不在 detail 页**时（如在 `pages/questions/index.vue` 工单列表）实时收新 escalate 通知
+- 🛡️ **现有兜底**：列表页 `pages/questions/index.vue` 有 `setInterval(loadData, 30000)` 30 秒轮询
+
+**根因待查**：
+- 学生端 token 里 `channels=["user#18"]`，自动订阅成功
+- 教师端 token 里 `channels=["user#6", "$teachers"]`，没自动订阅
+- 怀疑是 `$teachers` 频道在 Centrifugo `config.json` 里没对应 namespace（只配了 `conv` namespace），可能拖累了整个 server-side channels 自动订阅
+- 也可能是 `centrifuge-js` 客户端处理 token.channels 字段的实现差异
+
+**修复建议（后续做）**：
+- 方案 A：教师端模仿学生端 `stores/user.ts` 的 `_attachGlobalListeners` + 在 store 层显式 `centrifugeManager.subscribeUser(teacherId)` 订阅 `user#{teacher_id}`
+- 方案 B：在 `centrifugo/config.json` 加一个匹配 `$teachers` 的 namespace 配置，或改后端 token 不再附带 `$teachers`，改为按需订阅
+- 方案 C：教师端 `pages/questions/index.vue` 也做事件总线 fanout 重构，跟学生端对齐
+
+**优先级**：P2（30s polling 兜底已经够用，等内测后端到端节奏不紧时再做）
+
+### 9.2 后续追踪 checklist
 
 - [ ] 内测结束、数据收集完成后，PR 合并 `fix/realtime-user-channel-push` → master
 - [ ] prod TX 部署 + 学生手机验证
 - [ ] 给 `centrifugo_client.py` 加 contract test（testcontainers + v6 镜像）
 - [ ] 加启动自检 publish 到 `__healthcheck__` 频道
+- [ ] 修复 9.1 教师端 user# 频道自动订阅（P2）
 - [ ] 撤销 `vite.config.ts` 临时改动 + 关闭 SSH tunnel（演示完成后）
 
 ---
@@ -289,12 +331,14 @@ apps/teacher-app/src/pages/dashboard/index.vue            # centrifugeManager �
 ## 附录 B — Playwright e2e 脚本
 
 ```
-.tmp/demo-video/test-realtime-v6.mjs    # 主要 e2e（T1 + T2 + T3）
+.tmp/demo-video/test-realtime-v7.mjs    # 双端 UI 闭环 e2e（最终版，T1 + T2 + T3）
+.tmp/demo-video/test-realtime-v6.mjs    # 学生端单边 e2e（chat + history + home）
 .tmp/demo-video/test-realtime-v4.mjs    # 教师端 escalate push 专项
 .tmp/demo-video/test-realtime-v5.mjs    # 学生端接收专项（早期版本）
 .tmp/demo-video/diag-student-centrifugo.mjs       # 学生端 Centrifugo 连接诊断
 .tmp/demo-video/diag-prod-student-centrifugo.mjs  # prod 环境对照诊断
 .tmp/demo-video/test-cfg-publish.json   # curl 直测 Centrifugo publish payload
 .tmp/demo-video/test-cfg-broadcast.json # curl 直测 broadcast payload
-.tmp/demo-video/out/realtime-v6/        # 最近一次 e2e 截图 + ws-frames.json + timeline.log
+.tmp/demo-video/out/realtime-v6/        # v6 e2e 截图 + ws-frames.json + timeline.log
+.tmp/demo-video/out/realtime-v7/        # v7 双端 UI e2e 截图 + 双方 ws-frames.json
 ```
