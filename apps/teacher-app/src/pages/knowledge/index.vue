@@ -896,10 +896,10 @@ onShow(() => loadData())
 }
 
 .reject-reason-inline {
-  margin-bottom: 12px;
-  padding: 10px 12px;
-  background: rgba(239, 68, 68, 0.08);
-  border-radius: 12px;
+  margin-bottom: $space-3;
+  padding: $space-3 $space-3;
+  background: rgba($error, 0.08);
+  border-radius: $radius-md;
 }
 
 .reject-reason-text {

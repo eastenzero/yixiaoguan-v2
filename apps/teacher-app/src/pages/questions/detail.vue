@@ -2,7 +2,7 @@
   <view class="question-detail-page">
     <TopAppBar title="提问详情" showBack @back="handleBack" />
 
-    <scroll-view scroll-y class="main-content">
+    <scroll-view scroll-y class="main-content" :class="{ 'main-content--reply': isReplyMode }">
       <!-- Loading State -->
       <view v-if="loading" class="loading-container">
         <text class="loading-text">加载中...</text>
@@ -12,12 +12,15 @@
         <!-- Student Info Card -->
         <view class="student-card animate-fade-up delay-1">
           <view class="avatar-wrapper">
-            <view class="avatar-placeholder"></view>
+            <UserAvatar
+              :staff-id="escalation.student_id"
+              :size="56"
+            />
             <view class="online-indicator"></view>
           </view>
           <view class="student-meta">
             <view class="student-header">
-              <text class="student-name">学生 #{{ escalation.student_id }}</text>
+              <text class="student-name">学号 {{ escalation.student_id }}</text>
               <view class="status-tag" :class="`status-${escalation.status}`">
                 <text class="status-text">{{ getStatusText(escalation.status) }}</text>
               </view>
@@ -126,13 +129,14 @@
       </view>
 
       <!-- Status 2: 已解决 - 显示已解决状态 -->
-      <view v-else-if="escalation && escalation.status === 'resolved'" class="action-button action-button--disabled">
+      <view v-else-if="escalation && escalation.status === 'resolved'" class="action-button action-button--resolved">
         <text class="material-symbols-outlined action-icon">check_circle</text>
         <text class="action-text">已解决</text>
       </view>
 
       <!-- Status 3: 已关闭 -->
-      <view v-else-if="escalation && escalation.status === 'closed'" class="action-button action-button--disabled">
+      <view v-else-if="escalation && escalation.status === 'closed'" class="action-button action-button--closed">
+        <text class="material-symbols-outlined action-icon">lock</text>
         <text class="action-text">已关闭</text>
       </view>
     </view>
@@ -140,9 +144,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onUnmounted, nextTick } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import TopAppBar from '../../components/TopAppBar.vue'
+import UserAvatar from '../../components/UserAvatar.vue'
 import { getConversation, listMessages, sendMessage, acceptConversation, resolveConversation } from '@/api/conversations'
 import { getStatusText } from '@/utils/status-map'
 import { wsManager } from '@/utils/websocket'
@@ -155,6 +160,10 @@ const replyText = ref('')
 const submitting = ref(false)
 const conversationMessages = ref<any[]>([])
 const refreshing = ref(false)
+
+// 仅 teacher_serving 才需要 textarea + 双按钮，需要更多底部留白；
+// 其它状态只是单个 56px 胶囊按钮，过大的 padding-bottom 会显出大片空白。
+const isReplyMode = computed(() => escalation.value?.status === 'teacher_serving')
 
 // 格式化时间
 const formatTime = (timeStr: string) => {
@@ -341,9 +350,16 @@ onUnmounted(() => {
   padding-top: 80px;
   padding-left: 16px;
   padding-right: 16px;
-  padding-bottom: 160px;
+  // 默认（接单/已解决/已关闭）：底部 action-bar 内只有一个 56px 胶囊按钮
+  //   = 16(top) + 56(button) + 16(bottom) + safe ≈ 90-100px，留 120px 即可
+  padding-bottom: calc(120px + env(safe-area-inset-bottom));
   height: 100vh;
   box-sizing: border-box;
+
+  // 处理中（回复模式）：textarea + 双按钮 ≈ 200-230px
+  &--reply {
+    padding-bottom: calc(240px + env(safe-area-inset-bottom));
+  }
 }
 
 // Loading State
@@ -388,14 +404,6 @@ onUnmounted(() => {
 
 .avatar-wrapper {
   position: relative;
-}
-
-.avatar-placeholder {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: $surface-container;
-  border: 2px solid rgba($primary, 0.1);
 }
 
 .online-indicator {
@@ -625,15 +633,21 @@ onUnmounted(() => {
 }
 
 // Action Bar
+//
+// 注：原本用 frosted glass（rgba 0.95 + backdrop-filter blur 20px），但 chat 列表
+// scroll content 经过这个 fixed 区域时，backdrop-filter 会让上方气泡的下半部分被
+// "磨砂模糊"覆盖，看起来像 "有一层东西位于顶层"。
+//
+// 改为：100% 不透明背景 + 顶部 box-shadow 做分层（WeChat / iMessage / Material Chat 标准），
+// content 滚过时被清晰遮挡，不会出现半透明磨砂蒙层。
 .action-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
-  background: rgba($surface-container-lowest, 0.95);
-  backdrop-filter: $backdrop-bar;
-  -webkit-backdrop-filter: $backdrop-bar;
+  background: $surface-container-lowest;
+  box-shadow: 0 -2px 12px -2px rgba(0, 0, 0, 0.06);
   z-index: 50;
 }
 
@@ -656,6 +670,31 @@ onUnmounted(() => {
     background: linear-gradient(135deg, $text-muted, $border-strong);
     box-shadow: none;
     pointer-events: none;
+  }
+
+  // 已解决：使用 success tint，避免 disabled 灰渐变在浅色 action-bar 上看起来
+  // 像一层「死灰蒙版」覆盖底部（这是用户反馈的「遮罩异常」根因）。
+  &--resolved {
+    background: rgba($success, 0.12);
+    box-shadow: none;
+    pointer-events: none;
+
+    .action-icon,
+    .action-text {
+      color: $success;
+    }
+  }
+
+  // 已关闭：中性 surface tint，更内敛
+  &--closed {
+    background: $surface-container;
+    box-shadow: none;
+    pointer-events: none;
+
+    .action-icon,
+    .action-text {
+      color: $on-surface-variant;
+    }
   }
 }
 

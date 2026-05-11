@@ -166,56 +166,250 @@ const handleBack = () => {
 }
 </script>
 
-<style scoped>
-.import-page { min-height: 100vh; background: #faf5fb; }
-.custom-app-bar { position: sticky; top: 0; z-index: 100; background: rgba(250, 245, 251, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-.app-bar-content { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; padding-top: calc(env(safe-area-inset-top) + 0.75rem); }
-.app-bar-left { display: flex; align-items: center; gap: 0.5rem; }
-.app-bar-icon { font-size: 1.5rem; color: #5d5b5f; }
-.app-bar-title { font-size: 1.125rem; font-weight: 700; color: #191c1e; }
-.main-content { padding: 0.5rem 1rem 2rem; }
+<style scoped lang="scss">
+// 全部对齐 MD3 tonal palette / 8pt grid / 大半径 / no-shadow-as-default
+// 标杆：dashboard/index.vue + admin/users.vue (本次同步重构)
 
-.tips-card { display: flex; gap: 0.75rem; background: #eff6ff; border-radius: 0.75rem; padding: 1rem; margin-bottom: 1rem; }
-.tips-icon { font-size: 1.25rem; color: #3b82f6; flex-shrink: 0; }
-.tips-content { display: flex; flex-direction: column; gap: 0.25rem; }
-.tips-title { font-size: 0.8125rem; font-weight: 700; color: #1e40af; }
-.tips-text { font-size: 0.75rem; color: #3b82f6; }
+.import-page {
+  min-height: 100vh;
+  background: $background;
+}
 
-.form-section { margin-bottom: 1rem; }
-.form-label { font-size: 0.8125rem; font-weight: 700; color: #374151; margin-bottom: 0.375rem; display: block; }
-.form-input { width: 100%; padding: 0.625rem 0.875rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 0.625rem; font-size: 0.875rem; box-sizing: border-box; }
+.custom-app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba($surface-container-lowest, 0.8);
+  backdrop-filter: $backdrop-bar;
+  -webkit-backdrop-filter: $backdrop-bar;
+}
+.app-bar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $space-3 $space-4;
+  padding-top: calc(env(safe-area-inset-top) + #{$space-3});
+}
+.app-bar-left {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+.app-bar-icon {
+  font-size: 24px;
+  color: $on-surface;
+}
+.app-bar-title {
+  font-family: $font-headline;
+  font-size: 18px;
+  font-weight: 700;
+  color: $on-surface;
+}
 
-.role-selector { display: flex; gap: 0.5rem; }
-.role-option { padding: 0.5rem 1rem; border-radius: 0.625rem; background: #fff; border: 1px solid #e2e8f0; }
-.role-option--active { background: #702ae1; border-color: #702ae1; }
-.role-option--active .role-option-text { color: #fff; }
-.role-option-text { font-size: 0.8125rem; font-weight: 600; color: #64748b; }
+.main-content {
+  padding: $space-2 $space-5 $space-8;
+}
 
-.json-textarea { width: 100%; min-height: 10rem; padding: 0.75rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 0.625rem; font-size: 0.8125rem; font-family: monospace; line-height: 1.6; box-sizing: border-box; }
+// ── Tips card ──
+// info 色用 MD3 secondary-container（淡紫）替代 Tailwind blue，避免突兀
+.tips-card {
+  display: flex;
+  gap: $space-3;
+  background: $secondary-container;
+  border-radius: $radius-md;
+  padding: $space-4;
+  margin-bottom: $space-4;
+}
+.tips-icon {
+  font-size: 20px;
+  color: $on-secondary-container;
+  flex-shrink: 0;
+}
+.tips-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+.tips-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: $on-secondary-container;
+}
+.tips-text {
+  font-size: 12px;
+  color: rgba($on-secondary-container, 0.85);
+  line-height: 1.6;
+}
 
-.preview-section { background: #f0fdf4; border-radius: 0.75rem; padding: 0.75rem; margin-bottom: 1rem; }
-.preview-title { font-size: 0.8125rem; font-weight: 700; color: #16a34a; margin-bottom: 0.5rem; display: block; }
-.preview-list { display: flex; flex-direction: column; gap: 0.25rem; }
-.preview-item { display: flex; gap: 0.75rem; }
-.preview-sid { font-size: 0.75rem; color: #64748b; font-family: monospace; }
-.preview-name { font-size: 0.75rem; color: #374151; font-weight: 600; }
-.preview-more { font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem; }
+// ── Form ──
+.form-section { margin-bottom: $space-4; }
+.form-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: $on-surface;
+  margin-bottom: $space-1;
+  display: block;
+}
+.form-input {
+  width: 100%;
+  padding: $space-3 $space-4;
+  background: $surface-container-low;                 // No-Line: tonal 替代白底+1px solid
+  border: none;
+  border-radius: $radius-md;
+  font-size: 14px;
+  color: $on-surface;
+  box-sizing: border-box;
+}
 
-.error-bar { display: flex; align-items: center; gap: 0.375rem; background: #fef2f2; border-radius: 0.625rem; padding: 0.625rem 0.75rem; margin-bottom: 1rem; }
-.error-icon { font-size: 1.125rem; color: #ef4444; }
-.error-text { font-size: 0.8125rem; color: #dc2626; }
+.role-selector {
+  display: flex;
+  gap: $space-2;
+}
+.role-option {
+  padding: $space-2 $space-4;
+  border-radius: $radius-md;
+  background: $surface-container-low;
+  transition: all 0.2s ease;
 
-.submit-section { margin-top: 0.5rem; margin-bottom: 1rem; }
-.submit-btn { display: flex; align-items: center; justify-content: center; padding: 0.875rem; background: linear-gradient(135deg, #702ae1, #9333ea); border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(112, 42, 225, 0.3); }
-.submit-btn--disabled { opacity: 0.4; }
-.submit-text { font-size: 0.9375rem; font-weight: 700; color: #fff; }
+  &:active { transform: scale(0.97); }
+}
+.role-option--active {
+  background: $primary;
+  box-shadow: 0 8px 16px -4px rgba($primary, 0.2);
+}
+.role-option--active .role-option-text { color: $on-primary; }
+.role-option-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: $on-surface-variant;
+}
 
-.result-card { display: flex; align-items: center; gap: 0.5rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.75rem; padding: 1rem; }
-.result-icon { font-size: 1.5rem; color: #16a34a; }
-.result-text { font-size: 0.875rem; font-weight: 600; color: #16a34a; }
+.json-textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: $space-3;
+  background: $surface-container-low;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 13px;
+  font-family: 'Menlo', 'Consolas', 'Courier New', monospace;
+  line-height: 1.6;
+  color: $on-surface;
+  box-sizing: border-box;
+}
 
+// ── Preview ──
+.preview-section {
+  background: rgba($success, 0.10);
+  border-radius: $radius-md;
+  padding: $space-3;
+  margin-bottom: $space-4;
+}
+.preview-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: $success;
+  margin-bottom: $space-2;
+  display: block;
+}
+.preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+.preview-item {
+  display: flex;
+  gap: $space-3;
+}
+.preview-sid {
+  font-size: 12px;
+  color: $on-surface-variant;
+  font-family: 'Menlo', 'Consolas', 'Courier New', monospace;
+}
+.preview-name {
+  font-size: 12px;
+  color: $on-surface;
+  font-weight: 600;
+}
+.preview-more {
+  font-size: 12px;
+  color: $on-surface-variant;
+  margin-top: $space-1;
+}
+
+// ── Error ──
+.error-bar {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  background: rgba($error-container, 0.4);
+  border-radius: $radius-md;
+  padding: $space-2 $space-3;
+  margin-bottom: $space-4;
+}
+.error-icon {
+  font-size: 18px;
+  color: $error;
+}
+.error-text {
+  font-size: 13px;
+  color: $error;
+}
+
+// ── Submit ──
+.submit-section {
+  margin-top: $space-2;
+  margin-bottom: $space-4;
+}
+.submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-3 $space-4;
+  background: $gradient-cta;                          // signature CTA 渐变
+  border-radius: $radius-full;                        // pill
+  box-shadow: 0 8px 20px -4px rgba($primary, 0.3);
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+.submit-btn--disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.submit-text {
+  font-size: 15px;
+  font-weight: 700;
+  color: $on-primary;
+}
+
+// ── Result ──
+.result-card {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  background: rgba($success, 0.10);
+  border-radius: $radius-md;
+  padding: $space-4;                                  // No-Line: 去掉 1px solid
+}
+.result-icon {
+  font-size: 24px;
+  color: $success;
+}
+.result-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: $success;
+}
+
+// ── Animation ──
 .animate-fade-up { animation: fadeUp 0.3s ease-out both; }
 .delay-1 { animation-delay: 0.05s; }
 .delay-2 { animation-delay: 0.1s; }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 </style>

@@ -787,8 +787,8 @@ function scrollToBottom() {
 .cursor { display: inline-block; color: #5b21b6; animation: blink 1s infinite; margin-left: 0.125rem; }
 @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
 
-/* 预留 input-bar 自身 ~4.5rem + tab bar(var) 的滚动空间 */
-.bottom-spacer { height: calc(var(--tabbar-safe) + 4.5rem); }
+/* 预留 input-bar 自身 ~5.5rem (padding 1.5 + input-wrapper ~3.625 + 安全余量) + tab bar(var) 的滚动空间 */
+.bottom-spacer { height: calc(var(--tabbar-safe) + 5.5rem); }
 
 /* input bar 停在 tab bar 正上方 — 通过 var(--tabbar-safe) 消费 tokens.scss
    的单一源, 不再硬编码 3.5rem 这类会脱节的值 */

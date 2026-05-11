@@ -16,6 +16,12 @@ export default defineConfig({
         ws: true,
         changeOrigin: true,
       },
+      '/centrifugo': {
+        target: 'http://127.0.0.1:18000',
+        ws: true,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/centrifugo/, ''),
+      },
     }
   }
 });

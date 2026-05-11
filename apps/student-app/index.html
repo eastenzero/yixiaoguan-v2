@@ -1,14 +1,44 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>医小管</title>
-    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>医小管</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    /* 防止 Material Symbols ligature 在字体加载完成前以英文文本显示（FOUT）。
+         字体未就绪时整页 icon 会显示成 "search"/"chat_bubble"/"check_circle" 等英文，
+         与中文混排造成"刚开始全是英文，加载完才变中文"的体验。 */
+    .material-symbols-outlined {
+      visibility: hidden;
+    }
+
+    html.icons-ready .material-symbols-outlined {
+      visibility: visible;
+    }
+  </style>
+  <script>
+    (function () {
+      var html = document.documentElement;
+      function markReady() { html.classList.add('icons-ready'); }
+      // 优先使用 FontFace API：等到 Material Symbols 真正可用再展示
+      if (document.fonts && typeof document.fonts.load === 'function') {
+        document.fonts.load('24px "Material Symbols Outlined"').then(markReady, markReady);
+      }
+      // 安全兜底：3s 后强制显示，避免字体加载异常导致永久不可见
+      setTimeout(markReady, 3000);
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>

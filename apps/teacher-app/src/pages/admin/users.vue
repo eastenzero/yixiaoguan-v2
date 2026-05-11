@@ -235,84 +235,310 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/tokens.scss';
+// 全部对齐 MD3 tonal palette / 8pt grid / 大半径 / no-shadow-as-default
+// 标杆：dashboard/index.vue + 学生端 tokens.scss
 
-.admin-users-page { min-height: 100vh; background: #faf5fb; }
-.custom-app-bar { position: sticky; top: 0; z-index: 100; background: rgba(250, 245, 251, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-.app-bar-content { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; padding-top: calc(env(safe-area-inset-top) + 0.75rem); }
-.app-bar-left { display: flex; align-items: center; gap: 0.5rem; }
+.admin-users-page {
+  min-height: 100vh;
+  background: $background;
+}
+
+.custom-app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba($surface-container-lowest, 0.8);   // glass，与 dashboard custom-app-bar 一致
+  backdrop-filter: $backdrop-bar;
+  -webkit-backdrop-filter: $backdrop-bar;
+}
+.app-bar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $space-3 $space-4;
+  padding-top: calc(env(safe-area-inset-top) + #{$space-3});
+}
+.app-bar-left {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
 .app-bar-right { display: flex; align-items: center; }
-.app-bar-icon { font-size: 1.5rem; color: #5d5b5f; }
-.app-bar-icon--primary { color: #702ae1; }
-.app-bar-title { font-size: 1.125rem; font-weight: 700; color: #191c1e; }
-.main-content { padding: 0.5rem 1rem 2rem; }
+.app-bar-icon {
+  font-size: 24px;
+  color: $on-surface;
+}
+.app-bar-icon--primary { color: $primary; }
+.app-bar-title {
+  font-family: $font-headline;
+  font-size: 18px;
+  font-weight: 700;
+  color: $on-surface;
+}
 
-.search-bar { margin-bottom: 0.75rem; }
-.search-input-wrap { display: flex; align-items: center; background: #fff; border-radius: 0.75rem; padding: 0.5rem 0.75rem; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
-.search-icon { font-size: 1.25rem; color: #94a3b8; margin-right: 0.5rem; }
-.search-input { flex: 1; font-size: 0.875rem; border: none; background: none; }
+.main-content {
+  padding: $space-2 $space-5 $space-8;
+}
 
-.filter-row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
-.filter-chip { padding: 0.375rem 0.875rem; border-radius: 1rem; background: #fff; border: 1px solid #e2e8f0; }
-.filter-chip--active { background: #702ae1; border-color: #702ae1; }
-.filter-chip--active .chip-text { color: #fff; }
-.chip-text { font-size: 0.75rem; font-weight: 600; color: #64748b; }
+// ── Search ──
+.search-bar { margin-bottom: $space-3; }
+.search-input-wrap {
+  display: flex;
+  align-items: center;
+  background: $surface-container;                     // No-Line: 用 L2 tonal 替代白底+灰阴影
+  border-radius: $radius-md;
+  padding: $space-2 $space-3;
+}
+.search-icon {
+  font-size: 20px;
+  color: $on-surface-variant;
+  margin-right: $space-2;
+}
+.search-input {
+  flex: 1;
+  font-size: 14px;
+  border: none;
+  background: none;
+  color: $on-surface;
+}
 
-.filter-row--pilot { margin-bottom: 0.5rem; }
-.filter-toggle { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.5rem; }
-.toggle-icon { font-size: 1.125rem; color: #999; }
-.toggle-icon.active { color: var(--color-primary, #1976d2); }
-.toggle-text { font-size: 0.8125rem; color: #555; }
+// ── Filter chips ──
+.filter-row {
+  display: flex;
+  gap: $space-2;
+  margin-bottom: $space-3;
+  flex-wrap: wrap;
+}
+.filter-chip {
+  padding: $space-2 $space-4;
+  border-radius: $radius-full;
+  background: $surface-container-low;                 // No-Line: 不要 1px solid
+  transition: background 0.2s ease, transform 0.2s ease;
 
-.count-bar { margin-bottom: 0.75rem; }
-.count-text { font-size: 0.75rem; color: #94a3b8; }
+  &:active { transform: scale(0.97); }
+}
+.filter-chip--active {
+  background: $primary;
+  box-shadow: 0 8px 16px -4px rgba($primary, 0.2);
+}
+.filter-chip--active .chip-text { color: $on-primary; }
+.chip-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: $on-surface-variant;
+}
 
-.loading-wrap, .empty-wrap { display: flex; flex-direction: column; align-items: center; padding: 3rem 0; }
-.loading-text { font-size: 0.875rem; color: #94a3b8; }
-.empty-icon { font-size: 3rem; color: #cbd5e1; margin-bottom: 0.5rem; }
-.empty-text { font-size: 0.875rem; color: #94a3b8; }
+// ── Pilot toggle ──
+.filter-row--pilot { margin-bottom: $space-2; }
+.filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  padding: $space-1 $space-2;
+}
+.toggle-icon {
+  font-size: 18px;
+  color: $on-surface-variant;
+}
+.toggle-icon.active { color: $primary; }
+.toggle-text {
+  font-size: 13px;
+  color: $on-surface-variant;
+}
 
-.user-list { display: flex; flex-direction: column; gap: 0.5rem; }
-.user-card { display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 0.75rem; padding: 0.875rem 1rem; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+// ── Count bar ──
+.count-bar { margin-bottom: $space-3; }
+.count-text {
+  font-size: 12px;
+  color: $on-surface-variant;
+}
+
+// ── Loading / Empty ──
+.loading-wrap,
+.empty-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $space-12 0;
+  background: $surface-container-low;                 // 与 dashboard empty-container 风格一致
+  border-radius: $radius-md;
+}
+.loading-text,
+.empty-text {
+  font-size: 14px;
+  color: $on-surface-variant;
+}
+.empty-icon {
+  font-size: 48px;
+  color: $outline-variant;
+  margin-bottom: $space-2;
+}
+
+// ── User card ──
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+.user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: $surface-container-lowest;
+  border-radius: $radius-md;
+  padding: $space-4 $space-4;
+  box-shadow: $elevation-1;                           // [CA957F5] 双层紫折射，让卡片悬浮
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.99);
+    background: $surface-container-low;
+    box-shadow: $elevation-2;
+  }
+}
 .user-info { flex: 1; min-width: 0; }
-.user-top { display: flex; align-items: center; gap: 0.375rem; margin-bottom: 0.25rem; }
-.user-name { font-size: 0.9375rem; font-weight: 700; color: #191c1e; }
-.role-badge { padding: 0.125rem 0.5rem; border-radius: 0.5rem; }
-.role-student { background: #ede9fe; }
-.role-student .role-text { color: #7c3aed; }
-.role-teacher { background: #dcfce7; }
-.role-teacher .role-text { color: #16a34a; }
-.role-admin { background: #fef3c7; }
-.role-admin .role-text { color: #d97706; }
-.role-text { font-size: 0.625rem; font-weight: 700; }
-.disabled-badge { padding: 0.125rem 0.5rem; border-radius: 0.5rem; background: #fee2e2; }
-.disabled-text { font-size: 0.625rem; font-weight: 700; color: #dc2626; }
-.user-staff-id-row { display: flex; align-items: center; gap: 0.5rem; }
-.user-staff-id { font-size: 0.75rem; color: #64748b; display: block; }
+.user-top {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-1;
+}
+.user-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: $on-surface;
+}
+
+// ── Role / status badges ──
+// 用 MD3 container tier 颜色，pill 化，no-line
+.role-badge {
+  padding: 2px $space-2;
+  border-radius: $radius-full;
+}
+.role-text {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.role-student {
+  background: $secondary-container;
+  .role-text { color: $on-secondary-container; }
+}
+.role-teacher {
+  background: rgba($success, 0.16);
+  .role-text { color: $success; }
+}
+.role-admin {
+  background: rgba($warning, 0.16);
+  .role-text { color: $warning; }
+}
+
+.disabled-badge {
+  padding: 2px $space-2;
+  border-radius: $radius-full;
+  background: rgba($error-container, 0.4);
+}
+.disabled-text {
+  font-size: 10px;
+  font-weight: 700;
+  color: $error;
+}
+
+.user-staff-id-row {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+.user-staff-id {
+  font-size: 12px;
+  color: $on-surface-variant;
+  display: block;
+  font-family: $font-body;
+}
 .pilot-badge {
   display: inline-block;
-  padding: 0.125rem 0.375rem;
-  border-radius: 0.25rem;
+  padding: 2px $space-1;
+  border-radius: $radius-sm;
   background: rgba($warning, 0.16);
   color: $warning;
-  font-size: 0.625rem;
+  font-size: 10px;
+  font-weight: 600;
   line-height: 1;
 }
-.user-org { font-size: 0.6875rem; color: #94a3b8; display: block; margin-top: 0.125rem; }
+.user-org {
+  font-size: 11px;
+  color: $on-surface-variant;
+  display: block;
+  margin-top: 2px;
+}
 
-.user-actions { display: flex; gap: 0.5rem; flex-shrink: 0; margin-left: 0.5rem; }
-.action-btn { width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; background: #f1f5f9; }
-.action-btn:active { background: #e2e8f0; }
-.action-btn--danger { background: #fef2f2; }
-.action-icon { font-size: 1.125rem; color: #64748b; }
-.action-btn--danger .action-icon { color: #ef4444; }
+// ── Actions ──
+.user-actions {
+  display: flex;
+  gap: $space-2;
+  flex-shrink: 0;
+  margin-left: $space-2;
+}
+.action-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-sm;
+  background: $surface-container;
+  color: $on-surface-variant;                         // icon currentColor
 
-.pagination { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 1rem 0; }
-.page-btn { width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-.page-btn--disabled { opacity: 0.3; }
-.page-info { font-size: 0.8125rem; color: #64748b; font-weight: 600; }
+  &:active {
+    background: $surface-container-high;
+    transform: scale(0.95);
+  }
+}
+.action-btn--danger {
+  background: rgba($error-container, 0.4);
+  color: $error;
+}
+.action-icon {
+  font-size: 18px;
+  color: inherit;                                     // 沿用 .action-btn 的 color
+}
 
+// ── Pagination ──
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-4;
+  padding: $space-4 0;
+}
+.page-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-sm;
+  background: $surface-container-lowest;
+  color: $on-surface;
+  box-shadow: $elevation-1;
+
+  &:active { transform: scale(0.95); }
+}
+.page-btn--disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.page-info {
+  font-size: 13px;
+  color: $on-surface-variant;
+  font-weight: 600;
+}
+
+// ── Animation ──
 .animate-fade-up { animation: fadeUp 0.3s ease-out both; }
 .delay-1 { animation-delay: 0.05s; }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 </style>

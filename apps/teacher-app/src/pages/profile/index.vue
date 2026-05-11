@@ -11,9 +11,14 @@
           <view class="glow glow-2"></view>
           
           <view class="profile-content">
-            <!-- 头像占位 -->
+            <!-- 头像 -->
             <view class="avatar-wrapper">
-              <view class="avatar-placeholder"></view>
+              <UserAvatar
+                :name="userName"
+                :staff-id="userStore.userInfo?.staff_id"
+                :avatar-url="userStore.userInfo?.avatar_url"
+                :size="88"
+              />
             </view>
             
             <!-- 姓名 -->
@@ -30,19 +35,19 @@
         </view>
       </view>
 
-      <!-- Stats Grid - 统计网格 -->
+      <!-- Stats Grid - 统计网格（真实 API 派生）-->
       <view class="stats-grid animate-fade-up delay-2">
         <view class="stat-item">
-          <text class="stat-value">156</text>
+          <text class="stat-value">{{ stats.resolved }}</text>
           <text class="stat-label">累计处理</text>
         </view>
         <view class="stat-item">
-          <text class="stat-value">42</text>
-          <text class="stat-label">本月审批</text>
+          <text class="stat-value">{{ stats.totalConvs }}</text>
+          <text class="stat-label">参与工单</text>
         </view>
         <view class="stat-item">
-          <text class="stat-value">28</text>
-          <text class="stat-label">知识入库</text>
+          <text class="stat-value">{{ stats.knowledge }}</text>
+          <text class="stat-label">知识条目</text>
         </view>
       </view>
 
@@ -142,10 +147,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import TopAppBar from '../../components/TopAppBar.vue'
 import BottomNavBar from '../../components/BottomNavBar.vue'
+import UserAvatar from '../../components/UserAvatar.vue'
+import { listConversations } from '@/api/conversations'
+import { getKnowledgeEntries } from '@/api/knowledge'
 
 // 用户状态
 const userStore = useUserStore()
@@ -158,6 +167,26 @@ const department = computed(() => {
 })
 const userId = computed(() => userStore.userInfo?.staff_id || 'N/A')
 
+// 真实统计：分别拿 已解决 / 全部参与 / 知识条目
+const stats = ref({ resolved: 0, totalConvs: 0, knowledge: 0 })
+
+const loadStats = async () => {
+  try {
+    const [resolved, all, kb] = await Promise.allSettled([
+      listConversations(1, 1, 'resolved'),
+      listConversations(1, 1),
+      getKnowledgeEntries({ pageNum: 1, pageSize: 1 })
+    ])
+    stats.value = {
+      resolved: resolved.status === 'fulfilled' ? (resolved.value.total || 0) : 0,
+      totalConvs: all.status === 'fulfilled' ? (all.value.total || 0) : 0,
+      knowledge: kb.status === 'fulfilled' ? (kb.value.total || 0) : 0,
+    }
+  } catch (e) {
+    console.warn('profile stats load failed', e)
+  }
+}
+
 // 开关状态
 const notificationOn = ref(true)
 const soundOn = ref(true)
@@ -168,6 +197,9 @@ const handleLogout = () => {
   userStore.clearAuth()
   uni.reLaunch({ url: '/pages/login/index' })
 }
+
+onMounted(loadStats)
+onShow(loadStats)
 </script>
 
 <style lang="scss" scoped>
@@ -251,16 +283,13 @@ const handleLogout = () => {
   width: 96px;
   height: 96px;
   border-radius: 50%;
-  border: 4px solid rgba(255, 255, 255, 0.2);
+  border: 4px solid rgba(255, 255, 255, 0.24);
   padding: 4px;
   margin-bottom: 16px;
-}
-
-.avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: $surface-container-highest;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 // 姓名

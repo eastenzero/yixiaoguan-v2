@@ -328,10 +328,10 @@ const formatTime = (time?: string) => {
 }
 
 .reject-banner {
-  margin-bottom: 24px;
-  padding: 12px 16px;
-  background: rgba(239, 68, 68, 0.08);
-  border-radius: 16px;
+  margin-bottom: $space-6;
+  padding: $space-3 $space-4;
+  background: rgba($error, 0.08);
+  border-radius: $radius-md;
 }
 
 .reject-banner-text {

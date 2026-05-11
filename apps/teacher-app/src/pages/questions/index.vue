@@ -45,12 +45,13 @@
         >
           <view class="card-header">
             <view class="student-info">
-              <view class="avatar-circle" :class="avatarClassNames[index % avatarClassNames.length]">
-                <text class="avatar-initial">{{ item.title?.charAt(0) || '?' }}</text>
-              </view>
+              <UserAvatar
+                :staff-id="item.student_id"
+                :size="44"
+              />
               <view class="student-meta">
-                <text class="student-name">学生 #{{ item.student_id }}</text>
-                <text class="student-major">{{ item.title || '对话' }} · {{ formatTime(item.updated_at) }}</text>
+                <text class="student-name">学号 {{ item.student_id }}</text>
+                <text class="student-major">{{ formatTime(item.updated_at) }}</text>
               </view>
             </view>
             <view 
@@ -63,20 +64,20 @@
 
           <text class="question-content">{{ item.title || '无标题' }}</text>
 
-          <!-- AI Confidence Section -->
-          <view class="ai-confidence">
+          <!-- AI Confidence Section（仅当后端有真实 confidence 字段时展示）-->
+          <view v-if="typeof item.confidence === 'number' && item.confidence > 0" class="ai-confidence">
             <view class="confidence-header">
               <view class="confidence-label">
                 <text class="material-symbols-outlined confidence-icon">psychology</text>
                 <text class="label-text">AI 匹配度</text>
               </view>
-              <text class="confidence-value">{{ item.confidence || 80 }}%</text>
+              <text class="confidence-value">{{ item.confidence }}%</text>
             </view>
             <view class="progress-bar">
               <view 
                 class="progress-fill"
-                :class="getProgressColorClass(item.confidence || 80)"
-                :style="{ width: `${item.confidence || 80}%` }"
+                :class="getProgressColorClass(item.confidence)"
+                :style="{ width: `${item.confidence}%` }"
               ></view>
             </view>
           </view>
@@ -93,6 +94,7 @@ import { ref, onMounted, onUnmounted, onActivated } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopAppBar from '../../components/TopAppBar.vue'
 import BottomNavBar from '../../components/BottomNavBar.vue'
+import UserAvatar from '../../components/UserAvatar.vue'
 import { listConversations } from '@/api/conversations'
 import { getStatusText, getStatusClass } from '@/utils/status-map'
 import { wsManager } from '@/utils/websocket'
@@ -243,6 +245,9 @@ onUnmounted(() => {
   margin-right: -20px;
   padding-left: 20px;
   padding-right: 20px;
+  // 注意：垂直内边距移到 .filter-tabs（scroll content）内部，
+  // uni-app H5 的 <scroll-view> 内层 .uni-scroll-view 有 overflow:hidden，
+  // 给外层 host 加 padding 不会让超出 .filter-tab 顶沿的 badge 在内层可见。
   white-space: nowrap;
 
   :deep(.uni-scroll-view::-webkit-scrollbar) {
@@ -272,6 +277,10 @@ onUnmounted(() => {
 .filter-tabs {
   display: flex;
   gap: 12px;
+  // 12px = 4(.pending-badge top:-4 凸出) + 2(box-shadow ring) + 6 缓冲。
+  // 必须放在 scroll content（.filter-tabs）而非 scroll-view host（.filter-section），
+  // 才能突破内层 .uni-scroll-view overflow:hidden 的裁剪。
+  padding-top: 12px;
   padding-bottom: 8px;
 }
 

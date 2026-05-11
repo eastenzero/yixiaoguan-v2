@@ -8,13 +8,19 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'https://yxg.xiaoguan.site',
+        target: 'http://192.168.100.165:8100',
         changeOrigin: true
       },
       '/ws': {
-        target: 'wss://yxg.xiaoguan.site',
+        target: 'ws://192.168.100.165:8100',
         ws: true,
         changeOrigin: true
+      },
+      '/centrifugo': {
+        target: 'http://127.0.0.1:18000',
+        ws: true,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/centrifugo/, ''),
       }
     }
   }

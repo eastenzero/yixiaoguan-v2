@@ -23,7 +23,14 @@
             <text class="welcome-greeting">{{ greeting }}，{{ displayName }} 👋</text>
             <text class="welcome-subtitle">今天有 {{ pendingCount }} 条待处理提问</text>
           </view>
-          <view class="avatar-placeholder"></view>
+          <view class="welcome-avatar-ring">
+            <UserAvatar
+              :name="displayName"
+              :staff-id="userStore.userInfo?.staff_id"
+              :avatar-url="userStore.userInfo?.avatar_url"
+              :size="56"
+            />
+          </view>
         </view>
         <view class="welcome-decoration"></view>
       </view>
@@ -110,18 +117,17 @@
           >
             <view class="question-header">
               <view class="question-author">
-                <text class="author-name">学生 #{{ question.student_id }}</text>
+                <text class="author-name">{{ question.title || '新工单' }}</text>
                 <view class="department-tag">
-                  <text class="department-text">{{ question.title || '对话' }}</text>
+                  <text class="department-text">学号 {{ question.student_id }}</text>
                 </view>
               </view>
               <text class="question-time">{{ formatTime(question.updated_at) }}</text>
             </view>
-            <text class="question-content">{{ question.title || '无标题' }}</text>
             <view class="question-footer">
-              <view class="status-badge">
-                <view class="status-dot" :class="question.status"></view>
-                <text class="status-text" :class="question.status">{{ getStatusText(question.status) }}</text>
+              <view class="status-badge" :class="`status-${question.status}`">
+                <view class="status-dot"></view>
+                <text class="status-text">{{ getStatusText(question.status) }}</text>
               </view>
               <text class="material-symbols-outlined card-arrow">arrow_forward</text>
             </view>
@@ -166,6 +172,7 @@ import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import BottomNavBar from '../../components/BottomNavBar.vue'
 import FeatureNoticeSheet from '../../components/FeatureNoticeSheet.vue'
+import UserAvatar from '../../components/UserAvatar.vue'
 import { listConversations } from '@/api/conversations'
 import { getStatusText } from '@/utils/status-map'
 import { wsManager } from '@/utils/websocket'
@@ -466,12 +473,17 @@ onUnmounted(() => {
   color: rgba($on-primary, 0.8);
 }
 
-.avatar-placeholder {
+.welcome-avatar-ring {
   width: 64px;
   height: 64px;
-  background: $surface-container-high;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
 }
 
 .welcome-decoration {
@@ -703,71 +715,50 @@ onUnmounted(() => {
   color: $on-surface-variant;
 }
 
-.question-content {
-  font-family: $font-body;
-  font-size: 14px;
-  color: rgba($on-surface, 0.8);
-  margin-bottom: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  display: block;
-}
-
 .question-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+// 状态徽标：dot + text 颜色由 .status-{string} 父类驱动；
+// 字符串与 ConversationStatus enum (services/gateway/app/models/conversation.py) 对齐
 .status-badge {
   display: flex;
   align-items: center;
-  gap: 4px;
-}
+  gap: $space-1;
 
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $on-surface-variant;
+  }
+  .status-text {
+    font-family: $font-body;
+    font-size: 11px;
+    font-weight: 700;
+    color: $on-surface-variant;
+  }
 
-.status-0 {
-  background: $error;
-}
-
-.status-1 {
-  background: $warning;
-}
-
-.status-2 {
-  background: $success;
-}
-
-.status-3 {
-  background: $on-surface-variant;
-}
-
-.status-text {
-  font-family: $font-body;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.status-text-0 {
-  color: $error;
-}
-
-.status-text-1 {
-  color: $warning;
-}
-
-.status-text-2 {
-  color: $success;
-}
-
-.status-text-3 {
-  color: $on-surface-variant;
+  // pending_teacher: 等待响应 — 红色高亮
+  &.status-pending_teacher {
+    .status-dot { background: $error; }
+    .status-text { color: $error; }
+  }
+  // teacher_serving / ai_serving: 处理中 — 主色
+  &.status-teacher_serving,
+  &.status-ai_serving {
+    .status-dot { background: $primary; }
+    .status-text { color: $primary; }
+  }
+  // resolved: 已解决 — 绿色
+  &.status-resolved {
+    .status-dot { background: $success; }
+    .status-text { color: $success; }
+  }
+  // closed: 已关闭 — 灰色（默认）
+  &.status-closed { /* 用默认 on-surface-variant */ }
 }
 
 .card-arrow {
