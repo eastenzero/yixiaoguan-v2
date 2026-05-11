@@ -67,11 +67,10 @@ F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\ae-scene-13.mp4   (SCENE_13, 8s,
 | SCENE_13 | Screen 01 | `.tasks/student-ui-audit-2026-05-11/after-avatar/06-services.png` |
 | SCENE_13 | Screen 02 | `.tasks/teacher-ui-audit-2026-05-11/after-avatar/09-analytics.png` |
 
-**注意 SCENE_05 的 `04-chat-with-conv.png` 有 2 个已知瑕疵**：
-- tab bar 在中间出现一次（fullPage 截图导致）
-- 提问内容里包含"编号 xxx"等不自然措辞
-
-我们**接受这两个瑕疵**，先渲一版。后期重截后单独重渲 SCENE_05 即可。
+**SCENE_05 的 `04-chat-with-conv.png` 有 2 个瑕疵需要先修**（详见 Step 0）：
+- ❌ tab bar 在画面中段又出现一次（fullPage 截图把 fixed positioned tab 重复抓了）
+- ❌ 前两条对话气泡是 `[v7-r1-1778510893945] 老师 UI 实时回复 round 1` / `[v7-r2-...] 学生 UI 提问 round 2` —— 是 realtime e2e 测试遗留的脏 demo 数据
+- ❌ 底部还有一条"拜拜"测试残留
 
 ### 中文字幕文案（最终稿）
 来源：`@F:\Documents\code\yixiaoguan-v2\video\06-ae-text-final.md`
@@ -105,8 +104,45 @@ F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\ae-scene-13.mp4   (SCENE_13, 8s,
 
 按顺序做：
 
+### 0. 先重截 `04-chat-with-conv.png`（必做，否则 SCENE_05 出来全是 v7 测试垃圾文字）
+
+**现状**：当前的 `.tasks/student-ui-audit-2026-05-11/after-avatar/04-chat-with-conv.png` 有 3 处瑕疵（见上文 §屏幕替换映射）
+
+**capture 脚本位置**：`@F:\Documents\code\yixiaoguan-v2\.tmp\demo-video\student-audit-capture.mjs`
+
+脚本逻辑（自己看）：
+- API 登录学生 `4125150011/4125150011`
+- 找一条已有的 conv 注入 `pendingConversationId` 跳进去 + `fullPage: true` 截图
+- 当前 conv 选取逻辑没过滤 v7 脏数据，所以选到了一个含 `[v7-r1-...]` 测试消息的 conv
+
+**修法二选一**（推荐前者）：
+
+**方案 A：让脚本主动创建一条干净 demo conv**
+- API 调 `POST /api/conversations` 新建 → 调 `POST /api/chat/send` 发一条干净提问（如"医保报销怎么办理？"）→ 等 AI 流式回答完成 → 用这条新 conv 截图
+- 干净彻底，但需多走 2-3 个 API
+
+**方案 B：过滤含 v7 / round / [v7- 标记的 conv**
+- 拿现有 conv 列表 → filter 掉 title/last_message 含 `v7` / `round` / `拜拜` / `[` 的
+- 选剩下最近的一条
+- 简单但依赖现有数据库里有干净 conv
+
+**且无论哪个方案，把 `fullPage: true` 改成 `fullPage: false`**（截单 viewport 即可，避免 tab bar 重复出现）。模板手机屏幕区域受限，截上半屏 1-2 条对话气泡 + composer 即可，tab bar 留在底部固定位置不滚动。
+
+**服务器/账号**：
+- gateway: 165 dev `http://192.168.100.165:8100`（或脚本里写好的）
+- 学生 H5 dev: 跑 `apps/student-app` 的 `npm run dev:h5`（端口 3001）
+- 学生账号: `4125150011/4125150011`
+
+**验收**：新生成的 PNG 应该满足：
+- ✓ tab bar 只出现在底部一次
+- ✓ 画面里至少有 1 条干净的学生提问 + 1 条干净的 AI 回答
+- ✓ 没有 `[v7-r` / `round` / `拜拜` 这些字符串
+- ✓ 文件覆盖到原路径 `.tasks/student-ui-audit-2026-05-11/after-avatar/04-chat-with-conv.png`
+
+**如果你尝试 30 分钟仍跑不通这步**：把当前进度（脚本改动 / 错误日志）留在 `.tmp/demo-video/out/` 下，回报主对话，跳过 Step 0 直接做 Step 1（接受瑕疵渲一版，主对话后续单独重渲 SCENE_05）。
+
 ### 1. 屏幕替换
-跑 `ae-replace-screens.jsx`，确认 alert 报告 6 项全 ✓。
+跑 `ae-replace-screens.jsx`（路径见前文）→ 确认 alert 报告 6 项全 ✓。
 
 ### 2. 探测 Text Holder
 跑 `ae-inspect-text-holder.jsx`，把 alert 报告**复制保留**（后面写脚本要用 + 终验收要用）。
