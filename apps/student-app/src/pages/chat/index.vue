@@ -41,12 +41,14 @@
         class="chat-container"
         scroll-y
         :scroll-top="scrollTop"
+        :scroll-into-view="scrollAnchor"
         :scroll-with-animation="true"
       >
         <view
           v-for="msg in messages"
           :key="msg.id"
           class="msg-wrapper"
+          :class="{ 'msg-animate': animateMessages }"
         >
           <!-- 用户消息 -->
           <view v-if="msg.role === 'user'" class="user-msg">
@@ -171,7 +173,7 @@
           </view>
         </view>
 
-        <view class="bottom-spacer" />
+        <view id="chat-bottom-sentinel" class="bottom-spacer" />
       </scroll-view>
 
       <!-- 底部输入区 -->
@@ -282,6 +284,10 @@ const inputMessage = ref('')
 const isStreaming = ref(false)
 const isTyping = ref(false)
 const scrollTop = ref(0)
+const scrollAnchor = ref('')
+// 控制新消息入场动效：首次 mount 加载 history 时不动画（避免一次性全部淡入），
+// 加载完后开启 → 之后每条新消息（push 时）的 v-for 元素 mount 都会播放动画。
+const animateMessages = ref(false)
 const conversationId = ref<number | null>(null)
 const conversationStatus = ref<ConversationStatus>('ai_serving')
 const escalateLoading = ref(false)
@@ -438,6 +444,9 @@ async function loadHistory() {
     const res = await getMessages(conversationId.value)
     messages.value = res.items.map(mapServerMessage)
     scrollToBottom()
+    // history 加载完成 → 之后任何 push 进来的新消息都会触发入场动效
+    // 双 nextTick 保证首批 history v-for 元素的 mount 阶段都没有 msg-animate class
+    nextTick(() => nextTick(() => { animateMessages.value = true }))
   } catch (e) {
     console.error('加载消息失败:', e)
   }
@@ -729,7 +738,27 @@ function formatTime(timestamp: number): string {
 }
 
 function scrollToBottom() {
-  nextTick(() => { scrollTop.value = 9999999 + Math.random() })
+  // 用 scroll-into-view + sentinel 比 scroll-top hack 更可靠；
+  // 双 nextTick 让 DOM patch + layout 完成；
+  // anchor 先清空再 set，保证 prop watcher 一定被触发（uni-app scroll-view 同值不触发）。
+  nextTick(() => {
+    scrollAnchor.value = ''
+    nextTick(() => {
+      scrollAnchor.value = 'chat-bottom-sentinel'
+      // H5 双保险：直接对真 DOM 调 scrollIntoView（小程序时 document 不存在自然走 scroll-view 路径）
+      if (typeof document !== 'undefined') {
+        requestAnimationFrame(() => {
+          const anchor = document.querySelector('#chat-bottom-sentinel') as HTMLElement | null
+          if (anchor && typeof anchor.scrollIntoView === 'function') {
+            try { anchor.scrollIntoView({ behavior: 'smooth', block: 'end' }) } catch { /* IE11+ has no options support */ anchor.scrollIntoView(false) }
+          }
+        })
+      } else {
+        // 非 H5 兜底：保留 scroll-top hack
+        scrollTop.value = 9999999 + Math.random() * 1000
+      }
+    })
+  })
 }
 </script>
 
@@ -753,6 +782,17 @@ function scrollToBottom() {
 
 .chat-container { flex: 1; padding: 0 1rem; box-sizing: border-box; }
 .msg-wrapper { display: flex; flex-direction: column; margin-bottom: 1.5rem; }
+
+// 新消息入场动效：history 加载阶段不带 .msg-animate，避免一次性全部淡入；
+// loadHistory 完成后开启，之后每条 push 的新消息（v-for mount 时）都会 fadeUp 一次。
+.msg-wrapper.msg-animate {
+  animation: msgFadeUp 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes msgFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 .user-msg { align-items: flex-end; }
 .user-bubble { background: linear-gradient(135deg, #5b21b6, #b28cff); color: #fff; border-radius: 1rem 1rem 0 1rem; max-width: 85%; padding: 1rem 1.25rem; box-shadow: 0 0.5rem 1rem rgba(91,33,182,0.10); font-size: 0.9375rem; line-height: 1.7; }

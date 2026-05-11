@@ -2,7 +2,13 @@
   <view class="question-detail-page">
     <TopAppBar title="提问详情" showBack @back="handleBack" />
 
-    <scroll-view scroll-y class="main-content" :class="{ 'main-content--reply': isReplyMode }">
+    <scroll-view
+      scroll-y
+      class="main-content"
+      :class="{ 'main-content--reply': isReplyMode }"
+      :scroll-into-view="scrollAnchor"
+      :scroll-with-animation="true"
+    >
       <!-- Loading State -->
       <view v-if="loading" class="loading-container">
         <text class="loading-text">加载中...</text>
@@ -31,7 +37,12 @@
 
         <!-- 完整会话消息（动态加载） -->
         <view class="chat-section">
-          <view v-for="msg in conversationMessages" :key="msg.id" class="msg-item">
+          <view
+            v-for="msg in conversationMessages"
+            :key="msg.id"
+            class="msg-item"
+            :class="{ 'msg-animate': animateMessages }"
+          >
             <!-- 学生消息 -->
             <view v-if="msg.sender_type === 'student'" class="message-wrapper student-message">
               <view class="message-bubble student-bubble">
@@ -97,6 +108,8 @@
 
       <!-- Bottom padding for fixed action bar -->
       <view class="bottom-padding"></view>
+      <!-- scroll 锡点：新消息进来后 set scrollAnchor='tea-chat-bottom-sentinel' 让 scroll-view 滚到底 -->
+      <view id="tea-chat-bottom-sentinel"></view>
     </scroll-view>
 
     <!-- Fixed Bottom Action Bar -->
@@ -160,6 +173,30 @@ const replyText = ref('')
 const submitting = ref(false)
 const conversationMessages = ref<any[]>([])
 const refreshing = ref(false)
+// scroll-into-view target id。学生端同机制：anchor 先清空再 set，保证
+// uni-app <scroll-view> watch 每次都被触发（同值不触发）。
+const scrollAnchor = ref('')
+// 首次 loadMessages 之后才允许新消息动画入场，避免 history 一次性淡入。
+const animateMessages = ref(false)
+
+// 滚到底：scroll-into-view + H5 真 DOM scrollIntoView 双保险
+const scrollToBottom = () => {
+  nextTick(() => {
+    scrollAnchor.value = ''
+    nextTick(() => {
+      scrollAnchor.value = 'tea-chat-bottom-sentinel'
+      if (typeof document !== 'undefined') {
+        requestAnimationFrame(() => {
+          const anchor = document.querySelector('#tea-chat-bottom-sentinel') as HTMLElement | null
+          if (anchor && typeof anchor.scrollIntoView === 'function') {
+            try { anchor.scrollIntoView({ behavior: 'smooth', block: 'end' }) }
+            catch { anchor.scrollIntoView(false) }
+          }
+        })
+      }
+    })
+  })
+}
 
 // 仅 teacher_serving 才需要 textarea + 双按钮，需要更多底部留白；
 // 其它状态只是单个 56px 胶囊按钮，过大的 padding-bottom 会显出大片空白。
@@ -201,6 +238,9 @@ const loadMessages = async () => {
   try {
     const res = await listMessages(convId.value, 1, 200)
     conversationMessages.value = res.items || []
+    scrollToBottom()
+    // history 加载完后开启动画：之后 push 进来的 v-for 新元素都会 fadeUp
+    nextTick(() => nextTick(() => { animateMessages.value = true }))
   } catch (e) {
     console.error('加载消息失败:', e)
   } finally {
@@ -223,6 +263,7 @@ const onNewMessage = (data: any) => {
         content: data.content,
         created_at: data.created_at,
       })
+      scrollToBottom()
     }
   }
 }
@@ -271,6 +312,7 @@ const handleReplyOnly = async () => {
     const exists = conversationMessages.value.some(m => m.id === msg.id)
     if (!exists) {
       conversationMessages.value.push(msg)
+      scrollToBottom()
     }
     replyText.value = ''
     uni.showToast({ title: '回复已发送', icon: 'success' })
@@ -294,6 +336,7 @@ const handleResolve = async () => {
     const exists = conversationMessages.value.some(m => m.id === msg.id)
     if (!exists) {
       conversationMessages.value.push(msg)
+      scrollToBottom()
     }
     const res = await resolveConversation(convId.value)
     escalation.value = res
@@ -599,6 +642,17 @@ onUnmounted(() => {
 
 .msg-item {
   margin-bottom: 16px;
+}
+
+// 新消息入场动效：history 加载阶段不带 .msg-animate，避免一次性全部淡入；
+// loadMessages 完成后开启，之后每条 push 的新消息（v-for mount 时）都会 fadeUp 一次。
+.msg-item.msg-animate {
+  animation: msgFadeUp 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes msgFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 // System Message
