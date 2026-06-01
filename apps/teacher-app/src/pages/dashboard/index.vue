@@ -119,7 +119,7 @@
               <view class="question-author">
                 <text class="author-name">{{ question.title || '新工单' }}</text>
                 <view class="department-tag">
-                  <text class="department-text">学号 {{ question.student_id }}</text>
+                  <text class="department-text">{{ question.student_name || `学号 ${question.student_id}` }}</text>
                 </view>
               </view>
               <text class="question-time">{{ formatTime(question.updated_at) }}</text>
