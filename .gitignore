@@ -55,3 +55,7 @@ scripts/kimi-local-task-*.txt
 # Playwright CLI logs and temporary files
 .playwright-cli/
 *.log
+
+# Temporary directories
+.tmp/
+.tmp
