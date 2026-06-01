@@ -1,0 +1,14 @@
+== Font Preview ==
+Tue May 12 2026 03:15:59 GMT+0800
+
+Each scene uses a different font for comparison:
+
+A: 思源黑体 Bold -> SCENE_23 [#1=SourceHanSansCN-Bold, #2=SourceHanSansCN-Bold]
+B: 阿里巴巴普惠体 SemiBold -> SCENE_11 [#1=AlibabaPuHuiTi-2-75-SemiBold, #2=AlibabaPuHuiTi-2-75-SemiBold]
+C: 优设标题黑 -> SCENE_18 [#1=YouSheBiaoTiHei, #2=YouSheBiaoTiHei]
+D: HarmonyOS Sans Bold -> SCENE_27 [#1=HarmonyOS_Sans_SC_Bold, #2=HarmonyOS_Sans_SC_Bold]
+E: 微软雅黑 Bold (当前) -> SCENE_30 [#1=MicrosoftYaHei-Bold, #2=MicrosoftYaHei-Bold]
+
+
+Ctrl+Z to undo, then tell me which you like!
+If a font shows 'NONE', it's not installed on this machine.

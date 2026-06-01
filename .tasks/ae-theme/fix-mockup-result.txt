@@ -1,0 +1,75 @@
+== Fix Mockup Text ==
+Tue May 12 2026 02:54:00 GMT+0800
+
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 - SCENE_11 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 03 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 03 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 03 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 - SCENE_18 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 - SCENE_18 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 03 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 - SCENE_23 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 03 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 04 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 - SCENE_28 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 - SCENE_28 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 03 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 03 - SCENE_28 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 04 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 04 - SCENE_28 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 05 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 05 - SCENE_28 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 03 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 04 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 05 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 01 - SCENE_30 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 #2 SCREEN MOCKUP  By MotionFox -> disabled
+Screen 02 - SCENE_30 #2 SCREEN MOCKUP  By MotionFox -> disabled
+
+Total: 70 layers affected

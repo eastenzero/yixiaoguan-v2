@@ -1,0 +1,19 @@
+== Final Update ==
+Tue May 12 2026 03:19:59 GMT+0800
+
+Scenes: S23, S11, S18, S27(new), S30
+S28 -> S27 swap applied
+
+TEXT SCENE_23 title(#2,130px): 校园里的事 · 问医小管
+TEXT SCENE_23 sub(#1,60px): 智能问答 · 秒答常见问题
+TEXT SCENE_11 title(#1,130px): AI 流式回答 · 有据可查
+TEXT SCENE_11 sub(#2,60px): 来源可溯 · 历史可回
+TEXT SCENE_18 title(#2,130px): 学生有问 · 老师在场
+TEXT SCENE_18 sub(#1,60px): 一键转人工 · 端到端不到200毫秒
+TEXT SCENE_27 title(#2,130px): 全场景洞察 · 一屏到位
+TEXT SCENE_27 sub(#1,60px): 问答 · 服务 · 数据 · 知识
+TEXT SCENE_30 title(#2,130px): 让每一个问题被认真对待
+TEXT SCENE_30 sub(#1,60px): 医小管 · 智慧校园助理
+
+Total: 10 operations
+Ctrl+Z to undo

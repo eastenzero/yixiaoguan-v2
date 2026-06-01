@@ -1,0 +1,277 @@
+== Full Scene Audit ==
+Generated: Tue May 12 2026 02:40:59 GMT+0800
+
+━━━ SCENE_01 ━━━
+  Timeline: 0.0s - 8.0s (8.0s)
+  Phones: 1 | 3D Camera: YES | Text Holder: no
+  Screen 01 [File] 1170x2532 (4 layers) <- 02-home.png
+
+━━━ SCENE_02 ━━━
+  Timeline: 8.0s - 16.1s (8.0s)
+  Phones: 1 | 3D Camera: YES | Text Holder: no
+  Screen 01 [Solid] 1170x2532 (3 layers)
+
+━━━ SCENE_03 ━━━
+  Timeline: 16.1s - 24.1s (8.0s)
+  Phones: 2 | 3D Camera: YES | Text Holder: no
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+
+━━━ SCENE_04 ━━━
+  Timeline: 24.1s - 32.1s (8.0s)
+  Phones: 1 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 2 layers:
+    - Exclusive download only on videohive.net
+    - App Promo Mockup Phone 14 Pro Device
+
+━━━ SCENE_05 ━━━
+  Timeline: 32.1s - 40.2s (8.0s)
+  Phones: 1 | 3D Camera: YES | Text Holder: no
+  Screen 01 [File] 1170x2532 (4 layers) <- 04-chat-with-conv.png
+
+━━━ SCENE_06 ━━━
+  Timeline: 40.2s - 48.2s (8.0s)
+  Phones: 1 | 3D Camera: YES | Text Holder: no
+  Screen 01 [File] 1170x2532 (4 layers) <- 03-knowledge-list.png
+
+━━━ SCENE_07 ━━━
+  Timeline: 48.2s - 56.2s (8.0s)
+  Phones: 1 | 3D Camera: YES | Text Holder: no
+  Screen 01 [Solid] 1170x2532 (3 layers)
+
+━━━ SCENE_08 ━━━
+  Timeline: 56.2s - 64.3s (8.0s)
+  Phones: 1 | 3D Camera: YES | Text Holder: no
+  Screen 01 [Solid] 1170x2532 (3 layers)
+
+━━━ SCENE_09 ━━━
+  Timeline: 64.3s - 74.3s (10.0s)
+  Phones: 1 | 3D Camera: YES | Text Holder: no
+  Screen 01 [File] 1170x2532 (4 layers) <- 04-profile.png
+
+━━━ SCENE_10 ━━━
+  Timeline: 74.3s - 84.3s (10.0s)
+  Phones: 2 | 3D Camera: YES | Text Holder: no
+  Screen 02 [File] 1170x2532 (4 layers) <- 02-dashboard.png
+  Screen 01 [File] 1170x2532 (4 layers) <- 03-chat-empty.png
+
+━━━ SCENE_11 ━━━
+  Timeline: 84.3s - 92.4s (8.0s)
+  Phones: 1 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 2 layers:
+    - App Promotion High Quality AE Template
+    - Exclusive download only on videohive.net
+
+━━━ SCENE_12 ━━━
+  Timeline: 92.4s - 100.4s (8.0s)
+  Phones: 1 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 2 layers:
+    - Universal Expression One Click Color Change
+    - Exclusive download only on videohive.net
+
+━━━ SCENE_13 ━━━
+  Timeline: 100.4s - 108.4s (8.0s)
+  Phones: 2 | 3D Camera: YES | Text Holder: no
+  Screen 01 [File] 1170x2532 (3 layers) <- 06-services.png
+  Screen 02 [File] 1170x2532 (3 layers) <- 09-analytics.png
+
+━━━ SCENE_14 ━━━
+  Timeline: 108.4s - 118.5s (10.0s)
+  Phones: 3 | 3D Camera: YES | Text Holder: no
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Screen 03 [Solid] 1170x2532 (3 layers)
+
+━━━ SCENE_15 ━━━
+  Timeline: 118.5s - 126.5s (8.0s)
+  Phones: 1 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 1 layers:
+    - Exclusive download only on videohive.net
+
+━━━ SCENE_16 ━━━
+  Timeline: 126.5s - 136.5s (10.0s)
+  Phones: 3 | 3D Camera: YES | Text Holder: no
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Screen 03 [Solid] 1170x2532 (3 layers)
+
+━━━ SCENE_17 ━━━
+  Timeline: 136.5s - 144.6s (8.0s)
+  Phones: 3 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Screen 03 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 2 layers:
+    - Exclusive download only on videohive.net
+    - One Click Change 5 Color Device Available
+
+━━━ SCENE_18 ━━━
+  Timeline: 144.6s - 152.6s (8.0s)
+  Phones: 2 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 2 layers:
+    - Exclusive download only on videohive.net
+    - Quick Start Universal Expressions
+
+━━━ SCENE_19 ━━━
+  Timeline: 152.6s - 160.6s (8.0s)
+  Phones: 2 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 2 layers:
+    - Exclusive download only on videohive.net
+    - Very simple to edit Modular Structure
+
+━━━ SCENE_20 ━━━
+  Timeline: 160.6s - 168.7s (8.0s)
+  Phones: 2 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 1 layers:
+    - Ultra high resolution 4K Screen Resolution (3840x2
+
+━━━ SCENE_21 ━━━
+  Timeline: 168.7s - 176.7s (8.0s)
+  Phones: 2 | 3D Camera: YES | Text Holder: no
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+
+━━━ SCENE_22 ━━━
+  Timeline: 176.7s - 186.7s (10.0s)
+  Phones: 3 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Screen 03 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 2 layers:
+    - Exclusive download only on videohive.net
+    - Project version is After Effects CS5.5 & above
+
+━━━ SCENE_23 ━━━
+  Timeline: 186.7s - 194.8s (8.0s)
+  Phones: 1 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 2 layers:
+    - Exclusive download only on videohive.net
+    - Smart Phone device Brand New AE Template
+
+━━━ SCENE_24 ━━━
+  Timeline: 194.8s - 202.8s (8.0s)
+  Phones: 1 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 1 layers:
+    - Very simple to edit Clean and Modern Design
+
+━━━ SCENE_25 ━━━
+  Timeline: 202.8s - 210.8s (8.0s)
+  Phones: 4 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 2 layers:
+    - Exclusive download only on videohive.net
+    - Template by MotionFox Presents
+
+━━━ SCENE_26 ━━━
+  Timeline: 210.8s - 218.9s (8.0s)
+  Phones: 4 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 2 layers:
+    - Exclusive download only on videohive.net
+    - Very simple to edit Clean Modular Structure
+
+━━━ SCENE_27 ━━━
+  Timeline: 218.9s - 226.9s (8.0s)
+  Phones: 4 | 3D Camera: YES | Text Holder: YES
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Screen 03 [Solid] 1170x2532 (3 layers)
+  Screen 04 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 2 layers:
+    - Exclusive download only on videohive.net
+    - Help file included Very Simple to Customize
+
+━━━ SCENE_28 ━━━
+  Timeline: 226.9s - 234.9s (8.0s)
+  Phones: 5 | 3D Camera: YES | Text Holder: YES
+  Screen 05 [Solid] 1170x2532 (3 layers)
+  Screen 04 [Solid] 1170x2532 (3 layers)
+  Screen 03 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 2 layers:
+    - Exclusive download only on videohive.net
+    - HQ 3D Rendered No Need any Plugins
+
+━━━ SCENE_29 ━━━
+  Timeline: 234.9s - 243.0s (8.0s)
+  Phones: 13 | 3D Camera: YES | Text Holder: no
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Screen 05 [Solid] 1170x2532 (3 layers)
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Screen 03 [Solid] 1170x2532 (3 layers)
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Screen 03 [Solid] 1170x2532 (3 layers)
+  Screen 04 [Solid] 1170x2532 (3 layers)
+  Screen 03 [Solid] 1170x2532 (3 layers)
+  Screen 04 [Solid] 1170x2532 (3 layers)
+  Screen 05 [Solid] 1170x2532 (3 layers)
+
+━━━ SCENE_30 ━━━
+  Timeline: 243.0s - 251.0s (8.0s)
+  Phones: 2 | 3D Camera: YES | Text Holder: YES
+  Screen 02 [Solid] 1170x2532 (3 layers)
+  Screen 01 [Solid] 1170x2532 (3 layers)
+  Text Holder [ON] 2 layers:
+    - Exclusive download only on videohive.net
+    - Download only videohive.net Exclusive
+
+
+========== SUMMARY ==========
+
+-- 1 PHONE (13) --
+  SCENE_01 | 8s | 3D |      | 1 phone(s)
+  SCENE_02 | 8s | 3D |      | 1 phone(s)
+  SCENE_04 | 8s | 3D | TEXT | 1 phone(s)
+  SCENE_05 | 8s | 3D |      | 1 phone(s)
+  SCENE_06 | 8s | 3D |      | 1 phone(s)
+  SCENE_07 | 8s | 3D |      | 1 phone(s)
+  SCENE_08 | 8s | 3D |      | 1 phone(s)
+  SCENE_09 | 10s | 3D |      | 1 phone(s)
+  SCENE_11 | 8s | 3D | TEXT | 1 phone(s)
+  SCENE_12 | 8s | 3D | TEXT | 1 phone(s)
+  SCENE_15 | 8s | 3D | TEXT | 1 phone(s)
+  SCENE_23 | 8s | 3D | TEXT | 1 phone(s)
+  SCENE_24 | 8s | 3D | TEXT | 1 phone(s)
+
+-- 2 PHONES (8) --
+  SCENE_03 | 8s | 3D |      | 2 phone(s)
+  SCENE_10 | 10s | 3D |      | 2 phone(s)
+  SCENE_13 | 8s | 3D |      | 2 phone(s)
+  SCENE_18 | 8s | 3D | TEXT | 2 phone(s)
+  SCENE_19 | 8s | 3D | TEXT | 2 phone(s)
+  SCENE_20 | 8s | 3D | TEXT | 2 phone(s)
+  SCENE_21 | 8s | 3D |      | 2 phone(s)
+  SCENE_30 | 8s | 3D | TEXT | 2 phone(s)
+
+-- 3+ PHONES (9) --
+  SCENE_14 | 10s | 3D |      | 3 phone(s)
+  SCENE_16 | 10s | 3D |      | 3 phone(s)
+  SCENE_17 | 8s | 3D | TEXT | 3 phone(s)
+  SCENE_22 | 10s | 3D | TEXT | 3 phone(s)
+  SCENE_25 | 8s | 3D | TEXT | 4 phone(s)
+  SCENE_26 | 8s | 3D | TEXT | 4 phone(s)
+  SCENE_27 | 8s | 3D | TEXT | 4 phone(s)
+  SCENE_28 | 8s | 3D | TEXT | 5 phone(s)
+  SCENE_29 | 8s | 3D |      | 13 phone(s)

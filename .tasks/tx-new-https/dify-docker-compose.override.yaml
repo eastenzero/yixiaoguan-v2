@@ -1,0 +1,5 @@
+# Override: bind Dify nginx to loopback only; public access goes through host nginx on 443.
+services:
+  nginx:
+    ports: !override
+      - "127.0.0.1:${EXPOSE_NGINX_PORT:-3000}:${NGINX_PORT:-80}"

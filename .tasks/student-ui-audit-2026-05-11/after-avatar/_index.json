@@ -1,0 +1,45 @@
+{
+  "phase": "after-avatar",
+  "captured_at": "2026-05-11T17:20:17.370Z",
+  "demo_conv_id": 162,
+  "demo_conv_status": "resolved",
+  "student_user_id": 18,
+  "student_name": "陈锦阳",
+  "routes": [
+    {
+      "name": "01-login",
+      "path": "/#/pages/login/index",
+      "ok": true
+    },
+    {
+      "name": "02-home",
+      "path": "/#/pages/home/index",
+      "ok": true
+    },
+    {
+      "name": "03-chat-empty",
+      "path": "/#/pages/chat/index",
+      "ok": true
+    },
+    {
+      "name": "04-chat-with-conv",
+      "path": "/#/pages/chat/index",
+      "ok": true
+    },
+    {
+      "name": "05-history",
+      "path": "/#/pages/chat/history",
+      "ok": true
+    },
+    {
+      "name": "06-services",
+      "path": "/#/pages/services/index",
+      "ok": true
+    },
+    {
+      "name": "07-profile",
+      "path": "/#/pages/profile/index",
+      "ok": true
+    }
+  ]
+}

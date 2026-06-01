@@ -1,0 +1,24 @@
+== Render Queue: 5 Scenes (Final) ==
+Generated: Tue May 12 2026 03:26:14 GMT+0800
+Time budget: S23=6s, S11=8s, S18=8s, S27=6s, S30=6s (34s total)
+
+SCENE_23 | 186.7s - 194.8s (8.0s) -> ae-scene-23.avi
+SCENE_11 | 84.3s - 92.4s (8.0s) -> ae-scene-11.avi
+SCENE_18 | 144.6s - 152.6s (8.0s) -> ae-scene-18.avi
+SCENE_27 | 218.9s - 226.9s (8.0s) -> ae-scene-27.avi
+SCENE_30 | 243.0s - 251.0s (8.0s) -> ae-scene-30.avi
+
+Total: 5 segments queued
+
+After render, convert to H.264 mp4:
+
+ffmpeg -i "F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\render-segments\ae-scene-23.avi" -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p -r 30 "F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\render-segments\ae-scene-23.mp4"
+ffmpeg -i "F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\render-segments\ae-scene-11.avi" -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p -r 30 "F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\render-segments\ae-scene-11.mp4"
+ffmpeg -i "F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\render-segments\ae-scene-18.avi" -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p -r 30 "F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\render-segments\ae-scene-18.mp4"
+ffmpeg -i "F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\render-segments\ae-scene-27.avi" -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p -r 30 "F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\render-segments\ae-scene-27.mp4"
+ffmpeg -i "F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\render-segments\ae-scene-30.avi" -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p -r 30 "F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\render-segments\ae-scene-30.mp4"
+
+Steps:
+1. Ctrl+Alt+0 -> Render Queue
+2. Click Render
+3. Run ffmpeg commands above

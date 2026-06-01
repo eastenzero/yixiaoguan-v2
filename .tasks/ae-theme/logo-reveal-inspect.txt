@@ -1,0 +1,398 @@
+=== Quick Logo Reveal Template Inspection ===
+Project items: 68
+
+#1 [FOLDER] compositions
+#2 [COMP] background (7800x4389, 7.0s, 1 layers)
+  L1 [ON] White Solid 3 [Footage]
+
+#3 [COMP] Comp 1 (3840x2160, 20.0s, 1 layers)
+  L1 [ON] Shape Layer 5
+
+#4 [COMP] Comp 2 (3840x2160, 20.0s, 1 layers)
+  L1 [ON] Shape Layer 5
+
+#5 [COMP] Comp 7 (3840x2160, 20.0s, 2 layers)
+  L1 [ON] Comp 2 [PreComp 3840x2160]
+  L2 [ON] Comp 1 [PreComp 3840x2160]
+
+#6 [COMP] Comp 8 (3840x2160, 7.5s, 59 layers)
+  L1 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L2 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L3 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L4 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L5 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L6 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L7 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L8 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L9 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L10 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L11 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L12 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L13 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L14 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L15 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L16 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L17 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L18 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L19 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L20 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L21 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L22 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L23 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L24 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L25 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L26 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L27 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L28 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L29 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L30 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L31 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L32 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L33 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L34 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L35 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L36 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L37 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L38 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L39 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L40 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L41 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L42 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L43 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L44 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L45 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L46 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L47 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L48 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L49 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L50 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L51 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L52 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L53 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L54 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L55 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L56 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L57 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L58 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L59 [ON] holder_extrude_2 [PreComp 3840x2160]
+
+#7 [COMP] Comp 9 (3840x2160, 7.5s, 58 layers)
+  L1 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L2 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L3 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L4 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L5 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L6 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L7 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L8 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L9 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L10 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L11 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L12 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L13 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L14 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L15 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L16 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L17 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L18 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L19 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L20 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L21 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L22 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L23 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L24 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L25 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L26 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L27 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L28 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L29 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L30 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L31 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L32 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L33 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L34 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L35 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L36 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L37 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L38 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L39 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L40 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L41 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L42 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L43 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L44 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L45 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L46 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L47 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L48 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L49 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L50 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L51 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L52 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L53 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L54 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L55 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L56 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L57 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L58 [ON] holder_extrude_2 [PreComp 3840x2160]
+
+#8 [COMP] Comp 10 (3840x2160, 10.0s, 2 layers)
+  L1 [off] logo_holder [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+  L2 [ON] 07.jpg [Footage 07.jpg]
+
+#9 [COMP] Comp 11 (3840x2160, 10.0s, 2 layers)
+  L1 [off] logo_holder [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+  L2 [ON] spiral_noise.jpg [Footage spiral_noise.jpg]
+
+#10 [COMP] Comp 12 (3840x2160, 10.0s, 2 layers)
+  L1 [off] logo_holder [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+  L2 [ON] White Solid 1 [Footage]
+
+#11 [COMP] extrude (3840x2160, 12.0s, 63 layers)
+  L1 [ON] Camera 1
+  L2 [ON] holder_extrude_1 [PreComp 3840x2160]
+  L3 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L4 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L5 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L6 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L7 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L8 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L9 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L10 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L11 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L12 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L13 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L14 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L15 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L16 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L17 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L18 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L19 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L20 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L21 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L22 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L23 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L24 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L25 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L26 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L27 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L28 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L29 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L30 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L31 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L32 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L33 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L34 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L35 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L36 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L37 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L38 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L39 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L40 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L41 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L42 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L43 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L44 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L45 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L46 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L47 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L48 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L49 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L50 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L51 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L52 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L53 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L54 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L55 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L56 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L57 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L58 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L59 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L60 [ON] holder_extrude_2 [PreComp 3840x2160]
+  L61 [ON] Comp 8 [PreComp 3840x2160]
+  L62 [ON] Comp 9 [PreComp 3840x2160]
+  L63 [ON] Comp 9 [PreComp 3840x2160]
+
+#12 [COMP] gloss 8 (3840x2160, 10.0s, 3 layers)
+  L1 [off] logo_white [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+  L2 [ON] reflection map 3 [PreComp 3840x2160]
+  L3 [off] logo_white [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#13 [COMP] gloss 9 (3840x2160, 10.0s, 3 layers)
+  L1 [off] logo_white [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+  L2 [ON] reflection map 5 [PreComp 3840x2160]
+  L3 [off] logo_white [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#14 [COMP] holder_extrude_1 (3840x2160, 10.0s, 1 layers)
+  L1 [ON] logo_holder [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#15 [COMP] holder_extrude_2 (3840x2160, 10.0s, 3 layers)
+  L1 [ON] Comp 10 [PreComp 3840x2160]
+  L2 [ON] Comp 11 [PreComp 3840x2160]
+  L3 [ON] Comp 12 [PreComp 3840x2160]
+
+#16 [COMP] initial 2 (3840x2160, 10.0s, 1 layers)
+  L1 [ON] logo_white [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#17 [COMP] line 9 (3840x2160, 10.0s, 1 layers)
+  L1 [ON] logo_white [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#18 [COMP] line 10 (3840x2160, 10.0s, 1 layers)
+  L1 [ON] logo_white 3 [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#19 [COMP] line 11 (3840x2160, 10.0s, 1 layers)
+  L1 [ON] logo_white 3 [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#20 [COMP] line 14 (3840x2160, 10.0s, 1 layers)
+  L1 [ON] logo_white 3 [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#21 [COMP] line 15 (3840x2160, 10.0s, 1 layers)
+  L1 [ON] logo_white 3 [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#22 [COMP] line 17 (3840x2160, 10.0s, 1 layers)
+  L1 [ON] logo_white 3 [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#23 [COMP] line 18 (3840x2160, 10.0s, 1 layers)
+  L1 [ON] logo_white 3 [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#24 [COMP] logo (3840x2160, 10.0s, 1 layers)
+  L1 [ON] logo_holder [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#25 [COMP] logo_gloss 4 (3840x2160, 10.0s, 2 layers)
+  L1 [ON] gloss 9 [PreComp 3840x2160]
+  L2 [ON] logo [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#26 [COMP] logo_white (3840x2160, 10.0s, 1 layers)
+  L1 [ON] logo [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#27 [COMP] logo_white 2 (3840x2160, 10.0s, 2 layers)
+  L1 [ON] gloss 8 [PreComp 3840x2160]
+  L2 [ON] logo [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#28 [COMP] logo_white 3 (3840x2160, 10.0s, 1 layers)
+  L1 [ON] logo [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+
+#29 [COMP] normal_version (3840x2160, 6.0s, 22 layers)
+  L1 [ON] flare1.jpg [Footage flare1.jpg]
+  L2 [ON] flare1.mov [Footage flare1.mov]
+  L3 [off] Null 1 [Footage]
+  L4 [ON] Camera 1
+  L5 [ON] flare.jpg [Footage flare.jpg]
+  L6 [ON] tagline03 [PreComp 3840x2160]
+  L7 [ON] wave [PreComp 3840x2160]
+  L8 [ON] line 14 [PreComp 3840x2160]
+  L9 [ON] logo_gloss 4 [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+  L10 [ON] logo_white 2 [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+  L11 [ON] line 17 [PreComp 3840x2160]
+  L12 [ON] line 18 [PreComp 3840x2160]
+  L13 [ON] line 15 [PreComp 3840x2160]
+  L14 [ON] extrude [PreComp 3840x2160]
+  L15 [ON] initial 2 [PreComp 3840x2160]
+  L16 [ON] initial 8 [PreComp 3840x2160]
+  L17 [ON] Pre-comp 4 [PreComp 3840x2160]
+  L18 [ON] Pre-comp 1 [PreComp 3840x2160]
+  L19 [ON] shadow 4 [PreComp 3840x2160]
+  L20 [ON] shadow 3 [PreComp 3840x2160]
+  L21 [ON] side_shadow_5 [PreComp 4800x2700]
+  L22 [ON] background [PreComp 7800x4389]
+
+#30 [COMP] Pre-comp 1 (3840x2160, 6.0s, 1 layers)
+  L1 [ON] 1 [PreComp 3840x2160]
+
+#31 [COMP] Pre-comp 2 (3840x2160, 6.0s, 2 layers)
+  L1 [ON] line 11 [PreComp 3840x2160]
+  L2 [ON] line 10 [PreComp 3840x2160]
+
+#32 [COMP] Pre-comp 3 (3840x2160, 6.0s, 1 layers)
+  L1 [ON] initial 8 [PreComp 3840x2160]
+
+#33 [COMP] Pre-comp 4 (3840x2160, 6.0s, 1 layers)
+  L1 [ON] 1 [PreComp 3840x2160]
+
+#34 [COMP] Pre-comp 5 (3840x2160, 6.0s, 2 layers)
+  L1 [ON] caustics [Footage]
+  L2 [off] ripple [PreComp 3840x2160]
+
+#35 [COMP] reflection map 3 (3840x2160, 12.0s, 1 layers)
+  L1 [ON] reflection map 4 [PreComp 3840x2160]
+
+#36 [COMP] reflection map 4 (3840x2160, 12.0s, 2 layers)
+  L1 [off] Black Solid 7 [Footage]
+  L2 [ON] reflect_map.jpg [Footage reflect_map.jpg]
+
+#37 [COMP] reflection map 5 (3840x2160, 12.0s, 1 layers)
+  L1 [ON] reflection map 6 [PreComp 3840x2160]
+
+#38 [COMP] reflection map 6 (3840x2160, 12.0s, 3 layers)
+  L1 [off] Black Solid 7 [Footage]
+  L2 [off] reflect_map.jpg [Footage reflect_map.jpg]
+  L3 [ON] reflect_map.jpg [Footage reflect_map.jpg]
+
+#39 [COMP] ripple (3840x2160, 10.0s, 2 layers)
+  L1 [ON] Gray Solid 1 [Footage]
+  L2 [ON] Gray Solid 1 [Footage]
+
+#40 [COMP] short_version (3840x2160, 6.0s, 17 layers)
+  L1 [ON] flare2.jpg [Footage flare2.jpg]
+  L2 [ON] flare2.mov [Footage flare2.mov]
+  L3 [ON] flare.jpg [Footage flare.jpg]
+  L4 [off] Null 1 [Footage]
+  L5 [ON] Camera 1
+  L6 [ON] tagline03 [PreComp 3840x2160]
+  L7 [ON] wave [PreComp 3840x2160]
+  L8 [ON] line 14 [PreComp 3840x2160]
+  L9 [ON] logo_gloss 4 [PreComp 3840x2160] <<< LOGO PLACEHOLDER?
+  L10 [ON] line 15 [PreComp 3840x2160]
+  L11 [ON] initial 2 [PreComp 3840x2160]
+  L12 [ON] initial 8 [PreComp 3840x2160]
+  L13 [ON] Pre-comp 4 [PreComp 3840x2160]
+  L14 [ON] Pre-comp 1 [PreComp 3840x2160]
+  L15 [ON] shadow 4 [PreComp 3840x2160]
+  L16 [ON] shadow 3 [PreComp 3840x2160]
+  L17 [ON] background [PreComp 7800x4389]
+
+#41 [COMP] side_shadow_5 (4800x2700, 10.0s, 1 layers)
+  L1 [ON] line 9 [PreComp 3840x2160]
+
+#42 [COMP] tagline03 (3840x2160, 7.5s, 2 layers)
+  L1 [ON] tagline_holder [PreComp 3840x2160]
+  L2 [ON] Comp 7 [PreComp 3840x2160]
+
+#43 [FOLDER] files
+#44 [FOOTAGE] 07.jpg => F:\Documents\7\AE模板-简约干净LOGO徽标快速展示片头动画\Quick Logo Reveal\(Footage)\files\07.jpg
+#45 [FOOTAGE] flare1.jpg => F:\Documents\7\AE模板-简约干净LOGO徽标快速展示片头动画\Quick Logo Reveal\(Footage)\files\flare1.jpg
+#46 [FOOTAGE] flare2.jpg => F:\Documents\7\AE模板-简约干净LOGO徽标快速展示片头动画\Quick Logo Reveal\(Footage)\files\flare2.jpg
+#47 [FOOTAGE] flare.jpg => F:\Documents\7\AE模板-简约干净LOGO徽标快速展示片头动画\Quick Logo Reveal\(Footage)\files\flare.jpg
+#48 [FOOTAGE] reflect_map.jpg => F:\Documents\7\AE模板-简约干净LOGO徽标快速展示片头动画\Quick Logo Reveal\(Footage)\files\reflect_map.jpg
+#49 [FOOTAGE] spiral_noise.jpg => F:\Documents\7\AE模板-简约干净LOGO徽标快速展示片头动画\Quick Logo Reveal\(Footage)\files\spiral_noise.jpg
+#50 [FOOTAGE] flare1.mov => F:\Documents\7\AE模板-简约干净LOGO徽标快速展示片头动画\Quick Logo Reveal\(Footage)\files\flare1.mov
+#51 [FOOTAGE] flare2.mov => F:\Documents\7\AE模板-简约干净LOGO徽标快速展示片头动画\Quick Logo Reveal\(Footage)\files\flare2.mov
+#52 [FOLDER] holders_and_render
+#53 [COMP] logo_holder (3840x2160, 10.0s, 4 layers)
+  L1 [ON] G_logo.png [Footage G_logo.png] <<< LOGO PLACEHOLDER?
+  L2 [off] n_logo.png [Footage n_logo.png] <<< LOGO PLACEHOLDER?
+  L3 [off] bull_film_logo.png [Footage bull_film_logo.png] <<< LOGO PLACEHOLDER?
+  L4 [off] cube_logo.png [Footage cube_logo.png] <<< LOGO PLACEHOLDER?
+
+#54 [COMP] quick_logo_reveal_2160p (3840x2160, 5.0s, 3 layers)
+  L1 [ON] CUSTOM_LAYER [Footage]
+  L2 [ON] normal_version [PreComp 3840x2160]
+  L3 [ON] short_version [PreComp 3840x2160]
+
+#55 [COMP] tagline_holder (3840x2160, 10.0s, 2 layers)
+  L1 [ON] COMPANY slogan here
+  L2 [off] DELICATE MODERN SHAPE
+
+#56 [FOLDER] logos
+#57 [FOOTAGE] bull_film_logo.png => F:\Documents\7\AE模板-简约干净LOGO徽标快速展示片头动画\Quick Logo Reveal\(Footage)\logos\bull_film_logo.png
+#58 [FOOTAGE] cube_logo.png => F:\Documents\7\AE模板-简约干净LOGO徽标快速展示片头动画\Quick Logo Reveal\(Footage)\logos\cube_logo.png
+#59 [FOOTAGE] G_logo.png => F:\Documents\7\AE模板-简约干净LOGO徽标快速展示片头动画\Quick Logo Reveal\(Footage)\logos\G_logo.png
+#60 [FOOTAGE] n_logo.png => F:\Documents\7\AE模板-简约干净LOGO徽标快速展示片头动画\Quick Logo Reveal\(Footage)\logos\n_logo.png
+#61 [FOLDER] Solids
+#62 [FOOTAGE] Adjustment Layer 165
+#63 [FOOTAGE] Adjustment Layer 190
+#64 [FOOTAGE] Black Solid 7
+#65 [FOOTAGE] Gray Solid 1
+#66 [FOOTAGE] Null 1
+#67 [FOOTAGE] White Solid 1
+#68 [FOOTAGE] White Solid 3

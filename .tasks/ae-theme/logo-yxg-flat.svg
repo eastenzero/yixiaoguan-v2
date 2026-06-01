@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#5B21B6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Shield body -->
+  <path d="M256 52 L420 130 C420 130 425 320 256 448 C87 320 92 130 92 130 Z"
+        fill="none" stroke="url(#g1)" stroke-width="28" stroke-linejoin="round"/>
+
+  <!-- Graduation cap - top triangle -->
+  <polygon points="256,68 370,128 142,128"
+           fill="url(#g1)"/>
+  <!-- Graduation cap - brim line -->
+  <line x1="142" y1="128" x2="370" y2="128"
+        stroke="url(#g1)" stroke-width="10" stroke-linecap="round"/>
+  <!-- Graduation cap - tassel string -->
+  <line x1="370" y1="128" x2="390" y2="170"
+        stroke="url(#g1)" stroke-width="6" stroke-linecap="round"/>
+  <!-- Graduation cap - tassel ball -->
+  <circle cx="390" cy="176" r="10" fill="url(#g1)"/>
+
+  <!-- Chat bubble -->
+  <circle cx="256" cy="270" r="80" fill="url(#g1)"/>
+  <!-- Chat bubble tail -->
+  <path d="M210 330 L195 370 L240 340" fill="url(#g1)"/>
+
+  <!-- Medical cross (white, cut out) -->
+  <rect x="236" y="235" width="40" height="70" rx="6" fill="#FFFFFF"/>
+  <rect x="221" y="250" width="70" height="40" rx="6" fill="#FFFFFF"/>
+
+  <!-- Left hand/leaf -->
+  <path d="M150 340 C150 310 180 280 210 300 C195 330 175 355 150 370 Z"
+        fill="url(#g1)"/>
+  <!-- Right hand/leaf -->
+  <path d="M362 340 C362 310 332 280 302 300 C317 330 337 355 362 370 Z"
+        fill="url(#g1)"/>
+</svg>

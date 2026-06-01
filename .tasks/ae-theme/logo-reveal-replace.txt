@@ -1,0 +1,13 @@
+[OK] Imported logo: F:\Documents\code\yixiaoguan-v2\.tasks\ae-theme\logo-yxg-4k.png
+[OK] Disabled: yxg-logo
+[OK] Disabled: G_logo.png
+[OK] Disabled: n_logo.png
+[OK] Disabled: bull_film_logo.png
+[OK] Disabled: cube_logo.png
+[OK] Added yxg-logo to logo_holder, scale=40.2%
+[OK] Tagline: '医小管' -> '医管智枢'
+
+[INFO] Render comp: quick_logo_reveal_2160p (3840x2160, 5.0s)
+  L1 CUSTOM_LAYER
+  L2 normal_version
+  L3 short_version

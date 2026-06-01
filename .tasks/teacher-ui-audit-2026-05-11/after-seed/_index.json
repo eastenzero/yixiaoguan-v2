@@ -1,0 +1,63 @@
+{
+  "phase": "after-seed",
+  "captured_at": "2026-05-11T13:12:18.491Z",
+  "demo_conv_id": 138,
+  "demo_entry_id": 1,
+  "routes": [
+    {
+      "name": "01-login",
+      "path": "/#/pages/login/index",
+      "ok": true
+    },
+    {
+      "name": "02-dashboard",
+      "path": "/#/pages/dashboard/index",
+      "ok": true
+    },
+    {
+      "name": "03-questions-list",
+      "path": "/#/pages/questions/index",
+      "ok": true
+    },
+    {
+      "name": "04-questions-list-pending",
+      "path": "/#/pages/questions/index",
+      "ok": true
+    },
+    {
+      "name": "05-questions-detail",
+      "path": "/#/pages/questions/detail?id=138",
+      "ok": true
+    },
+    {
+      "name": "06-knowledge-list",
+      "path": "/#/pages/knowledge/index",
+      "ok": true
+    },
+    {
+      "name": "07-knowledge-detail",
+      "path": "/#/pages/knowledge/detail?id=1",
+      "ok": true
+    },
+    {
+      "name": "08-profile",
+      "path": "/#/pages/profile/index",
+      "ok": true
+    },
+    {
+      "name": "09-analytics",
+      "path": "/#/pages/analytics/index",
+      "ok": true
+    },
+    {
+      "name": "10-admin-users",
+      "path": "/#/pages/admin/users",
+      "ok": true
+    },
+    {
+      "name": "11-admin-import",
+      "path": "/#/pages/admin/import",
+      "ok": true
+    }
+  ]
+}

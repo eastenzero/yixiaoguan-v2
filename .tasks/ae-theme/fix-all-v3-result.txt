@@ -1,0 +1,17 @@
+== Fix All v3 ==
+Tue May 12 2026 02:59:46 GMT+0800
+
+Mockup layers disabled: 0
+
+TEXT SCENE_23 #2 (title, 130px): 医小管 · 智慧校园助理
+TEXT SCENE_23 #1 (sub, 60px): 基于大语言模型的医学教育智能问答平台
+TEXT SCENE_11 #1 (title, 130px): AI 实时问答 · 秒级响应
+TEXT SCENE_11 #2 (sub, 60px): 支持上下文理解 · RAG知识检索增强
+TEXT SCENE_18 #2 (title, 130px): 学生端 × 教师端 双向协同
+TEXT SCENE_18 #1 (sub, 60px): 问题自动分发 · 教师实时介入 · 全程可追溯
+TEXT SCENE_28 #2 (title, 130px): 六大核心模块 一站式覆盖
+TEXT SCENE_28 #1 (sub, 60px): 智能问答 · 知识库 · 服务中心 · 数据分析 · 消息管理
+TEXT SCENE_30 #2 (title, 130px): 医学教育数字化转型方案
+TEXT SCENE_30 #1 (sub, 60px): 山东第一医科大学 联合研发
+
+Total: 10 operations

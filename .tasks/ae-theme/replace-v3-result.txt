@@ -1,0 +1,27 @@
+== Replace v3 Results ==
+Tue May 12 2026 02:50:20 GMT+0800
+
+OK SCENE_23 Screen 01 (Screen Solid 2) -> 02-home.png | scale=148.9% | overflow=1963px
+OK SCENE_23 Text sub: 智能医学问答助手
+OK SCENE_23 Text title: 医小管
+OK SCENE_11 Screen 01 (Screen Solid 2) -> 04-chat-with-conv.png | scale=148.9% | overflow=4px
+OK SCENE_11 Text title: AI 实时问答
+OK SCENE_11 Text sub: 流式回复 · 智能检索
+OK SCENE_18 Screen 01 (Screen Solid 2) -> 03-chat-empty.png | scale=148.9% | overflow=153px
+OK SCENE_18 Screen 02 (Screen Solid 2) -> 02-dashboard.png | scale=148.9% | overflow=930px
+OK SCENE_18 Text sub: 双端实时协同
+OK SCENE_18 Text title: 学生提问 × 教师管理
+OK SCENE_28 Screen 05 (Screen Solid 2) -> 09-analytics.png | scale=148.9% | overflow=3375px
+OK SCENE_28 Screen 04 (Screen Solid 2) -> 02-dashboard.png | scale=148.9% | overflow=930px
+OK SCENE_28 Screen 03 (Screen Solid 2) -> 06-services.png | scale=148.9% | overflow=153px
+OK SCENE_28 Screen 02 (Screen Solid 2) -> 04-chat-with-conv.png | scale=148.9% | overflow=4px
+OK SCENE_28 Screen 01 (Screen Solid 2) -> 02-home.png | scale=148.9% | overflow=1963px
+OK SCENE_28 Text sub: 5 大核心功能一览
+OK SCENE_28 Text title: 全方位智能教育
+OK SCENE_30 Screen 02 (Screen Solid 2) -> 09-analytics.png | scale=148.9% | overflow=3375px
+OK SCENE_30 Screen 01 (Screen Solid 2) -> 06-services.png | scale=148.9% | overflow=153px
+OK SCENE_30 Text sub: 实时联动
+OK SCENE_30 Text title: 双端协同
+
+Total: 21 operations
+Ctrl+Z to undo
