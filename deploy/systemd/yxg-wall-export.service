@@ -1,0 +1,23 @@
+[Unit]
+Description=医小管 内测大屏 数据导出 (postgres → JSON 快照)
+After=network.target postgresql.service
+Wants=network.target
+
+[Service]
+Type=oneshot
+User=easten
+Group=easten
+WorkingDirectory=/home/easten/dev/yixiaoguan-v2
+ExecStart=/usr/bin/python3 /home/easten/dev/yixiaoguan-v2/scripts/wall_export.py --out /var/www/yixiaoguan/wall/data.json
+
+# 日志直接写到 systemd journal, 用 journalctl -u yxg-wall-export 查看
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=yxg-wall-export
+
+# 失败不破坏 timer; 单次最多跑 30s 后强杀
+TimeoutStartSec=30
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

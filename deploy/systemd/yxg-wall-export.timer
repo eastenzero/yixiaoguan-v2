@@ -1,0 +1,14 @@
+[Unit]
+Description=每 5 分钟触发一次 wall_export.py 快照刷新
+Requires=yxg-wall-export.service
+
+[Timer]
+# 启动后 30s 跑一次 (启动即生成数据), 然后每 5 分钟一次
+OnBootSec=30s
+OnUnitActiveSec=5min
+AccuracySec=10s
+Persistent=true
+Unit=yxg-wall-export.service
+
+[Install]
+WantedBy=timers.target
