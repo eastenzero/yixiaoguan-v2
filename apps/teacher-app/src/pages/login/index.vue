@@ -12,7 +12,7 @@
         <!-- Logo 区域 -->
         <view class="logo-area">
           <view class="logo-icon">
-            <IconGraduationCap :size="48" color="#ffffff" />
+            <image class="brand-logo" src="/static/favicon.svg" mode="aspectFit" />
           </view>
           <text class="logo-title">医小管</text>
           <text class="logo-subtitle">教师工作台</text>
@@ -114,7 +114,6 @@ import { ref } from 'vue'
 import { login as loginApi, getUserInfo } from '@/api/auth'
 import { useUserStore } from '@/stores/user'
 import { useWsStore } from '@/stores/websocket'
-import IconGraduationCap from '../../components/icons/IconGraduationCap.vue'
 import IconUser from '../../components/icons/IconUser.vue'
 import IconLock from '../../components/icons/IconLock.vue'
 import IconEye from '../../components/icons/IconEye.vue'
@@ -262,16 +261,21 @@ const handleForgotPassword = () => {
 }
 
 .logo-icon {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, $primary, $primary-container);
-  border-radius: 20px;
+  width: 96px;
+  height: 96px;
+  background: transparent;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
-  box-shadow: 0 8px 24px rgba($primary, 0.3);
-  transform: rotate(3deg);
+  box-shadow: none;
+  transform: none;
+}
+
+.brand-logo {
+  width: 96px;
+  height: 96px;
 }
 
 .logo-title {

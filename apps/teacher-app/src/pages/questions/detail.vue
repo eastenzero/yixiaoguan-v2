@@ -26,7 +26,7 @@
           </view>
           <view class="student-meta">
             <view class="student-header">
-              <text class="student-name">学号 {{ escalation.student_id }}</text>
+              <text class="student-name">{{ escalation.student_name || `学号 ${escalation.student_id}` }}</text>
               <view class="status-tag" :class="`status-${escalation.status}`">
                 <text class="status-text">{{ getStatusText(escalation.status) }}</text>
               </view>

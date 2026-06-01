@@ -50,7 +50,7 @@
                 :size="44"
               />
               <view class="student-meta">
-                <text class="student-name">学号 {{ item.student_id }}</text>
+                <text class="student-name">{{ item.student_name || `学号 ${item.student_id}` }}</text>
                 <text class="student-major">{{ formatTime(item.updated_at) }}</text>
               </view>
             </view>
