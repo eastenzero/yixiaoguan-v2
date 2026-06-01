@@ -10,9 +10,10 @@
 | 01 | [`01-tech-feasibility.md`](./01-tech-feasibility.md) | 技术路线可行性分析（Playwright + Remotion + 配音 + Rotato） | ✅ 第一稿 |
 | 02 | [`02-pages-inventory.md`](./02-pages-inventory.md) | 页面清单与截图（教师端） | ✅ 第一稿 |
 | 03 | [`03-ae-template-analysis.md`](./03-ae-template-analysis.md) | AE 模板分析（iPhone 14 Pro，场景扫描） | ✅ 完成 |
-| 04 | [`04-script-plan.md`](./04-script-plan.md) | **导演剧本契约 v3**（已敲定形态/时长/视角/分屏/录制环境/输出格式） | ✅ v3 定稿 |
-| 05 | _05-asset-checklist.md_ | 资源清单（字体、音乐、配音 API、品牌） | 📋 待写 |
-| 06 | _06-render-pipeline.md_ | 完整渲染流水线说明 | 📋 待写 |
+| 04 | [`04-script-plan.md`](./04-script-plan.md) | **导演剧本契约 v3.1**（亮色主题修订；形态/时长/视角/分屏/录制环境/输出格式） | ✅ v3.1 定稿 |
+| 05 | [`05-progress-checkpoint.md`](./05-progress-checkpoint.md) | **阶段性进展 checkpoint**（接手 AI 的入口文件） | ✅ 2026-05-11 21:55 |
+| 06 | _06-asset-checklist.md_ | 资源清单（字体、音乐、配音 API、品牌） | 📋 待写 |
+| 07 | _07-render-pipeline.md_ | 完整渲染流水线说明 | 📋 待写 |
 
 ## 当前进度
 

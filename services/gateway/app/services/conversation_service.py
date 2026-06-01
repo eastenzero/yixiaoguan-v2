@@ -175,7 +175,32 @@ async def list_conversations(
     result = await db.execute(stmt)
     items = list(result.scalars().all())
 
+    # 批量补 student_name / teacher_name —— 让前端不再显示"学号 {id}"占位
+    await _attach_user_names(db, items)
+
     return items, total
+
+
+async def _attach_user_names(db: AsyncSession, convs: list[Conversation]) -> None:
+    """批量查 users.name 并附加到 conversation 实例上（transient 属性，
+    Pydantic from_attributes=True 会把它们带到 ConversationResponse 输出）。"""
+    if not convs:
+        return
+    user_ids: set[int] = set()
+    for c in convs:
+        if c.student_id is not None:
+            user_ids.add(c.student_id)
+        if c.teacher_id is not None:
+            user_ids.add(c.teacher_id)
+    if not user_ids:
+        return
+    rows = (await db.execute(
+        select(User.id, User.name).where(User.id.in_(user_ids))
+    )).all()
+    name_map: dict[int, str | None] = {r.id: r.name for r in rows}
+    for c in convs:
+        c.student_name = name_map.get(c.student_id) if c.student_id is not None else None
+        c.teacher_name = name_map.get(c.teacher_id) if c.teacher_id is not None else None
 
 
 async def get_conversation(
@@ -191,6 +216,7 @@ async def get_conversation(
         return None
     if not await can_access_conversation(db, conv, user):
         return None
+    await _attach_user_names(db, [conv])
     return conv
 
 

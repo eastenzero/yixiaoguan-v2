@@ -62,6 +62,16 @@ class PendingKnowledgeReviewResponse(BaseModel):
     total: int
 
 
+class KnowledgeEntryListResponse(BaseModel):
+    """
+    GET /api/v1/knowledge/entries 响应。
+    非 admin 返回当前教师提交的条目（"我的知识"）；admin 返回全部。
+    """
+
+    items: list[KnowledgeDraftEntryResponse]
+    total: int
+
+
 class RejectKnowledgeReviewRequest(BaseModel):
     reject_reason: str | None = None
 

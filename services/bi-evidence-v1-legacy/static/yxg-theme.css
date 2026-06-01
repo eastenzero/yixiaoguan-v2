@@ -1,0 +1,218 @@
+/* ════════════════════════════════════════════════════════════════
+ * 医小管 内测特刊 · 全局主题 (紫绛学术杂志风)
+ * 加载方式：每页 markdown 顶部 <svelte:head><link rel=stylesheet href="/bi/yxg-theme.css"></svelte:head>
+ * ════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.font.im/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* 主色板（与 evidence.config.yaml colorPalettes 对齐） */
+  --jiang:    #5B1F5B;   /* 紫绛 主色 */
+  --huangzi:  #3A2059;   /* 皇室紫 辅色 */
+  --zhuhong:  #A23130;   /* 朱红 强调 */
+  --cooljin:  #A98B4F;   /* 冷金 装饰 */
+  --xiangya:  #F8F4EC;   /* 象牙 背景 */
+  --mohei:    #1F1A24;   /* 墨黑 正文 */
+  --hui:      #6B6470;   /* 灰 次级 */
+  --qianzi:   #8B5A8B;   /* 浅紫 */
+  --qianjin:  #D4B97D;   /* 浅金 */
+  --qianzhu:  #C77575;   /* 浅朱 */
+  --yumi:     #FBF8F1;   /* 玉米白 hover bg */
+
+  /* 排版 token */
+  --serif: 'Noto Serif SC', 'STSong', 'SimSun', serif;
+  --sans:  'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+/* 全局背景 + 字体 */
+body {
+  background: var(--xiangya) !important;
+  color: var(--mohei);
+  font-family: var(--sans);
+}
+.markdown, .markdown p, .markdown li {
+  color: var(--mohei);
+  font-family: var(--sans);
+}
+.markdown h1, .markdown h2, .markdown h3, .markdown h4 {
+  font-family: var(--serif);
+  color: var(--huangzi);
+  font-weight: 700;
+}
+
+/* ── Hero 区 ── */
+.yxg-hero {
+  padding: 4rem 0 1.5rem;
+  position: relative;
+}
+.yxg-hero h1 {
+  font-family: var(--serif);
+  font-weight: 900;
+  font-size: clamp(2.5rem, 5vw, 4.8rem);
+  line-height: 1.04;
+  color: var(--jiang);
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.005em;
+}
+.yxg-hero .yxg-eyebrow {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--cooljin);
+  font-weight: 500;
+  margin-bottom: 1.1rem;
+}
+.yxg-hero .yxg-sub {
+  font-family: var(--serif);
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  color: var(--hui);
+  margin: 0.6rem 0 0.4rem;
+  font-weight: 400;
+}
+.yxg-hero .yxg-meta {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--cooljin);
+  letter-spacing: 0.08em;
+  margin-top: 0.8rem;
+}
+
+/* ── 章节分隔（细金线 + § 标记） ── */
+.yxg-divider {
+  border: none;
+  border-top: 1px solid var(--cooljin);
+  margin: 3.5rem 0 2rem;
+  position: relative;
+  height: 0;
+  opacity: 0.6;
+}
+.yxg-divider::after {
+  content: '§';
+  position: absolute;
+  top: -1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--xiangya);
+  padding: 0 1.2rem;
+  color: var(--cooljin);
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+
+/* ── 章节标题（双层：eyebrow + title） ── */
+.yxg-section-eyebrow {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--cooljin);
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+.yxg-section-title {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  color: var(--huangzi);
+  margin: 0 0 0.4rem;
+  line-height: 1.3;
+}
+.yxg-section-lead {
+  font-family: var(--serif);
+  font-size: 1rem;
+  color: var(--hui);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+  max-width: 60ch;
+}
+
+/* ── Pull-quote / 卷首语 ── */
+.yxg-quote {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  line-height: 1.7;
+  color: var(--huangzi);
+  border-left: 3px solid var(--zhuhong);
+  padding: 0.6rem 0 0.6rem 1.5rem;
+  margin: 2rem 0;
+  font-style: italic;
+}
+
+/* ── 数字卡片字体覆写（BigValue 内部 class 命中） ── */
+:global(.big-value-title),
+:global([class*="big-value"] [class*="title"]) {
+  font-family: var(--serif) !important;
+  color: var(--hui) !important;
+  font-size: 0.85rem !important;
+  letter-spacing: 0.05em;
+  font-weight: 400 !important;
+}
+:global(.big-value-value),
+:global([class*="big-value"] [class*="value"]) {
+  font-family: var(--sans) !important;
+  font-weight: 300 !important;
+  color: var(--jiang) !important;
+  font-size: clamp(2.2rem, 4vw, 3.4rem) !important;
+  letter-spacing: -0.02em;
+  line-height: 1.05 !important;
+}
+
+/* ── DataTable 字体 ── */
+:global(table.data-table),
+:global(.data-table) {
+  font-family: var(--sans);
+}
+:global(.data-table thead) {
+  font-family: var(--serif);
+  color: var(--huangzi);
+}
+
+/* ── 链接 ── */
+.markdown a {
+  color: var(--zhuhong);
+  border-bottom: 1px dotted var(--zhuhong);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.markdown a:hover { opacity: 0.7; }
+
+/* ── 图章感小标记（footer 装饰） ── */
+.yxg-stamp {
+  display: inline-block;
+  font-family: var(--serif);
+  font-size: 0.85rem;
+  color: var(--zhuhong);
+  border: 1.5px solid var(--zhuhong);
+  padding: 0.2rem 0.7rem;
+  letter-spacing: 0.1em;
+  margin-top: 1rem;
+}
+
+/* ── 数字 count-up 入场（Evidence BigValue 渲染后由 SDK 触发，纯 CSS 仅 fade） ── */
+@keyframes yxgFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.yxg-hero, .yxg-divider, .yxg-section-title, .yxg-section-eyebrow {
+  animation: yxgFadeUp 0.7s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+.yxg-divider { animation-delay: 0.1s; }
+.yxg-section-eyebrow { animation-delay: 0.2s; }
+.yxg-section-title   { animation-delay: 0.25s; }
+
+/* ── 移动端 ── */
+@media (max-width: 720px) {
+  .yxg-hero { padding: 2.5rem 0 1rem; }
+  .yxg-divider { margin: 2.5rem 0 1.5rem; }
+}
+
+/* ── 打印样式（领导可能 PDF 导出） ── */
+@media print {
+  body { background: white !important; }
+  .yxg-divider::after { background: white; }
+  .yxg-hero, .yxg-divider, .yxg-section-title, .yxg-section-eyebrow {
+    animation: none;
+  }
+}

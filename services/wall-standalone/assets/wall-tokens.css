@@ -1,0 +1,126 @@
+/* ════════════════════════════════════════════════════════════════
+ * 医小管 · 内测大屏 · 设计令牌 (CSS vars)
+ * 单一真相源:  apps/student-app/src/styles/tokens.scss (产品端紫绛体系)
+ *              services/bi-evidence/static/yxg-theme.css (BI 米色画报体系)
+ * 与 BI /bi/ 画报保持视觉一致 (米色 + 紫绛 + 朱红 + 冷金 + 思源宋体)
+ * ════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.font.im/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=Inter:wght@200;300;400;500;600;700&display=swap');
+
+:root {
+  /* ── 主色板 (Editorial Purple) ── */
+  --jiang:        #5B1F5B;   /* 紫绛 主色 */
+  --jiang-deep:   #3A1340;   /* 深紫绛 */
+  --jiang-soft:   #8B5A8B;   /* 浅紫 */
+  --huangzi:      #3A2059;   /* 皇室紫 */
+  --zhuhong:      #A23130;   /* 朱红 强调 */
+  --zhuhong-soft: #C77575;   /* 浅朱 */
+  --cooljin:      #A98B4F;   /* 冷金 装饰 */
+  --cooljin-soft: #D4B97D;   /* 浅金 */
+
+  /* ── 米色画布 (Ivory canvas) ── */
+  --xiangya:    #F8F4EC;   /* 象牙白 主底 */
+  --yumi:       #FBF8F1;   /* 玉米白 卡纸 */
+  --mizhi:      #F2EBDA;   /* 米脂 章节底 */
+  --shaomi:     #ECE2CC;   /* 烧米 表格条纹 */
+
+  /* ── 文字 ── */
+  --mohei:      #1F1A24;   /* 墨黑 正文 */
+  --hui:        #6B6470;   /* 烟灰 次文字 */
+  --hui-soft:   #9C9099;   /* 弱烟灰 */
+
+  /* ── 装饰线 ── */
+  --line-gold:    #C5A977;   /* 金色 hairline */
+  --line-thin:    #D9CDB6;   /* 细米线 */
+  --line-strong:  #B8A88B;   /* 强米线 */
+
+  /* ── 字体 ── */
+  --serif: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+  --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --mono:  'IBM Plex Mono', 'SF Mono', 'Cascadia Mono', Consolas, monospace;
+
+  /* ════════════════════════════════════════════════════════════════
+   * 自适应基准 (1080p 默认 → 2K 加大 → 4K 再加大)
+   * 用 var() 在三档媒体查询里统一切换
+   * ════════════════════════════════════════════════════════════════ */
+
+  /* 默认 1080p (1920×1080) */
+  --pad-x:                 2.5rem;
+  --pad-y:                 1.6rem;
+  --gap-section:           1.4rem;
+
+  --title-size:            2rem;        /* 报头刊名 (思源宋体 900) */
+  --eyebrow-size:          0.7rem;
+  --section-title-size:    1.35rem;     /* § 章节标题 */
+  --kpi-label-size:        0.66rem;
+  --kpi-title-size:        0.92rem;
+  --kpi-value-size:        3.4rem;      /* KPI 大数字 (Inter 200) */
+  --kpi-unit-size:         0.95rem;
+  --card-title-size:       1.35rem;
+  --funnel-step-size:      0.92rem;
+  --funnel-num-size:       1.2rem;
+  --clock-time-size:       1.05rem;
+  --clock-date-size:       0.85rem;
+  --day-num-size:          1.05rem;
+  --ticker-size:           0.92rem;
+  --ticker-time-size:      0.85rem;
+
+  --kpi-min-h:             8.8rem;
+  --chart-h:               240px;       /* ECharts 高度 */
+}
+
+/* ── 2K (≥2400px) ── */
+@media (min-width: 2400px) {
+  :root {
+    --pad-x:               3rem;
+    --pad-y:               2.2rem;
+    --gap-section:         1.6rem;
+
+    --title-size:          2.4rem;
+    --eyebrow-size:        0.8rem;
+    --section-title-size:  1.6rem;
+    --kpi-label-size:      0.78rem;
+    --kpi-title-size:      1.05rem;
+    --kpi-value-size:      4.4rem;
+    --kpi-unit-size:       1.1rem;
+    --card-title-size:     1.6rem;
+    --funnel-step-size:    1.05rem;
+    --funnel-num-size:     1.4rem;
+    --clock-time-size:     1.25rem;
+    --clock-date-size:     0.95rem;
+    --day-num-size:        1.2rem;
+    --ticker-size:         1.05rem;
+    --ticker-time-size:    1rem;
+
+    --kpi-min-h:           10rem;
+    --chart-h:             310px;
+  }
+}
+
+/* ── 4K (≥3600px) ── */
+@media (min-width: 3600px) {
+  :root {
+    --pad-x:               4rem;
+    --pad-y:               3rem;
+    --gap-section:         2rem;
+
+    --title-size:          3.4rem;
+    --eyebrow-size:        1rem;
+    --section-title-size:  2.1rem;
+    --kpi-label-size:      0.95rem;
+    --kpi-title-size:      1.4rem;
+    --kpi-value-size:      6rem;
+    --kpi-unit-size:       1.5rem;
+    --card-title-size:     2.1rem;
+    --funnel-step-size:    1.35rem;
+    --funnel-num-size:     1.85rem;
+    --clock-time-size:     1.7rem;
+    --clock-date-size:     1.25rem;
+    --day-num-size:        1.6rem;
+    --ticker-size:         1.4rem;
+    --ticker-time-size:    1.3rem;
+
+    --kpi-min-h:           13rem;
+    --chart-h:             420px;
+  }
+}

@@ -1,0 +1,76 @@
+appearance:
+  default: light
+  switcher: true
+theme:
+  colorPalettes:
+    default:
+      light:
+      - '#5B1F5B'
+      - '#A23130'
+      - '#A98B4F'
+      - '#3A2059'
+      - '#8B5A8B'
+      - '#C77575'
+      - '#D4B97D'
+      - '#4A1A4A'
+      - '#6B6470'
+      - '#9C9099'
+      dark:
+      - '#C77575'
+      - '#D4B97D'
+      - '#A98B4F'
+      - '#8B5A8B'
+      - '#5B1F5B'
+      - '#A23130'
+      - '#9C9099'
+      - '#3A2059'
+      - '#6B6470'
+      - '#F8F4EC'
+  colorScales:
+    default:
+      light:
+      - '#F8F4EC'
+      - '#5B1F5B'
+      dark:
+      - '#8B5A8B'
+      - '#5B1F5B'
+  colors:
+    primary:
+      light: '#5B1F5B'
+      dark: '#C77575'
+    accent:
+      light: '#A23130'
+      dark: '#D4B97D'
+    base:
+      light: '#F8F4EC'
+      dark: '#1F1A24'
+    info:
+      light: '#3A2059'
+      dark: '#8B5A8B'
+    positive:
+      light: '#3F7D4D'
+      dark: '#86C295'
+    warning:
+      light: '#A98B4F'
+      dark: '#D4B97D'
+    negative:
+      light: '#A23130'
+      dark: '#C77575'
+plugins:
+  components:
+    '@evidence-dev/core-components': {}
+  datasources:
+    '@evidence-dev/bigquery': {}
+    '@evidence-dev/csv': {}
+    '@evidence-dev/databricks': {}
+    '@evidence-dev/duckdb': {}
+    '@evidence-dev/mssql': {}
+    '@evidence-dev/mysql': {}
+    '@evidence-dev/postgres': {}
+    '@evidence-dev/source-javascript': {}
+    '@evidence-dev/snowflake': {}
+    '@evidence-dev/sqlite': {}
+    '@evidence-dev/trino': {}
+    '@evidence-dev/motherduck': {}
+deployment:
+  basePath: /bi

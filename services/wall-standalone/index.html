@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <title>医小管 · 内测大屏</title>
+  <meta name="viewport" content="width=1920, initial-scale=1">
+  <meta name="description" content="医小管 · 山一医校园智能助理 · 内测期实时数据大屏">
+  <meta name="theme-color" content="#F8F4EC">
+
+  <!-- 显式锁住浅色: 防止浏览器/扩展(Dark Reader 等) 自动反色, 把米色翻成酒红 -->
+  <meta name="color-scheme" content="light only">
+  <meta name="darkreader-lock">
+
+  <meta http-equiv="refresh" content="900">
+  <!-- 900s = 15min hard refresh fallback (即使 JS 挂掉也能换一份) -->
+
+  <link rel="stylesheet" href="assets/wall-tokens.css?v=20260510d">
+  <link rel="stylesheet" href="assets/wall.css?v=20260510d">
+  <link rel="icon" href="data:,">
+</head>
+
+<body>
+
+  <div class="wall-offline-note" id="offlineNote">数据离线 · 等待重连</div>
+
+  <div class="wall-root">
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 报头 masthead                                              -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div class="wall-masthead">
+      <div class="wall-mast-left">
+        <div class="wall-eyebrow">PILOT &middot; VOL.I &middot; 山一医</div>
+        <h1 class="wall-title">医小管 &middot; 内测大屏</h1>
+      </div>
+      <div class="wall-mast-right">
+        <div class="wall-day">启动第<span class="num" id="dayNum">—</span>天</div>
+        <div class="wall-clock">
+          <span class="wall-clock-time" id="clockTime">--:--:--</span>
+          <span class="wall-clock-date" id="clockDate">----</span>
+        </div>
+        <div class="wall-live" id="liveBadge">LIVE</div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- § 一 · 即时态势                                            -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div class="wall-section">
+      <span class="wall-section-mark">§ 一</span>
+      <h2 class="wall-section-title">即时态势</h2>
+      <span class="wall-section-en">Real-time KPI</span>
+    </div>
+
+    <div class="wall-kpis">
+      <div class="wall-kpi">
+        <div class="wall-kpi-label">01 &middot; ACTIVE</div>
+        <div class="wall-kpi-title">活跃用户</div>
+        <div class="wall-kpi-value"><span data-kpi="active">0</span><span class="wall-kpi-unit">人</span></div>
+      </div>
+      <div class="wall-kpi">
+        <div class="wall-kpi-label">02 &middot; QUESTIONS</div>
+        <div class="wall-kpi-title">累计提问</div>
+        <div class="wall-kpi-value"><span data-kpi="questions">0</span></div>
+      </div>
+      <div class="wall-kpi">
+        <div class="wall-kpi-label">03 &middot; ANSWERED</div>
+        <div class="wall-kpi-title">AI 已答</div>
+        <div class="wall-kpi-value"><span data-kpi="answered">0</span></div>
+      </div>
+      <div class="wall-kpi">
+        <div class="wall-kpi-label">04 &middot; AI RATE</div>
+        <div class="wall-kpi-title">解答率</div>
+        <div class="wall-kpi-value"><span data-kpi="ai_rate">0</span><span class="wall-kpi-unit">%</span></div>
+      </div>
+      <div class="wall-kpi">
+        <div class="wall-kpi-label">05 &middot; GAPS</div>
+        <div class="wall-kpi-title">触达盲区</div>
+        <div class="wall-kpi-value"><span data-kpi="blind">0</span></div>
+      </div>
+      <div class="wall-kpi">
+        <div class="wall-kpi-label">06 &middot; FEEDBACK</div>
+        <div class="wall-kpi-title">留下反馈</div>
+        <div class="wall-kpi-value"><span data-kpi="feedback">0</span></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- § 二 · 学生路径                                            -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div class="wall-section">
+      <span class="wall-section-mark">§ 二</span>
+      <h2 class="wall-section-title">学生路径</h2>
+      <span class="wall-section-en">User Funnel &amp; Daily Trend</span>
+    </div>
+
+    <div class="wall-charts">
+      <!-- 左:漏斗 -->
+      <div class="wall-card">
+        <div class="wall-card-eyebrow">USER FUNNEL</div>
+        <h3 class="wall-card-title">从启动 App 到留下反馈</h3>
+        <div class="wall-funnel" id="funnelList">
+          <!-- 由 JS 渲染 -->
+        </div>
+      </div>
+
+      <!-- 右:折线 -->
+      <div class="wall-card">
+        <div class="wall-card-eyebrow">DAILY TREND</div>
+        <h3 class="wall-card-title">日级提问 &middot; AI 已答 &middot; 活跃</h3>
+        <div class="wall-chart-canvas" id="dailyChart"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- § 三 · 印刷推送                                             -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div class="wall-ticker">
+      <div class="wall-ticker-label">印刷推送</div>
+      <div class="wall-ticker-track" id="tickerTrack">
+        <div class="wall-ticker-item"><span class="wall-ticker-detail">等待事件 &hellip;</span></div>
+      </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="wall-foot">
+      <div>医小管编辑部 &middot; <span id="footYear">2026</span> &middot; 数据更新于 <span id="updatedAt">—</span></div>
+      <div class="wall-foot-stamp">每 5 分钟自动刷新</div>
+    </div>
+
+  </div><!-- /.wall-root -->
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script src="assets/wall.js?v=20260510d"></script>
+</body>
+
+</html>
