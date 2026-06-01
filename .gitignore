@@ -51,3 +51,7 @@ scripts/kimi-local-task-*.txt
 
 # Old smoke test scratchpads (kept locally only)
 /tmp_*.md
+
+# Playwright CLI logs and temporary files
+.playwright-cli/
+*.log
