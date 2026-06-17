@@ -36,6 +36,14 @@
       }
     },
     {
+      "path": "pages/services/webview",
+      "style": {
+        "navigationBarTitleText": "网页",
+        "navigationBarBackgroundColor": "#F8FAFC",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
       "path": "pages/profile/index",
       "style": {
         "navigationBarTitleText": "我的",

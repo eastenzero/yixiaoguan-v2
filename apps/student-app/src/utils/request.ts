@@ -1,6 +1,5 @@
 import { useUserStore } from '@/stores/user'
-
-const API_BASE = ''
+import { REQUEST_TIMEOUT_MS, toApiUrl } from '@/utils/runtime'
 
 type RequestError = Error & {
   statusCode?: number
@@ -24,8 +23,9 @@ export function request<T = any>(options: {
 
   return new Promise((resolve, reject) => {
     uni.request({
-      url: API_BASE + options.url,
+      url: toApiUrl(options.url),
       method: options.method || 'GET',
+      timeout: REQUEST_TIMEOUT_MS,
       data: options.data,
       header: {
         'Content-Type': 'application/json',
@@ -37,13 +37,10 @@ export function request<T = any>(options: {
           resolve(res.data as T)
         } else if (res.statusCode === 401) {
           void (async () => {
-            const ok = await userStore.tryPilotLogin()
-            if (!ok) {
-              userStore.logout()
-              uni.reLaunch({ url: '/pages/login/index' })
-            }
+            userStore.logout()
+            uni.reLaunch({ url: '/pages/login/index' })
           })()
-          reject(createRequestError('未授权', 401))
+          reject(createRequestError('登录已过期，请重新登录', 401))
         } else if (res.statusCode === 422) {
           const detail = (res.data as any)?.detail
           const message = Array.isArray(detail) ? detail[0]?.msg : (detail || '请求参数错误')

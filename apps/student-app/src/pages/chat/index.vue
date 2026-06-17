@@ -2,11 +2,11 @@
   <view class="chat-page">
     <view class="top-nav">
       <view class="nav-left" @click="goBack">
-        <text class="material-symbols-outlined nav-back-icon">arrow_back</text>
+        <AppIcon name="arrow_back" class="nav-back-icon" />
         <text class="nav-title">医小管</text>
       </view>
       <view class="nav-right" @click="goToHistory">
-        <text class="material-symbols-outlined nav-history-icon">history</text>
+        <AppIcon name="history" class="nav-history-icon" />
       </view>
     </view>
 
@@ -14,7 +14,7 @@
     <view v-if="!messages.length" class="welcome-center">
       <view class="welcome-content">
         <view class="empty-icon">
-          <text class="material-symbols-outlined empty-sparkle-icon">auto_awesome</text>
+          <AppIcon name="auto_awesome" class="empty-sparkle-icon" />
         </view>
         <text class="empty-title">智慧校园助理</text>
         <text class="empty-desc">同学你好！关于校园生活、选课安排或办事流程，你都可以问我。</text>
@@ -29,7 +29,7 @@
             @confirm="sendMessage"
           />
           <view :class="['send-btn', { disabled: !canSend }]" @click="sendMessage">
-            <text class="material-symbols-outlined send-icon">send</text>
+            <AppIcon name="send" class="send-icon" />
           </view>
         </view>
       </view>
@@ -65,12 +65,12 @@
           <view v-else-if="msg.role === 'teacher'" class="ai-msg">
             <view class="ai-header">
               <view class="teacher-avatar">
-                <text class="material-symbols-outlined teacher-icon">support_agent</text>
+                <AppIcon name="support_agent" class="teacher-icon" />
               </view>
               <text class="teacher-name">老师回复</text>
             </view>
             <view class="msg-bubble teacher-bubble">
-              <view class="markdown-body" v-html="renderMarkdown(msg.content)" />
+              <MarkdownContent class="markdown-body" :content="msg.content" />
             </view>
             <text class="msg-time">{{ formatTime(msg.timestamp) }}</text>
           </view>
@@ -79,7 +79,7 @@
           <view v-else-if="msg.role === 'assistant'" class="ai-msg">
             <view class="ai-header">
               <view class="ai-avatar">
-                <text class="material-symbols-outlined bot-icon">smart_toy</text>
+                <AppIcon name="smart_toy" class="bot-icon" />
               </view>
               <text class="ai-name">MEDICAL ASSISTANT</text>
             </view>
@@ -89,13 +89,13 @@
                 <view class="dot" /><view class="dot" /><view class="dot" />
               </view>
               <!-- Markdown 渲染 -->
-              <view v-else class="markdown-body" v-html="renderMarkdown(msg.content)" />
+              <MarkdownContent v-else class="markdown-body" :content="msg.content" />
               <!-- 流式光标 -->
               <text v-if="msg.isStreaming && msg.content" class="cursor">|</text>
               <!-- 来源引用 -->
               <view v-if="msg.sources && msg.sources.length && !msg.isStreaming" class="citations">
                 <view class="cit-header">
-                  <text class="material-symbols-outlined book-icon">menu_book</text>
+                  <AppIcon name="menu_book" class="book-icon" />
                   <text>参考资料</text>
                 </view>
                 <view class="cit-list">
@@ -106,7 +106,7 @@
                     @click="handleSourceClick(source)"
                   >
                     <text class="cit-text">{{ si + 1 }}. {{ source.title }}</text>
-                    <text class="material-symbols-outlined ext-link-icon">open_in_new</text>
+                    <AppIcon name="open_in_new" class="ext-link-icon" />
                   </view>
                 </view>
               </view>
@@ -125,11 +125,11 @@
               class="inline-call-teacher"
               @click="handleCallTeacher"
             >
-              <text class="material-symbols-outlined call-inline-icon">support_agent</text>
+              <AppIcon name="support_agent" class="call-inline-icon" />
               <text class="call-inline-text">{{ escalateLoading ? '呼叫中...' : '转人工服务' }}</text>
             </view>
             <view v-if="conversationStatus === 'pending_teacher' && isRefusalMsg(msg)" class="inline-call-done">
-              <text class="material-symbols-outlined call-done-icon">check_circle</text>
+              <AppIcon name="check_circle" class="call-done-icon" />
               <text class="call-done-text">已通知老师，请耐心等待</text>
             </view>
           </view>
@@ -140,7 +140,7 @@
           <view class="ai-msg">
             <view class="ai-header">
               <view class="ai-avatar">
-                <text class="material-symbols-outlined bot-icon">smart_toy</text>
+                <AppIcon name="smart_toy" class="bot-icon" />
               </view>
               <text class="ai-name">MEDICAL ASSISTANT</text>
             </view>
@@ -155,7 +155,7 @@
         <!-- R10: 关联问题推荐 -->
         <view v-if="suggestedQuestions.length && !isStreaming" class="suggestions-area">
           <view class="suggestions-header">
-            <text class="material-symbols-outlined suggestions-icon">lightbulb</text>
+            <AppIcon name="lightbulb" class="suggestions-icon" />
             <text class="suggestions-title">你可能还想问</text>
           </view>
           <view class="suggestions-list">
@@ -166,7 +166,7 @@
               @click="handleSuggestionClick(q)"
             >
               <text class="suggestion-text">{{ q }}</text>
-              <text class="material-symbols-outlined suggestion-arrow">arrow_forward</text>
+              <AppIcon name="arrow_forward" class="suggestion-arrow" />
             </view>
           </view>
         </view>
@@ -179,7 +179,7 @@
         <view v-if="showCallMenu" class="call-menu-overlay" @click="showCallMenu = false">
           <view class="call-menu" @click.stop>
             <view class="call-menu-item" @click="handleCallTeacher">
-              <text class="material-symbols-outlined call-menu-icon">call</text>
+              <AppIcon name="call" class="call-menu-icon" />
               <text class="call-menu-text">呼叫老师</text>
             </view>
           </view>
@@ -198,7 +198,7 @@
             @click="sendMessage"
             @longpress="onSendLongPress"
           >
-            <text class="material-symbols-outlined send-icon">send</text>
+            <AppIcon name="send" class="send-icon" />
           </view>
         </view>
       </view>
@@ -222,21 +222,23 @@
         <view class="source-popup-header">
           <text class="source-popup-title">{{ sourcePopup.title }}</text>
           <view class="source-header-actions">
-            <text
+            <AppIcon
               v-if="sourceSheetHeight < 95"
-              class="material-symbols-outlined source-expand"
+              name="open_in_full"
+              class="source-expand"
               @click="sourceSheetHeight = 95"
-            >open_in_full</text>
-            <text
+            />
+            <AppIcon
               v-else
-              class="material-symbols-outlined source-expand"
+              name="close_fullscreen"
+              class="source-expand"
               @click="sourceSheetHeight = 50"
-            >close_fullscreen</text>
-            <text class="material-symbols-outlined source-close" @click="closeSourcePopup">close</text>
+            />
+            <AppIcon name="close" class="source-close" @click="closeSourcePopup" />
           </view>
         </view>
         <scroll-view class="source-popup-body" scroll-y>
-          <view class="markdown-body source-markdown" v-html="renderMarkdown(sourcePopup.content)" />
+          <MarkdownContent class="markdown-body source-markdown" :content="sourcePopup.content" variant="source" />
         </scroll-view>
       </view>
     </view>
@@ -244,16 +246,18 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { ref, computed, nextTick, onMounted, onUnmounted, reactive } from 'vue'
 import { onShow, onHide } from '@dcloudio/uni-app'
-import MarkdownIt from 'markdown-it'
 import { useUserStore } from '@/stores/user'
 import { createConversation, getConversation, getMessages, escalate } from '@/api/chat'
 import { fetchSSE } from '@/utils/sse'
+import { request } from '@/utils/request'
 import { wsManager } from '@/utils/websocket'
 import { centrifugeManager } from '@/utils/centrifuge'
 import CustomTabBar from '@/components/CustomTabBar.vue'
 import UnansweredInviteCard from '@/components/UnansweredInviteCard.vue'
+import MarkdownContent from '@/components/MarkdownContent.vue'
 import { trackEvent } from '@/utils/track'
 import type { Message as BaseMessage, Source, ConversationStatus, MessageResponse } from '@/types/chat'
 
@@ -267,13 +271,6 @@ interface UnansweredInviteState {
 
 type ChatMessage = BaseMessage & {
   unanswered_invite?: UnansweredInviteState
-}
-
-// ============ Markdown 渲染器 ============
-const md = new MarkdownIt({ html: true, linkify: true, typographer: true })
-function renderMarkdown(content: string): string {
-  if (!content) return ''
-  return md.render(content)
 }
 
 // ============ 响应式状态 ============
@@ -516,22 +513,17 @@ async function sendMessage() {
 // ============ teacher_serving: JSON 发送 ============
 async function sendToTeacher(content: string) {
   try {
-    const resp = await fetch('/api/chat/send', {
+    await request({
+      url: '/api/chat/send',
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userStore.token}`,
-      },
-      body: JSON.stringify({ conv_id: conversationId.value, content }),
+      data: { conv_id: conversationId.value, content },
     })
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
     // JSON response — message already persisted server-side
   } catch (e: any) {
     console.error('发送消息失败:', e)
     uni.showToast({ title: '发送失败', icon: 'none' })
   }
 }
-
 // ============ ai_serving: SSE 流式响应 ============
 async function streamResponse(userContent: string) {
   isStreaming.value = true
@@ -654,7 +646,7 @@ function onSheetTouchStart(e: TouchEvent) {
 }
 function onSheetTouchMove(e: TouchEvent) {
   const dy = sheetTouchStartY - e.touches[0].clientY
-  const dvh = (dy / window.innerHeight) * 100
+  const dvh = (dy / getViewportHeight()) * 100
   sourceSheetHeight.value = Math.min(95, Math.max(30, sheetHeightAtStart + dvh))
 }
 function onSheetTouchEnd() {
@@ -716,6 +708,13 @@ async function handleCallTeacher() {
 }
 
 // ============ 工具函数 ============
+function getViewportHeight(): number {
+  try {
+    return uni.getSystemInfoSync().windowHeight || 667
+  } catch {
+    return 667
+  }
+}
 function formatTime(timestamp: number): string {
   if (!timestamp) return ''
   const date = new Date(timestamp)
@@ -819,13 +818,6 @@ function scrollToBottom() {
 .send-btn.disabled { opacity: 0.5; }
 .send-icon { font-size: 1.25rem; color: #fff; }
 
-.markdown-body { font-size: 0.875rem; line-height: 1.6; }
-.markdown-body :deep(p) { margin-bottom: 0.5rem; }
-.markdown-body :deep(ul) { padding-left: 1rem; margin-bottom: 0.5rem; list-style-type: disc; }
-.markdown-body :deep(ol) { padding-left: 1rem; margin-bottom: 0.5rem; list-style-type: decimal; }
-.markdown-body :deep(li) { margin-bottom: 0.25rem; }
-.markdown-body :deep(strong) { font-weight: 700; color: #5b21b6; }
-
 .inline-call-teacher { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 0.75rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #5b21b6, #b28cff); color: #fff; border-radius: 1.5rem; transition: all 0.2s; box-shadow: 0 0.25rem 0.75rem rgba(91,33,182,0.25); }
 .inline-call-teacher:active { transform: scale(0.95); opacity: 0.9; }
 .call-inline-icon { font-size: 1.125rem; color: #fff; }
@@ -856,17 +848,4 @@ function scrollToBottom() {
 .source-expand { font-size: 1.125rem; color: #94a3b8; }
 .source-close { font-size: 1.25rem; color: #94a3b8; }
 .source-popup-body { padding: 1.25rem; flex: 1; overflow: hidden; }
-.source-markdown { font-size: 0.875rem; color: #475569; line-height: 1.8; }
-.source-markdown :deep(p) { margin-bottom: 0.5rem; }
-.source-markdown :deep(ul) { padding-left: 1rem; margin-bottom: 0.5rem; list-style-type: disc; }
-.source-markdown :deep(ol) { padding-left: 1rem; margin-bottom: 0.5rem; list-style-type: decimal; }
-.source-markdown :deep(li) { margin-bottom: 0.25rem; }
-.source-markdown :deep(strong) { font-weight: 700; color: #5b21b6; }
-.source-markdown :deep(code) { background: #f3f4f6; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.8125rem; }
-.source-markdown :deep(pre) { background: #f3f4f6; padding: 0.75rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 0.5rem; }
-.source-markdown :deep(a) { color: #5b21b6; text-decoration: underline; }
-.source-markdown :deep(h1), .source-markdown :deep(h2), .source-markdown :deep(h3) { font-weight: 700; color: #2f2e32; margin: 0.75rem 0 0.375rem; }
-.source-markdown :deep(blockquote) { border-left: 3px solid #5b21b6; padding-left: 0.75rem; color: #6b7280; margin: 0.5rem 0; }
-.source-markdown :deep(table) { width: 100%; border-collapse: collapse; margin-bottom: 0.5rem; font-size: 0.8125rem; }
-.source-markdown :deep(th), .source-markdown :deep(td) { border: 1px solid #e5e7eb; padding: 0.375rem 0.5rem; text-align: left; }
 </style>

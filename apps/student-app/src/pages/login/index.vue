@@ -8,7 +8,7 @@
       <view class="login-card">
         <view class="header">
           <view class="logo-box">
-            <text class="material-symbols-outlined logo-icon" style="font-variation-settings: 'FILL' 1">school</text>
+            <image class="brand-logo" src="/static/favicon.svg" mode="aspectFit" />
           </view>
           <text class="app-title">医小管</text>
           <text class="app-subtitle">智慧校园服务平台</text>
@@ -18,7 +18,7 @@
           <view class="form-group">
             <text class="label">学号</text>
             <view class="input-wrapper">
-              <text class="material-symbols-outlined input-icon">person</text>
+              <AppIcon name="person" class="input-icon" />
               <input class="input" type="text" v-model="form.staffId" placeholder="请输入您的学号" placeholder-class="ph-color" />
             </view>
           </view>
@@ -26,15 +26,15 @@
           <view class="form-group">
             <text class="label">密码</text>
             <view class="input-wrapper">
-              <text class="material-symbols-outlined input-icon">lock</text>
+              <AppIcon name="lock" class="input-icon" />
               <input class="input" :type="showPwd ? 'text' : 'password'" v-model="form.password" placeholder="请输入密码" placeholder-class="ph-color" @confirm="handleLogin" />
-              <text class="material-symbols-outlined right-icon" @click="showPwd = !showPwd">{{ showPwd ? 'visibility' : 'visibility_off' }}</text>
+              <AppIcon :name="showPwd ? 'visibility' : 'visibility_off'" class="right-icon" @click="showPwd = !showPwd" />
             </view>
           </view>
 
           <button class="submit-btn" :disabled="loading" @click="handleLogin">
             <text class="btn-text">{{ loading ? '登录中...' : '登录' }}</text>
-            <text class="material-symbols-outlined btn-icon">arrow_forward</text>
+            <AppIcon name="arrow_forward" class="btn-icon" />
           </button>
         </view>
 
@@ -56,6 +56,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { reactive, ref, watch } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
@@ -69,8 +70,7 @@ const form = reactive({ staffId: '', password: '' })
 const showPwd = ref(false)
 const loading = ref(false)
 
-// R11 pilot: App.vue onLaunch 触发 userStore.init() 自动尝试 pilot 登录；
-// 一旦登录态可用立即跳到首页，避免用户看到登录页"卡住"。
+// 启动时仅恢复已保存的登录态；未登录时保留在当前页，等待学生手动登录。
 function redirectIfLogged() {
   if (userStore.isLoggedIn) {
     uni.switchTab({ url: '/pages/home/index' })
@@ -145,15 +145,15 @@ async function handleLogin() {
 .main-container { width: 100%; max-width: 25rem; z-index: 1; }
 .login-card { background: $surface-container-lowest; border-radius: $radius-lg; padding: 2.5rem 1.75rem; box-shadow: $shadow-fab; }
 .header { display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem; }
-.logo-box { width: 4rem; height: 4rem; background: rgba($primary-container, 0.30); border-radius: $radius-md; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
-.logo-icon { font-size: 2.25rem; color: $secondary; }
+.logo-box { width: 5rem; height: 5rem; background: transparent; border-radius: $radius-md; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
+.brand-logo { width: 5rem; height: 5rem; }
 .app-title { font-size: 1.875rem; font-weight: 800; color: $text-primary; margin-bottom: 0.25rem; }
 .app-subtitle { font-size: 0.875rem; font-weight: 500; color: $text-secondary; letter-spacing: 0.125rem; opacity: 0.7; }
 
 .form .form-group { margin-bottom: 1.25rem; }
 .label { font-size: 0.75rem; font-weight: 700; color: $text-secondary; margin-bottom: 0.5rem; margin-left: 0.25rem; display: block; }
 .input-wrapper { position: relative; display: flex; align-items: center; background: $surface-container-high; border-radius: $radius-md; padding: 0 1rem; height: 3.25rem; }
-.input { flex: 1; height: 100%; background: transparent; border: none; padding-left: 1.75rem; font-size: 0.875rem; color: $text-primary; font-weight: 500; }
+.input { flex: 1; height: 100%; min-width: 0; background: transparent; border: none; padding-left: 1.75rem; padding-right: 1.75rem; font-size: 0.875rem; color: $text-primary; font-weight: 500; }
 .ph-color { color: $text-muted; }
 .input-icon { font-size: 1.25rem; color: $text-muted; position: absolute; left: 1rem; }
 .right-icon { font-size: 1.25rem; color: $text-muted; position: absolute; right: 1rem; }

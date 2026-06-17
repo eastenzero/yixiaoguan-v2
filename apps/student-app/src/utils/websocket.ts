@@ -1,3 +1,5 @@
+import { appendQuery, toWsUrl } from '@/utils/runtime'
+
 type Callback = (data: any) => void
 
 class WsManager {
@@ -25,9 +27,7 @@ class WsManager {
 
   private doConnect() {
     if (this.closed) return
-    const wsBase = location?.protocol === 'https:' ? 'wss:' : 'ws:'
-    const wsHost = location?.host || '192.168.100.165:8100'
-    const url = `${wsBase}//${wsHost}/ws?token=${this.token}`
+    const url = appendQuery(toWsUrl('/ws'), { token: this.token })
 
     this.ws = uni.connectSocket({ url, complete: () => { } })
 

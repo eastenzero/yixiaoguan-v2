@@ -3,6 +3,7 @@
  * API 与旧 wsManager 兼容，方便平滑切换
  */
 import { Centrifuge, Subscription } from 'centrifuge'
+import { CENTRIFUGE_WS_URL } from '@/utils/runtime'
 
 type EventHandler = (data: any) => void
 
@@ -18,34 +19,39 @@ class CentrifugeManager {
     if (this.client) {
       this.disconnect()
     }
-    const wsUrl = location.protocol === 'https:'
-      ? `wss://${location.host}/centrifugo/connection/websocket`
-      : `ws://${location.host}/centrifugo/connection/websocket`
 
-    this.client = new Centrifuge(wsUrl, {
+    // #ifdef MP-WEIXIN
+    this._isConnected = false
+    return
+    // #endif
+
+    // #ifndef MP-WEIXIN
+    const client = new Centrifuge(CENTRIFUGE_WS_URL, {
       token: centrifugoToken,
       getToken,
     })
+    this.client = client
 
     // 服务端订阅频道的消息通过顶层事件分发
-    this.client.on('publication', (ctx) => {
+    client.on('publication', (ctx) => {
       const msg = ctx.data
       this.dispatch(msg?.type || 'unknown', msg?.data || msg)
     })
 
-    this.client.on('connected', () => {
+    client.on('connected', () => {
       console.log('[Centrifuge] connected')
       this._isConnected = true
       this.dispatch('_connected', {})
     })
 
-    this.client.on('disconnected', (ctx) => {
+    client.on('disconnected', (ctx) => {
       console.log('[Centrifuge] disconnected', ctx.reason)
       this._isConnected = false
       this.dispatch('_disconnected', { reason: ctx.reason })
     })
 
-    this.client.connect()
+    client.connect()
+    // #endif
   }
 
   disconnect() {

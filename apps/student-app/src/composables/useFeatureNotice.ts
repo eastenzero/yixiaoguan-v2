@@ -50,7 +50,8 @@ export function hideFeatureNotice() {
 
 export function onFeatureNoticePrimary() {
   if (state.suggestedQuestion) {
-    openAiQuestion(state.suggestedQuestion)
+    uni.setStorageSync('chat_init_query', state.suggestedQuestion)
+    uni.switchTab({ url: '/pages/chat/index' })
   }
   state.visible = false
 }

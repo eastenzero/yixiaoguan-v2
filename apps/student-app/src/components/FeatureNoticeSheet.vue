@@ -4,7 +4,7 @@
       <view class="sheet-handle" />
 
       <view class="sheet-icon-wrap">
-        <text class="material-symbols-outlined sheet-icon">{{ notice.state.icon }}</text>
+        <AppIcon :name="notice.state.icon" class="sheet-icon" />
       </view>
 
       <text class="sheet-title">{{ notice.state.title }}</text>
@@ -16,7 +16,7 @@
           class="btn-primary"
           @click="notice.onPrimary()"
         >
-          <text class="material-symbols-outlined btn-primary-icon">auto_awesome</text>
+          <AppIcon name="auto_awesome" class="btn-primary-icon" />
           <text class="btn-primary-text">{{ notice.state.primaryText }}</text>
         </view>
         <view class="btn-secondary" @click="notice.hide()">
@@ -28,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { useFeatureNotice } from '@/composables/useFeatureNotice'
 
 const notice = useFeatureNotice()

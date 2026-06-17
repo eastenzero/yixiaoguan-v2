@@ -2,14 +2,14 @@
   <view class="history-page">
     <view class="top-nav">
       <view class="nav-left" @click="goBack">
-        <text class="material-symbols-outlined nav-back-icon">arrow_back</text>
+        <AppIcon name="arrow_back" class="nav-back-icon" />
         <text class="nav-title">历史对话</text>
       </view>
     </view>
 
     <scroll-view class="list-container" scroll-y @scrolltolower="loadMore" refresher-enabled @refresherrefresh="onRefresh" :refresher-triggered="refreshing">
       <view v-if="!conversations.length && !loading" class="empty-state">
-        <text class="material-symbols-outlined empty-icon">chat_bubble_outline</text>
+        <AppIcon name="chat_bubble_outline" class="empty-icon" />
         <text class="empty-text">暂无对话记录</text>
       </view>
 
@@ -39,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { ref, onMounted } from 'vue'
 import { listConversations } from '@/api/chat'
 import type { ConversationResponse } from '@/types/chat'

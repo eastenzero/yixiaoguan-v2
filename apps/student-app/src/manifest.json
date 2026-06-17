@@ -1,6 +1,6 @@
 {
   "name": "医小管",
-  "appid": "",
+  "appid": "wxd3cf58fb6d05581e",
   "description": "山东第一医科大学智慧校园服务平台 v2",
   "versionName": "2.0.0",
   "versionCode": "200",
@@ -12,10 +12,14 @@
     }
   },
   "mp-weixin": {
-    "appid": "",
+    "appid": "wxd3cf58fb6d05581e",
     "setting": {
       "urlCheck": false
     },
     "usingComponents": true
-  }
+  },
+  "uniStatistics": {
+    "enable": false
+  },
+  "vueVersion": "3"
 }

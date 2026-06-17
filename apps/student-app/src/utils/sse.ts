@@ -1,3 +1,5 @@
+import { REQUEST_TIMEOUT_MS, toApiUrl } from '@/utils/runtime'
+
 export interface Source {
   title: string
   score?: number
@@ -12,17 +14,68 @@ export interface SSECallbacks {
   onUnansweredInvite?: (data: { message_id: number; conv_id: number }) => void
 }
 
-export async function fetchSSE(
-  url: string,
-  body: object,
-  token: string,
-  callbacks: SSECallbacks
-): Promise<void> {
+type SSEEventData = Record<string, any>
+
+function dispatchEvent(eventName: string, data: SSEEventData, callbacks: SSECallbacks): void {
+  if (eventName === 'message') {
+    callbacks.onToken(data.token || '')
+  } else if (eventName === 'message_end') {
+    callbacks.onEnd({
+      full_content: data.full_content || '',
+      sources: data.sources || [],
+      message_id: data.message_id || 0,
+    })
+  } else if (eventName === 'unanswered_invite') {
+    callbacks.onUnansweredInvite?.({
+      message_id: data.message_id || 0,
+      conv_id: data.conv_id || 0,
+    })
+  } else if (eventName === 'suggestions') {
+    callbacks.onSuggestions?.(data.questions || [])
+  } else if (eventName === 'error') {
+    callbacks.onError(data.message || 'AI 服务异常')
+  }
+}
+
+function parseEventBlock(block: string, callbacks: SSECallbacks): void {
+  const lines = block.split(/\r?\n/)
+  let eventName = 'message'
+  const dataLines: string[] = []
+
+  for (const line of lines) {
+    if (line.startsWith('event:')) {
+      eventName = line.slice(6).trim()
+    } else if (line.startsWith('data:')) {
+      dataLines.push(line.slice(5).trimStart())
+    }
+  }
+
+  if (eventName === 'done') return
+  if (!dataLines.length) return
+
+  try {
+    const data = JSON.parse(dataLines.join('\n')) as SSEEventData
+    dispatchEvent(eventName, data, callbacks)
+  } catch {
+    // Ignore malformed SSE data lines; the stream can continue.
+  }
+}
+
+function consumeSSEText(text: string, callbacks: SSECallbacks): void {
+  const normalized = text.replace(/\r\n/g, '\n')
+  const blocks = normalized.split(/\n\n+/)
+  for (const block of blocks) {
+    if (block.trim()) parseEventBlock(block, callbacks)
+  }
+}
+
+async function fetchStream(url: string, body: object, token: string, callbacks: SSECallbacks): Promise<void> {
   const resp = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
+      'Accept': 'text/event-stream',
     },
     body: JSON.stringify(body),
   })
@@ -32,46 +85,88 @@ export async function fetchSSE(
     throw new Error(`HTTP ${resp.status}: ${text}`)
   }
 
-  const reader = resp.body!.getReader()
+  if (!resp.body) {
+    const text = await resp.text()
+    consumeSSEText(text, callbacks)
+    return
+  }
+
+  const reader = resp.body.getReader()
   const decoder = new TextDecoder()
   let buffer = ''
-  let currentEvent = ''
 
   while (true) {
     const { value, done } = await reader.read()
     if (done) break
     buffer += decoder.decode(value, { stream: true })
 
-    const lines = buffer.split('\n')
-    buffer = lines.pop() || ''
+    const parts = buffer.replace(/\r\n/g, '\n').split(/\n\n+/)
+    buffer = parts.pop() || ''
+    for (const part of parts) {
+      if (part.trim()) parseEventBlock(part, callbacks)
+    }
+  }
 
-    for (const line of lines) {
-      if (line.startsWith('event: ')) {
-        currentEvent = line.slice(7).trim()
-      } else if (line.startsWith('data: ')) {
-        try {
-          const data = JSON.parse(line.slice(6))
-          if (currentEvent === 'message') {
-            callbacks.onToken(data.token || '')
-          } else if (currentEvent === 'message_end') {
-            callbacks.onEnd({
-              full_content: data.full_content || '',
-              sources: data.sources || [],
-              message_id: data.message_id || 0,
-            })
-          } else if (currentEvent === 'unanswered_invite') {
-            callbacks.onUnansweredInvite?.({
-              message_id: data.message_id || 0,
-              conv_id: data.conv_id || 0,
-            })
-          } else if (currentEvent === 'suggestions') {
-            callbacks.onSuggestions?.(data.questions || [])
-          } else if (currentEvent === 'error') {
-            callbacks.onError(data.message || 'AI 服务异常')
-          }
-          // event: done → no action needed, stream ends naturally
-        } catch { /* ignore JSON parse errors for non-data lines */ }
+  buffer += decoder.decode()
+  if (buffer.trim()) parseEventBlock(buffer, callbacks)
+}
+
+function bufferedRequest(url: string, body: object, token: string, callbacks: SSECallbacks): Promise<void> {
+  return new Promise((resolve, reject) => {
+    uni.request({
+      url,
+      method: 'POST',
+      timeout: REQUEST_TIMEOUT_MS,
+      responseType: 'text',
+      header: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'text/event-stream',
+      },
+      data: body,
+      success: (res) => {
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          const data = res.data as any
+          reject(new Error(data?.detail || data?.message || `HTTP ${res.statusCode}`))
+          return
+        }
+
+        if (typeof res.data === 'string') {
+          consumeSSEText(res.data, callbacks)
+        } else if (res.data && typeof res.data === 'object') {
+          const data = res.data as any
+          callbacks.onEnd({
+            full_content: data.full_content || data.content || '',
+            sources: data.sources || [],
+            message_id: data.message_id || 0,
+          })
+        }
+        resolve()
+      },
+      fail: (err) => reject(new Error(err.errMsg || '网络连接失败')),
+    })
+  })
+}
+
+export async function fetchSSE(
+  url: string,
+  body: object,
+  token: string,
+  callbacks: SSECallbacks
+): Promise<void> {
+  const requestUrl = toApiUrl(url)
+
+  if (typeof fetch === 'function' && typeof TextDecoder !== 'undefined') {
+    try {
+      await fetchStream(requestUrl, body, token, callbacks)
+      return
+    } catch (error) {
+      // H5 can fail on CORS/proxy mismatch; fall through to uni.request when available.
+      if (typeof uni === 'undefined' || typeof uni.request !== 'function') {
+        throw error
       }
     }
   }
+
+  await bufferedRequest(requestUrl, body, token, callbacks)
 }

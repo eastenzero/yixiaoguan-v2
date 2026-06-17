@@ -16,10 +16,6 @@ export interface UserInfo {
 const TOKEN_KEY = 'v2-token'
 const USER_INFO_KEY = 'v2-user-info'
 
-type RequestError = Error & {
-  statusCode?: number
-}
-
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>('')
   const userInfo = ref<UserInfo | null>(null)
@@ -30,36 +26,33 @@ export const useUserStore = defineStore('user', () => {
     const storedToken = uni.getStorageSync(TOKEN_KEY)
     const storedInfo = uni.getStorageSync(USER_INFO_KEY)
     if (storedToken) {
-      token.value = storedToken
+      setToken(storedToken)
       if (storedInfo) {
         try { userInfo.value = JSON.parse(storedInfo) } catch { /* ignore */ }
       }
       _connectRealtime(storedToken)
       return
     }
-
-    await tryPilotLogin()
+    await startPilotTrial()
   }
 
-  async function tryPilotLogin(): Promise<boolean> {
+  async function startPilotTrial(): Promise<void> {
     try {
       const [{ pilotAnonymousLogin, getMe }, { getDeviceId }] = await Promise.all([
         import('@/api/auth'),
         import('@/utils/device'),
       ])
-      const deviceId = getDeviceId()
-      const resp = await pilotAnonymousLogin(deviceId)
 
-      setToken(resp.access_token)
-      const info = await getMe()
-      setUserInfo(info)
-      _connectRealtime(resp.access_token)
-      return true
-    } catch (error) {
-      if ((error as RequestError | undefined)?.statusCode === 403) {
-        uni.reLaunch({ url: '/pages/login/index' })
-      }
-      return false
+      const loginRes = await pilotAnonymousLogin(getDeviceId())
+      setToken(loginRes.access_token)
+
+      const me = await getMe()
+      setUserInfo(me)
+    } catch {
+      token.value = ''
+      userInfo.value = null
+      uni.removeStorageSync(TOKEN_KEY)
+      uni.removeStorageSync(USER_INFO_KEY)
     }
   }
 
@@ -82,13 +75,11 @@ export const useUserStore = defineStore('user', () => {
     centrifugeManager.disconnect()
   }
 
+  function shouldConnectRealtime(): boolean {
+    return !userInfo.value?.staff_id?.startsWith('pilot:')
+  }
+
   function _connectRealtime(nextToken: string): void {
-    // R11 pilot 用户没有真实师生关系（无 college/class），实时通道（教师答复推送等）
-    // 在 pilot 模式下永远不会有消息，连接只会产生持续的 WS 报错噪音 —— 直接跳过。
-    const staffId = userInfo.value?.staff_id || ''
-    if (staffId.startsWith('pilot:')) {
-      return
-    }
     wsManager.connect(nextToken)
     void import('@/api/auth')
       .then(({ getCentrifugoToken }) => getCentrifugoToken())
@@ -102,5 +93,5 @@ export const useUserStore = defineStore('user', () => {
       .catch(() => { /* centrifugo unavailable, degrade silently */ })
   }
 
-  return { token, userInfo, isLoggedIn, init, tryPilotLogin, setToken, setUserInfo, logout }
+  return { token, userInfo, isLoggedIn, init, startPilotTrial, setToken, setUserInfo, logout }
 })
