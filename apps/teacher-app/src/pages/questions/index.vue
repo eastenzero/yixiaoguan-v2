@@ -67,7 +67,7 @@
           <view class="ai-confidence">
             <view class="confidence-header">
               <view class="confidence-label">
-                <text class="material-symbols-outlined confidence-icon">psychology</text>
+                <AppIcon name="psychology" class="confidence-icon" />
                 <text class="label-text">AI 匹配度</text>
               </view>
               <text class="confidence-value">{{ item.confidence || 80 }}%</text>
@@ -89,6 +89,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { ref, onMounted, onUnmounted, onActivated } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopAppBar from '../../components/TopAppBar.vue'
@@ -239,29 +240,16 @@ onUnmounted(() => {
   padding-right: 20px;
   white-space: nowrap;
 
+  /* #ifdef H5 */
   :deep(.uni-scroll-view::-webkit-scrollbar) {
     display: none;
   }
+  /* #endif */
   :deep(.uni-scroll-view) {
     scrollbar-width: none;
   }
 }
 
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-flex;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
-  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-}
 
 .filter-tabs {
   display: flex;

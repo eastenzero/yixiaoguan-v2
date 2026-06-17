@@ -23,7 +23,7 @@
           <text class="hero-title">{{ entry.title }}</text>
           <view class="author-row">
             <view class="author-avatar">
-              <text class="material-symbols-outlined author-icon">person</text>
+              <AppIcon name="person" class="author-icon" />
             </view>
             <view class="author-info">
               <text class="author-name">{{ entry.representative_query || '知识条目' }}</text>
@@ -48,7 +48,7 @@
           <text class="btn-text">下线</text>
         </button>
         <button class="action-btn action-btn--primary" @click="handleEdit">
-          <text class="material-symbols-outlined btn-icon">edit</text>
+          <AppIcon name="edit" class="btn-icon" />
           <text class="btn-text">编辑</text>
         </button>
       </view>
@@ -62,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import TopAppBar from '../../components/TopAppBar.vue'
@@ -192,21 +193,6 @@ const formatTime = (time?: string) => {
   padding-right: 20px;
 }
 
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-flex;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
-  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-}
 
 // Hero Section
 .hero-section {
@@ -348,8 +334,7 @@ const formatTime = (time?: string) => {
 }
 
 // Blockquote style for quoted content
-:deep(blockquote),
-.blockquote {
+.quote-block {
   border-left: 4px solid $primary-container;
   background: rgba($primary-container, 0.1);
   padding: 12px 16px;

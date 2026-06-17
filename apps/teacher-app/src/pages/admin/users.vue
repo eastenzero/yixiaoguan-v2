@@ -3,11 +3,11 @@
     <view class="custom-app-bar">
       <view class="app-bar-content">
         <view class="app-bar-left" @click="handleBack">
-          <text class="material-symbols-outlined app-bar-icon">arrow_back</text>
+          <AppIcon name="arrow_back" class="app-bar-icon" />
           <text class="app-bar-title">用户管理</text>
         </view>
         <view class="app-bar-right" @click="goImport">
-          <text class="material-symbols-outlined app-bar-icon app-bar-icon--primary">person_add</text>
+          <AppIcon name="person_add" class="app-bar-icon app-bar-icon--primary" />
         </view>
       </view>
     </view>
@@ -16,7 +16,7 @@
       <!-- 搜索 + 筛选 -->
       <view class="search-bar animate-fade-up">
         <view class="search-input-wrap">
-          <text class="material-symbols-outlined search-icon">search</text>
+          <AppIcon name="search" class="search-icon" />
           <input
             v-model="keyword"
             class="search-input"
@@ -41,9 +41,7 @@
 
       <view class="filter-row filter-row--pilot animate-fade-up delay-1">
         <view class="filter-toggle" @click="showPilot = !showPilot">
-          <text class="material-symbols-outlined toggle-icon" :class="{ active: showPilot }">
-            {{ showPilot ? 'check_box' : 'check_box_outline_blank' }}
-          </text>
+          <AppIcon :name="showPilot ? 'check_box' : 'check_box_outline_blank'" class="toggle-icon" :class="{ active: showPilot }" />
           <text class="toggle-text">显示内测访客（{{ pilotCount }}）</text>
         </view>
       </view>
@@ -59,7 +57,7 @@
       </view>
 
       <view v-else-if="visibleUsers.length === 0" class="empty-wrap">
-        <text class="material-symbols-outlined empty-icon">person_off</text>
+        <AppIcon name="person_off" class="empty-icon" />
         <text class="empty-text">暂无用户</text>
       </view>
 
@@ -89,10 +87,10 @@
           </view>
           <view class="user-actions">
             <view class="action-btn" @click="handleResetPwd(u)">
-              <text class="material-symbols-outlined action-icon">lock_reset</text>
+              <AppIcon name="lock_reset" class="action-icon" />
             </view>
             <view class="action-btn" :class="{ 'action-btn--danger': u.is_active }" @click="handleToggle(u)">
-              <text class="material-symbols-outlined action-icon">{{ u.is_active ? 'block' : 'check_circle' }}</text>
+              <AppIcon :name="u.is_active ? 'block' : 'check_circle'" class="action-icon" />
             </view>
           </view>
         </view>
@@ -101,11 +99,11 @@
       <!-- 分页 -->
       <view v-if="total > pageSize" class="pagination">
         <view class="page-btn" :class="{ 'page-btn--disabled': page <= 1 }" @click="prevPage">
-          <text class="material-symbols-outlined">chevron_left</text>
+          <AppIcon name="chevron_left" />
         </view>
         <text class="page-info">{{ page }} / {{ totalPages }}</text>
         <view class="page-btn" :class="{ 'page-btn--disabled': page >= totalPages }" @click="nextPage">
-          <text class="material-symbols-outlined">chevron_right</text>
+          <AppIcon name="chevron_right" />
         </view>
       </view>
     </view>
@@ -113,6 +111,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { ref, computed, onMounted } from 'vue'
 import { getUsers, resetPassword, toggleActive, type AdminUserItem } from '@/api/admin'
 

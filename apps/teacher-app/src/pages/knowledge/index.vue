@@ -7,12 +7,13 @@
       <view class="section animate-fade-up delay-1">
         <view class="search-wrapper">
           <view class="search-icon">
-            <text class="material-symbols-outlined search-symbol">search</text>
+            <AppIcon name="search" class="search-symbol" />
           </view>
           <input 
             v-model="searchText"
             class="search-input" 
             :placeholder="searchPlaceholder" 
+            placeholder-style="color: rgba(93, 91, 95, 0.5);"
             type="text"
             @confirm="handleSearch"
           />
@@ -163,6 +164,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { computed, ref, onMounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopAppBar from '../../components/TopAppBar.vue'
@@ -492,21 +494,6 @@ onShow(() => loadData())
   margin-bottom: 24px;
 }
 
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-flex;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
-  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-}
 
 // Search Bar
 .search-wrapper {
@@ -541,11 +528,6 @@ onShow(() => loadData())
   border: none;
   font-size: 15px;
   color: $on-surface;
-  
-  &::placeholder {
-    color: $on-surface-variant;
-    opacity: 0.5;
-  }
 }
 
 // Tabs
@@ -555,9 +537,11 @@ onShow(() => loadData())
   padding-left: 20px;
   padding-right: 20px;
 
+  /* #ifdef H5 */
   :deep(.uni-scroll-view::-webkit-scrollbar) {
     display: none;
   }
+  /* #endif */
   :deep(.uni-scroll-view) {
     scrollbar-width: none;
   }

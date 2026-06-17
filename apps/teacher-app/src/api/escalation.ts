@@ -4,7 +4,7 @@ import request from '@/utils/request'
 export function getPendingEscalations(pageNum = 1, pageSize = 10) {
   return request({
     url: '/api/v1/escalations/pending',
-    method: 'get',
+    method: 'GET',
     params: { pageNum, pageSize }
   })
 }
@@ -13,7 +13,7 @@ export function getPendingEscalations(pageNum = 1, pageSize = 10) {
 export function getAssignedEscalations(status?: number, pageNum = 1, pageSize = 10) {
   return request({
     url: '/api/v1/escalations/assigned',
-    method: 'get',
+    method: 'GET',
     params: { status, pageNum, pageSize }
   })
 }
@@ -22,7 +22,7 @@ export function getAssignedEscalations(status?: number, pageNum = 1, pageSize = 
 export function getEscalationDetail(id: number) {
   return request({
     url: `/api/v1/escalations/${id}`,
-    method: 'get'
+    method: 'GET'
   })
 }
 
@@ -30,7 +30,7 @@ export function getEscalationDetail(id: number) {
 export function assignEscalation(id: number) {
   return request({
     url: `/api/v1/escalations/${id}/assign`,
-    method: 'put'
+    method: 'PUT'
   })
 }
 
@@ -38,7 +38,7 @@ export function assignEscalation(id: number) {
 export function replyEscalation(id: number, teacherReply: string) {
   return request({
     url: `/api/v1/escalations/${id}/reply`,
-    method: 'put',
+    method: 'PUT',
     data: { teacherReply }
   })
 }
@@ -47,7 +47,7 @@ export function replyEscalation(id: number, teacherReply: string) {
 export function getConversationMessages(conversationId: number) {
   return request({
     url: `/api/v1/conversations/${conversationId}/messages`,
-    method: 'get'
+    method: 'GET'
   })
 }
 
@@ -55,7 +55,7 @@ export function getConversationMessages(conversationId: number) {
 export function resolveEscalation(id: number, teacherReply: string) {
   return request({
     url: `/api/v1/escalations/${id}/resolve`,
-    method: 'put',
+    method: 'PUT',
     data: { teacherReply }
   })
 }

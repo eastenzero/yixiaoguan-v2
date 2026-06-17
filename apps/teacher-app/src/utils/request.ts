@@ -1,24 +1,25 @@
 import { useUserStore } from '@/stores/user'
+import { REQUEST_TIMEOUT_MS, toApiUrl } from '@/utils/runtime'
 
 // ===== 配置区 =====
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
-const REQUEST_TIMEOUT = 30000
+const REQUEST_TIMEOUT = REQUEST_TIMEOUT_MS
+
+export type RequestOptions = UniApp.RequestOptions & {
+  params?: Record<string, any>
+}
 
 /**
  * 统一请求封装（v2 FastAPI — 直接返回 JSON，无 {code, data} 包装）
  */
-export function request<T = any>(options: UniApp.RequestOptions): Promise<T> {
+export function request<T = any>(options: RequestOptions): Promise<T> {
   return new Promise((resolve, reject) => {
     const userStore = useUserStore()
+    const { params, ...uniOptions } = options
 
     // 构建完整 URL
-    let url = options.url
-    if (url.startsWith('/')) {
-      url = BASE_URL + url
-    }
+    let url = toApiUrl(uniOptions.url)
 
     // 将 params 拼接到 URL query string
-    const params = (options as any).params as Record<string, any> | undefined
     if (params) {
       const entries = Object.entries(params).filter(([, v]) => v !== undefined && v !== null)
       if (entries.length > 0) {
@@ -31,12 +32,12 @@ export function request<T = any>(options: UniApp.RequestOptions): Promise<T> {
 
     // 请求配置
     const requestOptions: UniApp.RequestOptions = {
-      ...options,
+      ...uniOptions,
       url,
-      timeout: options.timeout || REQUEST_TIMEOUT,
+      timeout: uniOptions.timeout || REQUEST_TIMEOUT,
       header: {
         'Content-Type': 'application/json',
-        ...options.header
+        ...uniOptions.header
       },
       success: (res) => {
         // 401 未授权 → 跳登录

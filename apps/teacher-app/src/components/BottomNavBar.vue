@@ -1,29 +1,47 @@
 <template>
   <view class="bottom-nav-bar">
-    <view 
-      v-for="(tab, index) in tabs" 
+    <view
+      v-for="(tab, index) in tabs"
       :key="index"
       class="tab-item"
-      :class="{ 'tab-item--active': current === index }"
+      :class="{ 'tab-item--active': props.current === index }"
       @click="handleTabClick(index)"
     >
       <view class="icon-wrapper">
-        <component 
-          :is="tab.icon" 
-          :size="24" 
-          :color="current === index ? '#5b21b6' : '#5d5b5f'"
-          :stroke-width="current === index ? 2.5 : 2"
+        <IconDashboard
+          v-if="tab.key === 'dashboard'"
+          :size="24"
+          :color="props.current === index ? '#5b21b6' : '#5d5b5f'"
+          :stroke-width="props.current === index ? 2.5 : 2"
         />
-        <view 
-          v-if="index === 1 && badge && badge > 0" 
+        <IconMessage
+          v-else-if="tab.key === 'questions'"
+          :size="24"
+          :color="props.current === index ? '#5b21b6' : '#5d5b5f'"
+          :stroke-width="props.current === index ? 2.5 : 2"
+        />
+        <IconBook
+          v-else-if="tab.key === 'knowledge'"
+          :size="24"
+          :color="props.current === index ? '#5b21b6' : '#5d5b5f'"
+          :stroke-width="props.current === index ? 2.5 : 2"
+        />
+        <IconUser
+          v-else
+          :size="24"
+          :color="props.current === index ? '#5b21b6' : '#5d5b5f'"
+          :stroke-width="props.current === index ? 2.5 : 2"
+        />
+        <view
+          v-if="index === 1 && props.badge && props.badge > 0"
           class="badge"
         >
-          {{ badge > 99 ? '99+' : badge }}
+          {{ props.badge > 99 ? '99+' : props.badge }}
         </view>
       </view>
       <text class="tab-label">{{ tab.label }}</text>
-      <view 
-        v-if="current === index" 
+      <view
+        v-if="props.current === index"
         class="active-dot"
       />
     </view>
@@ -31,7 +49,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import IconDashboard from './icons/IconDashboard.vue'
 import IconMessage from './icons/IconMessage.vue'
 import IconBook from './icons/IconBook.vue'
@@ -42,16 +59,16 @@ interface Props {
   badge?: number
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   current: 0,
   badge: 0
 })
 
 const tabs = [
-  { label: '工作台', icon: IconDashboard, path: '/pages/dashboard/index' },
-  { label: '学生提问', icon: IconMessage, path: '/pages/questions/index' },
-  { label: '知识库', icon: IconBook, path: '/pages/knowledge/index' },
-  { label: '我的', icon: IconUser, path: '/pages/profile/index' }
+  { key: 'dashboard', label: '工作台', path: '/pages/dashboard/index' },
+  { key: 'questions', label: '学生提问', path: '/pages/questions/index' },
+  { key: 'knowledge', label: '知识库', path: '/pages/knowledge/index' },
+  { key: 'profile', label: '我的', path: '/pages/profile/index' }
 ]
 
 const handleTabClick = (index: number) => {

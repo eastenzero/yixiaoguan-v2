@@ -4,7 +4,7 @@
       <view class="sheet-handle" />
 
       <view class="sheet-icon-wrap">
-        <text class="material-symbols-outlined sheet-icon">{{ icon }}</text>
+        <AppIcon :name="icon" class="sheet-icon" />
       </view>
 
       <text class="sheet-title">{{ title }}</text>
@@ -20,6 +20,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 defineProps<{
   visible: boolean
   title: string

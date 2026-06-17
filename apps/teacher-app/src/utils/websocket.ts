@@ -1,3 +1,5 @@
+import { appendQuery, toWsUrl } from '@/utils/runtime'
+
 /**
  * WebSocket 管理器 — v2 单连接 + room 模式
  * H5: 原生 WebSocket
@@ -65,9 +67,7 @@ class WsManager {
 
   private doConnect() {
     this.cleanup()
-    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const host = location.host
-    const url = `${protocol}//${host}/ws?token=${this.token}`
+    const url = appendQuery(toWsUrl('/ws'), { token: this.token })
 
     try {
       this.task = uni.connectSocket({

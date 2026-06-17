@@ -12,7 +12,7 @@
         <!-- Logo 区域 -->
         <view class="logo-area">
           <view class="logo-icon">
-            <IconGraduationCap :size="48" color="#ffffff" />
+            <image class="brand-logo" src="/static/favicon.svg" mode="aspectFit" />
           </view>
           <text class="logo-title">医小管</text>
           <text class="logo-subtitle">教师工作台</text>
@@ -32,6 +32,7 @@
                 class="input-field"
                 type="text"
                 placeholder="请输入教师工号"
+                placeholder-style="color: rgba(93, 91, 95, 0.5);"
               />
             </view>
           </view>
@@ -48,6 +49,7 @@
                 class="input-field"
                 :type="showPassword ? 'text' : 'password'"
                 placeholder="请输入登录密码"
+                placeholder-style="color: rgba(93, 91, 95, 0.5);"
               />
               <view class="input-action" @click="togglePasswordVisibility">
                 <IconEye :size="20" :color="onSurfaceVariantColor" />
@@ -65,6 +67,7 @@
                   class="input-field"
                   type="text"
                   placeholder="请输入验证码"
+                  placeholder-style="color: rgba(93, 91, 95, 0.5);"
                 />
               </view>
               <image 
@@ -114,7 +117,6 @@ import { ref } from 'vue'
 import { login as loginApi, getUserInfo } from '@/api/auth'
 import { useUserStore } from '@/stores/user'
 import { useWsStore } from '@/stores/websocket'
-import IconGraduationCap from '../../components/icons/IconGraduationCap.vue'
 import IconUser from '../../components/icons/IconUser.vue'
 import IconLock from '../../components/icons/IconLock.vue'
 import IconEye from '../../components/icons/IconEye.vue'
@@ -133,9 +135,16 @@ const wsStore = useWsStore()
 const username = ref('')
 const password = ref('')
 const captchaEnabled = ref(false) // v2 无验证码
+const captchaCode = ref('')
+const captchaImg = ref('')
 const loading = ref(false)
 const rememberMe = ref(true)
 const showPassword = ref(false)
+
+const refreshCaptcha = () => {
+  captchaCode.value = ''
+  captchaImg.value = ''
+}
 
 // 切换密码可见性
 const togglePasswordVisibility = () => {
@@ -262,16 +271,21 @@ const handleForgotPassword = () => {
 }
 
 .logo-icon {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, $primary, $primary-container);
-  border-radius: 20px;
+  width: 88px;
+  height: 88px;
+  background: transparent;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
-  box-shadow: 0 8px 24px rgba($primary, 0.3);
-  transform: rotate(3deg);
+  box-shadow: none;
+  transform: none;
+}
+
+.brand-logo {
+  width: 88px;
+  height: 88px;
 }
 
 .logo-title {
@@ -340,10 +354,6 @@ const handleForgotPassword = () => {
   font-family: $font-body;
   font-size: 15px;
   color: $on-surface;
-  
-  &::placeholder {
-    color: rgba($on-surface-variant, 0.5);
-  }
 }
 
 // 验证码区域
