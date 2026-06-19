@@ -1,7 +1,7 @@
 <template>
   <view v-if="questions.length" class="suggestions">
     <view class="suggestions-title">
-      <uni-icons type="help" size="16" color="#d97706" />
+      <AppIcon name="lightbulb" class="suggestions-icon" />
       <text>你可能还想问</text>
     </view>
     <view class="suggestions-list">
@@ -12,13 +12,15 @@
         @click="$emit('select', question)"
       >
         <text class="suggestion-text">{{ question }}</text>
-        <uni-icons type="right" size="14" color="#5b21b6" />
+        <AppIcon name="arrow_forward" class="suggestion-icon" />
       </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+
 defineProps<{
   questions: string[]
 }>()
@@ -43,6 +45,11 @@ defineEmits<{
   color: #92400e;
   font-size: 12px;
   font-weight: 800;
+}
+
+.suggestions-icon {
+  color: #d97706;
+  font-size: 16px;
 }
 
 .suggestions-list {
@@ -71,5 +78,11 @@ defineEmits<{
   font-size: 13px;
   font-weight: 700;
   line-height: 1.45;
+}
+
+.suggestion-icon {
+  color: $primary;
+  font-size: 14px;
+  flex-shrink: 0;
 }
 </style>

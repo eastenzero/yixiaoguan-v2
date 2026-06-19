@@ -2,11 +2,11 @@
   <view class="chat-page">
     <view class="top-nav">
       <view class="nav-left" @click="goBack">
-        <uni-icons type="arrow-left" size="24" color="#5b21b6" />
+        <AppIcon name="arrow_back" class="nav-icon" />
         <text class="nav-title">医小管</text>
       </view>
       <view class="nav-right" @click="goToHistory">
-        <uni-icons type="chatboxes" size="22" color="#5b21b6" />
+        <AppIcon name="history" class="nav-history-icon" />
       </view>
     </view>
 
@@ -59,6 +59,7 @@
 
 <script setup lang="ts">
 import CustomTabBar from '@/components/CustomTabBar.vue'
+import AppIcon from '@/components/AppIcon.vue'
 import ChatComposer from '@/components/chat/ChatComposer.vue'
 import ChatEmptyState from '@/components/chat/ChatEmptyState.vue'
 import ChatThread from '@/components/chat/ChatThread.vue'
@@ -150,6 +151,19 @@ const {
   font-size: 20px;
   font-weight: 800;
   line-height: 1;
+}
+
+.nav-icon,
+.nav-history-icon {
+  color: $primary;
+}
+
+.nav-icon {
+  font-size: 24px;
+}
+
+.nav-history-icon {
+  font-size: 22px;
 }
 
 .chat-body {

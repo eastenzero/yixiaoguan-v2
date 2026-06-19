@@ -14,7 +14,7 @@
     <view v-else class="assistant-msg">
       <view class="assistant-header">
         <view :class="['avatar', message.role === 'teacher' ? 'avatar-teacher' : 'avatar-ai']">
-          <uni-icons :type="message.role === 'teacher' ? 'staff' : 'chatboxes'" size="14" color="#ffffff" />
+          <AppIcon :name="message.role === 'teacher' ? 'support_agent' : 'smart_toy'" class="avatar-icon" />
         </view>
         <text :class="['assistant-name', message.role === 'teacher' ? 'teacher-name' : 'ai-name']">
           {{ message.role === 'teacher' ? '老师回复' : '医小管 AI' }}
@@ -30,7 +30,7 @@
 
         <view v-if="message.sources && message.sources.length && !message.isStreaming" class="citations">
           <view class="cit-header">
-            <uni-icons type="paperclip" size="14" color="#5b21b6" />
+            <AppIcon name="menu_book" class="cit-icon" />
             <text>参考资料</text>
           </view>
           <view class="cit-list">
@@ -41,7 +41,7 @@
               @click="$emit('source-click', source)"
             >
               <text class="cit-text">{{ index + 1 }}. {{ source.title }}</text>
-              <uni-icons type="right" size="13" color="#7742a6" />
+              <AppIcon name="chevron_right" class="cit-arrow" />
             </view>
           </view>
         </view>
@@ -62,11 +62,11 @@
         class="inline-call-teacher"
         @click="$emit('call-teacher')"
       >
-        <uni-icons type="staff" size="17" color="#ffffff" />
+        <AppIcon name="support_agent" class="call-inline-icon" />
         <text class="call-inline-text">{{ escalateLoading ? '呼叫中...' : '转人工服务' }}</text>
       </view>
       <view v-if="conversationStatus === 'pending_teacher' && isRefusal" class="inline-call-done">
-        <uni-icons type="checkmarkempty" size="17" color="#059669" />
+        <AppIcon name="check_circle" class="call-done-icon" />
         <text class="call-done-text">已通知老师，请耐心等待</text>
       </view>
     </view>
@@ -75,6 +75,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import AppIcon from '@/components/AppIcon.vue'
 import MarkdownContent from '@/components/MarkdownContent.vue'
 import UnansweredInviteCard from '@/components/UnansweredInviteCard.vue'
 import type { ChatMessage, ConversationStatus, Source } from '@/types/chat'
@@ -171,6 +172,11 @@ const isRefusal = computed(() => props.isRefusalMsg(props.message))
   background: linear-gradient(135deg, #059669, #34d399);
 }
 
+.avatar-icon {
+  color: #fff;
+  font-size: 14px;
+}
+
 .assistant-name {
   font-size: 12px;
   font-weight: 800;
@@ -254,6 +260,11 @@ const isRefusal = computed(() => props.isRefusalMsg(props.message))
   font-weight: 800;
 }
 
+.cit-icon {
+  color: $primary;
+  font-size: 14px;
+}
+
 .cit-list {
   display: flex;
   flex-direction: column;
@@ -280,6 +291,12 @@ const isRefusal = computed(() => props.isRefusalMsg(props.message))
   white-space: nowrap;
 }
 
+.cit-arrow {
+  color: $secondary;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
 .inline-call-teacher,
 .inline-call-done {
   display: inline-flex;
@@ -294,6 +311,11 @@ const isRefusal = computed(() => props.isRefusalMsg(props.message))
   color: #fff;
   background: $gradient-cta;
   box-shadow: 0 8px 18px rgba(91, 33, 182, 0.22);
+}
+
+.call-inline-icon {
+  color: #fff;
+  font-size: 17px;
 }
 
 .inline-call-teacher:active {
@@ -312,5 +334,10 @@ const isRefusal = computed(() => props.isRefusalMsg(props.message))
 
 .call-done-text {
   color: $success;
+}
+
+.call-done-icon {
+  color: $success;
+  font-size: 17px;
 }
 </style>

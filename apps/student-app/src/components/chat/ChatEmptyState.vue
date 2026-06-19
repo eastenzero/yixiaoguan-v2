@@ -1,7 +1,7 @@
 <template>
   <view class="empty-state">
     <view class="empty-mark">
-      <uni-icons type="sparkles" size="30" color="#ffffff" />
+      <AppIcon name="auto_awesome" class="empty-icon" />
     </view>
     <text class="empty-title">智慧校园助理</text>
     <text class="empty-desc">同学你好！校园生活、选课安排和办事流程，都可以从这里开始问。</text>
@@ -14,13 +14,15 @@
         @click="$emit('select', question)"
       >
         <text class="starter-text">{{ question }}</text>
-        <uni-icons type="right" size="14" color="#5b21b6" />
+        <AppIcon name="arrow_forward" class="starter-icon" />
       </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+
 defineProps<{
   questions: string[]
 }>()
@@ -57,6 +59,11 @@ defineEmits<{
   margin-bottom: 18px;
   background: $gradient-cta;
   box-shadow: 0 18px 36px rgba(91, 33, 182, 0.22);
+}
+
+.empty-icon {
+  color: #fff;
+  font-size: 30px;
 }
 
 .empty-title {
@@ -106,5 +113,11 @@ defineEmits<{
   font-weight: 700;
   line-height: 1.45;
   text-align: left;
+}
+
+.starter-icon {
+  color: $primary;
+  font-size: 14px;
+  flex-shrink: 0;
 }
 </style>

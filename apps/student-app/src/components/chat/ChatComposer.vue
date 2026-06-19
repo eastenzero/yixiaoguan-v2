@@ -3,7 +3,7 @@
     <view v-if="showCallMenu" class="call-menu-overlay" @click="$emit('close-call-menu')">
       <view class="call-menu" @click.stop>
         <view class="call-menu-item" @click="$emit('call-teacher')">
-          <uni-icons type="staff" size="18" color="#5b21b6" />
+          <AppIcon name="support_agent" class="call-menu-icon" />
           <text class="call-menu-text">呼叫老师</text>
         </view>
       </view>
@@ -24,13 +24,15 @@
         @click="$emit('send')"
         @longpress="$emit('longpress-send')"
       >
-        <uni-icons type="paperplane" size="20" color="#ffffff" />
+        <AppIcon name="send" class="send-icon" />
       </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+
 defineProps<{
   modelValue: string
   placeholder: string
@@ -110,6 +112,11 @@ function onInput(event: any) {
   opacity: 0.45;
 }
 
+.send-icon {
+  color: #fff;
+  font-size: 20px;
+}
+
 .call-menu-overlay {
   position: absolute;
   left: 0;
@@ -137,6 +144,11 @@ function onInput(event: any) {
 
 .call-menu-item:active {
   background: $surface-container-low;
+}
+
+.call-menu-icon {
+  color: $primary;
+  font-size: 18px;
 }
 
 .call-menu-text {

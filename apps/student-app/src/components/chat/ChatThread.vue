@@ -21,7 +21,7 @@
 
       <view v-if="isTyping" class="typing-row">
         <view class="typing-avatar">
-          <uni-icons type="chatboxes" size="14" color="#ffffff" />
+          <AppIcon name="smart_toy" class="typing-icon" />
         </view>
         <view class="typing-bubble">
           <view class="typing-dot" /><view class="typing-dot" /><view class="typing-dot" />
@@ -40,6 +40,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import ChatMessageBubble from './ChatMessageBubble.vue'
 import ChatSuggestions from './ChatSuggestions.vue'
 import type { ChatMessage, ConversationStatus, Source } from '@/types/chat'
@@ -96,6 +97,11 @@ defineEmits<{
   justify-content: center;
   border-radius: 13px;
   background: $gradient-cta;
+}
+
+.typing-icon {
+  color: #fff;
+  font-size: 14px;
 }
 
 .typing-bubble {
