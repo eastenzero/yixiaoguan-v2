@@ -251,8 +251,8 @@ async function handleLogout() {
 .top-bar {
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
+  left: var(--student-fixed-left, 0);
+  right: var(--student-fixed-right, 0);
   z-index: 50;
   display: flex;
   align-items: center;

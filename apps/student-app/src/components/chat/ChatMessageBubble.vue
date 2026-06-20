@@ -67,7 +67,7 @@
       </view>
       <view v-if="conversationStatus === 'pending_teacher' && isRefusal" class="inline-call-done">
         <AppIcon name="check_circle" class="call-done-icon" />
-        <text class="call-done-text">已通知老师，请耐心等待</text>
+        <text class="call-done-text">已提交人工服务请求</text>
       </view>
     </view>
   </view>

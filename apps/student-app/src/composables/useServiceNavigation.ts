@@ -5,43 +5,72 @@ import { showFeatureNotice } from './useFeatureNotice'
 
 const SSO_LOGIN_URL = 'https://sso.sdfmu.edu.cn/login'
 
-type ExternalOptions = {
-  useSso?: boolean
-}
-
 export function openAiQuestion(question: string) {
   uni.setStorageSync('chat_init_query', question)
   uni.switchTab({ url: '/pages/chat/index' })
 }
 
-function wrapSsoUrl(target: string): string {
-  const params = new URLSearchParams({
-    noAutoRedirect: 'true',
-    service: target,
-  })
+function wrapSsoUrl(service: string, noAutoRedirect = 'true'): string {
+  const params = new URLSearchParams()
+  params.set('noAutoRedirect', noAutoRedirect)
+  params.set('service', service)
   return `${SSO_LOGIN_URL}?${params.toString()}`
 }
 
-function shouldUseSso(target: string): boolean {
+function getEhallSsoService(target: string): string {
+  return `https://ehall.sdfmu.edu.cn/site/login/cas-login?redirect_url=${encodeURIComponent(target)}`
+}
+
+function getPortalSsoService(): string {
+  return 'https://portal.sdfmu.edu.cn/frontend/login/index?redirect=https://portal.sdfmu.edu.cn/'
+}
+
+function getAppSsoService(target: string): string {
+  return `https://app.sdfmu.edu.cn/a_sdfmu/api/sso/index?redirect=${encodeURIComponent(target)}&from=wap`
+}
+
+function getAcademicSsoService(): string {
+  const oauthUrl = `https://app.sdfmu.edu.cn/uc/api/oauth/index?redirect=${encodeURIComponent('http://academic.sdfmu.edu.cn/mrFjNnfHQI.php/index/asycn_user?redirect=apply%2Fshowlist')}&appid=200230220105459274&state=STATE&qrcode=1`
+  return `https://app.sdfmu.edu.cn/a_sdfmu/api/sso/index?redirect=${encodeURIComponent(oauthUrl)}&from=wap`
+}
+
+function getWechatSafeUrl(target: string): string {
   try {
-    const host = new URL(target).hostname.toLowerCase()
-    return host.endsWith('.sdfmu.edu.cn') && host !== 'www.sdfmu.edu.cn'
+    const { hostname } = new URL(target)
+    const host = hostname.toLowerCase()
+
+    if (host === 'ehall.sdfmu.edu.cn') {
+      return wrapSsoUrl(getEhallSsoService(target))
+    }
+    if (host === 'portal.sdfmu.edu.cn') {
+      return wrapSsoUrl(getPortalSsoService())
+    }
+    if (host === 'app.sdfmu.edu.cn') {
+      return wrapSsoUrl(getAppSsoService(target), '1')
+    }
+    if (host === 'academic.sdfmu.edu.cn') {
+      return wrapSsoUrl(getAcademicSsoService(), '1')
+    }
+    if (host === 'vpnportal.sdfmu.edu.cn' || host === 'fpc.sdfmu.edu.cn' || host === 'ppu.sdfmu.edu.cn') {
+      return wrapSsoUrl(target)
+    }
   } catch {
-    return false
+    return target
   }
+
+  return target
 }
 
 function isWechatBrowser(): boolean {
   return typeof window !== 'undefined' && /MicroMessenger/i.test(window.navigator.userAgent)
 }
 
-export function openExternal(url: string, options: ExternalOptions = {}) {
+export function openExternal(url: string) {
   const target = url.trim()
   if (!target) return
 
-  const finalUrl = options.useSso || shouldUseSso(target) ? wrapSsoUrl(target) : target
-
   // #ifdef H5
+  const finalUrl = isWechatBrowser() ? getWechatSafeUrl(target) : target
   if (isWechatBrowser()) {
     window.location.href = finalUrl
   } else {
@@ -49,7 +78,8 @@ export function openExternal(url: string, options: ExternalOptions = {}) {
   }
   // #endif
   // #ifndef H5
-  uni.navigateTo({ url: `/pages/services/webview?url=${encodeURIComponent(finalUrl)}` })
+  const embeddedUrl = getWechatSafeUrl(target)
+  uni.navigateTo({ url: `/pages/services/webview?url=${encodeURIComponent(embeddedUrl)}` })
   // #endif
 }
 

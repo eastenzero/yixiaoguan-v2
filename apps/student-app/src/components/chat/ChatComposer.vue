@@ -60,8 +60,8 @@ function onInput(event: any) {
 
 .composer-shell {
   position: fixed;
-  left: 0;
-  right: 0;
+  left: var(--student-fixed-left, 0);
+  right: var(--student-fixed-right, 0);
   bottom: var(--tabbar-safe);
   z-index: 45;
   padding: 10px 16px 12px;

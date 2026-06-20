@@ -37,8 +37,8 @@ function switchTab(tab: { path: string; key: string }) {
 .tab-bar {
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: var(--student-fixed-left, 0);
+  right: var(--student-fixed-right, 0);
   z-index: 50;
   box-sizing: border-box;
   height: var(--tabbar-safe);                         // 76px + safe-area

@@ -18,6 +18,7 @@ alembic/versions/__pycache__/
 test-results/
 output/
 .tmp/
+/.local/
 
 # 敏感凭据档案（含 API Keys、SSH、数据库密码等）
 docs/PROJECT-SECRETS.md

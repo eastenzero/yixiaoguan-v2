@@ -2,7 +2,7 @@ from datetime import datetime
 
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, or_, update
+from sqlalchemy import select, func, or_, update, false
 from app.models.conversation import Conversation, Message, ConversationStatus, SenderType
 from app.models.user import User, UserRole
 from app.schemas.conversation import UnreadSummaryItem, UnreadSummaryResponse
@@ -95,13 +95,16 @@ async def list_conversations(
     elif user.role == UserRole.teacher:
         from app.models.user import User as UserModel
         base = base.join(UserModel, Conversation.student_id == UserModel.id)
+        pending_teacher_filter = false()
+        if user.college_id is not None:
+            pending_teacher_filter = (
+                (UserModel.college_id == user.college_id) &
+                (Conversation.status == ConversationStatus.pending_teacher)
+            )
         if status is not None:
             # 教师 + 指定状态: 只看该状态下自己有权看到的
             if status == ConversationStatus.pending_teacher:
-                base = base.where(
-                    (UserModel.college_id == user.college_id) &
-                    (Conversation.status == status)
-                )
+                base = base.where(pending_teacher_filter)
             else:
                 base = base.where(
                     (Conversation.teacher_id == user.id) &
@@ -111,8 +114,7 @@ async def list_conversations(
             # 教师无状态过滤: 本学院待接单 + 自己已接的
             base = base.where(
                 or_(
-                    (UserModel.college_id == user.college_id) &
-                    (Conversation.status == ConversationStatus.pending_teacher),
+                    pending_teacher_filter,
                     Conversation.teacher_id == user.id,
                 )
             )

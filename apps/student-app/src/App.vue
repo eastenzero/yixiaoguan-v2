@@ -36,6 +36,64 @@ page {
   --window-bottom: 0px;
 }
 
+/* #ifdef H5 */
+:root {
+  --student-frame-max-width: 480px;
+  --student-frame-width: 100vw;
+  --student-frame-offset: 0px;
+  --student-fixed-left: 0px;
+  --student-fixed-right: 0px;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: $surface;
+}
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: $surface;
+  overflow-x: hidden;
+}
+
+@media (min-width: 768px) and (min-aspect-ratio: 4 / 3) {
+  :root {
+    --student-frame-ratio-width: 56.25vh;
+    --student-frame-width: min(100vw, var(--student-frame-max-width), var(--student-frame-ratio-width));
+    --student-frame-offset: max(0px, calc((100vw - var(--student-frame-width)) / 2));
+    --student-fixed-left: var(--student-frame-offset);
+    --student-fixed-right: var(--student-frame-offset);
+  }
+
+  @supports (height: 100dvh) {
+    :root {
+      --student-frame-ratio-width: 56.25dvh;
+    }
+  }
+
+  body {
+    background:
+      linear-gradient(135deg, #f7f9fb 0%, #f5f0f8 46%, #eef7f3 100%);
+  }
+
+  #app {
+    width: var(--student-frame-width);
+    min-height: 100vh;
+    box-shadow:
+      0 0 0 1px rgba(91, 33, 182, 0.06),
+      0 24px 80px rgba(15, 23, 42, 0.12);
+  }
+}
+/* #endif */
+
 uni-tabbar,
 .uni-tabbar {
   display: none !important;

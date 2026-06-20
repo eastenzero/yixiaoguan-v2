@@ -22,6 +22,8 @@ docs/
 ├── design/                   ← 设计方案（架构、流程、方案选型）
 │   ├── dev-plan-v2.md            ← v2 总体开发计划
 │   └── dify-chatflow-design.md   ← Dify 对话流设计
+├── dev/                      ← 开发说明（模块规则、踩坑记录、协作指南）
+│   └── student-service-navigation.md ← 学生端事务导办外链跳转说明
 ├── specs/                    ← 规范（编码规范、数据规范等）
 │   └── （KB 规范在 kb-pipeline/KB-SPEC.md，不重复存放）
 └── archive-v1/               ← v1 归档（仅供参考，不用于开发）
@@ -52,6 +54,12 @@ docs/
 | [v2 开发计划](design/dev-plan-v2.md)　　　　　　　　　　　 | 总体架构、关键发现、优先级排序　　　　 |
 | [Dify Chatflow 设计](design/dify-chatflow-design.md)　　　 | 当前 4 分支 + 扩展方案　　　　　　　　 |
 | [TEB + Mutagen 远程开发](design/teb-mutagen-remote-dev.md) | 本地编辑、远端同步、任务协作与运行命令 |
+
+### 开发说明
+
+| 文档 | 说明 |
+| ---- | ---- |
+| [学生端事务导办外链跳转说明](dev/student-service-navigation.md) | `useSso` / `ssoNoAutoRedirect` 使用规则，避免错误追加微信跳转参数 |
 
 ### 规范
 

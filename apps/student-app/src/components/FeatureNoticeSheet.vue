@@ -39,7 +39,10 @@ const notice = useFeatureNotice()
 
 .sheet-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: var(--student-fixed-right, 0);
+  bottom: 0;
+  left: var(--student-fixed-left, 0);
   z-index: $z-modal;
   background: rgba(0, 0, 0, 0.32);
   display: flex;

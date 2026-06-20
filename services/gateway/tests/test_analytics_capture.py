@@ -12,8 +12,10 @@ from app.routers.chat import chat_send
 from app.schemas.chat import ChatSendRequest
 from app.services.analytics import (
     extract_rag_metrics,
+    judge_is_answered,
     normalize_query,
     record_chat_analytics,
+    should_capture_unanswered_query,
 )
 
 
@@ -103,6 +105,57 @@ def test_extract_rag_metrics_supports_retrieval_result_records():
     assert doc_name == "校园卡补办"
 
 
+@pytest.mark.parametrize(
+    ("rag_score", "response_text", "expected"),
+    [
+        (None, "这是一段看起来完整但没有来源分数的回答。", False),
+        (0.9008, "宿舍电费可以通过校园生活服务平台缴纳。", True),
+        (
+            0.1985,
+            "奖学金申请通常需要提交材料、等待学院审核并关注公示通知，这段回答足够长但来源相关性很弱。",
+            False,
+        ),
+    ],
+)
+def test_judge_is_answered_requires_trusted_rag_score(rag_score, response_text, expected):
+    assert judge_is_answered(rag_score, response_text) is expected
+
+
+@pytest.mark.parametrize(
+    "raw_query",
+    [
+        "你好",
+        "hello",
+        "我想转人工",
+        "联系导员",
+        "呼叫老师",
+        "我想回家",
+        "我有点郁闷",
+        "这个你做的不对，不能骗我",
+        "发烧应该吃什么药？",
+        "没有",
+        "。",
+    ],
+)
+def test_should_capture_unanswered_query_filters_non_knowledge_noise(raw_query):
+    assert should_capture_unanswered_query(raw_query) is False
+
+
+@pytest.mark.parametrize(
+    "raw_query",
+    [
+        "宿舍电费怎么交？",
+        "奖学金申请流程怎么走？",
+        "黄河图书馆开放时间是什么？",
+        "校园卡丢了怎么办？",
+        "怎么联系辅导员？",
+        "校医院怎么挂号？",
+    ],
+)
+def test_should_capture_unanswered_query_keeps_knowledge_candidates(raw_query):
+    assert should_capture_unanswered_query(raw_query) is True
+
+
 @pytest.mark.asyncio
 async def test_record_chat_analytics_hit_path(monkeypatch):
     student = _build_student(user_id=6001, staff_id="student6001")
@@ -153,6 +206,57 @@ async def test_record_chat_analytics_miss_path_creates_unanswered(monkeypatch):
     assert unresolved.question_text == "电费怎么缴"
     assert unresolved.hit_count == 1
     assert unresolved.sample_conv_ids == [89]
+    db.commit.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_record_chat_analytics_low_score_long_answer_creates_unanswered(monkeypatch):
+    student = _build_student(user_id=6007, staff_id="student6007")
+    db = _FakeDB()
+    monkeypatch.setattr("app.services.analytics.jieba.cut", lambda text: ["奖学金", "申请"])
+
+    await record_chat_analytics(
+        db,
+        conv_id=94,
+        user=student,
+        raw_query="奖学金申请流程怎么走？",
+        response_text="奖学金申请通常需要提交材料、等待学院审核并关注公示通知，这段回答足够长但来源相关性很弱。",
+        dify_metadata={
+            "retriever_resources": [
+                {"document_name": "对外合作交流部 — 出国留学流程与咨询", "score": 0.1985}
+            ],
+        },
+    )
+
+    analytics = db.add.call_args_list[0].args[0]
+    unresolved = db.add.call_args_list[1].args[0]
+    assert analytics.rag_score == 0.1985
+    assert analytics.kb_doc_matched == "对外合作交流部 — 出国留学流程与咨询"
+    assert analytics.is_answered is False
+    assert unresolved.question_text == "奖学金申请流程怎么走？"
+    assert unresolved.sample_conv_ids == [94]
+    db.commit.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("raw_query", ["你好", "我想转人工", "我有点郁闷", "这个你做的不对，不能骗我"])
+async def test_record_chat_analytics_filters_non_knowledge_unanswered_queue(monkeypatch, raw_query):
+    student = _build_student(user_id=6008, staff_id="student6008")
+    db = _FakeDB()
+    monkeypatch.setattr("app.services.analytics.jieba.cut", lambda text: [raw_query])
+
+    await record_chat_analytics(
+        db,
+        conv_id=95,
+        user=student,
+        raw_query=raw_query,
+        response_text="暂时没有查到明确答案。",
+        dify_metadata={"retriever_resources": []},
+    )
+
+    analytics = db.add.call_args_list[0].args[0]
+    assert analytics.is_answered is False
+    assert db.add.call_count == 1
     db.commit.assert_awaited_once()
 
 
@@ -213,8 +317,10 @@ async def test_chat_send_ai_path_still_returns_streaming_response_when_analytics
     monkeypatch.setattr("app.routers.chat.dify_client.chat_stream", fake_chat_stream)
     monkeypatch.setattr("app.routers.chat.manager.broadcast_to_room", AsyncMock())
     monkeypatch.setattr("app.routers.chat._schedule_chat_analytics", lambda **kwargs: None)
+    monkeypatch.setattr("app.routers.chat.limiter.enabled", False)
 
     response = await chat_send(
+        None,
         ChatSendRequest(conv_id=conv.id, content=student_msg.content),
         db=db,
         current_user=student,

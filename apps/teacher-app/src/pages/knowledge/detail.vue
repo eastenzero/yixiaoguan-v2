@@ -13,11 +13,11 @@
         <view class="hero-section">
           <view class="tags-row">
             <view class="category-tag">
-              <text class="tag-text">{{ getCategoryName(entry.scope) }}</text>
+              <text class="tag-text">{{ getCategoryName(entry) }}</text>
             </view>
             <view class="status-tag">
               <view class="status-dot" :class="getStatusClass(entry.status)"></view>
-              <text class="status-text">{{ getStatusText(entry.status) }}</text>
+              <text class="status-text">{{ getStatusText(entry) }}</text>
             </view>
           </view>
           <text class="hero-title">{{ entry.title }}</text>
@@ -26,7 +26,7 @@
               <AppIcon name="person" class="author-icon" />
             </view>
             <view class="author-info">
-              <text class="author-name">{{ entry.representative_query || '知识条目' }}</text>
+              <text class="author-name">{{ getEntryMeta(entry) }}</text>
               <text class="update-time">最后更新于 {{ formatTime(entry.reviewed_at || entry.published_at || entry.created_at) }}</text>
             </view>
           </view>
@@ -34,6 +34,10 @@
 
         <view v-if="entry.reject_reason" class="reject-banner">
           <text class="reject-banner-text">驳回原因：{{ entry.reject_reason }}</text>
+        </view>
+
+        <view v-if="entry.fallback" class="api-warning">
+          <text class="api-warning-text">{{ entry.fallback.message }}</text>
         </view>
 
         <!-- Body Content -->
@@ -87,6 +91,9 @@ const loadDetail = async () => {
   try {
     const res = await getKnowledgeDetail(entryId.value)
     entry.value = res
+    if (res.fallback?.message) {
+      uni.showToast({ title: res.fallback.message, icon: 'none' })
+    }
   } catch (e) {
     console.error('加载详情失败', e)
     uni.showToast({ title: '加载失败', icon: 'none' })
@@ -117,14 +124,17 @@ const handleEdit = () => {
   uni.showToast({ title: '编辑功能开发中', icon: 'none' })
 }
 
+const isKbEntry = (item: any) => item?.source_type === 'kb_entry'
+
 // 获取分类名称
-const getCategoryName = (scope?: string) => {
+const getCategoryName = (item: any) => {
+  if (isKbEntry(item)) return item.category || '真实知识库'
   const map: Record<string, string> = {
     class: '班级知识',
     college: '学院知识',
     global: '全校知识'
   }
-  return map[scope || 'college'] || '知识条目'
+  return map[item?.scope || 'college'] || '知识条目'
 }
 
 // 获取状态样式
@@ -140,7 +150,8 @@ const getStatusClass = (status?: string) => {
 }
 
 // 获取状态文字
-const getStatusText = (status?: string) => {
+const getStatusText = (item: any) => {
+  if (isKbEntry(item)) return '已入库'
   const map: Record<string, string> = {
     draft: '草稿',
     approved: '已发布',
@@ -148,7 +159,12 @@ const getStatusText = (status?: string) => {
     rejected: '已驳回',
     offline: '已下线'
   }
-  return map[status || 'draft'] || '未知'
+  return map[item?.status || 'draft'] || '未知'
+}
+
+const getEntryMeta = (item: any) => {
+  if (!isKbEntry(item)) return item?.representative_query || '知识条目'
+  return item.original_source || item.original_filename || item.material_id || item.campus || '真实知识库条目'
 }
 
 // 格式化时间
@@ -318,6 +334,19 @@ const formatTime = (time?: string) => {
   padding: 12px 16px;
   background: rgba(239, 68, 68, 0.08);
   border-radius: 16px;
+}
+
+.api-warning {
+  margin-bottom: 24px;
+  padding: 12px 16px;
+  background: rgba(245, 158, 11, 0.12);
+  border-radius: 16px;
+}
+
+.api-warning-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: $warning;
 }
 
 .reject-banner-text {

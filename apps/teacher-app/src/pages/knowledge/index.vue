@@ -37,6 +37,10 @@
         </scroll-view>
       </view>
 
+      <view v-if="apiFallbackMessage" class="api-warning">
+        <text class="api-warning-text">{{ apiFallbackMessage }}</text>
+      </view>
+
       <!-- Loading State -->
       <view v-if="loading" class="loading-state">
         <text class="loading-text">加载中...</text>
@@ -80,7 +84,9 @@
                 v-model="draftAnswer"
                 class="answer-input"
                 maxlength="1000"
-                placeholder="请输入教师答复，系统会自动润色后生成知识条目"
+                :disabled="previewing || submitting"
+                placeholder="请输入教师答复，先生成 AI 润色预览，确认后再发布"
+                @input="clearPreview"
               />
               <view class="scope-list">
                 <view
@@ -88,13 +94,44 @@
                   :key="option.value"
                   class="scope-pill"
                   :class="{ 'scope-pill--active': selectedScope === option.value }"
-                  @click="selectedScope = option.value"
+                  @click="selectScope(option.value)"
                 >
                   <text class="scope-pill-text">{{ option.label }}</text>
                 </view>
               </view>
-              <button class="submit-btn" :disabled="submitting" @click.stop="submitDraft(item.id)">
-                <text class="submit-btn-text">{{ submitting ? '提交中...' : '提交答复' }}</text>
+              <view v-if="draftPreview && draftPreview.unanswered_question_id === item.id" class="polish-preview">
+                <view class="preview-row">
+                  <text class="preview-label">适用范围</text>
+                  <text class="preview-scope">{{ draftPreview.scope_label }}</text>
+                </view>
+                <view class="preview-block">
+                  <text class="preview-label">教师原文</text>
+                  <text class="preview-text">{{ draftPreview.raw_content }}</text>
+                </view>
+                <view class="preview-block">
+                  <text class="preview-label">确认发布内容</text>
+                  <textarea
+                    v-model="previewContent"
+                    class="answer-input answer-input--preview"
+                    maxlength="1500"
+                    :disabled="submitting"
+                    placeholder="可直接编辑 AI 润色稿，确认后按此内容发布"
+                  />
+                </view>
+                <view class="preview-actions">
+                  <button class="mini-action-btn mini-action-btn--ghost" :disabled="previewing || submitting" @click.stop="previewDraft(item.id)">
+                    <text class="mini-action-text">{{ previewing ? '润色中...' : '重新润色' }}</text>
+                  </button>
+                  <button class="mini-action-btn mini-action-btn--ghost" :disabled="submitting" @click.stop="useRawAnswer">
+                    <text class="mini-action-text">使用原文</text>
+                  </button>
+                  <button class="mini-action-btn mini-action-btn--approve" :disabled="submitting" @click.stop="confirmDraft(item.id)">
+                    <text class="mini-action-text mini-action-text--light">{{ submitting ? '发布中...' : '确认发布' }}</text>
+                  </button>
+                </view>
+              </view>
+              <button v-else class="submit-btn" :disabled="previewing" @click.stop="previewDraft(item.id)">
+                <text class="submit-btn-text">{{ previewing ? '润色中...' : '生成润色预览' }}</text>
               </button>
             </view>
           </view>
@@ -108,12 +145,12 @@
             :class="`delay-${Math.min(index + 3, 5)}`"
           >
             <view class="card-header">
-              <view class="category-tag" :class="getCategoryClass(item.scope)">
-                <text class="tag-text">{{ getCategoryName(item.scope) }}</text>
+              <view class="category-tag" :class="getCategoryClass(item)">
+                <text class="tag-text">{{ getCategoryName(item) }}</text>
               </view>
               <view class="status-tag">
                 <view class="status-dot" :class="getStatusClass(item.status)"></view>
-                <text class="status-text" :class="getStatusTextClass(item.status)">{{ getStatusText(item.status) }}</text>
+                <text class="status-text" :class="getStatusTextClass(item.status)">{{ getStatusText(item) }}</text>
               </view>
             </view>
             <text class="card-title">{{ item.title }}</text>
@@ -124,7 +161,7 @@
             <view class="card-footer">
               <view class="author-info">
                 <view class="avatar-placeholder"></view>
-                <text class="author-name">{{ isAdmin && activeCategory === 0 ? `提交人 #${item.submitted_by || '-'}` : (item.representative_query || '知识条目') }}</text>
+                <text class="author-name">{{ isAdmin && activeCategory === 0 ? `提交人 #${item.submitted_by || '-'}` : getEntryMeta(item) }}</text>
               </view>
               <view v-if="isAdmin && activeCategory === 0" class="review-actions">
                 <button class="mini-action-btn mini-action-btn--approve" @click.stop="handleApprove(item.id)">
@@ -169,14 +206,15 @@ import { computed, ref, onMounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopAppBar from '../../components/TopAppBar.vue'
 import BottomNavBar from '../../components/BottomNavBar.vue'
-import { approveKnowledge, createKnowledgeDraft, getKnowledgeEntries, getPendingReviews, getUnansweredTop, rejectKnowledge } from '@/api/knowledge'
+import { approveKnowledge, createKnowledgeDraft, getKnowledgeEntries, getPendingReviews, getUnansweredTop, previewKnowledgeDraft, rejectKnowledge } from '@/api/knowledge'
 import { useUserStore } from '@/stores/user'
-import type { KnowledgeEntry, KnowledgeScope, UnansweredTopItem } from '@/types/api'
+import type { KnowledgeDraftPreviewResponse, KnowledgeEntry, KnowledgeScope, UnansweredTopItem } from '@/types/api'
 
 const userStore = useUserStore()
 
 const loading = ref(false)
 const submitting = ref(false)
+const previewing = ref(false)
 const activeCategory = ref(0)
 const searchText = ref('')
 const unansweredItems = ref<UnansweredTopItem[]>([])
@@ -184,9 +222,12 @@ const entries = ref<KnowledgeEntry[]>([])
 const pendingEntries = ref<KnowledgeEntry[]>([])
 const selectedQuestionId = ref<number | null>(null)
 const draftAnswer = ref('')
+const draftPreview = ref<KnowledgeDraftPreviewResponse | null>(null)
+const previewContent = ref('')
 const selectedScope = ref<KnowledgeScope>('college')
 const selectedReviewId = ref<number | null>(null)
 const reviewRejectReason = ref('')
+const apiFallbackMessage = ref('')
 
 const isAdmin = computed(() => userStore.isAdmin)
 const categories = computed(() => isAdmin.value
@@ -197,7 +238,7 @@ const showUnansweredPane = computed(() => !isAdmin.value && activeCategory.value
 const searchPlaceholder = computed(() => showUnansweredPane.value ? '搜索待补问题...' : '搜索知识文档、指南或规章...')
 const emptyText = computed(() => showUnansweredPane.value
   ? '暂无高频待补问题'
-  : (isAdmin.value && activeCategory.value === 0 ? '暂无待审核条目' : '暂无知识文档')
+  : (apiFallbackMessage.value ? '本地缓存暂无可显示数据' : (isAdmin.value && activeCategory.value === 0 ? '暂无待审核条目' : '暂无知识文档'))
 )
 const normalizedSearchText = computed(() => searchText.value.trim().toLowerCase())
 const availableScopes = computed(() => {
@@ -221,6 +262,11 @@ const filteredEntries = computed(() => {
     item.title.toLowerCase().includes(normalizedSearchText.value)
     || item.content.toLowerCase().includes(normalizedSearchText.value)
     || item.representative_query.toLowerCase().includes(normalizedSearchText.value)
+    || (item.category || '').toLowerCase().includes(normalizedSearchText.value)
+    || (item.original_source || '').toLowerCase().includes(normalizedSearchText.value)
+    || (item.original_filename || '').toLowerCase().includes(normalizedSearchText.value)
+    || (item.campus || '').toLowerCase().includes(normalizedSearchText.value)
+    || (item.tags || []).some(tag => tag.toLowerCase().includes(normalizedSearchText.value))
   ))
 })
 const filteredPendingEntries = computed(() => {
@@ -241,6 +287,7 @@ const currentItems = computed(() => showUnansweredPane.value ? filteredUnanswere
 // 加载数据
 const loadData = async () => {
   loading.value = true
+  apiFallbackMessage.value = ''
   try {
     if (showUnansweredPane.value) {
       const res = await getUnansweredTop(20)
@@ -251,6 +298,7 @@ const loadData = async () => {
     if (isAdmin.value && activeCategory.value === 0) {
       const res = await getPendingReviews(20)
       pendingEntries.value = res.items || []
+      apiFallbackMessage.value = res.fallback?.message || ''
       return
     }
 
@@ -260,8 +308,11 @@ const loadData = async () => {
       pageSize: 20
     })
     entries.value = res.items || []
+    apiFallbackMessage.value = res.fallback?.message || ''
   } catch (e) {
     console.error('加载知识库失败', e)
+    apiFallbackMessage.value = (e as any)?.message || '知识库接口失败，请稍后重试'
+    uni.showToast({ title: apiFallbackMessage.value, icon: 'none' })
     if (showUnansweredPane.value) unansweredItems.value = []
     else if (isAdmin.value && activeCategory.value === 0) pendingEntries.value = []
     else entries.value = []
@@ -277,6 +328,7 @@ const refreshAdminLists = async () => {
   ])
   pendingEntries.value = pendingRes.items || []
   entries.value = entryRes.items || []
+  apiFallbackMessage.value = pendingRes.fallback?.message || entryRes.fallback?.message || ''
 }
 
 const handleApprove = async (entryId: number) => {
@@ -304,6 +356,7 @@ const handleReject = async (entryId: number) => {
 const switchCategory = (index: number) => {
   activeCategory.value = index
   selectedQuestionId.value = null
+  resetDraftPreview()
   loadData()
 }
 
@@ -315,11 +368,27 @@ const handleSearch = () => {
 const toggleComposer = (questionId: number) => {
   if (selectedQuestionId.value === questionId) {
     selectedQuestionId.value = null
+    resetDraftPreview()
     return
   }
   selectedQuestionId.value = questionId
   draftAnswer.value = ''
+  resetDraftPreview()
   selectedScope.value = userStore.preferredKnowledgeScope
+}
+
+const resetDraftPreview = () => {
+  draftPreview.value = null
+  previewContent.value = ''
+}
+
+const clearPreview = () => {
+  if (draftPreview.value) resetDraftPreview()
+}
+
+const selectScope = (scope: KnowledgeScope) => {
+  selectedScope.value = scope
+  resetDraftPreview()
 }
 
 const toggleRejectComposer = (entryId: number) => {
@@ -337,17 +406,60 @@ const cancelRejectComposer = () => {
   reviewRejectReason.value = ''
 }
 
-const submitDraft = async (questionId: number) => {
+const validateDraftInput = () => {
   if (!draftAnswer.value.trim()) {
     uni.showToast({ title: '请输入教师答复', icon: 'none' })
-    return
+    return false
   }
   if (selectedScope.value === 'class' && !userStore.userInfo?.class_id) {
     uni.showToast({ title: '当前账号未绑定班级', icon: 'none' })
-    return
+    return false
   }
   if (selectedScope.value === 'college' && !userStore.userInfo?.college_id) {
     uni.showToast({ title: '当前账号未绑定学院', icon: 'none' })
+    return false
+  }
+  return true
+}
+
+const selectedScopeValue = () => {
+  if (selectedScope.value === 'class') return userStore.userInfo?.class_id ?? null
+  if (selectedScope.value === 'college') return userStore.userInfo?.college_id ?? null
+  return null
+}
+
+const previewDraft = async (questionId: number) => {
+  if (!validateDraftInput()) return
+
+  previewing.value = true
+  try {
+    const res = await previewKnowledgeDraft({
+      unanswered_question_id: questionId,
+      raw_answer: draftAnswer.value.trim(),
+      scope: selectedScope.value,
+      scope_value: selectedScopeValue()
+    })
+    draftPreview.value = res
+    previewContent.value = res.content
+    uni.showToast({ title: '已生成润色预览', icon: 'success' })
+  } catch (e: any) {
+    uni.showToast({ title: e?.message || '润色失败', icon: 'none' })
+  } finally {
+    previewing.value = false
+  }
+}
+
+const useRawAnswer = () => {
+  previewContent.value = draftPreview.value?.raw_content || draftAnswer.value.trim()
+}
+
+const confirmDraft = async (questionId: number) => {
+  if (!draftPreview.value || draftPreview.value.unanswered_question_id !== questionId) {
+    uni.showToast({ title: '请先生成润色预览', icon: 'none' })
+    return
+  }
+  if (!previewContent.value.trim()) {
+    uni.showToast({ title: '确认发布内容不能为空', icon: 'none' })
     return
   }
 
@@ -355,11 +467,10 @@ const submitDraft = async (questionId: number) => {
   try {
     const res = await createKnowledgeDraft({
       unanswered_question_id: questionId,
-      raw_answer: draftAnswer.value.trim(),
-      scope: selectedScope.value,
-      scope_value: selectedScope.value === 'class'
-        ? userStore.userInfo?.class_id
-        : (selectedScope.value === 'college' ? userStore.userInfo?.college_id : null)
+      raw_answer: draftPreview.value.raw_content,
+      confirmed_content: previewContent.value.trim(),
+      scope: draftPreview.value.scope,
+      scope_value: draftPreview.value.scope_value
     })
     uni.showToast({
       title: res.publish_mode === 'published' ? '已发布到知识库' : '已提交管理员审核',
@@ -367,10 +478,15 @@ const submitDraft = async (questionId: number) => {
     })
     selectedQuestionId.value = null
     draftAnswer.value = ''
-    await Promise.all([
+    resetDraftPreview()
+    const [, entryResp] = await Promise.all([
       getUnansweredTop(20).then((resp) => { unansweredItems.value = resp.items || [] }),
-      getKnowledgeEntries({ pageNum: 1, pageSize: 20 }).then((resp) => { entries.value = resp.items || [] })
+      getKnowledgeEntries({ pageNum: 1, pageSize: 20 }).then((resp) => {
+        entries.value = resp.items || []
+        return resp
+      })
     ])
+    apiFallbackMessage.value = entryResp.fallback?.message || ''
   } catch (e: any) {
     uni.showToast({ title: e?.message || '提交失败', icon: 'none' })
   } finally {
@@ -384,23 +500,27 @@ const goToDetail = (id: number) => {
 }
 
 // 获取分类样式
-const getCategoryClass = (scope?: string) => {
+const isKbEntry = (item: KnowledgeEntry) => item.source_type === 'kb_entry'
+
+const getCategoryClass = (item: KnowledgeEntry) => {
+  if (isKbEntry(item)) return 'category-tag--tertiary'
   const map: Record<string, string> = {
     class: 'category-tag--secondary',
     college: 'category-tag--secondary',
     global: 'category-tag--tertiary'
   }
-  return map[scope || 'college'] || 'category-tag--secondary'
+  return map[item.scope || 'college'] || 'category-tag--secondary'
 }
 
 // 获取分类名称
-const getCategoryName = (scope?: string) => {
+const getCategoryName = (item: KnowledgeEntry) => {
+  if (isKbEntry(item)) return item.category || '真实知识库'
   const map: Record<string, string> = {
     class: '班级知识',
     college: '学院知识',
     global: '全校知识'
   }
-  return map[scope || 'college'] || '知识条目'
+  return map[item.scope || 'college'] || '知识条目'
 }
 
 // 获取状态样式
@@ -428,7 +548,8 @@ const getStatusTextClass = (status?: string) => {
 }
 
 // 获取状态文字
-const getStatusText = (status?: string) => {
+const getStatusText = (item: KnowledgeEntry) => {
+  if (isKbEntry(item)) return '已入库'
   const map: Record<string, string> = {
     draft: '草稿',
     approved: '已发布',
@@ -436,7 +557,12 @@ const getStatusText = (status?: string) => {
     rejected: '已驳回',
     offline: '已下线'
   }
-  return map[status || 'draft'] || '未知'
+  return map[item.status || 'draft'] || '未知'
+}
+
+const getEntryMeta = (item: KnowledgeEntry) => {
+  if (!isKbEntry(item)) return item.representative_query || '教师提交建议'
+  return item.original_source || item.original_filename || item.material_id || item.campus || '真实知识库条目'
 }
 
 // 获取摘要
@@ -591,6 +717,19 @@ onShow(() => loadData())
 .empty-state {
   padding: 60px 20px;
   text-align: center;
+}
+
+.api-warning {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  background: rgba(245, 158, 11, 0.12);
+  border-radius: 12px;
+}
+
+.api-warning-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: $warning;
 }
 
 .loading-text,
@@ -822,6 +961,10 @@ onShow(() => loadData())
   color: $on-surface;
 }
 
+.answer-input--preview {
+  min-height: 160px;
+}
+
 .scope-list {
   display: flex;
   flex-wrap: wrap;
@@ -867,6 +1010,54 @@ onShow(() => loadData())
   font-size: 14px;
   font-weight: 700;
   color: $on-primary;
+}
+
+.polish-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: $surface-container;
+  border-radius: 16px;
+}
+
+.preview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.preview-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.preview-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: $on-surface-variant;
+}
+
+.preview-scope {
+  font-size: 13px;
+  font-weight: 700;
+  color: $primary;
+}
+
+.preview-text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: $on-surface;
+  white-space: pre-wrap;
+}
+
+.preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .review-actions {

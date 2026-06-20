@@ -54,7 +54,7 @@ function onPopupChange(event: { show?: boolean }) {
 
 .source-sheet {
   width: 100%;
-  max-width: 720px;
+  max-width: var(--student-frame-max-width, 480px);
   max-height: 78vh;
   margin: 0 auto;
   display: flex;

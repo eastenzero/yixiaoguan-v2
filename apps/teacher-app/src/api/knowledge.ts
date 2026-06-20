@@ -2,12 +2,16 @@ import request, { get, post } from '@/utils/request'
 import type {
   CreateKnowledgeDraftPayload,
   CreateKnowledgeDraftResponse,
+  FallbackPageResult,
+  KnowledgeDraftPreviewResponse,
   KnowledgeEntry,
   PageResult,
   UnansweredTopResponse
 } from '@/types/api'
 
 const KNOWLEDGE_CACHE_KEY = 'teacher-knowledge-cache'
+const LIST_FALLBACK_MESSAGE = '知识库接口失败，正在显示本地缓存'
+const DETAIL_FALLBACK_MESSAGE = '知识详情接口失败，正在显示本地缓存'
 
 function readKnowledgeCache(): KnowledgeEntry[] {
   try {
@@ -48,6 +52,15 @@ function normalizeEntry(input: any): KnowledgeEntry {
     submitted_by: Number(input?.submitted_by ?? input?.submittedBy ?? 0),
     reject_reason: input?.reject_reason ?? input?.rejectReason ?? null,
     dify_document_id: input?.dify_document_id ?? input?.difyDocumentId ?? null,
+    dify_dataset_id: input?.dify_dataset_id ?? input?.difyDatasetId ?? null,
+    source_type: input?.source_type ?? input?.sourceType ?? (input?.dify_dataset_id ? 'kb_entry' : 'suggestion'),
+    category: input?.category ?? null,
+    tags: Array.isArray(input?.tags) ? input.tags : null,
+    original_source: input?.original_source ?? input?.originalSource ?? null,
+    source_url: input?.source_url ?? input?.sourceUrl ?? null,
+    material_id: input?.material_id ?? input?.materialId ?? null,
+    campus: input?.campus ?? null,
+    original_filename: input?.original_filename ?? input?.originalFilename ?? null,
     created_at: String(input?.created_at || input?.createdAt || new Date().toISOString()),
     published_at: input?.published_at ?? input?.publishedAt ?? null,
     reviewed_at: input?.reviewed_at ?? input?.reviewedAt ?? null
@@ -58,11 +71,6 @@ function upsertKnowledgeEntry(entry: KnowledgeEntry) {
   const current = readKnowledgeCache()
   const next = [entry, ...current.filter(item => item.id !== entry.id)]
   writeKnowledgeCache(next)
-}
-
-function updateCachedEntry(id: number, patch: Partial<KnowledgeEntry>) {
-  const current = readKnowledgeCache()
-  writeKnowledgeCache(current.map(item => item.id === id ? { ...item, ...patch } : item))
 }
 
 function filterCachedEntries(params?: {
@@ -86,18 +94,36 @@ function filterCachedEntries(params?: {
   }
 }
 
+function withFallbackMeta(
+  result: PageResult<KnowledgeEntry>,
+  message = LIST_FALLBACK_MESSAGE
+): FallbackPageResult<KnowledgeEntry> {
+  return {
+    ...result,
+    fallback: {
+      source: 'localStorage',
+      message
+    }
+  }
+}
+
 // 分页查询知识条目
 export function getKnowledgeEntries(params?: {
   categoryId?: number
+  category?: string
+  campus?: string
+  source?: string
+  collegeId?: number
   status?: string
   title?: string
   pageNum?: number
   pageSize?: number
-}): Promise<PageResult<KnowledgeEntry>> {
+}): Promise<FallbackPageResult<KnowledgeEntry>> {
   return get<any>('/api/v1/knowledge/entries', {
     pageNum: 1,
     pageSize: 10,
-    ...params
+    ...params,
+    college_id: params?.collegeId
   }).then((res) => {
     if (Array.isArray(res?.items)) {
       return {
@@ -111,8 +137,8 @@ export function getKnowledgeEntries(params?: {
         total: Number(res?.total || res.rows.length)
       }
     }
-    return filterCachedEntries(params)
-  }).catch(() => filterCachedEntries(params))
+    return withFallbackMeta(filterCachedEntries(params), '知识库接口返回异常，正在显示本地缓存')
+  }).catch(() => withFallbackMeta(filterCachedEntries(params)))
 }
 
 // 获取知识条目详情
@@ -120,12 +146,18 @@ export function getKnowledgeDetail(id: number): Promise<KnowledgeEntry> {
   return request<any>({
     url: `/api/v1/knowledge/entries/${id}`,
     method: 'GET'
-  }).then((res) => normalizeEntry(res)).catch(() => {
+  }).then((res) => normalizeEntry(res)).catch((error) => {
     const matched = readKnowledgeCache().find(item => item.id === id)
     if (!matched) {
-      throw new Error('知识详情不存在')
+      throw error
     }
-    return matched
+    return {
+      ...matched,
+      fallback: {
+        source: 'localStorage',
+        message: DETAIL_FALLBACK_MESSAGE
+      }
+    }
   })
 }
 
@@ -142,9 +174,6 @@ export function offlineEntry(id: number) {
   return request({
     url: `/api/v1/knowledge/entries/${id}/offline`,
     method: 'POST'
-  }).catch(() => {
-    updateCachedEntry(id, { status: 'offline' })
-    return { success: true }
   })
 }
 
@@ -162,7 +191,11 @@ export function createKnowledgeDraft(payload: CreateKnowledgeDraftPayload): Prom
   })
 }
 
-export function getPendingReviews(limit = 20): Promise<PageResult<KnowledgeEntry>> {
+export function previewKnowledgeDraft(payload: CreateKnowledgeDraftPayload): Promise<KnowledgeDraftPreviewResponse> {
+  return post<KnowledgeDraftPreviewResponse>('/api/v1/knowledge/drafts/preview', payload)
+}
+
+export function getPendingReviews(limit = 20): Promise<FallbackPageResult<KnowledgeEntry>> {
   return get<any>('/api/v1/knowledge/reviews/pending', { limit }).then((res) => {
     const items = Array.isArray(res?.items) ? res.items.map(normalizeEntry) : []
     return {
@@ -171,23 +204,17 @@ export function getPendingReviews(limit = 20): Promise<PageResult<KnowledgeEntry
     }
   }).catch(() => {
     const items = readKnowledgeCache().filter(item => item.status === 'pending').slice(0, limit)
-    return {
+    return withFallbackMeta({
       items,
       total: items.length
-    }
+    })
   })
 }
 
 export function approveKnowledge(id: number) {
-  return post(`/api/v1/knowledge/reviews/${id}/approve`).catch(() => {
-    updateCachedEntry(id, { status: 'approved', reviewed_at: new Date().toISOString(), reject_reason: null })
-    return { success: true }
-  })
+  return post(`/api/v1/knowledge/reviews/${id}/approve`)
 }
 
 export function rejectKnowledge(id: number, reject_reason: string) {
-  return post(`/api/v1/knowledge/reviews/${id}/reject`, { reject_reason }).catch(() => {
-    updateCachedEntry(id, { status: 'rejected', reviewed_at: new Date().toISOString(), reject_reason })
-    return { success: true }
-  })
+  return post(`/api/v1/knowledge/reviews/${id}/reject`, { reject_reason })
 }

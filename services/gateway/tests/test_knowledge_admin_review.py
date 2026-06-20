@@ -110,6 +110,7 @@ async def test_approve_pending_review_publishes_and_marks_approved(monkeypatch):
         "app.services.knowledge_service.dify_client.create_document",
         AsyncMock(return_value={"document": {"id": "doc-global-32"}}),
     )
+    monkeypatch.setattr("app.services.knowledge_service.settings.dify_global_dataset_id", "dataset-global")
 
     approved = await approve_pending_review(
         db,

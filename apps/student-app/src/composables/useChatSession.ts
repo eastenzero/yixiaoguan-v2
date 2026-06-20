@@ -414,11 +414,11 @@ export function useChatSession() {
       messages.value.push({
         id: `sys-escalate-${Date.now()}`,
         role: 'system',
-        content: '已通知老师，请耐心等待回复。',
+        content: '已提交人工服务请求，请耐心等待回复。',
         timestamp: Date.now(),
       })
       scrollToBottom()
-      uni.showToast({ title: '已呼叫老师', icon: 'success' })
+      uni.showToast({ title: '已提交人工请求', icon: 'success' })
     } catch (e: any) {
       console.error('呼叫老师失败:', e)
       uni.showToast({ title: e?.message || '呼叫失败', icon: 'none' })

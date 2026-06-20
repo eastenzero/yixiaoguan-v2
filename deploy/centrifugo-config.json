@@ -10,12 +10,7 @@
     "proxy": {
       "subscribe": {
         "endpoint": "http://host.docker.internal:8100/api/internal/centrifugo/subscribe",
-        "timeout": "2s",
-        "http": {
-          "static_headers": {
-            "X-Auth": "CHANGE_ME_SYNC_WITH_CENTRIFUGO_PROXY_SECRET"
-          }
-        }
+        "timeout": "2s"
       }
     },
     "namespaces": [

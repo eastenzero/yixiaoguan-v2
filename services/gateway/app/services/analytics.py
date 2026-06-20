@@ -50,11 +50,126 @@ STOPWORDS = {
     "一下哈",
 }
 PUNCTUATION_PATTERN = re.compile(r"[\s\W_]+", re.UNICODE)
+QUERY_TEXT_PATTERN = re.compile(r"[\w\u4e00-\u9fff]", re.UNICODE)
 SYNONYM_REPLACEMENTS = {
     "缴纳": "交",
     "缴费": "交费",
     "缴": "交",
 }
+GREETING_QUERIES = {
+    "hello",
+    "hi",
+    "hey",
+    "你好",
+    "您好",
+    "老师好",
+    "在吗",
+    "在嘛",
+    "早上好",
+    "中午好",
+    "下午好",
+    "晚上好",
+}
+FILLER_QUERIES = {
+    "没有",
+    "没了",
+    "不用",
+    "不要",
+    "不需要",
+    "算了",
+    "好的",
+    "好",
+    "嗯",
+    "嗯嗯",
+    "哦",
+    "哦哦",
+    "行",
+    "可以",
+    "ok",
+    "测试",
+    "test",
+}
+HUMAN_HANDOFF_PATTERNS = (
+    "转人工",
+    "人工客服",
+    "真人客服",
+    "转接人工",
+    "找人工",
+    "联系导员",
+    "联系辅导员",
+    "呼叫老师",
+    "找老师",
+    "叫老师",
+)
+EMOTIONAL_SUPPORT_PATTERNS = (
+    "我想回家",
+    "想回家",
+    "我想谈恋爱",
+    "我有点郁闷",
+    "郁闷",
+    "难过",
+    "焦虑",
+    "抑郁",
+    "崩溃",
+    "不开心",
+    "想哭",
+    "压力好大",
+    "活不下去",
+)
+COMPLAINT_FEEDBACK_PATTERNS = (
+    "你做的不对",
+    "不能骗我",
+    "骗我",
+    "投诉",
+    "反馈",
+    "不满意",
+    "差评",
+    "胡说",
+    "乱说",
+    "答错",
+    "错了",
+)
+MEDICAL_RISK_PATTERNS = (
+    "吃什么药",
+    "用什么药",
+    "怎么用药",
+    "药量",
+    "剂量",
+    "处方",
+    "诊断",
+)
+KNOWLEDGE_INTENT_MARKERS = (
+    "怎么",
+    "如何",
+    "哪里",
+    "哪儿",
+    "什么",
+    "多少",
+    "几",
+    "是否",
+    "能不能",
+    "可以",
+    "需要",
+    "流程",
+    "申请",
+    "办理",
+    "开放时间",
+    "时间",
+    "电话",
+    "联系方式",
+    "地点",
+    "地址",
+    "规定",
+    "政策",
+    "材料",
+    "要求",
+    "缴费",
+    "交费",
+    "补办",
+    "挂失",
+    "预约",
+    "报名",
+)
 
 
 class UsageMetrics(TypedDict, total=False):
@@ -91,6 +206,38 @@ def normalize_query(raw: str) -> str | None:
     if not unique_tokens:
         return None
     return "|".join(sorted(unique_tokens)[:3])[:255]
+
+
+def _compact_query(raw_query: str) -> str:
+    return re.sub(r"[\s\W_]+", "", raw_query.strip().lower(), flags=re.UNICODE)
+
+
+def _has_knowledge_intent(text: str) -> bool:
+    return any(marker in text for marker in KNOWLEDGE_INTENT_MARKERS)
+
+
+def should_capture_unanswered_query(raw_query: str) -> bool:
+    """Return whether a low-confidence query is a knowledge-base candidate."""
+    text = _compact_query(raw_query)
+    if not text or not QUERY_TEXT_PATTERN.search(text):
+        return False
+
+    if text in GREETING_QUERIES or text in FILLER_QUERIES:
+        return False
+
+    has_knowledge_intent = _has_knowledge_intent(text)
+    if any(pattern in text for pattern in MEDICAL_RISK_PATTERNS):
+        return False
+    if any(pattern in text for pattern in COMPLAINT_FEEDBACK_PATTERNS):
+        return False
+    if any(pattern in text for pattern in EMOTIONAL_SUPPORT_PATTERNS) and not has_knowledge_intent:
+        return False
+    if any(pattern in text for pattern in HUMAN_HANDOFF_PATTERNS) and not has_knowledge_intent:
+        return False
+    if len(text) <= 2 and not has_knowledge_intent:
+        return False
+
+    return True
 
 
 def _iter_resources(metadata: dict) -> Iterable[dict]:
@@ -203,11 +350,14 @@ def judge_is_answered(
     score_threshold: float = 0.3,
     min_answer_length: int = 20,
 ) -> bool:
+    """Return whether a response is grounded enough to skip review.
+
+    A long answer with weak retrieval evidence is still low confidence and
+    should enter the unanswered / operations loop.
+    """
     if rag_score is None:
         return False
-    if rag_score is not None and rag_score >= score_threshold:
-        return True
-    return len(response_text.strip()) >= min_answer_length
+    return rag_score >= score_threshold
 
 
 def build_question_hash(raw_query: str, query_norm: str | None) -> str:
@@ -284,7 +434,7 @@ async def record_chat_analytics(
             latency=usage.get("latency"),
         )
         db.add(analytics)
-        if not is_answered:
+        if not is_answered and should_capture_unanswered_query(raw_query):
             await upsert_unanswered_question(
                 db,
                 conv_id=conv_id,
