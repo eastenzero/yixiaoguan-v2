@@ -4,7 +4,7 @@
     <view class="custom-app-bar">
       <view class="app-bar-content">
         <view class="app-bar-left" @click="goBack">
-          <text class="material-symbols-outlined app-bar-icon">arrow_back</text>
+          <AppIcon name="arrow_back" class="app-bar-icon" />
           <text class="app-bar-title">数据看板</text>
         </view>
       </view>
@@ -27,7 +27,7 @@
 
       <!-- Loading -->
       <view v-if="loading" class="loading-wrap">
-        <text class="material-symbols-outlined loading-spin">progress_activity</text>
+        <AppIcon name="progress_activity" class="loading-spin" />
         <text class="loading-text">正在加载数据…</text>
       </view>
 
@@ -42,10 +42,10 @@
           >
             <view class="metric-top">
               <view class="metric-icon-wrap" :class="'icon-bg--' + m.color">
-                <text class="material-symbols-outlined metric-icon">{{ m.icon }}</text>
+                <AppIcon :name="m.icon" class="metric-icon" />
               </view>
               <view v-if="m.change !== null" class="metric-change" :class="m.dir">
-                <text class="material-symbols-outlined change-arrow">{{ m.dir === 'up' ? 'trending_up' : 'trending_down' }}</text>
+                <AppIcon :name="m.dir === 'up' ? 'trending_up' : 'trending_down'" class="change-arrow" />
                 <text class="change-pct">{{ m.change }}%</text>
               </view>
             </view>
@@ -235,6 +235,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { ref, computed, onMounted } from 'vue'
 import { getAnalytics } from '@/api/analytics'
 import type { AnalyticsData } from '@/api/analytics'

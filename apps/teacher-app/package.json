@@ -6,6 +6,7 @@
     "build:h5": "uni build",
     "dev:mp-weixin": "uni -p mp-weixin",
     "build:mp-weixin": "uni build -p mp-weixin",
+    "test:knowledge-api": "node tests/knowledge-api-fallback.test.mjs",
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {

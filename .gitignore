@@ -12,6 +12,14 @@ dist/
 .ruff_cache/
 alembic/versions/__pycache__/
 
+# Local browser/test artifacts
+.playwright-cli/
+.playwright-mcp/
+test-results/
+output/
+.tmp/
+/.local/
+
 # 敏感凭据档案（含 API Keys、SSH、数据库密码等）
 docs/PROJECT-SECRETS.md
 bailian.txt
@@ -51,3 +59,8 @@ scripts/kimi-local-task-*.txt
 
 # Old smoke test scratchpads (kept locally only)
 /tmp_*.md
+
+# Local investigation scratch files
+/task_plan.md
+/findings.md
+/progress.md

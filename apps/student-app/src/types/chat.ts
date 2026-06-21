@@ -14,6 +14,24 @@ export interface Message {
   refusal?: boolean
 }
 
+export interface UnansweredInviteState {
+  message_id: number
+  conv_id: number
+  dismissed: boolean
+}
+
+export type ChatMessage = Message & {
+  unanswered_invite?: UnansweredInviteState
+}
+
+export type ChatStreamEvent =
+  | { event: 'message'; token: string }
+  | { event: 'message_end'; full_content: string; sources: Source[]; message_id: number }
+  | { event: 'suggestions'; questions: string[] }
+  | { event: 'unanswered_invite'; message_id: number; conv_id: number }
+  | { event: 'error'; message: string }
+  | { event: 'done' }
+
 export interface ConversationResponse {
   id: number
   student_id: number

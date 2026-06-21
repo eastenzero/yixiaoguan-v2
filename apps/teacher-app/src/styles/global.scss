@@ -1,5 +1,14 @@
-// ── 基础 Reset ──
-* {
+// Basic Reset
+page,
+view,
+text,
+scroll-view,
+swiper,
+swiper-item,
+image,
+input,
+textarea,
+button {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -29,6 +38,7 @@
 }
 
 // ── 工具类 ──
+/* #ifdef H5 */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -36,6 +46,7 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+/* #endif */
 
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom);

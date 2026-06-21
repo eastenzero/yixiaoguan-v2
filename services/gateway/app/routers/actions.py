@@ -43,8 +43,39 @@ async def _notify_college_teachers(
     conv: Conversation,
     current_user: User,
 ):
+    def build_payload(notification_scope: str, fallback_reason: str | None = None) -> dict:
+        data = {
+            "conv_id": conv.id,
+            "student_id": conv.student_id,
+            "student_college_id": current_user.college_id,
+            "title": conv.title,
+            "status": conv.status.value,
+            "created_at": conv.created_at.isoformat(),
+            "notification_scope": notification_scope,
+        }
+        if fallback_reason is not None:
+            data["fallback_reason"] = fallback_reason
+        return {"type": "escalation_notify", "data": data}
+
+    async def notify_admins(fallback_reason: str) -> None:
+        result = await db.execute(
+            select(User.id).where(
+                User.role == UserRole.admin,
+                User.is_active,
+            )
+        )
+        admin_ids = list(result.scalars().all())
+        if not admin_ids:
+            return
+        notify_data = build_payload("admin_fallback", fallback_reason)
+        await centrifugo.broadcast([f"user#{uid}" for uid in admin_ids], notify_data)
+        for admin_id in admin_ids:
+            await manager.send_to_user(admin_id, notify_data)
+
     if current_user.college_id is None:
+        await notify_admins("student_without_college")
         return
+
     result = await db.execute(
         select(User.id).where(
             User.role == UserRole.teacher,
@@ -54,17 +85,9 @@ async def _notify_college_teachers(
     )
     teacher_ids = list(result.scalars().all())
     if not teacher_ids:
+        await notify_admins("no_active_college_teachers")
         return
-    _notify_data = {
-        "type": "escalation_notify",
-        "data": {
-            "conv_id": conv.id,
-            "student_id": conv.student_id,
-            "title": conv.title,
-            "status": conv.status.value,
-            "created_at": conv.created_at.isoformat(),
-        },
-    }
+    _notify_data = build_payload("college_teachers")
     await centrifugo.broadcast([f"user#{tid}" for tid in teacher_ids], _notify_data)
     await manager.broadcast_to_college_teachers(
         current_user.college_id, teacher_ids, _notify_data,

@@ -242,9 +242,11 @@ $danger: $error;
 $info: #3b82f6;
 
 // ─────────────────────────────────────────────────────────
-// 10. CSS custom property bridge (runtime theming hook)
+// 10. CSS custom property bridge
+//    Emit from App.vue's page selector only, so scoped imports do not
+//    generate :root / .data-v-xxx:root in WXSS.
 // ─────────────────────────────────────────────────────────
-:root {
+@mixin token-css-vars {
   // MD3 核心
   --md-primary: #{$primary};
   --md-primary-container: #{$primary-container};
@@ -316,12 +318,4 @@ $info: #3b82f6;
   font-size: $label-md-size;
   line-height: $label-md-lh;
   font-weight: $label-md-weight;
-}
-
-// ─────────────────────────────────────────────────────────
-// 12. Material Symbols — wght 300 per DESIGN.md
-//     「保持细腻、高端的笔画」
-// ─────────────────────────────────────────────────────────
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
 }

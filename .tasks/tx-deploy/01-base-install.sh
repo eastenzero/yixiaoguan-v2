@@ -18,8 +18,9 @@ df -h / | head -2
 log "== 2. apt update + 核心包 =="
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -q
+# Ubuntu 24.04 noble:docker compose plugin 的 apt 包名是 docker-compose-v2(不是 docker-compose-plugin)
 apt-get install -y -q \
-    docker.io docker-compose-plugin \
+    docker.io docker-compose-v2 docker-buildx \
     nginx \
     certbot python3-certbot-nginx \
     postgresql-client-16 \

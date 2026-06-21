@@ -15,7 +15,7 @@
         </view>
         <view class="hero-blur" />
         <view class="hero-bg-icon">
-          <text class="material-symbols-outlined hero-icon-bg">school</text>
+          <AppIcon name="school" class="hero-icon-bg" />
         </view>
       </view>
 
@@ -26,32 +26,32 @@
         </view>
         <view class="quick-grid">
           <view class="quick-large" @click="openExternal('https://www.sdfmu.edu.cn')">
-            <text class="material-symbols-outlined quick-icon text-primary">home</text>
+            <AppIcon name="home" class="quick-icon text-primary" />
             <view class="quick-label-row">
               <text class="quick-label">校主页</text>
-              <text class="material-symbols-outlined meta-external">open_in_new</text>
+              <AppIcon name="open_in_new" class="meta-external" />
             </view>
           </view>
           <view class="quick-stack">
             <view class="quick-row" @click="openExternal('http://portal.sdfmu.edu.cn', { useSso: true })">
-              <text class="material-symbols-outlined quick-icon text-secondary">gate</text>
+              <AppIcon name="gate" class="quick-icon text-secondary" />
               <text class="quick-label">信息门户</text>
-              <text class="material-symbols-outlined meta-external">open_in_new</text>
+              <AppIcon name="open_in_new" class="meta-external" />
             </view>
             <view class="quick-row" @click="openExternal('https://ehall.sdfmu.edu.cn/v2/site/index', { useSso: true })">
-              <text class="material-symbols-outlined quick-icon text-tertiary">cloud_done</text>
+              <AppIcon name="cloud_done" class="quick-icon text-tertiary" />
               <text class="quick-label">服务大厅</text>
-              <text class="material-symbols-outlined meta-external">open_in_new</text>
+              <AppIcon name="open_in_new" class="meta-external" />
             </view>
           </view>
         </view>
         <!-- 统一消息平台: 企业微信原生应用，暂无 Web URL，暂时隐藏 -->
         <view v-if="false" class="quick-wide" @click="handleComingSoon('统一消息平台', '我在哪里查看学校通知和老师回复？')">
           <view class="quick-wide-left">
-            <text class="material-symbols-outlined quick-icon text-primary">message</text>
+            <AppIcon name="message" class="quick-icon text-primary" />
             <text class="quick-label">统一消息平台</text>
           </view>
-          <text class="material-symbols-outlined text-outline-variant">chevron_right</text>
+          <AppIcon name="chevron_right" class="text-outline-variant" />
         </view>
       </view>
 
@@ -65,8 +65,8 @@
             @click="handleServiceClick(item)"
           >
             <view class="campus-icon-box">
-              <text class="material-symbols-outlined campus-icon">{{ item.icon }}</text>
-              <text v-if="item.url" class="material-symbols-outlined badge-external">open_in_new</text>
+              <AppIcon :name="item.icon" class="campus-icon" />
+              <AppIcon v-if="item.url" name="open_in_new" class="badge-external" />
             </view>
             <text class="campus-label">{{ item.label }}</text>
           </view>
@@ -78,38 +78,38 @@
         <view class="query-grid">
           <view class="query-card" @click="openExternal('https://app.sdfmu.edu.cn/site/schedule/index', { useSso: true })">
             <view class="query-icon-box bg-secondary-light">
-              <text class="material-symbols-outlined text-secondary">calendar_month</text>
+              <AppIcon name="calendar_month" class="text-secondary" />
             </view>
             <view class="query-info">
               <text class="query-name">学生课表</text>
-              <text class="query-meta">课表查询 <text class="material-symbols-outlined meta-external">open_in_new</text></text>
+              <view class="query-meta">课表查询 <AppIcon name="open_in_new" class="meta-external" /></view>
             </view>
           </view>
           <view class="query-card" @click="openExternal('http://jwc.sdfmu.edu.cn', { useSso: true })">
             <view class="query-icon-box bg-tertiary-light">
-              <text class="material-symbols-outlined text-tertiary">grade</text>
+              <AppIcon name="grade" class="text-tertiary" />
             </view>
             <view class="query-info">
               <text class="query-name">成绩查询</text>
-              <text class="query-meta">教务系统 <text class="material-symbols-outlined meta-external">open_in_new</text></text>
+              <view class="query-meta">教务系统 <AppIcon name="open_in_new" class="meta-external" /></view>
             </view>
           </view>
           <view class="query-card" @click="openExternal('http://202.194.232.127/index.html')">
             <view class="query-icon-box bg-primary-light">
-              <text class="material-symbols-outlined text-primary">library_books</text>
+              <AppIcon name="library_books" class="text-primary" />
             </view>
             <view class="query-info">
               <text class="query-name">图书馆</text>
-              <text class="query-meta">借阅状态 <text class="material-symbols-outlined meta-external">open_in_new</text></text>
+              <view class="query-meta">借阅状态 <AppIcon name="open_in_new" class="meta-external" /></view>
             </view>
           </view>
           <view class="query-card" @click="openExternal('https://mail.sdfmu.edu.cn/', { useSso: true })">
             <view class="query-icon-box bg-error-light">
-              <text class="material-symbols-outlined text-error">mail</text>
+              <AppIcon name="mail" class="text-error" />
             </view>
             <view class="query-info">
               <text class="query-name">学生邮箱</text>
-              <text class="query-meta">收件箱 <text class="material-symbols-outlined meta-external">open_in_new</text></text>
+              <view class="query-meta">收件箱 <AppIcon name="open_in_new" class="meta-external" /></view>
             </view>
           </view>
         </view>
@@ -120,18 +120,18 @@
         <view class="personal-list">
           <view class="personal-item" @click="openExternal('https://app.sdfmu.edu.cn/site/agenda/index', { useSso: true })">
             <view class="personal-left">
-              <text class="material-symbols-outlined text-primary">event_note</text>
+              <AppIcon name="event_note" class="text-primary" />
               <text class="personal-name">个人日程</text>
             </view>
-            <text class="material-symbols-outlined meta-external">open_in_new</text>
+            <AppIcon name="open_in_new" class="meta-external" />
           </view>
           <view class="personal-item" @click="goChatHistory">
             <view class="personal-left">
-              <text class="material-symbols-outlined text-primary">help_center</text>
+              <AppIcon name="help_center" class="text-primary" />
               <text class="personal-name">我的提问</text>
             </view>
             <view class="personal-right">
-              <text class="material-symbols-outlined text-outline-variant">chevron_right</text>
+              <AppIcon name="chevron_right" class="text-outline-variant" />
             </view>
           </view>
         </view>
@@ -146,6 +146,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { onShow } from '@dcloudio/uni-app'
 import CustomTabBar from '@/components/CustomTabBar.vue'
 import FeatureNoticeSheet from '@/components/FeatureNoticeSheet.vue'
@@ -177,9 +178,13 @@ const campusServices: ServiceItem[] = [
   { icon: 'podium', label: '学术讲座', url: 'http://academic.sdfmu.edu.cn/index.php?redirect=apply/showlist', useSso: true },
   { icon: 'event_available', label: '预约中心', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=3', useSso: true },
   { icon: 'qr_code', label: '访客预约', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=2', useSso: true },
-  // 行 4：证件采集 + 媒体 + 应用中心兜底
+  // 行 4：证件采集 + 体育健康
   { icon: 'face_retouching_natural', label: '人脸采集', url: 'https://fpc.sdfmu.edu.cn/#/home', useSso: true },
   { icon: 'photo_camera', label: '证件照采集', url: 'https://ppu.sdfmu.edu.cn', useSso: true },
+  { icon: 'badge', label: '体育保健课', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=368', useSso: true },
+  { icon: 'book', label: '校史馆预约', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=407', useSso: true },
+  // 行 5：媒体 + 应用中心兜底
+  { icon: 'history', label: '我的申请', url: 'https://ehall.sdfmu.edu.cn/v2/matter/launch', useSso: true },
   { icon: 'live_tv', label: '直播山一大', url: 'https://qjjern.vnet.weizan.cn/live/channelpage-253967?v=1764637917204' },
   { icon: 'apps', label: '更多服务', url: 'https://ehall.sdfmu.edu.cn/v2/site/serviceList', useSso: true },
 ]
@@ -229,8 +234,8 @@ function goChatHistory() {
   padding: 0.75rem 1.5rem;
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
+  left: var(--student-fixed-left, 0);
+  right: var(--student-fixed-right, 0);
   z-index: 100;
   background: rgba(250, 245, 251, 0.90);    /* ivory/90 跟着 $surface */
   backdrop-filter: $backdrop-bar;

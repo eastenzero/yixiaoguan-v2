@@ -8,11 +8,11 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://192.168.100.165:8100',
+        target: 'https://teacher.xiaoguan.site',
         changeOrigin: true,
       },
       '/ws': {
-        target: 'ws://192.168.100.165:8100',
+        target: 'wss://teacher.xiaoguan.site',
         ws: true,
         changeOrigin: true,
       },

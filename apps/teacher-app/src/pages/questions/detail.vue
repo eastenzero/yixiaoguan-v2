@@ -40,7 +40,7 @@
             <!-- AI 消息 -->
             <view v-else-if="msg.sender_type === 'ai'" class="message-wrapper ai-message">
               <view class="ai-avatar">
-                <text class="material-symbols-outlined ai-icon">smart_toy</text>
+                <AppIcon name="smart_toy" class="ai-icon" />
               </view>
               <view class="ai-content">
                 <view class="message-bubble ai-bubble">
@@ -53,7 +53,7 @@
             <!-- 教师消息 -->
             <view v-else-if="msg.sender_type === 'teacher'" class="message-wrapper teacher-message">
               <view class="ai-avatar">
-                <text class="material-symbols-outlined ai-icon">support_agent</text>
+                <AppIcon name="support_agent" class="ai-icon" />
               </view>
               <view class="ai-content">
                 <view class="message-bubble teacher-bubble">
@@ -66,7 +66,7 @@
             <!-- 系统消息 -->
             <view v-else class="system-message">
               <view class="system-badge">
-                <text class="material-symbols-outlined system-icon">notifications</text>
+                <AppIcon name="notifications" class="system-icon" />
                 <text class="system-text">{{ msg.content }}</text>
               </view>
             </view>
@@ -83,7 +83,7 @@
           <!-- 工单系统提示 -->
           <view class="system-message">
             <view class="system-badge">
-              <text class="material-symbols-outlined system-icon">notifications</text>
+              <AppIcon name="notifications" class="system-icon" />
               <text class="system-text">学生已呼叫老师 — {{ formatTime(escalation.created_at) }}</text>
             </view>
           </view>
@@ -100,7 +100,7 @@
     <view class="action-bar animate-fade-up delay-5">
       <!-- Status 0: 待处理 - 显示接单按钮 -->
       <view v-if="escalation && escalation.status === 'pending_teacher'" class="action-button" @click="handleAssign">
-        <text class="material-symbols-outlined action-icon">support_agent</text>
+        <AppIcon name="support_agent" class="action-icon" />
         <text class="action-text">{{ submitting ? '接单中...' : '接单处理' }}</text>
       </view>
 
@@ -115,11 +115,11 @@
         />
         <view class="reply-buttons-row">
           <view class="reply-button reply-button--secondary" :class="{ 'reply-button--disabled': !replyText.trim() || submitting }" @click="handleReplyOnly">
-            <text class="material-symbols-outlined reply-icon-secondary">chat_bubble</text>
+            <AppIcon name="chat_bubble" class="reply-icon-secondary" />
             <text class="action-text-secondary">{{ submitting ? '发送中...' : '仅回复' }}</text>
           </view>
           <view class="reply-button" :class="{ 'reply-button--disabled': !replyText.trim() || submitting }" @click="handleResolve">
-            <text class="material-symbols-outlined reply-icon">check_circle</text>
+            <AppIcon name="check_circle" class="reply-icon" />
             <text class="action-text">{{ submitting ? '提交中...' : '回复并解决' }}</text>
           </view>
         </view>
@@ -127,7 +127,7 @@
 
       <!-- Status 2: 已解决 - 显示已解决状态 -->
       <view v-else-if="escalation && escalation.status === 'resolved'" class="action-button action-button--disabled">
-        <text class="material-symbols-outlined action-icon">check_circle</text>
+        <AppIcon name="check_circle" class="action-icon" />
         <text class="action-text">已解决</text>
       </view>
 
@@ -140,6 +140,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { ref, onUnmounted, nextTick } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import TopAppBar from '../../components/TopAppBar.vue'
@@ -359,21 +360,6 @@ onUnmounted(() => {
   color: $on-surface-variant;
 }
 
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-flex;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
-  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-}
 
 // Student Card
 .student-card {

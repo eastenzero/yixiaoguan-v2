@@ -36,6 +36,14 @@
       }
     },
     {
+      "path": "pages/services/webview",
+      "style": {
+        "navigationBarTitleText": "网页",
+        "navigationBarBackgroundColor": "#F8FAFC",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
       "path": "pages/profile/index",
       "style": {
         "navigationBarTitleText": "我的",
@@ -48,6 +56,12 @@
     "navigationBarTitleText": "医小管",
     "navigationBarBackgroundColor": "#F8FAFC",
     "backgroundColor": "#F8FAFC"
+  },
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+    }
   },
   "tabBar": {
     "custom": true,

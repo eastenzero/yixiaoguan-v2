@@ -49,6 +49,15 @@ export interface PageResult<T> {
   total: number
 }
 
+export interface ApiFallbackMeta {
+  source: 'localStorage'
+  message: string
+}
+
+export interface FallbackPageResult<T> extends PageResult<T> {
+  fallback?: ApiFallbackMeta
+}
+
 export type KnowledgeScope = 'class' | 'college' | 'global'
 
 export type KnowledgePublishMode = 'published' | 'pending_review'
@@ -81,14 +90,25 @@ export interface KnowledgeEntry {
   submitted_by: number
   reject_reason: string | null
   dify_document_id: string | null
+  dify_dataset_id?: string | null
+  source_type?: 'kb_entry' | 'suggestion'
+  category?: string | null
+  tags?: string[] | null
+  original_source?: string | null
+  source_url?: string | null
+  material_id?: string | null
+  campus?: string | null
+  original_filename?: string | null
   created_at: string
   published_at: string | null
   reviewed_at: string | null
+  fallback?: ApiFallbackMeta
 }
 
 export interface CreateKnowledgeDraftPayload {
   unanswered_question_id: number
   raw_answer: string
+  confirmed_content?: string | null
   scope: KnowledgeScope
   scope_value?: number | null
 }
@@ -96,4 +116,17 @@ export interface CreateKnowledgeDraftPayload {
 export interface CreateKnowledgeDraftResponse {
   entry: KnowledgeEntry
   publish_mode: KnowledgePublishMode
+}
+
+export interface KnowledgeDraftPreviewResponse {
+  unanswered_question_id: number
+  title: string
+  content: string
+  raw_content: string
+  scope: KnowledgeScope
+  scope_value: number | null
+  scope_label: string
+  representative_query: string
+  college_id: number | null
+  publish_mode: 'requires_confirmation'
 }

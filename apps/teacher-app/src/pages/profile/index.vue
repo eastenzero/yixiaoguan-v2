@@ -56,7 +56,7 @@
           <view class="setting-item">
             <view class="item-left">
               <view class="icon-circle">
-                <text class="material-symbols-outlined setting-icon">notifications</text>
+                <AppIcon name="notifications" class="setting-icon" />
               </view>
               <text class="item-label">通知提醒</text>
             </view>
@@ -73,7 +73,7 @@
           <view class="setting-item">
             <view class="item-left">
               <view class="icon-circle">
-                <text class="material-symbols-outlined setting-icon">volume_up</text>
+                <AppIcon name="volume_up" class="setting-icon" />
               </view>
               <text class="item-label">声音提示</text>
             </view>
@@ -90,7 +90,7 @@
           <view class="setting-item">
             <view class="item-left">
               <view class="icon-circle">
-                <text class="material-symbols-outlined setting-icon">smart_toy</text>
+                <AppIcon name="smart_toy" class="setting-icon" />
               </view>
               <text class="item-label">AI 自动回复</text>
             </view>
@@ -110,28 +110,28 @@
           <view class="setting-item setting-item--nav">
             <view class="item-left">
               <view class="icon-circle">
-                <text class="material-symbols-outlined setting-icon">lock</text>
+                <AppIcon name="lock" class="setting-icon" />
               </view>
               <text class="item-label">修改密码</text>
             </view>
-            <text class="material-symbols-outlined nav-chevron">chevron_right</text>
+            <AppIcon name="chevron_right" class="nav-chevron" />
           </view>
           
           <!-- 关于我们 -->
           <view class="setting-item setting-item--nav">
             <view class="item-left">
               <view class="icon-circle">
-                <text class="material-symbols-outlined setting-icon">info</text>
+                <AppIcon name="info" class="setting-icon" />
               </view>
               <text class="item-label">关于我们</text>
             </view>
-            <text class="material-symbols-outlined nav-chevron">chevron_right</text>
+            <AppIcon name="chevron_right" class="nav-chevron" />
           </view>
         </view>
 
         <!-- 退出登录按钮 -->
         <view class="logout-btn" @click="handleLogout">
-          <text class="material-symbols-outlined logout-icon">logout</text>
+          <AppIcon name="logout" class="logout-icon" />
           <text class="logout-text">退出登录</text>
         </view>
       </view>
@@ -142,6 +142,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { ref, computed } from 'vue'
 import { useUserStore } from '@/stores/user'
 import TopAppBar from '../../components/TopAppBar.vue'
@@ -190,21 +191,6 @@ const handleLogout = () => {
   margin-bottom: 24px;
 }
 
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-flex;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
-  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-}
 
 .hero-bg {
   position: relative;

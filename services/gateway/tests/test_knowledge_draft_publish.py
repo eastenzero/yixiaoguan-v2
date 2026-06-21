@@ -7,7 +7,7 @@ from fastapi import HTTPException
 
 from app.models.knowledge import KnowledgeScope, SuggestionStatus
 from app.models.user import User, UserRole
-from app.services.knowledge_service import create_knowledge_draft
+from app.services.knowledge_service import create_knowledge_draft, create_knowledge_draft_preview
 
 
 class _FakeExecuteResult:
@@ -74,7 +74,46 @@ def _build_mapping(*, college_id: int, dataset_id: str):
 
 
 @pytest.mark.asyncio
-async def test_create_knowledge_draft_class_scope_direct_publish(monkeypatch):
+async def test_create_knowledge_draft_preview_polishes_without_publishing(monkeypatch):
+    teacher = _build_user(user_id=8000, role=UserRole.teacher, college_id=1, class_id=11, staff_id="teacher8000")
+    unanswered = _build_unanswered(
+        item_id=9,
+        question_text="宿舍电费怎么交",
+        question_hash="hash-preview",
+        college_id=1,
+    )
+    db = _FakeDB([unanswered])
+
+    polish_mock = AsyncMock(return_value="润色后的预览内容")
+    monkeypatch.setattr("app.services.knowledge_service.polish_knowledge_content", polish_mock)
+    create_document_mock = AsyncMock()
+    monkeypatch.setattr("app.services.knowledge_service.dify_client.create_document", create_document_mock)
+
+    preview = await create_knowledge_draft_preview(
+        db,
+        current_user=teacher,
+        unanswered_question_id=unanswered.id,
+        raw_answer="可以在校园生活服务平台缴费。",
+        scope="class",
+        scope_value=11,
+    )
+
+    assert preview["title"] == "宿舍电费怎么交"
+    assert preview["raw_content"] == "可以在校园生活服务平台缴费。"
+    assert preview["content"] == "润色后的预览内容"
+    assert preview["scope"] == "class"
+    assert preview["scope_value"] == 11
+    assert preview["publish_mode"] == "requires_confirmation"
+    assert unanswered.is_resolved is False
+    assert unanswered.kb_suggestion_id is None
+    assert db.added == []
+    db.commit.assert_not_awaited()
+    create_document_mock.assert_not_awaited()
+    polish_mock.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_create_knowledge_draft_class_scope_confirmed_publish(monkeypatch):
     teacher = _build_user(user_id=8001, role=UserRole.teacher, college_id=1, class_id=11, staff_id="teacher8001")
     unanswered = _build_unanswered(
         item_id=10,
@@ -84,10 +123,8 @@ async def test_create_knowledge_draft_class_scope_direct_publish(monkeypatch):
     )
     db = _FakeDB([unanswered, _build_mapping(college_id=1, dataset_id="dataset-college-1")])
 
-    monkeypatch.setattr(
-        "app.services.knowledge_service.polish_knowledge_content",
-        AsyncMock(return_value="润色后的班级知识内容"),
-    )
+    polish_mock = AsyncMock(return_value="不应在确认发布时润色")
+    monkeypatch.setattr("app.services.knowledge_service.polish_knowledge_content", polish_mock)
     create_document_mock = AsyncMock(return_value={"document": {"id": "doc-class-1"}})
     monkeypatch.setattr("app.services.knowledge_service.dify_client.create_document", create_document_mock)
 
@@ -96,11 +133,13 @@ async def test_create_knowledge_draft_class_scope_direct_publish(monkeypatch):
         current_user=teacher,
         unanswered_question_id=unanswered.id,
         raw_answer="可以在校园生活服务平台缴费。",
+        confirmed_content="教师确认后的班级知识内容",
         scope="class",
         scope_value=11,
     )
 
     assert publish_mode == "published"
+    assert entry.content == "教师确认后的班级知识内容"
     assert entry.scope == KnowledgeScope.class_
     assert entry.scope_value == 11
     assert entry.status == SuggestionStatus.approved
@@ -108,12 +147,13 @@ async def test_create_knowledge_draft_class_scope_direct_publish(monkeypatch):
     assert entry.published_at is not None
     assert unanswered.is_resolved is True
     assert unanswered.kb_suggestion_id == entry.id
+    polish_mock.assert_not_awaited()
     create_document_mock.assert_awaited_once()
     db.commit.assert_awaited_once()
 
 
 @pytest.mark.asyncio
-async def test_create_knowledge_draft_college_scope_direct_publish(monkeypatch):
+async def test_create_knowledge_draft_college_scope_confirmed_publish(monkeypatch):
     teacher = _build_user(user_id=8002, role=UserRole.teacher, college_id=2, class_id=None, staff_id="teacher8002")
     unanswered = _build_unanswered(
         item_id=11,
@@ -123,10 +163,8 @@ async def test_create_knowledge_draft_college_scope_direct_publish(monkeypatch):
     )
     db = _FakeDB([unanswered, _build_mapping(college_id=2, dataset_id="dataset-college-2")])
 
-    monkeypatch.setattr(
-        "app.services.knowledge_service.polish_knowledge_content",
-        AsyncMock(return_value="润色后的学院知识内容"),
-    )
+    polish_mock = AsyncMock(return_value="不应在确认发布时润色")
+    monkeypatch.setattr("app.services.knowledge_service.polish_knowledge_content", polish_mock)
     monkeypatch.setattr(
         "app.services.knowledge_service.dify_client.create_document",
         AsyncMock(return_value={"document": {"id": "doc-college-2"}}),
@@ -137,15 +175,18 @@ async def test_create_knowledge_draft_college_scope_direct_publish(monkeypatch):
         current_user=teacher,
         unanswered_question_id=unanswered.id,
         raw_answer="可在图书馆系统中预约。",
+        confirmed_content="教师确认后的学院知识内容",
         scope="college",
         scope_value=2,
     )
 
     assert publish_mode == "published"
+    assert entry.content == "教师确认后的学院知识内容"
     assert entry.scope == KnowledgeScope.college
     assert entry.scope_value == 2
     assert entry.status == SuggestionStatus.approved
     assert unanswered.is_resolved is True
+    polish_mock.assert_not_awaited()
     db.commit.assert_awaited_once()
 
 
@@ -160,10 +201,8 @@ async def test_create_knowledge_draft_global_scope_stays_pending(monkeypatch):
     )
     db = _FakeDB([unanswered])
 
-    monkeypatch.setattr(
-        "app.services.knowledge_service.polish_knowledge_content",
-        AsyncMock(return_value="润色后的全校知识内容"),
-    )
+    polish_mock = AsyncMock(return_value="不应在确认发布时润色")
+    monkeypatch.setattr("app.services.knowledge_service.polish_knowledge_content", polish_mock)
     create_document_mock = AsyncMock()
     monkeypatch.setattr("app.services.knowledge_service.dify_client.create_document", create_document_mock)
 
@@ -172,16 +211,19 @@ async def test_create_knowledge_draft_global_scope_stays_pending(monkeypatch):
         current_user=teacher,
         unanswered_question_id=unanswered.id,
         raw_answer="需要联系教务处补办。",
+        confirmed_content="教师确认后的全校知识内容",
         scope="global",
         scope_value=None,
     )
 
     assert publish_mode == "pending_review"
+    assert entry.content == "教师确认后的全校知识内容"
     assert entry.scope == KnowledgeScope.global_
     assert entry.status == SuggestionStatus.pending
     assert entry.dify_document_id is None
     assert unanswered.is_resolved is False
     assert unanswered.kb_suggestion_id == entry.id
+    polish_mock.assert_not_awaited()
     create_document_mock.assert_not_awaited()
     db.commit.assert_awaited_once()
 
@@ -217,6 +259,36 @@ async def test_create_knowledge_draft_rejects_cross_scope(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_create_knowledge_draft_rejects_unconfirmed_publish(monkeypatch):
+    teacher = _build_user(user_id=8008, role=UserRole.teacher, college_id=1, class_id=None, staff_id="teacher8008")
+    unanswered = _build_unanswered(
+        item_id=17,
+        question_text="宿舍维修怎么报修",
+        question_hash="hash-unconfirmed",
+        college_id=1,
+    )
+    db = _FakeDB([unanswered])
+    polish_mock = AsyncMock(return_value="不应在未确认发布时润色")
+    monkeypatch.setattr("app.services.knowledge_service.polish_knowledge_content", polish_mock)
+
+    with pytest.raises(HTTPException) as exc_info:
+        await create_knowledge_draft(
+            db,
+            current_user=teacher,
+            unanswered_question_id=unanswered.id,
+            raw_answer="到宿管平台报修。",
+            scope="college",
+            scope_value=1,
+        )
+
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "请先生成润色预览并确认发布内容"
+    assert db.added == []
+    db.commit.assert_not_awaited()
+    polish_mock.assert_not_awaited()
+
+
+@pytest.mark.asyncio
 async def test_create_knowledge_draft_rolls_back_on_dify_failure(monkeypatch):
     teacher = _build_user(user_id=8005, role=UserRole.teacher, college_id=1, class_id=None, staff_id="teacher8005")
     unanswered = _build_unanswered(
@@ -242,6 +314,7 @@ async def test_create_knowledge_draft_rolls_back_on_dify_failure(monkeypatch):
             current_user=teacher,
             unanswered_question_id=unanswered.id,
             raw_answer="到宿管平台报修。",
+            confirmed_content="教师确认后的报修知识",
             scope="college",
             scope_value=1,
         )
@@ -253,7 +326,40 @@ async def test_create_knowledge_draft_rolls_back_on_dify_failure(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_create_knowledge_draft_uses_fallback_when_polish_fails(monkeypatch):
+async def test_create_knowledge_draft_uses_confirmed_content_without_repolishing(monkeypatch):
+    teacher = _build_user(user_id=8007, role=UserRole.teacher, college_id=1, class_id=None, staff_id="teacher8007")
+    unanswered = _build_unanswered(
+        item_id=16,
+        question_text="校园卡丢了怎么办",
+        question_hash="hash-confirmed",
+        college_id=1,
+    )
+    db = _FakeDB([unanswered, _build_mapping(college_id=1, dataset_id="dataset-college-1")])
+
+    polish_mock = AsyncMock(return_value="不应该再次润色")
+    monkeypatch.setattr("app.services.knowledge_service.polish_knowledge_content", polish_mock)
+    create_document_mock = AsyncMock(return_value={"document": {"id": "doc-confirmed-1"}})
+    monkeypatch.setattr("app.services.knowledge_service.dify_client.create_document", create_document_mock)
+
+    entry, publish_mode = await create_knowledge_draft(
+        db,
+        current_user=teacher,
+        unanswered_question_id=unanswered.id,
+        raw_answer="先挂失，再到服务中心补办。",
+        confirmed_content="教师确认后的最终知识内容",
+        scope="college",
+        scope_value=1,
+    )
+
+    assert publish_mode == "published"
+    assert entry.content == "教师确认后的最终知识内容"
+    polish_mock.assert_not_awaited()
+    create_document_mock.assert_awaited_once()
+    assert create_document_mock.await_args.kwargs["content"] == "教师确认后的最终知识内容"
+
+
+@pytest.mark.asyncio
+async def test_create_knowledge_draft_preview_uses_fallback_when_polish_fails(monkeypatch):
     teacher = _build_user(user_id=8006, role=UserRole.teacher, college_id=1, class_id=None, staff_id="teacher8006")
     unanswered = _build_unanswered(
         item_id=15,
@@ -261,18 +367,16 @@ async def test_create_knowledge_draft_uses_fallback_when_polish_fails(monkeypatc
         question_hash="hash-card-loss",
         college_id=1,
     )
-    db = _FakeDB([unanswered, _build_mapping(college_id=1, dataset_id="dataset-college-1")])
+    db = _FakeDB([unanswered])
 
     monkeypatch.setattr(
         "app.services.knowledge_service.dify_client.polish_text",
         AsyncMock(side_effect=RuntimeError("polish down")),
     )
-    monkeypatch.setattr(
-        "app.services.knowledge_service.dify_client.create_document",
-        AsyncMock(return_value={"document": {"id": "doc-fallback-1"}}),
-    )
+    create_document_mock = AsyncMock()
+    monkeypatch.setattr("app.services.knowledge_service.dify_client.create_document", create_document_mock)
 
-    entry, publish_mode = await create_knowledge_draft(
+    preview = await create_knowledge_draft_preview(
         db,
         current_user=teacher,
         unanswered_question_id=unanswered.id,
@@ -281,8 +385,10 @@ async def test_create_knowledge_draft_uses_fallback_when_polish_fails(monkeypatc
         scope_value=1,
     )
 
-    assert publish_mode == "published"
-    assert "适用范围：学院 1" in entry.content
-    assert "问题：校园卡丢了怎么办" in entry.content
-    assert "答复：先挂失，再到服务中心补办。" in entry.content
-    db.commit.assert_awaited_once()
+    assert preview["publish_mode"] == "requires_confirmation"
+    assert "适用范围：学院 1" in preview["content"]
+    assert "问题：校园卡丢了怎么办" in preview["content"]
+    assert "答复：先挂失，再到服务中心补办。" in preview["content"]
+    assert db.added == []
+    db.commit.assert_not_awaited()
+    create_document_mock.assert_not_awaited()

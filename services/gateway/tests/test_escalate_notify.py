@@ -29,10 +29,20 @@ class _FakeExecuteResult:
 
 class _FakeDB:
     def __init__(self, values):
-        self.execute = AsyncMock(return_value=_FakeExecuteResult(values))
+        if values and isinstance(values[0], list):
+            self._values_by_call = list(values)
+        else:
+            self._values_by_call = [values]
+        self.statements = []
+        self.execute = AsyncMock(side_effect=self._execute)
+
+    async def _execute(self, statement):
+        self.statements.append(statement)
+        values = self._values_by_call.pop(0) if self._values_by_call else []
+        return _FakeExecuteResult(values)
 
 
-def _build_student(*, user_id: int, college_id: int, staff_id: str) -> User:
+def _build_student(*, user_id: int, college_id: int | None, staff_id: str) -> User:
     return User(
         id=user_id,
         staff_id=staff_id,
@@ -54,6 +64,16 @@ def _assert_notify_filters(statement, *, college_id: int):
     compiled_params = statement.compile().params
     assert compiled_params['role_1'] == UserRole.teacher
     assert compiled_params['college_id_1'] == college_id
+
+
+def _assert_admin_fallback_filters(statement):
+    conditions = statement.whereclause.clauses if isinstance(statement.whereclause, BooleanClauseList) else (statement.whereclause,)
+    assert len(conditions) == 2
+    rendered_conditions = {str(condition) for condition in conditions}
+    assert 'users.role = :role_1' in rendered_conditions
+    assert 'users.is_active' in rendered_conditions
+    compiled_params = statement.compile().params
+    assert compiled_params['role_1'] == UserRole.admin
 
 
 @pytest.mark.asyncio
@@ -87,17 +107,19 @@ async def test_notify_college_teachers_broadcasts_ticket_payload(monkeypatch):
             "data": {
                 "conv_id": conv.id,
                 "student_id": conv.student_id,
+                "student_college_id": student.college_id,
                 "title": conv.title,
                 "status": conv.status.value,
                 "created_at": conv.created_at.isoformat(),
+                "notification_scope": "college_teachers",
             },
         },
     )
 
 
 @pytest.mark.asyncio
-async def test_notify_college_teachers_returns_when_no_teachers_found(monkeypatch):
-    db = _FakeDB([])
+async def test_notify_college_teachers_falls_back_to_admins_when_no_teachers_found(monkeypatch):
+    db = _FakeDB([[], [5101, 5102]])
     student = _build_student(user_id=4005, college_id=9, staff_id="student105")
     conv = SimpleNamespace(
         id=75,
@@ -107,18 +129,74 @@ async def test_notify_college_teachers_returns_when_no_teachers_found(monkeypatc
         created_at=datetime(2026, 4, 21, 5, 6, 0),
     )
     broadcast_mock = AsyncMock()
+    send_to_user_mock = AsyncMock()
+    centrifugo_mock = AsyncMock()
 
     monkeypatch.setattr(
         "app.routers.actions.manager.broadcast_to_college_teachers",
         broadcast_mock,
     )
+    monkeypatch.setattr("app.routers.actions.manager.send_to_user", send_to_user_mock)
+    monkeypatch.setattr("app.routers.actions.centrifugo.broadcast", centrifugo_mock)
+
+    await _notify_college_teachers(db, conv, student)
+
+    assert db.execute.await_count == 2
+    _assert_notify_filters(db.statements[0], college_id=student.college_id)
+    _assert_admin_fallback_filters(db.statements[1])
+    broadcast_mock.assert_not_awaited()
+    centrifugo_mock.assert_awaited_once()
+    assert centrifugo_mock.await_args.args[0] == ["user#5101", "user#5102"]
+    payload = centrifugo_mock.await_args.args[1]
+    assert payload["data"]["notification_scope"] == "admin_fallback"
+    assert payload["data"]["fallback_reason"] == "no_active_college_teachers"
+    assert send_to_user_mock.await_count == 2
+
+
+@pytest.mark.asyncio
+async def test_notify_college_teachers_falls_back_to_admins_for_no_college_student(monkeypatch):
+    db = _FakeDB([6101, 6102])
+    student = _build_student(user_id=4006, college_id=None, staff_id="pilot:student106")
+    conv = SimpleNamespace(
+        id=76,
+        student_id=student.id,
+        title="呼叫老师",
+        status=ConversationStatus.pending_teacher,
+        created_at=datetime(2026, 4, 21, 5, 7, 0),
+    )
+    broadcast_mock = AsyncMock()
+    send_to_user_mock = AsyncMock()
+    centrifugo_mock = AsyncMock()
+
+    monkeypatch.setattr(
+        "app.routers.actions.manager.broadcast_to_college_teachers",
+        broadcast_mock,
+    )
+    monkeypatch.setattr("app.routers.actions.manager.send_to_user", send_to_user_mock)
+    monkeypatch.setattr("app.routers.actions.centrifugo.broadcast", centrifugo_mock)
 
     await _notify_college_teachers(db, conv, student)
 
     db.execute.assert_awaited_once()
-    statement = db.execute.await_args.args[0]
-    _assert_notify_filters(statement, college_id=student.college_id)
+    _assert_admin_fallback_filters(db.statements[0])
     broadcast_mock.assert_not_awaited()
+    centrifugo_mock.assert_awaited_once()
+    assert centrifugo_mock.await_args.args[0] == ["user#6101", "user#6102"]
+    payload = centrifugo_mock.await_args.args[1]
+    assert payload == {
+        "type": "escalation_notify",
+        "data": {
+            "conv_id": conv.id,
+            "student_id": conv.student_id,
+            "student_college_id": None,
+            "title": conv.title,
+            "status": conv.status.value,
+            "created_at": conv.created_at.isoformat(),
+            "notification_scope": "admin_fallback",
+            "fallback_reason": "student_without_college",
+        },
+    }
+    assert send_to_user_mock.await_count == 2
 
 
 @pytest.mark.asyncio

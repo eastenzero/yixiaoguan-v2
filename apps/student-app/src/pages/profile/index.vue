@@ -2,11 +2,11 @@
   <view class="profile-page">
     <view class="top-bar">
       <view class="top-action" @click="goHome">
-        <text class="material-symbols-outlined top-icon">arrow_back</text>
+        <AppIcon name="arrow_back" class="top-icon" />
       </view>
       <text class="top-title">我的</text>
       <view class="top-action" @click="goChatHistory">
-        <text class="material-symbols-outlined top-icon">notifications</text>
+        <AppIcon name="notifications" class="top-icon" />
         <view class="notify-dot" />
       </view>
     </view>
@@ -25,7 +25,7 @@
               <text class="avatar-initial">{{ avatarInitial }}</text>
             </view>
             <view class="verified-badge">
-              <text class="material-symbols-outlined verified-icon">verified</text>
+              <AppIcon name="verified" class="verified-icon" />
             </view>
           </view>
           <view class="hero-copy">
@@ -43,14 +43,14 @@
       <view class="stats-grid">
         <view class="stat-card" @click="goChatHistory">
           <view class="stat-icon-wrap primary-soft">
-            <text class="material-symbols-outlined stat-icon primary-icon">forum</text>
+            <AppIcon name="forum" class="stat-icon primary-icon" />
           </view>
           <text class="stat-value">{{ conversationCount }}</text>
           <text class="stat-label">咨询记录</text>
         </view>
         <view class="stat-card" @click="goChatHistory">
           <view class="stat-icon-wrap secondary-soft">
-            <text class="material-symbols-outlined stat-icon secondary-icon">mark_chat_read</text>
+            <AppIcon name="mark_chat_read" class="stat-icon secondary-icon" />
           </view>
           <text class="stat-value">{{ totalUnread }}</text>
           <text class="stat-label">未读消息</text>
@@ -61,14 +61,14 @@
         <view class="ai-card" @click="goChat">
           <view class="ai-head">
             <view class="ai-icon-wrap">
-              <text class="material-symbols-outlined ai-icon">smart_toy</text>
+              <AppIcon name="smart_toy" class="ai-icon" />
             </view>
             <text class="card-title">AI 智慧助手</text>
           </view>
           <text class="ai-preview">校园事务、办事流程、政策查询…有问题随时问我。</text>
           <view class="ai-action">
             <text class="ai-action-text">开始咨询</text>
-            <text class="material-symbols-outlined ai-action-icon">arrow_forward</text>
+            <AppIcon name="arrow_forward" class="ai-action-icon" />
           </view>
         </view>
       </view>
@@ -82,11 +82,11 @@
         >
           <view class="settings-left">
             <view class="settings-icon-wrap">
-              <text class="material-symbols-outlined settings-icon">{{ item.icon }}</text>
+              <AppIcon :name="item.icon" class="settings-icon" />
             </view>
             <text class="settings-label">{{ item.label }}</text>
           </view>
-          <text class="material-symbols-outlined chevron-icon">chevron_right</text>
+          <AppIcon name="chevron_right" class="chevron-icon" />
         </view>
       </view>
 
@@ -99,11 +99,11 @@
         >
           <view class="settings-left">
             <view class="settings-icon-wrap">
-              <text class="material-symbols-outlined settings-icon">{{ item.icon }}</text>
+              <AppIcon :name="item.icon" class="settings-icon" />
             </view>
             <text class="settings-label">{{ item.label }}</text>
           </view>
-          <text class="material-symbols-outlined chevron-icon">chevron_right</text>
+          <AppIcon name="chevron_right" class="chevron-icon" />
         </view>
       </view>
 
@@ -123,6 +123,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
@@ -250,8 +251,8 @@ async function handleLogout() {
 .top-bar {
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
+  left: var(--student-fixed-left, 0);
+  right: var(--student-fixed-right, 0);
   z-index: 50;
   display: flex;
   align-items: center;

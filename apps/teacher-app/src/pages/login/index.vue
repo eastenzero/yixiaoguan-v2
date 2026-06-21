@@ -32,6 +32,7 @@
                 class="input-field"
                 type="text"
                 placeholder="请输入教师工号"
+                placeholder-style="color: rgba(93, 91, 95, 0.5);"
               />
             </view>
           </view>
@@ -48,6 +49,7 @@
                 class="input-field"
                 :type="showPassword ? 'text' : 'password'"
                 placeholder="请输入登录密码"
+                placeholder-style="color: rgba(93, 91, 95, 0.5);"
               />
               <view class="input-action" @click="togglePasswordVisibility">
                 <IconEye :size="20" :color="onSurfaceVariantColor" />
@@ -65,6 +67,7 @@
                   class="input-field"
                   type="text"
                   placeholder="请输入验证码"
+                  placeholder-style="color: rgba(93, 91, 95, 0.5);"
                 />
               </view>
               <image 
@@ -132,9 +135,16 @@ const wsStore = useWsStore()
 const username = ref('')
 const password = ref('')
 const captchaEnabled = ref(false) // v2 无验证码
+const captchaCode = ref('')
+const captchaImg = ref('')
 const loading = ref(false)
 const rememberMe = ref(true)
 const showPassword = ref(false)
+
+const refreshCaptcha = () => {
+  captchaCode.value = ''
+  captchaImg.value = ''
+}
 
 // 切换密码可见性
 const togglePasswordVisibility = () => {
@@ -344,10 +354,6 @@ const handleForgotPassword = () => {
   font-family: $font-body;
   font-size: 15px;
   color: $on-surface;
-  
-  &::placeholder {
-    color: rgba($on-surface-variant, 0.5);
-  }
 }
 
 // 验证码区域

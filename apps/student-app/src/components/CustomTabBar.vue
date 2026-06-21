@@ -6,13 +6,14 @@
       :class="['tab-item', { active: current === tab.key }]"
       @click="switchTab(tab)"
     >
-      <text :class="['material-symbols-outlined', 'tab-icon', { active: current === tab.key }]">{{ tab.icon }}</text>
+      <AppIcon :name="tab.icon" :class="['tab-icon', { active: current === tab.key }]" />
       <text :class="['tab-label', { active: current === tab.key }]">{{ tab.label }}</text>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 defineProps<{ current: string }>()
 
 const tabs = [
@@ -36,8 +37,8 @@ function switchTab(tab: { path: string; key: string }) {
 .tab-bar {
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: var(--student-fixed-left, 0);
+  right: var(--student-fixed-right, 0);
   z-index: 50;
   box-sizing: border-box;
   height: var(--tabbar-safe);                         // 76px + safe-area

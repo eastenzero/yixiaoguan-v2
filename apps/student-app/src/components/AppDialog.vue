@@ -2,10 +2,7 @@
   <view v-if="dialog.state.visible" class="dialog-overlay" @click="dialog.close(false)">
     <view class="dialog-card" @click.stop>
       <view v-if="dialog.state.icon" class="dialog-icon-wrap">
-        <text
-          class="material-symbols-outlined dialog-icon"
-          :style="dialog.state.iconFill ? `font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24` : ''"
-        >{{ dialog.state.icon }}</text>
+        <AppIcon :name="dialog.state.icon" class="dialog-icon" />
       </view>
 
       <text class="dialog-title">{{ dialog.state.title }}</text>
@@ -32,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { useDialog } from '@/composables/useDialog'
 
 const dialog = useDialog()
@@ -42,7 +40,10 @@ const dialog = useDialog()
 
 .dialog-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: var(--student-fixed-right, 0);
+  bottom: 0;
+  left: var(--student-fixed-left, 0);
   z-index: $z-modal;
   background: rgba(0, 0, 0, 0.32);
   display: flex;

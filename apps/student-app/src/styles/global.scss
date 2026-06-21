@@ -3,7 +3,16 @@
 // 两端共用动画 (animate-fade-up), 阶梯延迟, 工具类 (no-scrollbar, line-clamp-*)
 
 // ── 基础 Reset ──
-* {
+page,
+view,
+text,
+scroll-view,
+swiper,
+swiper-item,
+image,
+input,
+textarea,
+button {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -33,6 +42,7 @@
 }
 
 // ── 工具类 ──
+/* #ifdef H5 */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -40,6 +50,7 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+/* #endif */
 
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom);

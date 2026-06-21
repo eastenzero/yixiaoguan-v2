@@ -4,11 +4,11 @@
     <view class="custom-app-bar">
       <view class="app-bar-content">
         <view class="app-bar-left">
-          <text class="material-symbols-outlined app-bar-icon app-bar-icon--primary">dashboard</text>
+          <AppIcon name="dashboard" class="app-bar-icon app-bar-icon--primary" />
           <text class="app-bar-title">工作台</text>
         </view>
         <view class="app-bar-right" @click="handleNotification">
-          <text class="material-symbols-outlined app-bar-icon">notifications</text>
+          <AppIcon name="notifications" class="app-bar-icon" />
           <view class="notification-dot"></view>
         </view>
       </view>
@@ -33,19 +33,19 @@
         <scroll-view scroll-x class="quick-actions-scroll" show-scrollbar="false">
           <view class="quick-actions-content">
             <view class="quick-action-btn" @click="handleQuickAction('knowledge')">
-              <text class="material-symbols-outlined quick-action-icon">add_circle</text>
+              <AppIcon name="add_circle" class="quick-action-icon" />
               <text class="quick-action-text">新建知识</text>
             </view>
             <view class="quick-action-btn" @click="handleQuickAction('notice')">
-              <text class="material-symbols-outlined quick-action-icon">campaign</text>
+              <AppIcon name="campaign" class="quick-action-icon" />
               <text class="quick-action-text">发布通知</text>
             </view>
             <view class="quick-action-btn" @click="handleQuickAction('report')">
-              <text class="material-symbols-outlined quick-action-icon">analytics</text>
+              <AppIcon name="analytics" class="quick-action-icon" />
               <text class="quick-action-text">数据报告</text>
             </view>
             <view class="quick-action-btn" @click="handleQuickAction('settings')">
-              <text class="material-symbols-outlined quick-action-icon">settings</text>
+              <AppIcon name="settings" class="quick-action-icon" />
               <text class="quick-action-text">系统设置</text>
             </view>
           </view>
@@ -56,28 +56,28 @@
       <view class="stats-grid animate-fade-up delay-2">
         <view class="stat-card stat-card-1">
           <view class="stat-header">
-            <text class="material-symbols-outlined stat-icon stat-icon--primary">dashboard</text>
+            <AppIcon name="dashboard" class="stat-icon stat-icon--primary" />
             <text class="stat-number">{{ stats.todayQuestions }}</text>
           </view>
           <text class="stat-label">今日提问</text>
         </view>
         <view class="stat-card stat-card-2">
           <view class="stat-header">
-            <text class="material-symbols-outlined stat-icon stat-icon--danger">priority_high</text>
+            <AppIcon name="priority_high" class="stat-icon stat-icon--danger" />
             <text class="stat-number">{{ pendingCount }}</text>
           </view>
           <text class="stat-label">待处理</text>
         </view>
         <view class="stat-card stat-card-3">
           <view class="stat-header">
-            <text class="material-symbols-outlined stat-icon stat-icon--success">menu_book</text>
+            <AppIcon name="menu_book" class="stat-icon stat-icon--success" />
             <text class="stat-number">{{ stats.knowledgeCount }}</text>
           </view>
           <text class="stat-label">知识条目</text>
         </view>
         <view class="stat-card stat-card-4">
           <view class="stat-header">
-            <text class="material-symbols-outlined stat-icon stat-icon--warning">task_alt</text>
+            <AppIcon name="task_alt" class="stat-icon stat-icon--warning" />
             <text class="stat-number">{{ stats.todayApprovals }}</text>
           </view>
           <text class="stat-label">今日审批</text>
@@ -123,7 +123,7 @@
                 <view class="status-dot" :class="question.status"></view>
                 <text class="status-text" :class="question.status">{{ getStatusText(question.status) }}</text>
               </view>
-              <text class="material-symbols-outlined card-arrow">arrow_forward</text>
+              <AppIcon name="arrow_forward" class="card-arrow" />
             </view>
           </view>
         </view>
@@ -136,11 +136,11 @@
         </view>
         <view class="admin-grid">
           <view class="admin-card" @click="goAdminUsers">
-            <text class="material-symbols-outlined admin-card-icon">group</text>
+            <AppIcon name="group" class="admin-card-icon" />
             <text class="admin-card-label">用户管理</text>
           </view>
           <view class="admin-card" @click="goAdminImport">
-            <text class="material-symbols-outlined admin-card-icon">person_add</text>
+            <AppIcon name="person_add" class="admin-card-icon" />
             <text class="admin-card-label">批量导入</text>
           </view>
         </view>
@@ -161,6 +161,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
@@ -354,21 +355,6 @@ onUnmounted(() => {
   gap: 12px;
 }
 
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-flex;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
-  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-}
 
 .app-bar-icon {
   font-size: 24px;

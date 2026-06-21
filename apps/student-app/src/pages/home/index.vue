@@ -5,7 +5,7 @@
       <text class="brand-logo">医小管</text>
       <view class="top-actions">
         <view class="notif-btn" @click="goHistory">
-          <text class="material-symbols-outlined notif-icon">notifications</text>
+          <AppIcon name="notifications" class="notif-icon" />
           <view v-if="totalUnread > 0" class="notif-dot" />
         </view>
       </view>
@@ -21,9 +21,9 @@
       <!-- 2. AI Search Pill (No-Line; relies on ivory→white tonal shift) -->
       <view class="search-pill animate-fade-up delay-2" @click="goChat()">
         <view class="search-icon-box">
-          <text class="material-symbols-outlined search-icon">auto_awesome</text>
+          <AppIcon name="auto_awesome" class="search-icon" />
         </view>
-        <input class="search-input" placeholder="有什么可以帮你的？" disabled />
+        <input class="search-input" placeholder="有什么可以帮你的？" placeholder-style="color: #78767b;" disabled />
         <view class="search-action">
           <text class="search-action-text">提问</text>
         </view>
@@ -44,14 +44,14 @@
         <view class="bento-large" @click="goChat()">
           <view class="bento-large-top">
             <view class="bento-large-icon-wrap">
-              <text class="material-symbols-outlined bento-large-icon">auto_awesome</text>
+              <AppIcon name="auto_awesome" class="bento-large-icon" />
             </view>
             <text class="bento-large-title">AI 智能助手</text>
             <text class="bento-large-desc">您的全天候校园百科全书</text>
           </view>
           <view class="bento-large-action">
             <text class="bento-large-action-text">立即开启</text>
-            <text class="material-symbols-outlined bento-large-action-icon">arrow_forward</text>
+            <AppIcon name="arrow_forward" class="bento-large-action-icon" />
           </view>
           <view class="glow glow-secondary" />
           <view class="glow glow-corner" />
@@ -60,7 +60,7 @@
         <!-- Small 1: Chat History (tertiary tint) -->
         <view class="bento-small" @click="onBentoClick(bentoItems[1])">
           <view class="icon-wrap icon-wrap-tertiary">
-            <text class="material-symbols-outlined icon-tertiary">history</text>
+            <AppIcon name="history" class="icon-tertiary" />
           </view>
           <view class="bento-small-body">
             <text class="bento-small-title">对话历史</text>
@@ -71,7 +71,7 @@
         <!-- Small 2: Campus Services (primary tint) -->
         <view class="bento-small" @click="onBentoClick(bentoItems[2])">
           <view class="icon-wrap icon-wrap-primary">
-            <text class="material-symbols-outlined icon-primary">grid_view</text>
+            <AppIcon name="grid_view" class="icon-primary" />
           </view>
           <view class="bento-small-body">
             <text class="bento-small-title">校园服务</text>
@@ -94,11 +94,11 @@
             @click="onServiceClick(svc)"
           >
             <view class="service-row-left">
-              <text class="material-symbols-outlined service-icon">{{ svc.icon }}</text>
+              <AppIcon :name="svc.icon" class="service-icon" />
               <text class="service-label">{{ svc.label }}</text>
             </view>
-            <text v-if="svc.url" class="material-symbols-outlined service-external">open_in_new</text>
-            <text v-else class="material-symbols-outlined service-arrow">chevron_right</text>
+            <AppIcon v-if="svc.url" name="open_in_new" class="service-external" />
+            <AppIcon v-else name="chevron_right" class="service-arrow" />
           </view>
         </view>
       </view>
@@ -117,13 +117,13 @@
             @click="goConversation(conv.id)"
           >
             <view class="service-row-left">
-              <text class="material-symbols-outlined service-icon">{{ getConvIcon(conv.status) }}</text>
+              <AppIcon :name="getConvIcon(conv.status)" class="service-icon" />
               <view class="conv-info">
                 <text class="service-label">{{ conv.title || '未命名对话' }}</text>
                 <text class="conv-status">{{ getStatusLabel(conv.status) }}</text>
               </view>
             </view>
-            <text class="material-symbols-outlined service-arrow">chevron_right</text>
+            <AppIcon name="chevron_right" class="service-arrow" />
           </view>
         </view>
       </view>
@@ -132,11 +132,11 @@
       <view v-if="totalUnread > 0" class="notice-banner animate-fade-up delay-6" @click="goHistory">
         <view class="notice-left">
           <view class="notice-icon-wrap">
-            <text class="material-symbols-outlined notice-icon">campaign</text>
+            <AppIcon name="campaign" class="notice-icon" />
           </view>
           <text class="notice-text">你有 {{ totalUnread }} 条未读消息</text>
         </view>
-        <text class="material-symbols-outlined notice-arrow">arrow_forward</text>
+        <AppIcon name="arrow_forward" class="notice-arrow" />
       </view>
     </view>
 
@@ -153,6 +153,7 @@ import { getUnreadSummary } from '@/api/notification'
 import { listConversations } from '@/api/chat'
 import { openExternal } from '@/composables/useServiceNavigation'
 import CustomTabBar from '@/components/CustomTabBar.vue'
+import AppIcon from '@/components/AppIcon.vue'
 import { trackEvent } from '@/utils/track'
 import type { ConversationResponse } from '@/types/chat'
 
@@ -199,12 +200,21 @@ const services = ref([
 ])
 
 onShow(() => {
+  trackEvent('page_view', { path: '/pages/home/index' })
+  if (!userStore.isLoggedIn) {
+    totalUnread.value = 0
+    recentConversations.value = []
+    return
+  }
   refreshUnreadSummary()
   loadRecentConversations()
-  trackEvent('page_view', { path: '/pages/home/index' })
 })
 
 async function refreshUnreadSummary() {
+  if (!userStore.isLoggedIn) {
+    totalUnread.value = 0
+    return
+  }
   try {
     const response = await getUnreadSummary()
     totalUnread.value = response.total_unread || 0
@@ -249,6 +259,10 @@ function onServiceClick(svc: { id: string; label: string; icon: string; url?: st
 }
 
 async function loadRecentConversations() {
+  if (!userStore.isLoggedIn) {
+    recentConversations.value = []
+    return
+  }
   try {
     const res = await listConversations(1, 3)
     recentConversations.value = res.items || []
@@ -315,8 +329,8 @@ function showToastSoon() {
 .top-app-bar {
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
+  left: var(--student-fixed-left, 0);
+  right: var(--student-fixed-right, 0);
   z-index: 50;
   display: flex;
   align-items: center;
@@ -444,9 +458,7 @@ function showToastSoon() {
   color: $on-surface-variant;
   padding: 0 $space-4;
 
-  &::placeholder {
-    color: $outline;
-  }
+
 }
 
 .search-action {
@@ -473,10 +485,12 @@ function showToastSoon() {
   padding: 0 $space-6;
   white-space: nowrap;
 
+  /* #ifdef H5 */
   &::-webkit-scrollbar,
   :deep(::-webkit-scrollbar) {
     display: none;
   }
+  /* #endif */
 }
 
 .tag-list {

@@ -14,6 +14,11 @@ from app.schemas.chat import ChatSendRequest, ChatSendResponse
 from app.schemas.conversation import SendMessageRequest
 
 
+@pytest.fixture(autouse=True)
+def _disable_limiter(monkeypatch):
+    monkeypatch.setattr("app.routers.chat.limiter.enabled", False)
+
+
 def _build_student(*, user_id: int, staff_id: str) -> User:
     return User(
         id=user_id,
@@ -103,6 +108,7 @@ async def test_chat_send_ai_serving_streams_dify(monkeypatch):
     )
 
     response = await chat_send(
+        None,
         ChatSendRequest(conv_id=conv.id, content=student_msg.content),
         db=db,
         current_user=student,
@@ -155,6 +161,7 @@ async def test_chat_send_non_ai_states_return_json_and_skip_dify(monkeypatch, st
     monkeypatch.setattr("app.routers.chat.dify_client.chat_stream", fail_chat_stream)
 
     result = await chat_send(
+        None,
         ChatSendRequest(conv_id=conv.id, content=student_msg.content),
         db=db,
         current_user=student,
@@ -225,6 +232,7 @@ async def test_chat_send_resolved_reactivates_before_streaming_ai(monkeypatch):
     )
 
     response = await chat_send(
+        None,
         ChatSendRequest(conv_id=conv.id, content=student_msg.content),
         db=db,
         current_user=student,

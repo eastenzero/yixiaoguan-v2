@@ -2,7 +2,7 @@
   <view class="invite-card">
     <view class="invite-header">
       <view class="invite-icon-wrap">
-        <text class="material-symbols-outlined invite-icon">help</text>
+        <AppIcon name="help" class="invite-icon" />
       </view>
       <text class="invite-title">这次回答没帮到你？告诉我们一些信息，让医小管做得更好</text>
     </view>
@@ -13,7 +13,7 @@
     <picker mode="selector" :range="pickerOptions" range-key="label" @change="onCollegePick">
       <view class="picker-display" :class="{ placeholder: !selectedCollegeName }">
         <text>{{ selectedCollegeName || '请选择（可选）' }}</text>
-        <text class="material-symbols-outlined picker-icon">expand_more</text>
+        <AppIcon name="expand_more" class="picker-icon" />
       </view>
     </picker>
 
@@ -65,6 +65,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { computed, onMounted, ref } from 'vue'
 import { listColleges, type CollegeOption } from '@/api/college'
 import { submitUnansweredFeedback } from '@/api/feedback'

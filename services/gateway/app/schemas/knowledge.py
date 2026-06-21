@@ -22,6 +22,7 @@ class UnansweredTopResponse(BaseModel):
 class CreateKnowledgeDraftRequest(BaseModel):
     unanswered_question_id: int
     raw_answer: str
+    confirmed_content: str | None = None
     scope: Literal["class", "college", "global"] = "college"
     scope_value: int | None = None
 
@@ -32,6 +33,61 @@ class CreateKnowledgeDraftRequest(BaseModel):
         if not normalized:
             raise ValueError("答复内容不能为空")
         return normalized
+
+    @field_validator("confirmed_content")
+    @classmethod
+    def validate_confirmed_content(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("确认发布内容不能为空")
+        return normalized
+
+
+class KnowledgeDraftPreviewResponse(BaseModel):
+    unanswered_question_id: int
+    title: str
+    content: str
+    raw_content: str
+    scope: str
+    scope_value: int | None = None
+    scope_label: str
+    representative_query: str
+    college_id: int | None = None
+    publish_mode: Literal["requires_confirmation"] = "requires_confirmation"
+
+
+class KnowledgeBaseEntryResponse(BaseModel):
+    id: int
+    title: str
+    content: str
+    raw_content: str | None = None
+    scope: Literal["college", "global"] = "global"
+    scope_value: int | None = None
+    representative_query: str
+    status: Literal["published"] = "published"
+    college_id: int | None = None
+    submitted_by: int = 0
+    reject_reason: str | None = None
+    dify_document_id: str
+    dify_dataset_id: str
+    source_type: Literal["kb_entry"] = "kb_entry"
+    category: str | None = None
+    tags: list[str] | None = None
+    original_source: str | None = None
+    source_url: str | None = None
+    material_id: str | None = None
+    campus: str | None = None
+    original_filename: str | None = None
+    created_at: datetime
+    published_at: datetime | None = None
+    reviewed_at: datetime | None = None
+
+
+class KnowledgeBaseEntriesResponse(BaseModel):
+    items: list[KnowledgeBaseEntryResponse]
+    total: int
 
 
 class KnowledgeDraftEntryResponse(BaseModel):

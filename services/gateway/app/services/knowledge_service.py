@@ -90,6 +90,25 @@ async def polish_knowledge_content(*, question: str, raw_answer: str, scope_labe
         )
 
 
+async def _load_unanswered_question(
+    db: AsyncSession,
+    current_user: User,
+    *,
+    unanswered_question_id: int,
+) -> UnansweredQuestion:
+    result = await db.execute(
+        select(UnansweredQuestion).where(UnansweredQuestion.id == unanswered_question_id)
+    )
+    unanswered = result.scalar_one_or_none()
+    if not unanswered:
+        raise HTTPException(status_code=404, detail="待补问题不存在")
+
+    if current_user.role == UserRole.teacher and unanswered.college_id not in {None, current_user.college_id}:
+        raise HTTPException(status_code=403, detail="不能处理其他学院的待补问题")
+
+    return unanswered
+
+
 async def _resolve_dataset_id(db: AsyncSession, *, scope: KnowledgeScope, scope_value: int | None, user: User) -> str:
     if scope == KnowledgeScope.global_:
         if not settings.dify_global_dataset_id:
@@ -177,52 +196,6 @@ async def list_pending_reviews(
     result = await db.execute(stmt)
     items = list(result.scalars().all())
     return items, len(items)
-
-
-async def list_knowledge_entries(
-    db: AsyncSession,
-    current_user: User,
-    *,
-    title: str | None = None,
-    page_num: int = 1,
-    page_size: int = 20,
-) -> tuple[list[KbSuggestion], int]:
-    """
-    "我的知识" 列表。
-    - 非 admin：仅返回 submitted_by = current_user.id 的条目（所有状态都可见，
-      包含 draft / pending / approved / rejected，便于教师看到审核进度）
-    - admin：返回全部条目（便于审计 / 演示时一眼看到全库）
-
-    支持 title LIKE 模糊搜索 + 分页。
-    按 created_at DESC + id DESC 排序（最新在前）。
-    """
-    if current_user.role not in {UserRole.teacher, UserRole.admin}:
-        raise HTTPException(status_code=403, detail="仅教师或管理员可查看知识条目")
-
-    base = select(KbSuggestion)
-    if current_user.role != UserRole.admin:
-        base = base.where(KbSuggestion.submitted_by == current_user.id)
-    if title:
-        base = base.where(KbSuggestion.title.ilike(f"%{title.strip()}%"))
-
-    # total count (on filtered base)
-    count_stmt = select(func.count()).select_from(base.subquery())
-    count_result = await db.execute(count_stmt)
-    total = int(count_result.scalar() or 0)
-
-    # paginated items
-    normalized_page = max(1, page_num)
-    normalized_size = max(1, min(page_size, 100))
-    offset = (normalized_page - 1) * normalized_size
-    stmt = (
-        base
-        .order_by(desc(KbSuggestion.created_at), desc(KbSuggestion.id))
-        .limit(normalized_size)
-        .offset(offset)
-    )
-    result = await db.execute(stmt)
-    items = list(result.scalars().all())
-    return items, total
 
 
 async def _publish_suggestion_to_dify(db: AsyncSession, entry: KbSuggestion) -> str:
@@ -316,12 +289,221 @@ async def reject_pending_review(
     return entry
 
 
+async def create_knowledge_draft_preview(
+    db: AsyncSession,
+    *,
+    current_user: User,
+    unanswered_question_id: int,
+    raw_answer: str,
+    scope: str,
+    scope_value: int | None,
+) -> dict:
+    scope_enum = _normalize_scope(scope)
+    college_id, normalized_scope_value = _validate_scope(
+        current_user,
+        scope=scope_enum,
+        scope_value=scope_value,
+    )
+    unanswered = await _load_unanswered_question(
+        db,
+        current_user,
+        unanswered_question_id=unanswered_question_id,
+    )
+
+    scope_label = _scope_label(scope_enum, normalized_scope_value)
+    polished_content = await polish_knowledge_content(
+        question=unanswered.question_text,
+        raw_answer=raw_answer,
+        scope_label=scope_label,
+    )
+
+    return {
+        "unanswered_question_id": unanswered.id,
+        "title": unanswered.question_text[:255],
+        "content": polished_content,
+        "raw_content": raw_answer,
+        "scope": scope_enum.value,
+        "scope_value": normalized_scope_value,
+        "scope_label": scope_label,
+        "representative_query": unanswered.question_text,
+        "college_id": college_id,
+        "publish_mode": "requires_confirmation",
+    }
+
+
+def _build_kb_entry_content(entry: KbEntry) -> str:
+    lines: list[str] = []
+    if entry.category:
+        lines.append(f"分类：{entry.category}")
+    if entry.tags:
+        lines.append(f"标签：{' / '.join(entry.tags)}")
+    if entry.campus:
+        lines.append(f"校区：{entry.campus}")
+    if entry.original_source:
+        lines.append(f"来源：{entry.original_source}")
+    if entry.original_filename:
+        lines.append(f"原始文件：{entry.original_filename}")
+    if entry.material_id:
+        lines.append(f"素材编号：{entry.material_id}")
+    if entry.source_url:
+        lines.append(f"来源链接：{entry.source_url}")
+    lines.append(f"Dify 文档 ID：{entry.dify_document_id}")
+    return "\n".join(lines)
+
+
+def serialize_kb_entry(entry: KbEntry) -> dict:
+    scope = "global" if entry.dify_dataset_id == settings.dify_global_dataset_id else "college"
+    return {
+        "id": entry.id,
+        "title": entry.title,
+        "content": _build_kb_entry_content(entry),
+        "raw_content": None,
+        "scope": scope,
+        "scope_value": None,
+        "representative_query": entry.original_source or entry.category or entry.original_filename or "真实知识库条目",
+        "status": "published",
+        "college_id": None,
+        "submitted_by": 0,
+        "reject_reason": None,
+        "dify_document_id": entry.dify_document_id,
+        "dify_dataset_id": entry.dify_dataset_id,
+        "source_type": "kb_entry",
+        "category": entry.category,
+        "tags": entry.tags,
+        "original_source": entry.original_source,
+        "source_url": entry.source_url,
+        "material_id": entry.material_id,
+        "campus": entry.campus,
+        "original_filename": entry.original_filename,
+        "created_at": entry.created_at,
+        "published_at": entry.created_at,
+        "reviewed_at": None,
+    }
+
+
+async def _college_dataset_id(db: AsyncSession, college_id: int) -> str | None:
+    result = await db.execute(
+        select(CollegeDataset.dify_dataset_id).where(CollegeDataset.college_id == college_id)
+    )
+    return result.scalar_one_or_none()
+
+
+async def _visible_kb_dataset_ids(db: AsyncSession, current_user: User) -> set[str] | None:
+    if current_user.role == UserRole.admin:
+        return None
+    if current_user.role != UserRole.teacher:
+        raise HTTPException(status_code=403, detail="仅教师或管理员可查看知识库")
+
+    dataset_ids: set[str] = set()
+    if settings.dify_global_dataset_id:
+        dataset_ids.add(settings.dify_global_dataset_id)
+    if current_user.college_id is not None:
+        college_dataset_id = await _college_dataset_id(db, current_user.college_id)
+        if college_dataset_id:
+            dataset_ids.add(college_dataset_id)
+    return dataset_ids
+
+
+async def list_knowledge_entries(
+    db: AsyncSession,
+    current_user: User,
+    *,
+    title: str | None,
+    category: str | None,
+    campus: str | None,
+    source: str | None,
+    college_id: int | None,
+    page_num: int,
+    page_size: int,
+) -> tuple[list[KbEntry], int]:
+    visible_dataset_ids = await _visible_kb_dataset_ids(db, current_user)
+    filters = []
+    if visible_dataset_ids is not None:
+        if not visible_dataset_ids:
+            return [], 0
+        filters.append(KbEntry.dify_dataset_id.in_(visible_dataset_ids))
+
+    if college_id is not None:
+        target_dataset_id = await _college_dataset_id(db, college_id)
+        if not target_dataset_id:
+            return [], 0
+        if visible_dataset_ids is not None and target_dataset_id not in visible_dataset_ids:
+            return [], 0
+        filters.append(KbEntry.dify_dataset_id == target_dataset_id)
+
+    keyword = (title or "").strip()
+    if keyword:
+        pattern = f"%{keyword}%"
+        filters.append(
+            or_(
+                KbEntry.title.ilike(pattern),
+                KbEntry.category.ilike(pattern),
+                KbEntry.original_source.ilike(pattern),
+                KbEntry.source_url.ilike(pattern),
+                KbEntry.material_id.ilike(pattern),
+                KbEntry.original_filename.ilike(pattern),
+            )
+        )
+    category_keyword = (category or "").strip()
+    if category_keyword:
+        filters.append(KbEntry.category.ilike(f"%{category_keyword}%"))
+    campus_keyword = (campus or "").strip()
+    if campus_keyword:
+        filters.append(KbEntry.campus.ilike(f"%{campus_keyword}%"))
+    source_keyword = (source or "").strip()
+    if source_keyword:
+        source_pattern = f"%{source_keyword}%"
+        filters.append(
+            or_(
+                KbEntry.original_source.ilike(source_pattern),
+                KbEntry.source_url.ilike(source_pattern),
+                KbEntry.original_filename.ilike(source_pattern),
+                KbEntry.material_id.ilike(source_pattern),
+            )
+        )
+
+    count_stmt = select(func.count()).select_from(KbEntry)
+    stmt = select(KbEntry)
+    if filters:
+        count_stmt = count_stmt.where(*filters)
+        stmt = stmt.where(*filters)
+
+    total_result = await db.execute(count_stmt)
+    total = int(total_result.scalar_one() or 0)
+    if total == 0:
+        return [], 0
+
+    offset = (page_num - 1) * page_size
+    result = await db.execute(
+        stmt.order_by(desc(KbEntry.created_at), desc(KbEntry.id)).offset(offset).limit(page_size)
+    )
+    return list(result.scalars().all()), total
+
+
+async def get_knowledge_entry(
+    db: AsyncSession,
+    current_user: User,
+    *,
+    entry_id: int,
+) -> KbEntry:
+    result = await db.execute(select(KbEntry).where(KbEntry.id == entry_id))
+    entry = result.scalar_one_or_none()
+    if not entry:
+        raise HTTPException(status_code=404, detail="知识条目不存在")
+
+    visible_dataset_ids = await _visible_kb_dataset_ids(db, current_user)
+    if visible_dataset_ids is not None and entry.dify_dataset_id not in visible_dataset_ids:
+        raise HTTPException(status_code=404, detail="知识条目不存在")
+    return entry
+
+
 async def create_knowledge_draft(
     db: AsyncSession,
     *,
     current_user: User,
     unanswered_question_id: int,
     raw_answer: str,
+    confirmed_content: str | None = None,
     scope: str,
     scope_value: int | None,
 ) -> tuple[KbSuggestion, str]:
@@ -332,22 +514,18 @@ async def create_knowledge_draft(
         scope_value=scope_value,
     )
 
-    result = await db.execute(
-        select(UnansweredQuestion).where(UnansweredQuestion.id == unanswered_question_id)
+    unanswered = await _load_unanswered_question(
+        db,
+        current_user,
+        unanswered_question_id=unanswered_question_id,
     )
-    unanswered = result.scalar_one_or_none()
-    if not unanswered:
-        raise HTTPException(status_code=404, detail="待补问题不存在")
 
-    if current_user.role == UserRole.teacher and unanswered.college_id not in {None, current_user.college_id}:
-        raise HTTPException(status_code=403, detail="不能处理其他学院的待补问题")
+    if confirmed_content is None:
+        raise HTTPException(status_code=400, detail="请先生成润色预览并确认发布内容")
 
-    scope_label = _scope_label(scope_enum, normalized_scope_value)
-    polished_content = await polish_knowledge_content(
-        question=unanswered.question_text,
-        raw_answer=raw_answer,
-        scope_label=scope_label,
-    )
+    polished_content = confirmed_content.strip()
+    if not polished_content:
+        raise HTTPException(status_code=400, detail="确认发布内容不能为空")
     title = unanswered.question_text[:255]
     suggestion = KbSuggestion(
         title=title,

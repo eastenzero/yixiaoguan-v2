@@ -5,7 +5,7 @@
 
       <view class="drawer-header">
         <text class="drawer-title">意见反馈</text>
-        <text class="material-symbols-outlined drawer-close" @click="onClose">close</text>
+        <AppIcon name="close" class="drawer-close" @click="onClose" />
       </view>
 
       <text class="drawer-desc">遇到问题、有建议或想吐槽，都可以告诉我们。我们会认真看每一条。</text>
@@ -36,6 +36,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { computed, ref, watch } from 'vue'
 import { submitGeneralFeedback } from '@/api/feedback'
 import { getDeviceId } from '@/utils/device'
@@ -100,7 +101,10 @@ async function onSubmit() {
 
 .drawer-mask {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: var(--student-fixed-right, 0);
+  bottom: 0;
+  left: var(--student-fixed-left, 0);
   z-index: $z-modal;
   background: rgba(0, 0, 0, 0.32);
   display: flex;

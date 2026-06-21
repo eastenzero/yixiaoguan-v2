@@ -1,3 +1,5 @@
+import { REQUEST_TIMEOUT_MS, toApiUrl } from '@/utils/runtime'
+
 interface TrackEvent {
   event: string
   props?: Record<string, any>
@@ -42,8 +44,9 @@ async function flush(): Promise<void> {
   try {
     await new Promise<void>((resolve) => {
       uni.request({
-        url: '/api/track',
+        url: toApiUrl('/api/track'),
         method: 'POST',
+        timeout: REQUEST_TIMEOUT_MS,
         header: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,

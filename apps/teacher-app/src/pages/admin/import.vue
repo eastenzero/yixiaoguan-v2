@@ -3,7 +3,7 @@
     <view class="custom-app-bar">
       <view class="app-bar-content">
         <view class="app-bar-left" @click="handleBack">
-          <text class="material-symbols-outlined app-bar-icon">arrow_back</text>
+          <AppIcon name="arrow_back" class="app-bar-icon" />
           <text class="app-bar-title">批量导入用户</text>
         </view>
       </view>
@@ -12,7 +12,7 @@
     <view class="main-content">
       <!-- 步骤提示 -->
       <view class="tips-card animate-fade-up">
-        <text class="material-symbols-outlined tips-icon">info</text>
+        <AppIcon name="info" class="tips-icon" />
         <view class="tips-content">
           <text class="tips-title">导入格式说明</text>
           <text class="tips-text">1. 请输入 JSON 格式的用户列表</text>
@@ -74,7 +74,7 @@
       </view>
 
       <view v-if="parseError" class="error-bar">
-        <text class="material-symbols-outlined error-icon">error</text>
+        <AppIcon name="error" class="error-icon" />
         <text class="error-text">{{ parseError }}</text>
       </view>
 
@@ -92,7 +92,7 @@
 
       <!-- 结果 -->
       <view v-if="result" class="result-card animate-fade-up">
-        <text class="material-symbols-outlined result-icon">check_circle</text>
+        <AppIcon name="check_circle" class="result-icon" />
         <text class="result-text">成功创建 {{ result.created }} 人，跳过 {{ result.skipped }} 人</text>
       </view>
     </view>
@@ -100,6 +100,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { ref, computed, watch } from 'vue'
 import { batchImport, type BatchImportResponse } from '@/api/admin'
 
