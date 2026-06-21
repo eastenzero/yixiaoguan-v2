@@ -1,0 +1,346 @@
+/* ════════════════════════════════════════════════════════════════
+ * 医小管 BI · 米色画报风格主题 (统一画报 + 大屏)
+ * 设计源:  纽约时报中文版 · 财新周刊 · 民国老画报 · 山一医校刊
+ * 体系:    米色 + 紫绛 + 朱红 + 冷金 + 思源宋体 + Inter
+ * 应用范围:
+ *   /bi/         (画报封面)
+ *   /bi/overview /content /voice /cost  (画报章节)
+ *   /bi/wall/    (画报头版式大屏)
+ * ════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.font.im/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=Inter:wght@200;300;400;500;600;700&display=swap');
+
+:root {
+  /* ── 主色板 (Editorial Purple) ── */
+  --jiang: #5B1F5B;
+  /* 紫绛 主色 */
+  --jiang-deep: #3A1340;
+  /* 深紫绛 标题 */
+  --jiang-soft: #8B5A8B;
+  /* 浅紫 hover/弱 */
+  --huangzi: #3A2059;
+  /* 皇室紫 辅色 */
+  --zhuhong: #A23130;
+  /* 朱红 强调 */
+  --zhuhong-soft: #C77575;
+  /* 浅朱 */
+  --cooljin: #A98B4F;
+  /* 冷金 装饰 */
+  --cooljin-soft: #D4B97D;
+  /* 浅金 */
+
+  /* ── 米色画布 (Ivory canvas) ── */
+  --xiangya: #F8F4EC;
+  /* 象牙白 主底 */
+  --yumi: #FBF8F1;
+  /* 玉米白 卡纸 (比底略亮) */
+  --mizhi: #F2EBDA;
+  /* 米脂 章节底 */
+  --shaomi: #ECE2CC;
+  /* 烧米 表格条纹 */
+
+  /* ── 文字 ── */
+  --mohei: #1F1A24;
+  /* 墨黑 正文 */
+  --hui: #6B6470;
+  /* 烟灰 次文字 */
+  --hui-soft: #9C9099;
+  /* 弱烟灰 三级文字 */
+
+  /* ── 装饰线 ── */
+  --line-gold: #C5A977;
+  /* 金色 hairline */
+  --line-thin: #D9CDB6;
+  /* 细米线 */
+  --line-strong: #B8A88B;
+  /* 强米线 */
+
+  /* ── 排版 token ── */
+  --serif: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --mono: 'IBM Plex Mono', 'SF Mono', 'Cascadia Mono', Consolas, monospace;
+}
+
+/* ════════════════════════════════════════════════════════════════
+ * 全局
+ * ════════════════════════════════════════════════════════════════ */
+body {
+  background: var(--xiangya) !important;
+  color: var(--mohei);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.markdown,
+.markdown p,
+.markdown li {
+  color: var(--mohei);
+  font-family: var(--sans);
+  line-height: 1.7;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4 {
+  font-family: var(--serif);
+  color: var(--jiang-deep);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+/* ════════════════════════════════════════════════════════════════
+ * 画报 Hero 区 (yxg-hero)
+ * ════════════════════════════════════════════════════════════════ */
+.yxg-hero {
+  padding: 4rem 0 2rem;
+  position: relative;
+  border-bottom: 1px solid var(--line-gold);
+  margin-bottom: 2.5rem;
+}
+
+.yxg-hero h1,
+.yxg-hero .yxg-headline {
+  font-family: var(--serif);
+  font-weight: 900;
+  font-size: clamp(2.5rem, 5vw, 4.6rem);
+  line-height: 1.05;
+  color: var(--jiang);
+  margin: 0 0 0.6rem;
+  letter-spacing: 0.005em;
+}
+
+.yxg-hero .yxg-eyebrow {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--cooljin);
+  font-weight: 500;
+  margin-bottom: 1.1rem;
+}
+
+.yxg-hero .yxg-sub {
+  font-family: var(--serif);
+  font-size: clamp(1.05rem, 1.4vw, 1.3rem);
+  color: var(--hui);
+  margin: 0.6rem 0 0.4rem;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.yxg-hero .yxg-meta {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--cooljin);
+  letter-spacing: 0.08em;
+  margin-top: 0.8rem;
+}
+
+.yxg-hero .yxg-meta strong {
+  color: var(--jiang);
+  font-weight: 600;
+}
+
+/* ════════════════════════════════════════════════════════════════
+ * 章节分隔 (§ 金线)
+ * ════════════════════════════════════════════════════════════════ */
+.yxg-divider {
+  border: none;
+  border-top: 1px solid var(--line-gold);
+  margin: 4rem 0 2.5rem;
+  position: relative;
+  height: 0;
+  opacity: 0.7;
+}
+
+.yxg-divider::after {
+  content: '§';
+  position: absolute;
+  top: -1.1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--xiangya);
+  padding: 0 1.2rem;
+  color: var(--cooljin);
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+/* 章节双层标题 */
+.yxg-section-eyebrow {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--cooljin);
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+
+.yxg-section-title {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 2.2vw, 1.95rem);
+  color: var(--jiang-deep);
+  margin: 0 0 0.5rem;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+}
+
+.yxg-section-lead {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  color: var(--hui);
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+  max-width: 64ch;
+}
+
+/* ════════════════════════════════════════════════════════════════
+ * Pull-quote / 卷首语
+ * ════════════════════════════════════════════════════════════════ */
+.yxg-quote {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  line-height: 1.75;
+  color: var(--jiang-deep);
+  border-left: 3px solid var(--zhuhong);
+  padding: 0.6rem 0 0.6rem 1.6rem;
+  margin: 2.5rem 0;
+  font-style: italic;
+}
+
+/* ════════════════════════════════════════════════════════════════
+ * BigValue 数字卡 (Evidence 内置组件覆写)
+ * ════════════════════════════════════════════════════════════════ */
+.big-value-title,
+[class*="big-value"] [class*="title"] {
+  font-family: var(--serif) !important;
+  color: var(--hui) !important;
+  font-size: 0.88rem !important;
+  letter-spacing: 0.03em;
+  font-weight: 500 !important;
+}
+
+.big-value-value,
+[class*="big-value"] [class*="value"] {
+  font-family: var(--sans) !important;
+  font-weight: 300 !important;
+  color: var(--jiang) !important;
+  font-size: clamp(2.4rem, 4vw, 3.6rem) !important;
+  letter-spacing: -0.025em;
+  line-height: 1.05 !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ════════════════════════════════════════════════════════════════
+ * DataTable
+ * ════════════════════════════════════════════════════════════════ */
+table.data-table,
+.data-table {
+  font-family: var(--sans);
+}
+
+.data-table thead {
+  font-family: var(--serif);
+  color: var(--jiang-deep);
+}
+
+/* ════════════════════════════════════════════════════════════════
+ * 链接
+ * ════════════════════════════════════════════════════════════════ */
+.markdown a {
+  color: var(--zhuhong);
+  border-bottom: 1px dotted var(--zhuhong);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.markdown a:hover {
+  opacity: 0.65;
+}
+
+/* ════════════════════════════════════════════════════════════════
+ * 图章 (footer · stamp)
+ * ════════════════════════════════════════════════════════════════ */
+.yxg-stamp {
+  display: inline-block;
+  font-family: var(--serif);
+  font-size: 0.85rem;
+  color: var(--zhuhong);
+  border: 1.5px solid var(--zhuhong);
+  padding: 0.25rem 0.75rem;
+  letter-spacing: 0.12em;
+  margin-top: 1.2rem;
+  font-weight: 500;
+}
+
+/* ════════════════════════════════════════════════════════════════
+ * 入场动画 (克制, 0.6s 一次)
+ * ════════════════════════════════════════════════════════════════ */
+@keyframes yxgFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.yxg-hero,
+.yxg-divider,
+.yxg-section-title,
+.yxg-section-eyebrow {
+  animation: yxgFadeUp 0.7s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+
+.yxg-divider {
+  animation-delay: 0.1s;
+}
+
+.yxg-section-eyebrow {
+  animation-delay: 0.2s;
+}
+
+.yxg-section-title {
+  animation-delay: 0.25s;
+}
+
+/* ════════════════════════════════════════════════════════════════
+ * 移动端
+ * ════════════════════════════════════════════════════════════════ */
+@media (max-width: 720px) {
+  .yxg-hero {
+    padding: 2.5rem 0 1rem;
+  }
+
+  .yxg-divider {
+    margin: 2.5rem 0 1.5rem;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+ * 打印 (PDF 导出)
+ * ════════════════════════════════════════════════════════════════ */
+@media print {
+  body {
+    background: white !important;
+  }
+
+  .yxg-divider::after {
+    background: white;
+  }
+
+  .yxg-hero,
+  .yxg-divider,
+  .yxg-section-title,
+  .yxg-section-eyebrow {
+    animation: none;
+  }
+}

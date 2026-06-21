@@ -19,6 +19,9 @@ class ConversationResponse(BaseModel):
     resolved_at: datetime | None
     closed_at: datetime | None
     last_read_at: datetime | None = None
+    # joined fields — populated in service layer via batch user lookup
+    student_name: str | None = None
+    teacher_name: str | None = None
 
     class Config:
         from_attributes = True

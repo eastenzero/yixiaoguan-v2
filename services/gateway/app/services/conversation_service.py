@@ -132,7 +132,29 @@ async def list_conversations(
     result = await db.execute(stmt)
     items = list(result.scalars().all())
 
+    await _attach_user_names(db, items)
+
     return items, total
+
+
+async def _attach_user_names(db: AsyncSession, convs: list[Conversation]) -> None:
+    if not convs:
+        return
+    user_ids: set[int] = set()
+    for conv in convs:
+        if conv.student_id is not None:
+            user_ids.add(conv.student_id)
+        if conv.teacher_id is not None:
+            user_ids.add(conv.teacher_id)
+    if not user_ids:
+        return
+    rows = (
+        await db.execute(select(User.id, User.name).where(User.id.in_(user_ids)))
+    ).all()
+    name_map: dict[int, str | None] = {row.id: row.name for row in rows}
+    for conv in convs:
+        conv.student_name = name_map.get(conv.student_id) if conv.student_id is not None else None
+        conv.teacher_name = name_map.get(conv.teacher_id) if conv.teacher_id is not None else None
 
 
 async def get_conversation(
@@ -148,6 +170,7 @@ async def get_conversation(
         return None
     if not await can_access_conversation(db, conv, user):
         return None
+    await _attach_user_names(db, [conv])
     return conv
 
 

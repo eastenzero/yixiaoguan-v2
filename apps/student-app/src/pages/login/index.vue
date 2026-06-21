@@ -8,7 +8,7 @@
       <view class="login-card">
         <view class="header">
           <view class="logo-box">
-            <text class="material-symbols-outlined logo-icon" style="font-variation-settings: 'FILL' 1">school</text>
+            <image class="brand-logo" src="/static/favicon.svg" mode="aspectFit" />
           </view>
           <text class="app-title">医小管</text>
           <text class="app-subtitle">智慧校园服务平台</text>
@@ -145,8 +145,8 @@ async function handleLogin() {
 .main-container { width: 100%; max-width: 25rem; z-index: 1; }
 .login-card { background: $surface-container-lowest; border-radius: $radius-lg; padding: 2.5rem 1.75rem; box-shadow: $shadow-fab; }
 .header { display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem; }
-.logo-box { width: 4rem; height: 4rem; background: rgba($primary-container, 0.30); border-radius: $radius-md; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
-.logo-icon { font-size: 2.25rem; color: $secondary; }
+.logo-box { width: 5rem; height: 5rem; background: transparent; border-radius: $radius-md; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
+.brand-logo { width: 5rem; height: 5rem; }
 .app-title { font-size: 1.875rem; font-weight: 800; color: $text-primary; margin-bottom: 0.25rem; }
 .app-subtitle { font-size: 0.875rem; font-weight: 500; color: $text-secondary; letter-spacing: 0.125rem; opacity: 0.7; }
 

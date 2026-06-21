@@ -3,7 +3,7 @@ from hashlib import sha256
 from types import SimpleNamespace
 
 from fastapi import HTTPException
-from sqlalchemy import desc, or_, select
+from sqlalchemy import desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
@@ -177,6 +177,52 @@ async def list_pending_reviews(
     result = await db.execute(stmt)
     items = list(result.scalars().all())
     return items, len(items)
+
+
+async def list_knowledge_entries(
+    db: AsyncSession,
+    current_user: User,
+    *,
+    title: str | None = None,
+    page_num: int = 1,
+    page_size: int = 20,
+) -> tuple[list[KbSuggestion], int]:
+    """
+    "我的知识" 列表。
+    - 非 admin：仅返回 submitted_by = current_user.id 的条目（所有状态都可见，
+      包含 draft / pending / approved / rejected，便于教师看到审核进度）
+    - admin：返回全部条目（便于审计 / 演示时一眼看到全库）
+
+    支持 title LIKE 模糊搜索 + 分页。
+    按 created_at DESC + id DESC 排序（最新在前）。
+    """
+    if current_user.role not in {UserRole.teacher, UserRole.admin}:
+        raise HTTPException(status_code=403, detail="仅教师或管理员可查看知识条目")
+
+    base = select(KbSuggestion)
+    if current_user.role != UserRole.admin:
+        base = base.where(KbSuggestion.submitted_by == current_user.id)
+    if title:
+        base = base.where(KbSuggestion.title.ilike(f"%{title.strip()}%"))
+
+    # total count (on filtered base)
+    count_stmt = select(func.count()).select_from(base.subquery())
+    count_result = await db.execute(count_stmt)
+    total = int(count_result.scalar() or 0)
+
+    # paginated items
+    normalized_page = max(1, page_num)
+    normalized_size = max(1, min(page_size, 100))
+    offset = (normalized_page - 1) * normalized_size
+    stmt = (
+        base
+        .order_by(desc(KbSuggestion.created_at), desc(KbSuggestion.id))
+        .limit(normalized_size)
+        .offset(offset)
+    )
+    result = await db.execute(stmt)
+    items = list(result.scalars().all())
+    return items, total
 
 
 async def _publish_suggestion_to_dify(db: AsyncSession, entry: KbSuggestion) -> str:

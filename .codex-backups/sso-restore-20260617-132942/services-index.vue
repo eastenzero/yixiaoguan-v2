@@ -33,12 +33,12 @@
             </view>
           </view>
           <view class="quick-stack">
-            <view class="quick-row" @click="openExternal('http://portal.sdfmu.edu.cn', { useSso: true })">
+            <view class="quick-row" @click="openExternal('http://portal.sdfmu.edu.cn')">
               <text class="material-symbols-outlined quick-icon text-secondary">gate</text>
               <text class="quick-label">信息门户</text>
               <text class="material-symbols-outlined meta-external">open_in_new</text>
             </view>
-            <view class="quick-row" @click="openExternal('https://ehall.sdfmu.edu.cn/v2/site/index', { useSso: true })">
+            <view class="quick-row" @click="openExternal('https://ehall.sdfmu.edu.cn/v2/site/index')">
               <text class="material-symbols-outlined quick-icon text-tertiary">cloud_done</text>
               <text class="quick-label">服务大厅</text>
               <text class="material-symbols-outlined meta-external">open_in_new</text>
@@ -76,7 +76,7 @@
       <view class="section">
         <text class="section-title">学业</text>
         <view class="query-grid">
-          <view class="query-card" @click="openExternal('https://app.sdfmu.edu.cn/site/schedule/index', { useSso: true })">
+          <view class="query-card" @click="openExternal('https://app.sdfmu.edu.cn/site/schedule/index')">
             <view class="query-icon-box bg-secondary-light">
               <text class="material-symbols-outlined text-secondary">calendar_month</text>
             </view>
@@ -85,7 +85,7 @@
               <text class="query-meta">课表查询 <text class="material-symbols-outlined meta-external">open_in_new</text></text>
             </view>
           </view>
-          <view class="query-card" @click="openExternal('http://jwc.sdfmu.edu.cn', { useSso: true })">
+          <view class="query-card" @click="openExternal('http://jwc.sdfmu.edu.cn')">
             <view class="query-icon-box bg-tertiary-light">
               <text class="material-symbols-outlined text-tertiary">grade</text>
             </view>
@@ -103,7 +103,7 @@
               <text class="query-meta">借阅状态 <text class="material-symbols-outlined meta-external">open_in_new</text></text>
             </view>
           </view>
-          <view class="query-card" @click="openExternal('https://mail.sdfmu.edu.cn/', { useSso: true })">
+          <view class="query-card" @click="openExternal('https://mail.sdfmu.edu.cn/')">
             <view class="query-icon-box bg-error-light">
               <text class="material-symbols-outlined text-error">mail</text>
             </view>
@@ -118,7 +118,7 @@
       <view class="section">
         <text class="section-title">个人</text>
         <view class="personal-list">
-          <view class="personal-item" @click="openExternal('https://app.sdfmu.edu.cn/site/agenda/index', { useSso: true })">
+          <view class="personal-item" @click="openExternal('https://app.sdfmu.edu.cn/site/agenda/index')">
             <view class="personal-left">
               <text class="material-symbols-outlined text-primary">event_note</text>
               <text class="personal-name">个人日程</text>
@@ -156,32 +156,31 @@ interface ServiceItem {
   icon: string
   label: string
   url?: string
-  useSso?: boolean
   aiQuestion?: string
   comingSoon?: boolean
 }
 
 const campusServices: ServiceItem[] = [
   // 行 1：最高频学生事务（教务/团委）
-  { icon: 'meeting_room', label: '空教室申请', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=383', useSso: true },
-  { icon: 'feedback', label: '接诉即办', url: 'https://ehall.sdfmu.edu.cn/v2/matter/start?id=378', useSso: true },
+  { icon: 'meeting_room', label: '空教室申请', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=383' },
+  { icon: 'feedback', label: '接诉即办', url: 'https://ehall.sdfmu.edu.cn/v2/matter/start?id=378' },
   { icon: 'handyman', label: '网上报修', url: 'https://metc.sdfmu.edu.cn/info/1073/1954.htm' },
-  { icon: 'school', label: '学籍办理', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=369', useSso: true },
+  { icon: 'school', label: '学籍办理', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=369' },
   // 行 2：学生工作部申请类
-  { icon: 'home_work', label: '校外住宿', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=394', useSso: true },
-  { icon: 'volunteer_activism', label: '困难补助', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=417', useSso: true },
-  { icon: 'groups', label: '活动室预约', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=445', useSso: true },
-  { icon: 'credit_card', label: '校园卡服务', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=443', useSso: true },
+  { icon: 'home_work', label: '校外住宿', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=394' },
+  { icon: 'volunteer_activism', label: '困难补助', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=417' },
+  { icon: 'groups', label: '活动室预约', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=445' },
+  { icon: 'credit_card', label: '校园卡服务', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=443' },
   // 行 3：校园生活与公共资源
-  { icon: 'wifi', label: '校园网', url: 'http://vpnportal.sdfmu.edu.cn', useSso: true },
-  { icon: 'podium', label: '学术讲座', url: 'http://academic.sdfmu.edu.cn/index.php?redirect=apply/showlist', useSso: true },
-  { icon: 'event_available', label: '预约中心', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=3', useSso: true },
-  { icon: 'qr_code', label: '访客预约', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=2', useSso: true },
+  { icon: 'wifi', label: '校园网', url: 'http://vpnportal.sdfmu.edu.cn' },
+  { icon: 'podium', label: '学术讲座', url: 'http://academic.sdfmu.edu.cn/index.php?redirect=apply/showlist' },
+  { icon: 'event_available', label: '预约中心', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=3' },
+  { icon: 'qr_code', label: '访客预约', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=2' },
   // 行 4：证件采集 + 媒体 + 应用中心兜底
-  { icon: 'face_retouching_natural', label: '人脸采集', url: 'https://fpc.sdfmu.edu.cn/#/home', useSso: true },
-  { icon: 'photo_camera', label: '证件照采集', url: 'https://ppu.sdfmu.edu.cn', useSso: true },
+  { icon: 'face_retouching_natural', label: '人脸采集', url: 'https://fpc.sdfmu.edu.cn/#/home' },
+  { icon: 'photo_camera', label: '证件照采集', url: 'https://ppu.sdfmu.edu.cn' },
   { icon: 'live_tv', label: '直播山一大', url: 'https://qjjern.vnet.weizan.cn/live/channelpage-253967?v=1764637917204' },
-  { icon: 'apps', label: '更多服务', url: 'https://ehall.sdfmu.edu.cn/v2/site/serviceList', useSso: true },
+  { icon: 'apps', label: '更多服务', url: 'https://ehall.sdfmu.edu.cn/v2/site/serviceList' },
 ]
 
 onShow(() => {
@@ -191,7 +190,7 @@ onShow(() => {
 function handleServiceClick(item: ServiceItem) {
   trackEvent('service_card_click', { card: item.label, source: 'services' })
   if (item.url) {
-    openExternal(item.url, { useSso: item.useSso })
+    openExternal(item.url)
   } else if (item.comingSoon) {
     showComingSoon(item.label, item.aiQuestion)
   } else if (item.aiQuestion) {

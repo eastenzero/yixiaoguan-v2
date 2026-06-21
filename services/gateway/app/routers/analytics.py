@@ -24,14 +24,19 @@ router = APIRouter(prefix="/api/analytics", tags=["analytics"])
 # ── helpers ──────────────────────────────────────────────
 
 def _period_range(period: str):
-    """Return (start, prev_start | None, now) for the requested window."""
-    now = datetime.now(timezone.utc)
+    """Return (start, prev_start | None, now) for the requested window.
+
+    NOTE: Postgres conversations.created_at / chat_analytics.created_at 是
+    TIMESTAMP WITHOUT TIME ZONE，asyncpg 拒绝把 tz-aware datetime 绑到 naive
+    column。所以这里全部返回 naive datetime（UTC 时刻，但去掉 tzinfo）。
+    """
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
     if period == "7d":
         return now - timedelta(days=7), now - timedelta(days=14), now
     if period == "30d":
         return now - timedelta(days=30), now - timedelta(days=60), now
     # "all" – no meaningful prev period
-    return datetime(2020, 1, 1, tzinfo=timezone.utc), None, now
+    return datetime(2020, 1, 1), None, now
 
 
 async def _count(db: AsyncSession, stmt) -> int:

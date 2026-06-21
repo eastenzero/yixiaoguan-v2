@@ -3,7 +3,9 @@
     "allowed_origins": [
       "https://yxg.xiaoguan.site",
       "https://teacher.xiaoguan.site",
-      "http://localhost:*"
+      "http://localhost:*",
+      "http://82.156.129.75",
+      "http://82.156.129.75:81"
     ]
   },
   "channel": {
