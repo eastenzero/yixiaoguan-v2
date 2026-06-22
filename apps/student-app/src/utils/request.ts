@@ -36,10 +36,12 @@ export function request<T = any>(options: {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data as T)
         } else if (res.statusCode === 401) {
-          void (async () => {
-            userStore.logout()
-            uni.reLaunch({ url: '/pages/login/index' })
-          })()
+          if (userStore.token) {
+            void (async () => {
+              userStore.logout()
+              uni.reLaunch({ url: '/pages/login/index' })
+            })()
+          }
           reject(createRequestError('登录已过期，请重新登录', 401))
         } else if (res.statusCode === 422) {
           const detail = (res.data as any)?.detail

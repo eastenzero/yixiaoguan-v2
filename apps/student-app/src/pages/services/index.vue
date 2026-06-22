@@ -33,12 +33,12 @@
             </view>
           </view>
           <view class="quick-stack">
-            <view class="quick-row" @click="openExternal('http://portal.sdfmu.edu.cn', { useSso: true })">
+            <view class="quick-row" @click="openExternal('http://portal.sdfmu.edu.cn', { useSso: true, ssoNoAutoRedirect: true })">
               <AppIcon name="gate" class="quick-icon text-secondary" />
               <text class="quick-label">信息门户</text>
               <AppIcon name="open_in_new" class="meta-external" />
             </view>
-            <view class="quick-row" @click="openExternal('https://ehall.sdfmu.edu.cn/v2/site/index', { useSso: true })">
+            <view class="quick-row" @click="openExternal('https://ehall.sdfmu.edu.cn/v2/site/index', { useSso: true, ssoNoAutoRedirect: true })">
               <AppIcon name="cloud_done" class="quick-icon text-tertiary" />
               <text class="quick-label">服务大厅</text>
               <AppIcon name="open_in_new" class="meta-external" />
@@ -150,7 +150,7 @@ import AppIcon from '@/components/AppIcon.vue'
 import { onShow } from '@dcloudio/uni-app'
 import CustomTabBar from '@/components/CustomTabBar.vue'
 import FeatureNoticeSheet from '@/components/FeatureNoticeSheet.vue'
-import { openAiQuestion, openExternal, showComingSoon } from '@/composables/useServiceNavigation'
+import { openExternal, showComingSoon } from '@/composables/useServiceNavigation'
 import { trackEvent } from '@/utils/track'
 
 interface ServiceItem {
@@ -158,35 +158,32 @@ interface ServiceItem {
   label: string
   url?: string
   useSso?: boolean
-  aiQuestion?: string
+  ssoNoAutoRedirect?: boolean
   comingSoon?: boolean
 }
 
 const campusServices: ServiceItem[] = [
-  // 行 1：最高频学生事务（教务/团委）
-  { icon: 'meeting_room', label: '空教室申请', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=383', useSso: true },
-  { icon: 'feedback', label: '接诉即办', url: 'https://ehall.sdfmu.edu.cn/v2/matter/start?id=378', useSso: true },
+  // 行 1：高频办理入口
+  { icon: 'meeting_room', label: '空教室申请', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=383', useSso: true, ssoNoAutoRedirect: true },
   { icon: 'handyman', label: '网上报修', url: 'https://metc.sdfmu.edu.cn/info/1073/1954.htm' },
-  { icon: 'school', label: '学籍办理', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=369', useSso: true },
-  // 行 2：学生工作部申请类
-  { icon: 'home_work', label: '校外住宿', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=394', useSso: true },
-  { icon: 'volunteer_activism', label: '困难补助', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=417', useSso: true },
-  { icon: 'groups', label: '活动室预约', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=445', useSso: true },
-  { icon: 'credit_card', label: '校园卡服务', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=443', useSso: true },
-  // 行 3：校园生活与公共资源
-  { icon: 'wifi', label: '校园网', url: 'http://vpnportal.sdfmu.edu.cn', useSso: true },
+  { icon: 'school', label: '学籍办理', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=369', useSso: true, ssoNoAutoRedirect: true },
+  { icon: 'credit_card', label: '校园卡服务', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=443', useSso: true, ssoNoAutoRedirect: true },
+  // 行 2：学工与生活咨询
+  { icon: 'home_work', label: '校外住宿', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=394', useSso: true, ssoNoAutoRedirect: true },
+  { icon: 'volunteer_activism', label: '困难补助', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=417', useSso: true, ssoNoAutoRedirect: true },
+  // 行 3：教务与图书馆
+  { icon: 'grade', label: '成绩查询', url: 'http://jwc.sdfmu.edu.cn', useSso: true },
+  { icon: 'calendar_month', label: '学生课表', url: 'https://app.sdfmu.edu.cn/site/schedule/index', useSso: true },
+  { icon: 'library_books', label: '图书馆预约', url: 'http://202.194.232.127/index.html' },
+  // 行 4：公共资源与预约
   { icon: 'podium', label: '学术讲座', url: 'http://academic.sdfmu.edu.cn/index.php?redirect=apply/showlist', useSso: true },
-  { icon: 'event_available', label: '预约中心', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=3', useSso: true },
-  { icon: 'qr_code', label: '访客预约', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=2', useSso: true },
-  // 行 4：证件采集 + 体育健康
-  { icon: 'face_retouching_natural', label: '人脸采集', url: 'https://fpc.sdfmu.edu.cn/#/home', useSso: true },
-  { icon: 'photo_camera', label: '证件照采集', url: 'https://ppu.sdfmu.edu.cn', useSso: true },
-  { icon: 'badge', label: '体育保健课', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=368', useSso: true },
-  { icon: 'book', label: '校史馆预约', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=407', useSso: true },
-  // 行 5：媒体 + 应用中心兜底
-  { icon: 'history', label: '我的申请', url: 'https://ehall.sdfmu.edu.cn/v2/matter/launch', useSso: true },
-  { icon: 'live_tv', label: '直播山一大', url: 'https://qjjern.vnet.weizan.cn/live/channelpage-253967?v=1764637917204' },
-  { icon: 'apps', label: '更多服务', url: 'https://ehall.sdfmu.edu.cn/v2/site/serviceList', useSso: true },
+  { icon: 'event_available', label: '预约中心', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=3', useSso: true, ssoNoAutoRedirect: true },
+  { icon: 'qr_code', label: '访客预约', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=2', useSso: true, ssoNoAutoRedirect: true },
+  // 行 5：健康体育 + 应用中心兜底
+  { icon: 'badge', label: '体育保健课', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=368', useSso: true, ssoNoAutoRedirect: true },
+  { icon: 'book', label: '校史馆预约', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=407', useSso: true, ssoNoAutoRedirect: true },
+  { icon: 'history', label: '我的申请', url: 'https://ehall.sdfmu.edu.cn/v2/matter/launch', useSso: true, ssoNoAutoRedirect: true },
+  { icon: 'apps', label: '更多服务', url: 'https://ehall.sdfmu.edu.cn/v2/site/serviceList', useSso: true, ssoNoAutoRedirect: true },
 ]
 
 onShow(() => {
@@ -196,16 +193,10 @@ onShow(() => {
 function handleServiceClick(item: ServiceItem) {
   trackEvent('service_card_click', { card: item.label, source: 'services' })
   if (item.url) {
-    openExternal(item.url, { useSso: item.useSso })
+    openExternal(item.url, { useSso: item.useSso, ssoNoAutoRedirect: item.ssoNoAutoRedirect })
   } else if (item.comingSoon) {
-    showComingSoon(item.label, item.aiQuestion)
-  } else if (item.aiQuestion) {
-    openAiQuestion(item.aiQuestion)
+    showComingSoon(item.label)
   }
-}
-
-function handleAiQuestion(question: string) {
-  openAiQuestion(question)
 }
 
 function handleComingSoon(name: string, question?: string) {

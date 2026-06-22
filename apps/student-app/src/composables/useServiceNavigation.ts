@@ -7,6 +7,7 @@ const SSO_LOGIN_URL = 'https://sso.sdfmu.edu.cn/login'
 
 type ExternalOptions = {
   useSso?: boolean
+  ssoNoAutoRedirect?: boolean
 }
 
 export function openAiQuestion(question: string) {
@@ -14,9 +15,11 @@ export function openAiQuestion(question: string) {
   uni.switchTab({ url: '/pages/chat/index' })
 }
 
-function wrapSsoUrl(service: string, noAutoRedirect = 'true'): string {
+function wrapSsoUrl(service: string, noAutoRedirect?: string): string {
   const params = new URLSearchParams()
-  params.set('noAutoRedirect', noAutoRedirect)
+  if (noAutoRedirect) {
+    params.set('noAutoRedirect', noAutoRedirect)
+  }
   params.set('service', service)
   return `${SSO_LOGIN_URL}?${params.toString()}`
 }
@@ -38,25 +41,40 @@ function getAcademicSsoService(): string {
   return `https://app.sdfmu.edu.cn/a_sdfmu/api/sso/index?redirect=${encodeURIComponent(oauthUrl)}&from=wap`
 }
 
-function getWechatSafeUrl(target: string): string {
+function getSsoUrl(target: string, options: ExternalOptions): string {
   try {
     const { hostname } = new URL(target)
     const host = hostname.toLowerCase()
 
-    if (host === 'ehall.sdfmu.edu.cn') {
-      return wrapSsoUrl(getEhallSsoService(target))
-    }
-    if (host === 'portal.sdfmu.edu.cn') {
-      return wrapSsoUrl(getPortalSsoService())
-    }
     if (host === 'app.sdfmu.edu.cn') {
       return wrapSsoUrl(getAppSsoService(target), '1')
     }
     if (host === 'academic.sdfmu.edu.cn') {
       return wrapSsoUrl(getAcademicSsoService(), '1')
     }
-    if (host === 'vpnportal.sdfmu.edu.cn' || host === 'fpc.sdfmu.edu.cn' || host === 'ppu.sdfmu.edu.cn') {
-      return wrapSsoUrl(target)
+  } catch {
+    // Fall through to the standard CAS service wrapper below.
+  }
+
+  return wrapSsoUrl(target, options.ssoNoAutoRedirect ? 'true' : undefined)
+}
+
+function getWechatSafeUrl(target: string): string {
+  try {
+    const { hostname } = new URL(target)
+    const host = hostname.toLowerCase()
+
+    if (host === 'ehall.sdfmu.edu.cn') {
+      return wrapSsoUrl(getEhallSsoService(target), 'true')
+    }
+    if (host === 'portal.sdfmu.edu.cn') {
+      return wrapSsoUrl(getPortalSsoService(), 'true')
+    }
+    if (host === 'app.sdfmu.edu.cn') {
+      return wrapSsoUrl(getAppSsoService(target), '1')
+    }
+    if (host === 'academic.sdfmu.edu.cn') {
+      return wrapSsoUrl(getAcademicSsoService(), '1')
     }
   } catch {
     return target
@@ -73,7 +91,7 @@ export function openExternal(url: string, options: ExternalOptions = {}) {
   const target = url.trim()
   if (!target) return
 
-  const ssoUrl = options.useSso ? wrapSsoUrl(target) : target
+  const ssoUrl = options.useSso ? getSsoUrl(target, options) : target
 
   // #ifdef H5
   const finalUrl = options.useSso ? ssoUrl : isWechatBrowser() ? getWechatSafeUrl(target) : target

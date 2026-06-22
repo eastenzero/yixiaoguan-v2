@@ -44,7 +44,7 @@ openExternal('http://202.194.232.127/index.html')
 
 ### 2. 只走 SSO，不加 `noAutoRedirect`
 
-适用于教务、邮箱、校园网、学术讲座、人脸采集、证件照采集等校内业务系统。
+适用于教务、邮箱、学术讲座等校内业务系统。
 
 ```ts
 openExternal('http://jwc.sdfmu.edu.cn', { useSso: true })
@@ -58,6 +58,14 @@ https://sso.sdfmu.edu.cn/login?service=http%3A%2F%2Fjwc.sdfmu.edu.cn
 ```
 
 不要额外加 `noAutoRedirect=true`，除非已经确认该系统需要这个参数。
+
+注意：`app.sdfmu.edu.cn` 系列移动应用入口（如学生课表、个人日程）不能直接作为 CAS `service`，否则会出现“服务未授权”。代码会自动转换为：
+
+```text
+https://app.sdfmu.edu.cn/a_sdfmu/api/sso/index?redirect=<target>&from=wap
+```
+
+再交给统一身份认证登录，并追加 `noAutoRedirect=1`。
 
 ### 3. 走 SSO，并显式加 `noAutoRedirect`
 
@@ -96,7 +104,9 @@ https://sso.sdfmu.edu.cn/login?noAutoRedirect=true&service=https%3A%2F%2Fehall.s
 至少验证 URL 生成结果：
 
 - 信息门户、ehall：应包含 `noAutoRedirect=true`。
-- 教务、邮箱、校园网、学术讲座等：应走 SSO，但不包含 `noAutoRedirect=true`。
+- app.sdfmu.edu.cn：应通过 `/a_sdfmu/api/sso/index` 中转，并包含 `noAutoRedirect=1`。
+- 教务、邮箱、学术讲座等：应走 SSO，但不包含 `noAutoRedirect=true`。
+- 校园网 / VPN：`vpnportal.sdfmu.edu.cn` 不能直接作为 CAS `service`；没有可验证授权入口前，不应放成事务导办按钮。
 - 网上报修、学校官网、直播等：不应被 SSO 包装。
 
 能登录真实环境时，再分别在普通浏览器和微信内打开抽查。SSO 页面可能出现滑块安全验证，不建议把账号密码写入自动化脚本。

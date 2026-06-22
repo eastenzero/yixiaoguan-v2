@@ -70,15 +70,21 @@ const form = reactive({ staffId: '', password: '' })
 const showPwd = ref(false)
 const loading = ref(false)
 
-// 启动时仅恢复已保存的登录态；未登录时保留在当前页，等待学生手动登录。
-function redirectIfLogged() {
+async function enterPilotTrialIfNeeded() {
+  if (userStore.isLoggedIn) {
+    uni.switchTab({ url: '/pages/home/index' })
+    return
+  }
+  await userStore.startPilotTrial()
   if (userStore.isLoggedIn) {
     uni.switchTab({ url: '/pages/home/index' })
   }
 }
-onShow(redirectIfLogged)
+onShow(() => {
+  void enterPilotTrialIfNeeded()
+})
 watch(() => userStore.isLoggedIn, (logged) => {
-  if (logged) redirectIfLogged()
+  if (logged) uni.switchTab({ url: '/pages/home/index' })
 })
 
 async function handleLogin() {

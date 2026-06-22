@@ -317,6 +317,7 @@ export function useChatSession() {
     } finally {
       isStreaming.value = false
       isTyping.value = false
+      nextTick(() => consumeInitQuery())
     }
   }
 
@@ -430,17 +431,23 @@ export function useChatSession() {
   function goBack() { uni.navigateBack() }
   function goToHistory() { uni.navigateTo({ url: '/pages/chat/history' }) }
 
-  onMounted(() => {
+  function consumeInitQuery() {
+    if (isStreaming.value) return
     const initQuery = uni.getStorageSync('chat_init_query')
     if (initQuery) {
       uni.removeStorageSync('chat_init_query')
-      inputMessage.value = initQuery
+      inputMessage.value = String(initQuery)
       nextTick(() => sendMessage())
     }
+  }
+
+  onMounted(() => {
+    consumeInitQuery()
   })
 
   onShow(() => {
     trackEvent('page_view', { path: '/pages/chat/index' })
+    consumeInitQuery()
     const pendingId = uni.getStorageSync('pendingConversationId')
     if (pendingId) {
       uni.removeStorageSync('pendingConversationId')
