@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#faf5fb",
+                        "on-secondary-container": "#612c90",
+                        "inverse-primary": "#a476ff",
+                        "on-secondary": "#fbefff",
+                        "on-surface": "#2f2e32",
+                        "secondary-container": "#e6c5ff",
+                        "primary": "#702ae1",
+                        "secondary-fixed-dim": "#ddb3ff",
+                        "inverse-surface": "#0e0e11",
+                        "error-dim": "#a70138",
+                        "background": "#faf5fb",
+                        "error-container": "#f74b6d",
+                        "on-primary-fixed": "#000000",
+                        "surface-container-high": "#e5e1e8",
+                        "tertiary-dim": "#8e294c",
+                        "on-error": "#ffefef",
+                        "surface-variant": "#e0dbe3",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-dim": "#6411d5",
+                        "inverse-on-surface": "#9f9ca1",
+                        "on-background": "#2f2e32",
+                        "primary-fixed-dim": "#a67aff",
+                        "tertiary-fixed": "#ff8eac",
+                        "on-error-container": "#510017",
+                        "outline-variant": "#afacb1",
+                        "tertiary-fixed-dim": "#f77c9e",
+                        "primary-container": "#b28cff",
+                        "surface-dim": "#d7d3db",
+                        "on-tertiary": "#ffeff1",
+                        "secondary": "#7742a6",
+                        "surface-container-highest": "#e0dbe3",
+                        "on-tertiary-fixed-variant": "#711036",
+                        "on-tertiary-fixed": "#380016",
+                        "on-secondary-fixed-variant": "#6b369a",
+                        "primary-fixed": "#b28cff",
+                        "error": "#b41340",
+                        "tertiary": "#9e3657",
+                        "on-tertiary-container": "#64042d",
+                        "on-primary-container": "#2e006c",
+                        "outline": "#78767b",
+                        "surface-container": "#ebe7ed",
+                        "secondary-fixed": "#e6c5ff",
+                        "tertiary-container": "#ff8eac",
+                        "on-secondary-fixed": "#4d137b",
+                        "surface-container-low": "#f4eff5",
+                        "surface-bright": "#faf5fb",
+                        "surface-tint": "#702ae1",
+                        "secondary-dim": "#6a3599",
+                        "on-primary": "#f8f0ff",
+                        "on-primary-fixed-variant": "#390083",
+                        "on-surface-variant": "#5d5b5f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fade-up 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 h-14 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl flex items-center px-5 w-full">
+<div class="flex items-center w-full justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container-low transition-colors p-1 rounded-full">arrow_back</span>
+<h1 class="font-manrope title-lg text-on-surface font-bold">学生提问</h1>
+</div>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full cursor-pointer">search</span>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="pt-20 pb-28 px-5 max-w-2xl mx-auto space-y-8 animate-fade-up">
+<!-- Filter Tabs (Horizontal scroll pills) -->
+<section class="overflow-x-auto no-scrollbar -mx-5 px-5 flex gap-3">
+<button class="flex-shrink-0 px-6 py-2.5 rounded-full bg-primary text-on-primary font-medium text-sm shadow-[0_8px_16px_-4px_rgba(112,42,225,0.2)]">全部(28)</button>
+<button class="flex-shrink-0 px-6 py-2.5 rounded-full bg-surface-container text-on-surface-variant font-medium text-sm hover:bg-surface-container-high transition-colors">待处理(3)</button>
+<button class="flex-shrink-0 px-6 py-2.5 rounded-full bg-surface-container text-on-surface-variant font-medium text-sm hover:bg-surface-container-high transition-colors">处理中(5)</button>
+<button class="flex-shrink-0 px-6 py-2.5 rounded-full bg-surface-container text-on-surface-variant font-medium text-sm hover:bg-surface-container-high transition-colors">已解决(20)</button>
+</section>
+<!-- Question List -->
+<div class="grid gap-6">
+<!-- Question Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-5 relative overflow-hidden group transition-transform active:scale-[0.98]">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<img class="w-12 h-12 rounded-full bg-surface-container" data-alt="close-up portrait of a male student with glasses in a soft lit campus setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2Ca4_BIjff-vZ_l80JaR7Mzy6dy3j4blygWQcpd_gnOl-aG0C33n_v72nzoIzq2qmrx4VMo_wbPpbQ9iRI7syLTuNFbsJZiKNGgYHbglw45JtKfeOJyEo_gQ8P4AOUNuYz5CBF6BUtQHdg79ECvTie-Hu6D3IjwifjzTUjDkAa7nMx1mO-jk2DVKSLpawpXdnn5mudX7vfDeUMTntcPZNXb_SYcoSVVjjocPD5g4-DWM4suYxQv6NUtWuu6aN1ZrMp9-egFhcxA"/>
+<div>
+<h3 class="font-bold text-base text-on-surface">陈小明</h3>
+<p class="text-xs text-on-surface-variant font-medium">计算机科学与技术 · 10分钟前</p>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-error-container/10 text-error-dim">待处理</span>
+</div>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6 line-clamp-2">
+                    老师您好，在最新的深度学习作业中，关于Transformer模型的多头注意力机制实现，我不太确定在多头拼接后的线性映射层是否需要添加Bias...
+                </p>
+<!-- AI Confidence Section -->
+<div class="space-y-2">
+<div class="flex justify-between items-center text-[10px] font-bold text-on-surface-variant/60">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">psychology</span>AI 匹配度</span>
+<span>92%</span>
+</div>
+<div class="h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 rounded-full" style="width: 92%"></div>
+</div>
+</div>
+</div>
+<!-- Question Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-5 relative overflow-hidden group transition-transform active:scale-[0.98]">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<img class="w-12 h-12 rounded-full bg-surface-container" data-alt="close-up portrait of a female student with a bright smile in a modern library" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAU7sLQvU_NpWEZFgofnCkKctsYyHu8n4TnxmKZf2S4jVt6lPQOwHba1JC_urbwz4gJ-vDydCFZJxi-OsBLk1ECTfG9Af3btm04mpp0y5eo4TJWihb4ygkGj4fTq21k23Ps01OpyYF0nB8pjDqrKlgqFLv73FJ7Td3fGu_GFTtq4wxgtEgs81Q8LGjFkm4RmFsEv9SZ_F5k80U6Mox9J4VjgQ3HdKU0AskK4oC_Bym6jRsurCB9vLcsKHld5HMI5iyarMnHhumVqQ"/>
+<div>
+<h3 class="font-bold text-base text-on-surface">林静怡</h3>
+<p class="text-xs text-on-surface-variant font-medium">数字媒体艺术 · 2小时前</p>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-primary-container/20 text-primary">处理中</span>
+</div>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6 line-clamp-2">
+                    关于期中作品集的排版，目前的C4D渲染结果噪点比较多，请问在Octane渲染器中如何平衡采样率和渲染时间？
+                </p>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-[10px] font-bold text-on-surface-variant/60">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">psychology</span>AI 匹配度</span>
+<span>74%</span>
+</div>
+<div class="h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-amber-500 rounded-full" style="width: 74%"></div>
+</div>
+</div>
+</div>
+<!-- Question Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-5 relative overflow-hidden group transition-transform active:scale-[0.98]">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<img class="w-12 h-12 rounded-full bg-surface-container" data-alt="close-up portrait of a young man with a serious expression in a classroom background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZZJhO1iMA41rvsE8-wKWBNR_tE5p4RfGRq23e0uJJrkVYBavATiwsNRmfLgxWfCuTC0NP6RCy8QlCWLevblSrN_pIH4ENZGkmLgqiyQGFpc8VNffAgveX_ZtrMU7y8GwMuqTxuhSfm3-lpzBGb8Oj1viMbW84XpdgiIphux22ujN-LRMXmBKbRij9VaMTVNBCpPP1kMO-06W2uyICb0gmxaz4rFX-YhFDZqPj2CTuiab0xu3hZWIKQQ8XmZxhQvaF91DWYpdHeA"/>
+<div>
+<h3 class="font-bold text-base text-on-surface">张子涵</h3>
+<p class="text-xs text-on-surface-variant font-medium">应用数学系 · 昨天</p>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-error-container/10 text-error-dim">待处理</span>
+</div>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6 line-clamp-2">
+                    请问偏微分方程在金融定价模型中的具体推导过程，上课讲的Black-Scholes方程部分，热传导方程的变换还没完全理解。
+                </p>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-[10px] font-bold text-on-surface-variant/60">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">psychology</span>AI 匹配度</span>
+<span>38%</span>
+</div>
+<div class="h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-error rounded-full" style="width: 38%"></div>
+</div>
+</div>
+</div>
+<!-- Question Card 4 -->
+<div class="bg-surface-container-lowest rounded-xl p-5 relative overflow-hidden group transition-transform active:scale-[0.98]">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<img class="w-12 h-12 rounded-full bg-surface-container" data-alt="close-up portrait of a cheerful female student with headphones around neck in a sunny outdoors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj3ogtOAMhjVl_7LVMl0Vzl1tQIZJ3fRqOBr2OAf5N63USoOzLjrci4SmwXwsOpvLGxQmMClBAMztX86Qih1-Z0lMseSQL4SMW3LPCLsm_ni5E7XC-3EW6Qj_oFTOP_nJ51DJMuWOC-St13SN7Osb3kTvC-v-yXy1_TAeuDciKZ0D0jjgjrVZxqNH22kkc7ibRqhTPrfI-E7RvVnZxaRW7KJ4DOXtGwK8aNDGrZzO2kBTXaTMFEkkRKQejDpxJev90YHu6NnVTBQ"/>
+<div>
+<h3 class="font-bold text-base text-on-surface">周沫</h3>
+<p class="text-xs text-on-surface-variant font-medium">心理学系 · 2天前</p>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-surface-container text-on-surface-variant">已解决</span>
+</div>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6 line-clamp-2">
+                    老师，之前的实验设计方案已经按照您的建议修改了，现在关于控制组的随机分配已经完成，后续需要发给您审核吗？
+                </p>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-[10px] font-bold text-on-surface-variant/60">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">psychology</span>AI 匹配度</span>
+<span>85%</span>
+</div>
+<div class="h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 rounded-full" style="width: 85%"></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-5 pb-safe z-50 h-[calc(4rem+env(safe-area-inset-bottom))] bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-t-3xl shadow-[0_-4px_20px_rgba(99,14,212,0.05)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-manrope label-md font-medium">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#630ED4] relative after:content-[''] after:w-1 after:h-1 after:bg-[#630ED4] after:rounded-full after:mt-1 scale-95 active:scale-90 transition-transform" href="#">
+<div class="relative">
+<span class="material-symbols-outlined">forum</span>
+<span class="absolute -top-1.5 -right-2 bg-error text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">3</span>
+</div>
+<span class="font-manrope label-md font-medium">学生提问</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-manrope label-md font-medium">Knowledge</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-manrope label-md font-medium">Profile</span>
+</a>
+</nav>
+</body></html>

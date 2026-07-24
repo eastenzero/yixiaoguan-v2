@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "surface": "#faf5fb",
+                "on-secondary-container": "#612c90",
+                "inverse-primary": "#a476ff",
+                "on-secondary": "#fbefff",
+                "on-surface": "#2f2e32",
+                "secondary-container": "#e6c5ff",
+                "primary": "#702ae1",
+                "secondary-fixed-dim": "#ddb3ff",
+                "inverse-surface": "#0e0e11",
+                "error-dim": "#a70138",
+                "background": "#faf5fb",
+                "error-container": "#f74b6d",
+                "on-primary-fixed": "#000000",
+                "surface-container-high": "#e5e1e8",
+                "tertiary-dim": "#8e294c",
+                "on-error": "#ffefef",
+                "surface-variant": "#e0dbe3",
+                "surface-container-lowest": "#ffffff",
+                "primary-dim": "#6411d5",
+                "inverse-on-surface": "#9f9ca1",
+                "on-background": "#2f2e32",
+                "primary-fixed-dim": "#a67aff",
+                "tertiary-fixed": "#ff8eac",
+                "on-error-container": "#510017",
+                "outline-variant": "#afacb1",
+                "tertiary-fixed-dim": "#f77c9e",
+                "primary-container": "#b28cff",
+                "surface-dim": "#d7d3db",
+                "on-tertiary": "#ffeff1",
+                "secondary": "#7742a6",
+                "surface-container-highest": "#e0dbe3",
+                "on-tertiary-fixed-variant": "#711036",
+                "on-tertiary-fixed": "#380016",
+                "on-secondary-fixed-variant": "#6b369a",
+                "primary-fixed": "#b28cff",
+                "error": "#b41340",
+                "tertiary": "#9e3657",
+                "on-tertiary-container": "#64042d",
+                "on-primary-container": "#2e006c",
+                "outline": "#78767b",
+                "surface-container": "#ebe7ed",
+                "secondary-fixed": "#e6c5ff",
+                "tertiary-container": "#ff8eac",
+                "on-secondary-fixed": "#4d137b",
+                "surface-container-low": "#f4eff5",
+                "surface-bright": "#faf5fb",
+                "surface-tint": "#702ae1",
+                "secondary-dim": "#6a3599",
+                "on-primary": "#f8f0ff",
+                "on-primary-fixed-variant": "#390083",
+                "on-surface-variant": "#5d5b5f"
+            },
+            "borderRadius": {
+                "DEFAULT": "1rem",
+                "lg": "2rem",
+                "xl": "3rem",
+                "full": "9999px"
+            },
+            "fontFamily": {
+                "headline": ["Manrope"],
+                "body": ["Manrope"],
+                "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .title-lg { font-size: 1.375rem; line-height: 1.5; font-weight: 700; }
+        .label-md { font-size: 0.75rem; line-height: 1rem; font-weight: 500; }
+        .body-md { font-size: 0.875rem; line-height: 1.25rem; }
+        .display-md { font-size: 2.75rem; line-height: 3.25rem; font-weight: 800; }
+        
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up { animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<nav class="fixed top-0 w-full z-50 h-14 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl flex items-center px-5 w-full">
+<div class="flex items-center justify-between w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#630ED4] transition-transform active:scale-90 cursor-pointer">dashboard</span>
+<h1 class="font-manrope title-lg text-on-surface font-bold text-xl tracking-tight">工作台</h1>
+</div>
+<div class="relative transition-transform active:scale-90 cursor-pointer p-2 hover:bg-surface-container-low rounded-full">
+<span class="material-symbols-outlined text-on-surface">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-20 px-5 space-y-8 max-w-2xl mx-auto">
+<!-- Welcome Banner -->
+<section class="animate-fade-up" style="animation-delay: 0.05s;">
+<div class="relative overflow-hidden bg-gradient-to-br from-primary to-primary-container p-6 rounded-xl text-on-primary flex justify-between items-center shadow-[0_12px_32px_-4px_rgba(112,42,225,0.15)]">
+<div class="z-10">
+<h2 class="text-xl font-bold mb-1">早上好，梁老师 👋</h2>
+<p class="text-on-primary/80 body-md">今天有 3 条待处理提问</p>
+</div>
+<div class="relative w-16 h-16 rounded-full border-2 border-white/30 overflow-hidden z-10">
+<img alt="Teacher Avatar" class="w-full h-full object-cover" data-alt="professional portrait of a smiling female teacher in a brightly lit modern office setting with soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADVvxNCiXzNluUfSTu--_cTxIiCZgwLTKh-AmcNNpMX1l-yGxEl4s6rOkD7fXZpN15KDPjppU1D-Q6lV9Rz1M8Ccl06pO0CAfiL5r8N6OaEkgvZdUs7A1kk90zooZHstQiz3yAidSgvX0kipm8JecdbcJjiTt0AhhNDa6KHAABJE80lnj0MTgxcPFNKEETzIqpBMIAbrwQAjaisOnYQ-V2LmWKi27szkC2E7GH5CY_4l329t4AvYE2Y8DESjNc6TO6OPTcpkMRZw"/>
+</div>
+<!-- Subtle Texture -->
+<div class="absolute -right-4 -bottom-4 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+</div>
+</section>
+<!-- Quick Actions (Horizontal Scroll) -->
+<section class="animate-fade-up space-y-3" style="animation-delay: 0.1s;">
+<div class="flex overflow-x-auto gap-4 pb-2 no-scrollbar">
+<button class="flex-shrink-0 flex items-center gap-2 bg-surface-container-low px-4 py-3 rounded-full hover:bg-surface-container transition-colors active:scale-95">
+<span class="material-symbols-outlined text-primary text-xl">add_circle</span>
+<span class="label-md font-bold whitespace-nowrap">新建知识</span>
+</button>
+<button class="flex-shrink-0 flex items-center gap-2 bg-surface-container-low px-4 py-3 rounded-full hover:bg-surface-container transition-colors active:scale-95">
+<span class="material-symbols-outlined text-primary text-xl">campaign</span>
+<span class="label-md font-bold whitespace-nowrap">发布通知</span>
+</button>
+<button class="flex-shrink-0 flex items-center gap-2 bg-surface-container-low px-4 py-3 rounded-full hover:bg-surface-container transition-colors active:scale-95">
+<span class="material-symbols-outlined text-primary text-xl">analytics</span>
+<span class="label-md font-bold whitespace-nowrap">数据报告</span>
+</button>
+<button class="flex-shrink-0 flex items-center gap-2 bg-surface-container-low px-4 py-3 rounded-full hover:bg-surface-container transition-colors active:scale-95">
+<span class="material-symbols-outlined text-primary text-xl">settings</span>
+<span class="label-md font-bold whitespace-nowrap">系统设置</span>
+</button>
+</div>
+</section>
+<!-- Statistics Grid -->
+<section class="animate-fade-up grid grid-cols-2 gap-4" style="animation-delay: 0.15s;">
+<div class="bg-secondary-container/30 p-4 rounded-lg flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary" data-weight="fill">dashboard</span>
+<span class="text-2xl font-black text-on-surface">12</span>
+</div>
+<span class="label-md text-on-surface-variant">今日提问</span>
+</div>
+<div class="bg-error-container/10 p-4 rounded-lg flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-error" data-weight="fill">priority_high</span>
+<span class="text-2xl font-black text-on-surface">3</span>
+</div>
+<span class="label-md text-on-surface-variant">待处理</span>
+</div>
+<div class="bg-[#e2f5ec] p-4 rounded-lg flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-emerald-600" data-weight="fill">menu_book</span>
+<span class="text-2xl font-black text-on-surface">731</span>
+</div>
+<span class="label-md text-on-surface-variant">知识条目</span>
+</div>
+<div class="bg-amber-50 p-4 rounded-lg flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-amber-600" data-weight="fill">task_alt</span>
+<span class="text-2xl font-black text-on-surface">5</span>
+</div>
+<span class="label-md text-on-surface-variant">今日审批</span>
+</div>
+</section>
+<!-- Pending Questions List -->
+<section class="animate-fade-up space-y-4" style="animation-delay: 0.2s;">
+<div class="flex justify-between items-end px-1">
+<h3 class="title-lg">待处理提问</h3>
+<a class="label-md text-primary font-bold hover:underline" href="#">查看全部</a>
+</div>
+<div class="space-y-3">
+<!-- Question Card 1 -->
+<div class="bg-surface-container-low p-4 rounded-lg hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="font-bold body-md">张晓明</span>
+<span class="px-2 py-0.5 bg-surface-container-highest text-[10px] rounded-full text-on-surface-variant">软件工程系</span>
+</div>
+<span class="text-[10px] text-on-surface-variant">10:24</span>
+</div>
+<p class="body-md text-on-surface/80 line-clamp-1 mb-3">老师，请问关于 React 的 useEffect 钩子函数中的依赖项...</p>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-error rounded-full"></span>
+<span class="text-[10px] font-bold text-error">待处理</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</div>
+<!-- Question Card 2 -->
+<div class="bg-surface-container-low p-4 rounded-lg hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="font-bold body-md">李思源</span>
+<span class="px-2 py-0.5 bg-surface-container-highest text-[10px] rounded-full text-on-surface-variant">计算机科学</span>
+</div>
+<span class="text-[10px] text-on-surface-variant">09:15</span>
+</div>
+<p class="body-md text-on-surface/80 line-clamp-1 mb-3">大模型微调时，Lora参数的选择一般基于什么标准？</p>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+<span class="text-[10px] font-bold text-amber-600">处理中</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</div>
+<!-- Question Card 3 -->
+<div class="bg-surface-container-low p-4 rounded-lg hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="font-bold body-md">陈锦</span>
+<span class="px-2 py-0.5 bg-surface-container-highest text-[10px] rounded-full text-on-surface-variant">数学系</span>
+</div>
+<span class="text-[10px] text-on-surface-variant">昨天</span>
+</div>
+<p class="body-md text-on-surface/80 line-clamp-1 mb-3">关于线性代数中特征值分解在图像压缩中的应用...</p>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-error rounded-full"></span>
+<span class="text-[10px] font-bold text-error">待处理</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl flex justify-around items-center px-5 pb-safe h-[calc(4rem+env(safe-area-inset-bottom))] rounded-t-3xl shadow-[0_-4px_20px_rgba(99,14,212,0.05)]">
+<div class="flex flex-col items-center justify-center text-[#630ED4] relative after:content-[''] after:w-1 after:h-1 after:bg-[#630ED4] after:rounded-full after:mt-1 transition-transform scale-95 active:scale-90">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-manrope label-md font-medium">工作台</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity transition-transform scale-95 active:scale-90">
+<span class="material-symbols-outlined">forum</span>
+<span class="font-manrope label-md font-medium">Questions</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity transition-transform scale-95 active:scale-90">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-manrope label-md font-medium">Knowledge</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity transition-transform scale-95 active:scale-90">
+<span class="material-symbols-outlined">person</span>
+<span class="font-manrope label-md font-medium">Profile</span>
+</div>
+</nav>
+<style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+    </style>
+</body></html>

@@ -3,9 +3,13 @@
     <view class="top-nav">
       <view class="nav-left" @click="goBack">
         <text class="material-symbols-outlined nav-back-icon">arrow_back</text>
-        <text class="nav-title">医小管</text>
+        <view class="nav-title-group">
+          <text class="nav-title">智能问答</text>
+          <text class="nav-subtitle">SDFMU · CAMPUS AI</text>
+        </view>
       </view>
       <view class="nav-right" @click="goToHistory">
+        <view class="nav-online"><view class="nav-online-dot" /><text>在线</text></view>
         <text class="material-symbols-outlined nav-history-icon">history</text>
       </view>
     </view>
@@ -13,11 +17,27 @@
     <!-- 欢迎空状态 -->
     <view v-if="!messages.length" class="welcome-center">
       <view class="welcome-content">
-        <view class="empty-icon">
-          <text class="material-symbols-outlined empty-sparkle-icon">auto_awesome</text>
+        <view class="welcome-panel">
+          <view class="panel-topline">
+            <text class="panel-kicker">CAMPUS AI DESK</text>
+            <view class="panel-status"><view class="panel-status-dot" /><text>实时在线</text></view>
+          </view>
+          <view class="empty-icon">
+            <text class="material-symbols-outlined empty-sparkle-icon">auto_awesome</text>
+          </view>
+          <text class="empty-title">你的校园，随时有回应</text>
+          <text class="empty-desc">选课、校园卡、图书馆或办事流程，交给小管先帮你理清。</text>
+          <view class="panel-meta"><text>流式回答</text><text>可随时中断</text><text>真实校园入口</text></view>
         </view>
-        <text class="empty-title">智慧校园助理</text>
-        <text class="empty-desc">同学你好！关于校园生活、选课安排或办事流程，你都可以问我。</text>
+        <view class="prompt-block">
+          <text class="prompt-heading">从这里开始</text>
+          <view class="prompt-grid">
+            <view v-for="prompt in welcomePrompts" :key="prompt" class="prompt-chip" @click="handleWelcomePrompt(prompt)">
+              <text class="prompt-chip-text">{{ prompt }}</text>
+              <text class="material-symbols-outlined prompt-chip-icon">arrow_upward</text>
+            </view>
+          </view>
+        </view>
       </view>
       <view class="welcome-input-area">
         <view class="input-wrapper">
@@ -83,7 +103,7 @@
               </view>
               <text class="ai-name">MEDICAL ASSISTANT</text>
             </view>
-            <view class="msg-bubble ai-bubble">
+            <view :class="['msg-bubble', 'ai-bubble', { streaming: msg.isStreaming }]">
               <!-- 等待中动画 -->
               <view v-if="msg.isStreaming && !msg.content" class="typing-animation">
                 <view class="dot" /><view class="dot" /><view class="dot" />
@@ -95,8 +115,11 @@
               <!-- 来源引用 -->
               <view v-if="msg.sources && msg.sources.length && !msg.isStreaming" class="citations">
                 <view class="cit-header">
-                  <text class="material-symbols-outlined book-icon">menu_book</text>
-                  <text>参考资料</text>
+                  <view class="cit-heading">
+                    <text class="cit-kicker">VERIFIED SOURCES</text>
+                    <text class="cit-title">参考来源</text>
+                  </view>
+                  <text class="cit-count">{{ msg.sources.length }} 项</text>
                 </view>
                 <view class="cit-list">
                   <view
@@ -105,32 +128,42 @@
                     class="cit-item"
                     @click="handleSourceClick(source)"
                   >
-                    <text class="cit-text">{{ si + 1 }}. {{ source.title }}</text>
+                    <view class="cit-index">0{{ si + 1 }}</view>
+                    <view class="cit-copy">
+                      <text class="cit-text">{{ source.title }}</text>
+                      <text class="cit-meta">校园知识库 · 已核验</text>
+                    </view>
                     <text class="material-symbols-outlined ext-link-icon">open_in_new</text>
                   </view>
                 </view>
               </view>
             </view>
+            <view v-if="msg.isStreaming" class="streaming-state">
+              <view class="streaming-wave"><view /><view /><view /><view /></view>
+              <text>实时生成中 · 可随时停止</text>
+            </view>
             <text class="msg-time">{{ formatTime(msg.timestamp) }}</text>
-            <!-- 拒答时显示内联呼叫老师按钮 -->
-            <UnansweredInviteCard
-              v-if="msg.unanswered_invite && !msg.unanswered_invite.dismissed"
-              :conv_id="msg.unanswered_invite.conv_id"
-              :message_id="msg.unanswered_invite.message_id"
-              @submitted="onUnansweredCardClosed(msg, true)"
-              @dismissed="onUnansweredCardClosed(msg, false)"
-            />
             <view
-              v-if="!msg.isStreaming && isRefusalMsg(msg) && conversationStatus === 'ai_serving'"
-              class="inline-call-teacher"
+              v-if="!msg.isStreaming && isLatestAssistantMessage(msg.id) && conversationStatus === 'ai_serving'"
+              class="answer-support"
               @click="handleCallTeacher"
             >
-              <text class="material-symbols-outlined call-inline-icon">support_agent</text>
-              <text class="call-inline-text">{{ escalateLoading ? '呼叫中...' : '转人工服务' }}</text>
+              <view class="support-icon-wrap"><text class="material-symbols-outlined support-icon">support_agent</text></view>
+              <view class="support-copy">
+                <text class="support-kicker">NEED MORE HELP?</text>
+                <text class="support-title">还没有解决？为你转接老师</text>
+              </view>
+              <view class="support-action">
+                <text>{{ escalateLoading ? '呼叫中' : '转人工' }}</text>
+                <text class="material-symbols-outlined support-arrow">arrow_forward</text>
+              </view>
             </view>
-            <view v-if="conversationStatus === 'pending_teacher' && isRefusalMsg(msg)" class="inline-call-done">
+            <view v-if="conversationStatus === 'pending_teacher' && isLatestAssistantMessage(msg.id)" class="answer-support answer-support-done">
               <text class="material-symbols-outlined call-done-icon">check_circle</text>
-              <text class="call-done-text">已通知老师，请耐心等待</text>
+              <view class="support-copy">
+                <text class="support-kicker">TEACHER SERVICE</text>
+                <text class="support-title">已通知老师，请耐心等待回复</text>
+              </view>
             </view>
           </view>
         </view>
@@ -194,11 +227,11 @@
             @confirm="sendMessage"
           />
           <view
-            :class="['send-btn', { disabled: !canSend }]"
-            @click="sendMessage"
+            :class="['send-btn', { disabled: !canSend && !isStreaming, streaming: isStreaming }]"
+            @click="isStreaming ? stopStreaming() : sendMessage()"
             @longpress="onSendLongPress"
           >
-            <text class="material-symbols-outlined send-icon">send</text>
+            <text class="material-symbols-outlined send-icon">{{ isStreaming ? 'stop' : 'send' }}</text>
           </view>
         </view>
       </view>
@@ -253,7 +286,6 @@ import { fetchSSE } from '@/utils/sse'
 import { wsManager } from '@/utils/websocket'
 import { centrifugeManager } from '@/utils/centrifuge'
 import CustomTabBar from '@/components/CustomTabBar.vue'
-import UnansweredInviteCard from '@/components/UnansweredInviteCard.vue'
 import { trackEvent } from '@/utils/track'
 import type { Message as BaseMessage, Source, ConversationStatus, MessageResponse } from '@/types/chat'
 
@@ -287,6 +319,8 @@ const conversationStatus = ref<ConversationStatus>('ai_serving')
 const escalateLoading = ref(false)
 const suggestedQuestions = ref<string[]>([])
 const showCallMenu = ref(false)
+const welcomePrompts = ['查今天课表', '图书馆几点开？', '校园卡怎么用？', '宿舍电费怎么交？']
+let activeController: AbortController | null = null
 const sourcePopup = reactive({ visible: false, title: '', content: '' })
 const sourceSheetHeight = ref(50)
 const DISMISSED_KEY = 'dismissed_unanswered_msg_ids'
@@ -536,6 +570,7 @@ async function sendToTeacher(content: string) {
 async function streamResponse(userContent: string) {
   isStreaming.value = true
   isTyping.value = true
+  activeController = new AbortController()
 
   const aiMessage: ChatMessage = {
     id: `assistant-${Date.now()}`,
@@ -614,13 +649,16 @@ async function streamResponse(userContent: string) {
           scrollToBottom()
         },
       }
+      , activeController.signal
     )
   } catch (e: any) {
     console.error('Stream error:', e)
     isTyping.value = false
     const msg = messages.value.find(m => m.id === aiMessage.id)
-    if (msg) {
+    if (msg && e?.name !== 'AbortError') {
       msg.content = '抱歉，AI 服务暂时不可用，请稍后重试。'
+      msg.isStreaming = false
+    } else if (msg) {
       msg.isStreaming = false
     }
     scrollToBottom()
@@ -631,7 +669,21 @@ async function streamResponse(userContent: string) {
   } finally {
     isStreaming.value = false
     isTyping.value = false
+    activeController = null
   }
+}
+
+function stopStreaming() {
+  if (!isStreaming.value) return
+  activeController?.abort()
+  const current = messages.value.find(message => message.isStreaming)
+  if (current) {
+    current.isStreaming = false
+    if (current.content) current.content += '\n\n_已停止生成，你可以继续追问。_'
+  }
+  isStreaming.value = false
+  isTyping.value = false
+  uni.showToast({ title: '已停止生成', icon: 'none' })
 }
 
 // ============ 来源点击 — 弹层展示 ============
@@ -677,8 +729,20 @@ function isRefusalMsg(msg: BaseMessage): boolean {
   return false
 }
 
+function isLatestAssistantMessage(id: ChatMessage['id']): boolean {
+  for (let index = messages.value.length - 1; index >= 0; index -= 1) {
+    if (messages.value[index].role === 'assistant') return messages.value[index].id === id
+  }
+  return false
+}
+
 // ============ R10: 推荐问题点击 ============
 function handleSuggestionClick(question: string) {
+  inputMessage.value = question
+  nextTick(() => sendMessage())
+}
+
+function handleWelcomePrompt(question: string) {
   inputMessage.value = question
   nextTick(() => sendMessage())
 }
@@ -737,47 +801,83 @@ function scrollToBottom() {
 <style scoped lang="scss">
 @import '@/styles/tokens.scss';
 
-.chat-page { display: flex; flex-direction: column; height: 100vh; background: $surface; }
+.chat-page { display: flex; flex-direction: column; width: min(100%, 390px); height: 100dvh; margin: 0 auto; background: #f3efe9; color: #332a38; }
 
-.top-nav { display: flex; justify-content: space-between; align-items: center; padding: calc(env(safe-area-inset-top) + 1rem) 1.5rem 1rem; background: rgba(250,245,251,0.80); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); z-index: 50; }
-.nav-left { display: flex; align-items: center; gap: 0.75rem; }
-.nav-title { font-size: 1.25rem; font-weight: 700; color: #5b21b6; }
-.nav-back-icon, .nav-history-icon { font-size: 1.5rem; color: #5b21b6; }
+.top-nav { display: flex; justify-content: space-between; align-items: center; padding: calc(env(safe-area-inset-top) + .75rem) 1.25rem .75rem; background: rgba(243,239,233,.86); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); z-index: 50; }
+.nav-left, .nav-right { display: flex; align-items: center; }
+.nav-left { gap: .75rem; }
+.nav-right { gap: .7rem; }
+.nav-title-group { display: flex; flex-direction: column; gap: .18rem; }
+.nav-title { font-size: 1rem; line-height: 1.1; font-weight: 820; color: #35203f; letter-spacing: .02em; }
+.nav-subtitle { color: #aa96af; font-size: .5rem; font-weight: 800; letter-spacing: .13em; }
+.nav-back-icon, .nav-history-icon { font-size: 1.35rem; color: #5b2b8f; }
+.nav-online { display: flex; align-items: center; gap: .3rem; padding: .42rem .55rem; border-radius: .7rem; color: #6c5772; background: rgba(255,255,255,.62); font-size: .58rem; font-weight: 800; }
+.nav-online-dot, .panel-status-dot { width: .32rem; height: .32rem; border-radius: 50%; background: #aee65e; box-shadow: 0 0 8px rgba(174,230,94,.8); }
 
-.welcome-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 1.5rem; padding-bottom: calc(var(--tabbar-safe) + 2rem); }
-.welcome-content { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 2.5rem; }
-.welcome-input-area { width: 100%; max-width: 20rem; }
-.empty-icon { width: 3.75rem; height: 3.75rem; background: linear-gradient(135deg, #5b21b6, #b28cff); border-radius: 1.875rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; box-shadow: 0 0.5rem 1.5rem rgba(91,33,182,0.20); }
-.empty-sparkle-icon { font-size: 1.75rem; color: #fff; }
-.empty-title { font-size: 1.5rem; font-weight: 800; color: #2f2e32; margin-bottom: 0.625rem; }
-.empty-desc { font-size: 0.875rem; color: #64748b; line-height: 1.7; max-width: 16.25rem; }
+.welcome-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 1.25rem 1rem calc(var(--tabbar-safe) + 1rem); overflow-y: auto; }
+.welcome-content { width: 100%; display: flex; flex-direction: column; align-items: stretch; margin-bottom: 1rem; }
+.welcome-panel { padding: 1.15rem 1.15rem .95rem; border-radius: 1.6rem; color: #fff; background: #3e236d; box-shadow: 0 1.15rem 2.5rem rgba(62,35,109,.20); }
+.panel-topline { display: flex; align-items: center; justify-content: space-between; }
+.panel-kicker { color: rgba(255,255,255,.58); font-size: .52rem; font-weight: 850; letter-spacing: .17em; }
+.panel-status { display: flex; align-items: center; gap: .35rem; color: rgba(255,255,255,.75); font-size: .55rem; font-weight: 750; }
+.empty-icon { width: 3.2rem; height: 3.2rem; margin-top: 1.45rem; display: flex; align-items: center; justify-content: center; border-radius: 1.15rem; background: rgba(255,255,255,.15); box-shadow: inset 0 1px 0 rgba(255,255,255,.23); }
+.empty-sparkle-icon { font-size: 1.55rem; color: #fff; }
+.empty-title { display: block; margin-top: .85rem; font-size: 1.5rem; line-height: 1.15; font-weight: 820; letter-spacing: -.04em; }
+.empty-desc { display: block; max-width: 17rem; margin-top: .55rem; color: rgba(255,255,255,.68); font-size: .72rem; line-height: 1.6; }
+.panel-meta { display: flex; gap: .45rem; margin-top: 1.1rem; }
+.panel-meta text { padding: .4rem .55rem; border-radius: .55rem; color: rgba(255,255,255,.72); background: rgba(255,255,255,.1); font-size: .52rem; font-weight: 700; }
+.prompt-block { margin-top: 1.25rem; }
+.prompt-heading { display: block; margin: 0 .15rem .65rem; color: #786a7c; font-size: .66rem; font-weight: 820; letter-spacing: .08em; }
+.prompt-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .5rem; }
+.prompt-chip { display: flex; align-items: center; justify-content: space-between; gap: .35rem; min-height: 2.7rem; padding: 0 .7rem; border-radius: .95rem; background: rgba(255,255,255,.74); box-shadow: inset 0 1px 0 #fff; }
+.prompt-chip:active { transform: scale(.98); background: #fff; }
+.prompt-chip-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #4b3b50; font-size: .67rem; font-weight: 750; }
+.prompt-chip-icon { flex-shrink: 0; color: #5b2b8f; font-size: .9rem; }
+.welcome-input-area { width: 100%; max-width: 30rem; margin-top: auto; }
 
 .chat-container { flex: 1; padding: 0 1rem; box-sizing: border-box; }
 .msg-wrapper { display: flex; flex-direction: column; margin-bottom: 1.5rem; }
 
 .user-msg { align-items: flex-end; }
-.user-bubble { background: linear-gradient(135deg, #5b21b6, #b28cff); color: #fff; border-radius: 1rem 1rem 0 1rem; max-width: 85%; padding: 1rem 1.25rem; box-shadow: 0 0.5rem 1rem rgba(91,33,182,0.10); font-size: 0.9375rem; line-height: 1.7; }
+.user-bubble { background: #5b2b8f; color: #fff; border-radius: 1rem 1rem 0 1rem; max-width: 85%; padding: 1rem 1.25rem; box-shadow: 0 0.5rem 1rem rgba(91,33,143,.12); font-size: 0.9375rem; line-height: 1.7; }
 .msg-time { font-size: 0.6875rem; font-weight: 700; color: #94a3b8; margin-top: 0.5rem; padding: 0 0.5rem; }
 
-.ai-msg { align-items: flex-start; }
+.ai-msg { width: 100%; align-items: flex-start; }
 .ai-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; padding: 0 0.5rem; }
-.ai-avatar { width: 1.5rem; height: 1.5rem; border-radius: 0.75rem; background: linear-gradient(135deg, #5b21b6, #b28cff); display: flex; align-items: center; justify-content: center; }
+.ai-avatar { width: 1.5rem; height: 1.5rem; border-radius: 0.75rem; background: #5b2b8f; display: flex; align-items: center; justify-content: center; }
 .bot-icon { font-size: 0.875rem; color: #fff; }
 .ai-name { font-size: 0.75rem; font-weight: 700; color: #5b21b6; letter-spacing: 0.0625rem; }
-.ai-bubble { background: #ffffff; color: #2f2e32; border-radius: 1rem 1rem 1rem 0; max-width: 90%; padding: 1.25rem 1.5rem; box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.02); border-left: 0.25rem solid #5b21b6; font-size: 0.9375rem; line-height: 1.7; }
+.ai-bubble { width: 100%; box-sizing: border-box; background: rgba(255,255,255,.86); color: #2f2e32; border-radius: 1.15rem 1.15rem 1.15rem .22rem; padding: 1.25rem 1.15rem 1.1rem; box-shadow: inset 0 1px 0 rgba(255,255,255,.96), 0 .6rem 1.8rem rgba(91,43,143,.07); border-left: .22rem solid #5b2b8f; font-size: 0.9375rem; line-height: 1.7; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.ai-bubble.streaming { box-shadow: inset 0 1px 0 rgba(255,255,255,.94), 0 0 0 1px rgba(91,43,143,.10), 0 10px 26px rgba(91,43,143,.10); }
+.streaming-state { display: flex; align-items: center; gap: .45rem; margin-top: .45rem; padding-left: .45rem; color: #5b2b8f; font-size: .68rem; font-weight: 700; }
+.streaming-wave { display: flex; align-items: center; gap: 2px; height: 12px; }
+.streaming-wave view { width: 2px; height: 5px; border-radius: 2px; background: #5b2b8f; animation: streamWave 1s ease-in-out infinite; }
+.streaming-wave view:nth-child(2) { animation-delay: .12s; }
+.streaming-wave view:nth-child(3) { animation-delay: .24s; }
+.streaming-wave view:nth-child(4) { animation-delay: .36s; }
+@keyframes streamWave { 0%,100% { height: 5px; opacity: .45; } 50% { height: 12px; opacity: 1; } }
 
 .teacher-avatar { width: 1.5rem; height: 1.5rem; border-radius: 0.75rem; background: linear-gradient(135deg, #059669, #34d399); display: flex; align-items: center; justify-content: center; }
 .teacher-icon { font-size: 0.875rem; color: #fff; }
 .teacher-name { font-size: 0.75rem; font-weight: 700; color: #059669; letter-spacing: 0.0625rem; }
 .teacher-bubble { background: #ffffff; color: #2f2e32; border-radius: 1rem 1rem 1rem 0; max-width: 90%; padding: 1.25rem 1.5rem; box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.02); border-left: 0.25rem solid #059669; font-size: 0.9375rem; line-height: 1.7; }
 
-.citations { margin-top: 1rem; padding: 0.75rem; background: #f4eff5; border-radius: 0.5rem; }
-.cit-header { display: flex; align-items: center; gap: 0.25rem; margin-bottom: 0.5rem; color: #5b21b6; font-size: 0.75rem; font-weight: 700; }
-.book-icon { font-size: 0.875rem; color: #5b21b6; }
-.cit-list { display: flex; flex-direction: column; gap: 0.5rem; }
-.cit-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.5); border-radius: 0.25rem; font-size: 0.75rem; color: #7742a6; text-decoration: underline; }
-.cit-text { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 0.5rem; }
-.ext-link-icon { font-size: 0.75rem; color: #7742a6; }
+.citations { margin-top: 1.1rem; padding: .9rem .85rem .35rem; border-radius: .95rem; background: #f4eff7; box-shadow: inset 0 1px 0 rgba(255,255,255,.84); animation: sourceReveal .45s cubic-bezier(.2,.75,.2,1) both; }
+.cit-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: .55rem; }
+.cit-heading { display: flex; flex-direction: column; gap: .18rem; }
+.cit-kicker { color: #a88ab9; font-size: .46rem; font-weight: 850; letter-spacing: .15em; }
+.cit-title { color: #4d296c; font-size: .74rem; font-weight: 850; }
+.cit-count { padding: .25rem .45rem; border-radius: .5rem; color: #765889; background: rgba(255,255,255,.65); font-size: .5rem; font-weight: 800; }
+.cit-list { display: flex; flex-direction: column; }
+.cit-item { display: flex; align-items: center; gap: .65rem; min-height: 3.1rem; padding: .2rem .1rem; color: #4d296c; }
+.cit-item + .cit-item { box-shadow: inset 0 1px 0 rgba(91,43,143,.08); }
+.cit-item:active { opacity: .72; transform: translateX(2px); }
+.cit-index { width: 1.55rem; height: 1.55rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: .55rem; color: #5b2b8f; background: rgba(255,255,255,.82); font-size: .52rem; font-weight: 900; box-shadow: inset 0 1px 0 #fff; }
+.cit-copy { flex: 1; min-width: 0; }
+.cit-text { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #4b3a52; font-size: .68rem; font-weight: 760; }
+.cit-meta { display: block; margin-top: .22rem; color: #a598aa; font-size: .5rem; }
+.ext-link-icon { flex-shrink: 0; font-size: .8rem; color: #8e6fa1; }
+@keyframes sourceReveal { from { opacity: 0; transform: translateY(.5rem); } to { opacity: 1; transform: translateY(0); } }
 
 .typing-animation { display: flex; gap: 0.25rem; padding: 0.25rem 0; }
 .dot { width: 0.375rem; height: 0.375rem; background: #5b21b6; border-radius: 50%; animation: typing 1.4s infinite ease-in-out; }
@@ -789,15 +889,17 @@ function scrollToBottom() {
 @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
 
 /* 预留 input-bar 自身 ~4.5rem + tab bar(var) 的滚动空间 */
-.bottom-spacer { height: calc(var(--tabbar-safe) + 4.5rem); }
+.bottom-spacer { height: calc(var(--tabbar-safe) + 6rem); }
 
 /* input bar 停在 tab bar 正上方 — 通过 var(--tabbar-safe) 消费 tokens.scss
    的单一源, 不再硬编码 3.5rem 这类会脱节的值 */
 .bottom-area {
   position: fixed;
   bottom: var(--tabbar-safe);
-  left: 0;
-  right: 0;
+  left: 50%;
+  right: auto;
+  width: min(100%, 390px);
+  transform: translateX(-50%);
   z-index: 40;
   background: rgba(250, 245, 251, 0.80);
   backdrop-filter: blur(20px) saturate(180%);
@@ -813,10 +915,12 @@ function scrollToBottom() {
 
 .system-message { display: flex; justify-content: center; padding: 0.5rem 0; font-size: 0.75rem; color: #94a3b8; font-style: italic; }
 
-.input-wrapper { display: flex; align-items: center; gap: 0.5rem; background: #e5e1e8; border-radius: 1.5rem; padding: 0.375rem 0.375rem 0.375rem 1rem; }
+.input-wrapper { display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,.92); border: 1px solid rgba(91,43,143,.12); border-radius: 1.25rem; padding: 0.38rem 0.38rem 0.38rem 1rem; box-shadow: inset 0 1px 0 #fff, 0 .75rem 1.7rem rgba(62,35,109,.10); }
 .input { flex: 1; background: transparent; border: none; font-size: 0.875rem; color: #2f2e32; }
-.send-btn { width: 2.5rem; height: 2.5rem; border-radius: 1.25rem; background: linear-gradient(135deg, #5b21b6, #b28cff); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.send-btn { width: 2.5rem; height: 2.5rem; border-radius: 1.25rem; background: #5b2b8f; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .send-btn.disabled { opacity: 0.5; }
+.send-btn.streaming { background: #b22b89; box-shadow: 0 0 0 5px rgba(178,43,137,.14); animation: stopPulse 1.4s ease-in-out infinite; }
+@keyframes stopPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(.94); } }
 .send-icon { font-size: 1.25rem; color: #fff; }
 
 .markdown-body { font-size: 0.875rem; line-height: 1.6; }
@@ -826,13 +930,19 @@ function scrollToBottom() {
 .markdown-body :deep(li) { margin-bottom: 0.25rem; }
 .markdown-body :deep(strong) { font-weight: 700; color: #5b21b6; }
 
-.inline-call-teacher { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 0.75rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #5b21b6, #b28cff); color: #fff; border-radius: 1.5rem; transition: all 0.2s; box-shadow: 0 0.25rem 0.75rem rgba(91,33,182,0.25); }
-.inline-call-teacher:active { transform: scale(0.95); opacity: 0.9; }
-.call-inline-icon { font-size: 1.125rem; color: #fff; }
-.call-inline-text { font-size: 0.8125rem; font-weight: 700; color: #fff; }
-.inline-call-done { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 0.75rem; padding: 0.5rem 1rem; background: rgba(30,200,60,0.1); border-radius: 1.5rem; }
+.answer-support { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: .65rem; margin-top: .65rem; padding: .7rem .7rem; border-radius: 1rem; color: #fff; background: #5b2b8f; box-shadow: 0 .7rem 1.6rem rgba(91,43,143,.16), inset 0 1px 0 rgba(255,255,255,.16); animation: sourceReveal .5s .08s cubic-bezier(.2,.75,.2,1) both; }
+.answer-support:active { transform: scale(.985); }
+.support-icon-wrap { width: 2.3rem; height: 2.3rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: .8rem; background: rgba(255,255,255,.15); }
+.support-icon { color: #fff; font-size: 1.15rem; }
+.support-copy { flex: 1; min-width: 0; }
+.support-kicker { display: block; color: rgba(255,255,255,.5); font-size: .44rem; font-weight: 850; letter-spacing: .12em; }
+.support-title { display: block; margin-top: .22rem; color: #fff; font-size: .68rem; font-weight: 790; }
+.support-action { display: flex; align-items: center; gap: .12rem; flex-shrink: 0; padding: .55rem .65rem; border-radius: .7rem; color: #4a1c75; background: rgba(255,255,255,.92); font-size: .58rem; font-weight: 850; }
+.support-arrow { font-size: .75rem; }
+.answer-support-done { color: #315d2e; background: #edf7e8; box-shadow: inset 0 1px 0 #fff; }
+.answer-support-done .support-kicker { color: #79a470; }
+.answer-support-done .support-title { color: #315d2e; }
 .call-done-icon { font-size: 1.125rem; color: #1e8e3e; }
-.call-done-text { font-size: 0.8125rem; font-weight: 700; color: #1e8e3e; }
 
 /* R10: 关联问题推荐 */
 .suggestions-area { padding: 0 0.5rem; margin-bottom: 1.5rem; }

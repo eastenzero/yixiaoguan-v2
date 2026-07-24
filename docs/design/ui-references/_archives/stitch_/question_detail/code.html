@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>提问详情 - The Ethereal Educator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#faf5fb",
+                    "on-secondary-container": "#612c90",
+                    "inverse-primary": "#a476ff",
+                    "on-secondary": "#fbefff",
+                    "on-surface": "#2f2e32",
+                    "secondary-container": "#e6c5ff",
+                    "primary": "#702ae1",
+                    "secondary-fixed-dim": "#ddb3ff",
+                    "inverse-surface": "#0e0e11",
+                    "error-dim": "#a70138",
+                    "background": "#faf5fb",
+                    "error-container": "#f74b6d",
+                    "on-primary-fixed": "#000000",
+                    "surface-container-high": "#e5e1e8",
+                    "tertiary-dim": "#8e294c",
+                    "on-error": "#ffefef",
+                    "surface-variant": "#e0dbe3",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-dim": "#6411d5",
+                    "inverse-on-surface": "#9f9ca1",
+                    "on-background": "#2f2e32",
+                    "primary-fixed-dim": "#a67aff",
+                    "tertiary-fixed": "#ff8eac",
+                    "on-error-container": "#510017",
+                    "outline-variant": "#afacb1",
+                    "tertiary-fixed-dim": "#f77c9e",
+                    "primary-container": "#b28cff",
+                    "surface-dim": "#d7d3db",
+                    "on-tertiary": "#ffeff1",
+                    "secondary": "#7742a6",
+                    "surface-container-highest": "#e0dbe3",
+                    "on-tertiary-fixed-variant": "#711036",
+                    "on-tertiary-fixed": "#380016",
+                    "on-secondary-fixed-variant": "#6b369a",
+                    "primary-fixed": "#b28cff",
+                    "error": "#b41340",
+                    "tertiary": "#9e3657",
+                    "on-tertiary-container": "#64042d",
+                    "on-primary-container": "#2e006c",
+                    "outline": "#78767b",
+                    "surface-container": "#ebe7ed",
+                    "secondary-fixed": "#e6c5ff",
+                    "tertiary-container": "#ff8eac",
+                    "on-secondary-fixed": "#4d137b",
+                    "surface-container-low": "#f4eff5",
+                    "surface-bright": "#faf5fb",
+                    "surface-tint": "#702ae1",
+                    "secondary-dim": "#6a3599",
+                    "on-primary": "#f8f0ff",
+                    "on-primary-fixed-variant": "#390083",
+                    "on-surface-variant": "#5d5b5f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', 'PingFang SC', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            opacity: 0;
+            transform: translateY(16px);
+        }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface min-h-screen text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 h-14 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl flex items-center px-5">
+<div class="flex items-center gap-4 w-full">
+<button class="material-symbols-outlined text-[#630ED4] hover:bg-surface-container-low transition-colors p-2 rounded-full active:scale-90" data-icon="arrow_back">arrow_back</button>
+<h1 class="font-manrope title-lg text-on-surface font-bold">提问详情</h1>
+</div>
+</header>
+<main class="pt-20 pb-40 px-4 max-w-2xl mx-auto space-y-8 overflow-x-hidden">
+<!-- Student Info Card -->
+<section class="animate-fade-up" style="animation-delay: 100ms;">
+<div class="bg-surface-container-lowest rounded-xl p-5 flex items-center gap-4">
+<div class="relative">
+<img alt="Avatar" class="w-14 h-14 rounded-full object-cover border-2 border-primary/10" data-alt="portrait of a young female student with soft natural lighting and calm academic background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0mnLddO7vGEyv-XlfV9JlaPZUhg_FDHDROcRMfraxf2lPxWD-mHaSReUTOe8shaQ9_9C68GSEWOJbyp81PGn3Cp3jQ3OrP3FPvv1SNcuyoAjwg-9ojnfAL3E-wQCHPUimVU-TPQjSsk_gYrsoM9QINL5aEXf-0rC-sd3BaIuZr25pZfxgle11Jww7NKVZztEGX3Cnud9Bo4-dc9O8d9p4i7tGPeu9n52r093sAJyK_pBhXfcPdjZgrO58-xpfXUiP1HTuh4gkIQ"/>
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<h2 class="title-lg font-bold">张小洋</h2>
+<span class="bg-primary-container text-on-primary-container text-xs font-bold px-3 py-1 rounded-full">待处理</span>
+</div>
+<p class="text-on-surface-variant body-md mt-0.5">护理学院 · 2023级本科</p>
+</div>
+</div>
+</section>
+<!-- Chat History -->
+<section class="space-y-6">
+<!-- Student Message -->
+<div class="flex flex-col items-end animate-fade-up" style="animation-delay: 200ms;">
+<div class="max-w-[85%] bg-primary p-4 rounded-t-2xl rounded-bl-2xl shadow-[0_8px_24px_-4px_rgba(112,42,225,0.12)]">
+<p class="text-on-primary body-md leading-relaxed">请问学校的电费缴纳在哪里操作？我看校微中心没找到入口，宿舍快停电了有点急，麻烦老师指路一下。</p>
+</div>
+<span class="text-[10px] text-on-surface-variant mt-2 px-1">14:30</span>
+</div>
+<!-- AI Response (Refusal) -->
+<div class="flex items-start gap-3 animate-fade-up" style="animation-delay: 300ms;">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="smart_toy" style="font-variation-settings: 'FILL' 1">smart_toy</span>
+</div>
+<div class="flex flex-col">
+<div class="max-w-[90%] bg-white border border-error/20 p-4 rounded-t-2xl rounded-br-2xl relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-error"></div>
+<p class="text-on-surface body-md leading-relaxed">很抱歉，医小管目前尚未学习到关于“校微中心电费缴纳入口”的相关说明。系统提示可能在“智慧校园”APP的“后勤服务”模块中进行。已为您呼叫人工老师处理。</p>
+</div>
+<span class="text-[10px] text-on-surface-variant mt-2 px-1">14:31</span>
+</div>
+</div>
+<!-- System Message -->
+<div class="flex justify-center animate-fade-up" style="animation-delay: 400ms;">
+<div class="bg-surface-container rounded-full px-4 py-1.5 flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="notifications">notifications</span>
+<span class="text-on-surface-variant label-md">学生已呼叫老师 — 14:32</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Fixed Bottom Action Bar -->
+<!-- Case: Pending State (Rendered as requested: Large primary button) -->
+<div class="fixed bottom-0 left-0 w-full z-50 p-6 bg-white/90 backdrop-blur-xl animate-fade-up" style="animation-delay: 500ms;">
+<div class="max-w-2xl mx-auto">
+<button class="w-full h-14 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold title-lg shadow-[0_12px_32px_-4px_rgba(112,42,225,0.2)] active:scale-95 transition-transform flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="assignment_ind" style="font-variation-settings: 'FILL' 1">assignment_ind</span>
+                接单处理
+            </button>
+</div>
+</div>
+<!-- Hidden Case: Processing State (Included for structure reference) -->
+<!-- 
+    <div class="fixed bottom-0 left-0 w-full z-50 p-4 bg-white/95 backdrop-blur-xl space-y-3">
+        <div class="flex gap-2 overflow-x-auto px-1 no-scrollbar">
+            <span class="whitespace-nowrap px-4 py-2 bg-surface-container-high text-primary rounded-full label-md active:scale-95 transition-transform">已为您查询</span>
+            <span class="whitespace-nowrap px-4 py-2 bg-surface-container-high text-primary rounded-full label-md active:scale-95 transition-transform">请到XX部门</span>
+            <span class="whitespace-nowrap px-4 py-2 bg-surface-container-high text-primary rounded-full label-md active:scale-95 transition-transform">核对缴费号</span>
+        </div>
+        <div class="flex items-center gap-3 bg-surface-container-low rounded-2xl p-2 px-4">
+            <input type="text" placeholder="输入回复内容..." class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface body-md h-10">
+            <button class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center active:scale-90 transition-transform">
+                <span class="material-symbols-outlined" data-icon="send">send</span>
+            </button>
+        </div>
+    </div>
+    -->
+</body></html>

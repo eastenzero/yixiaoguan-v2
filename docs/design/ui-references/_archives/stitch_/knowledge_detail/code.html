@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#faf5fb",
+                    "on-secondary-container": "#612c90",
+                    "inverse-primary": "#a476ff",
+                    "on-secondary": "#fbefff",
+                    "on-surface": "#2f2e32",
+                    "secondary-container": "#e6c5ff",
+                    "primary": "#702ae1",
+                    "secondary-fixed-dim": "#ddb3ff",
+                    "inverse-surface": "#0e0e11",
+                    "error-dim": "#a70138",
+                    "background": "#faf5fb",
+                    "error-container": "#f74b6d",
+                    "on-primary-fixed": "#000000",
+                    "surface-container-high": "#e5e1e8",
+                    "tertiary-dim": "#8e294c",
+                    "on-error": "#ffefef",
+                    "surface-variant": "#e0dbe3",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-dim": "#6411d5",
+                    "inverse-on-surface": "#9f9ca1",
+                    "on-background": "#2f2e32",
+                    "primary-fixed-dim": "#a67aff",
+                    "tertiary-fixed": "#ff8eac",
+                    "on-error-container": "#510017",
+                    "outline-variant": "#afacb1",
+                    "tertiary-fixed-dim": "#f77c9e",
+                    "primary-container": "#b28cff",
+                    "surface-dim": "#d7d3db",
+                    "on-tertiary": "#ffeff1",
+                    "secondary": "#7742a6",
+                    "surface-container-highest": "#e0dbe3",
+                    "on-tertiary-fixed-variant": "#711036",
+                    "on-tertiary-fixed": "#380016",
+                    "on-secondary-fixed-variant": "#6b369a",
+                    "primary-fixed": "#b28cff",
+                    "error": "#b41340",
+                    "tertiary": "#9e3657",
+                    "on-tertiary-container": "#64042d",
+                    "on-primary-container": "#2e006c",
+                    "outline": "#78767b",
+                    "surface-container": "#ebe7ed",
+                    "secondary-fixed": "#e6c5ff",
+                    "tertiary-container": "#ff8eac",
+                    "on-secondary-fixed": "#4d137b",
+                    "surface-container-low": "#f4eff5",
+                    "surface-bright": "#faf5fb",
+                    "surface-tint": "#702ae1",
+                    "secondary-dim": "#6a3599",
+                    "on-primary": "#f8f0ff",
+                    "on-primary-fixed-variant": "#390083",
+                    "on-surface-variant": "#5d5b5f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 h-14 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl flex items-center px-5">
+<div class="flex items-center justify-between w-full">
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low transition-colors active:scale-90">
+<span class="material-symbols-outlined text-on-surface" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-manrope title-lg text-on-surface font-bold">知识详情</h1>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low transition-colors active:scale-90">
+<span class="material-symbols-outlined text-[#630ED4]" data-icon="edit">edit</span>
+</button>
+</div>
+</header>
+<main class="pt-20 pb-32 px-5 max-w-3xl mx-auto space-y-8 animate-fade-up">
+<!-- Hero Section -->
+<section class="space-y-4">
+<div class="flex flex-wrap items-center gap-2">
+<span class="px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-[11px] font-bold tracking-wider uppercase">
+                    生活指南
+                </span>
+<span class="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                    已发布
+                </span>
+</div>
+<h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface leading-tight">
+                学生电费缴纳指南
+            </h2>
+<div class="flex items-center gap-3 pt-2">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container text-sm" data-icon="person">person</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">系统管理员</span>
+<span class="text-xs text-on-surface-variant">最后更新于 2023年10月24日 14:30</span>
+</div>
+</div>
+</section>
+<!-- Body Content -->
+<article class="space-y-6 text-on-surface-variant leading-relaxed">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Modern university dormitory interior with warm ambient lighting and a digital payment kiosk interface on a smartphone" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_U4SkUC8A38irahU1G5FSKVzD7eP72m-CJuMe_4oxVujSbOWmfo7ZVbNDF-w0jwSShdmafy_fYf1Fa0Ggie2W4vYX-lu4chtnBBlkegow4dWigBvzeSYVOqQEv6aXmvztYXbPwezTgU1ICfcL5QXBW7SbcCV0e4NHjPlAcK9kSceQTk3P9u1l8HbodIMluPA5GNlect4-3hfHuN-poEY3FHway-WgJo9oGCULIOGVT5JyNz_jhUOogyygl0fieHihhwLNdB2uuA"/>
+</div>
+<h3 class="text-xl font-bold text-on-surface pt-4">1. 缴纳方式概述</h3>
+<p>
+                为方便广大在校学生，学校提供了多种电费缴纳途径。目前支持通过校园一卡通、手机银行以及第三方支付平台（微信/支付宝）进行实时充值。
+            </p>
+<h3 class="text-xl font-bold text-on-surface pt-4">2. 详细操作步骤</h3>
+<ul class="space-y-4 list-none">
+<li class="flex gap-4 p-4 rounded-lg bg-surface-container-low">
+<span class="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold">01</span>
+<div>
+<p class="font-bold text-on-surface mb-1">登录校园小程序</p>
+<p class="text-sm">打开“智慧校园”小程序，进入“生活缴费”模块，选择“电费管理”。</p>
+</div>
+</li>
+<li class="flex gap-4 p-4 rounded-lg bg-surface-container-low">
+<span class="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold">02</span>
+<div>
+<p class="font-bold text-on-surface mb-1">绑定宿舍信息</p>
+<p class="text-sm">首次使用需输入所在楼栋和宿舍号进行身份校验与余额查询。</p>
+</div>
+</li>
+<li class="flex gap-4 p-4 rounded-lg bg-surface-container-low">
+<span class="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold">03</span>
+<div>
+<p class="font-bold text-on-surface mb-1">确认并支付</p>
+<p class="text-sm">输入充值金额（单次不少于10元），选择支付方式并完成确认。</p>
+</div>
+</li>
+</ul>
+<h3 class="text-xl font-bold text-on-surface pt-4">3. 注意事项</h3>
+<div class="p-5 border-l-4 border-primary bg-primary/5 rounded-r-lg italic">
+                “系统每日 23:30 至次日 00:30 为结算维护时间，期间无法进行充值，请避开此时段。”
+            </div>
+<p>
+                如遇充值成功但电表未及时下发指令的情况，请携带一卡通前往宿舍楼下的自助终端进行补登，或联系后勤保障部服务热线（010-88888888）。
+            </p>
+</article>
+</main>
+<!-- Bottom Action Bar -->
+<footer class="fixed bottom-0 left-0 w-full z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl px-5 py-4 pb-safe flex gap-3 items-center justify-between shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
+<button class="flex-1 h-12 rounded-full border border-outline-variant text-on-surface font-semibold hover:bg-surface-container-low transition-all active:scale-95">
+            下线
+        </button>
+<button class="flex-[2] h-12 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="edit" data-weight="fill">edit</span>
+            编辑
+        </button>
+</footer>
+</body></html>

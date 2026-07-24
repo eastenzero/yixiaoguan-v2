@@ -21,16 +21,16 @@
 // ─────────────────────────────────────────────────────────
 
 // ── Primary tier ──
-$primary: #5b21b6; // [OVERRIDE] 保留现状 (dashboard 原值 #702ae1)
-$primary-dim: #6411d5;
-$primary-container: #b28cff;
-$on-primary: #f8f0ff;
-$on-primary-container: #2e006c;
-$primary-fixed: #b28cff;
-$primary-fixed-dim: #a67aff;
+$primary: #5b2b8f; // 参考提案中的深紫罗兰
+$primary-dim: #43216d;
+$primary-container: #d9c8ef;
+$on-primary: #fbf7ff;
+$on-primary-container: #32105d;
+$primary-fixed: #d9c8ef;
+$primary-fixed-dim: #c4ace4;
 $on-primary-fixed: #000000;
 $on-primary-fixed-variant: #390083;
-$inverse-primary: #a476ff;
+$inverse-primary: #b899df;
 
 // ── Secondary tier ──
 $secondary: #7742a6;
@@ -71,7 +71,7 @@ $surface-container-low: #f4eff5; // L1 (section 分组)
 $surface-container: #ebe7ed; // L2 (主力 container)
 $surface-container-high: #e5e1e8; // L3 focus
 $surface-container-highest: #e0dbe3; // L4 modal-ish
-$surface-tint: #5b21b6; // [OVERRIDE] 跟随 $primary (dashboard 原值 #702ae1)
+$surface-tint: #5b2b8f; // 提案深紫罗兰
 
 // ── On-surface / background ──
 $on-surface: #2f2e32;

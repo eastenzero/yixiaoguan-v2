@@ -6,18 +6,32 @@
  */
 import { showFeatureNotice } from './useFeatureNotice'
 
+const SSO_LOGIN_URL = 'https://sso.sdfmu.edu.cn/login?noAutoRedirect=true&service='
+
 export function openAiQuestion(question: string) {
   uni.setStorageSync('chat_init_query', question)
   uni.switchTab({ url: '/pages/chat/index' })
 }
 
+export function buildSsoServiceUrl(url: string) {
+  return `${SSO_LOGIN_URL}${encodeURIComponent(url)}`
+}
+
 export function openExternal(url: string) {
   // #ifdef H5
-  window.open(url, '_blank')
+  if (/MicroMessenger/i.test(window.navigator.userAgent)) {
+    window.location.href = url
+  } else {
+    window.open(url, '_blank')
+  }
   // #endif
   // #ifndef H5
   uni.navigateTo({ url: `/pages/services/webview?url=${encodeURIComponent(url)}` })
   // #endif
+}
+
+export function openSsoExternal(url: string) {
+  openExternal(buildSsoServiceUrl(url))
 }
 
 export function showComingSoon(featureName: string, suggestedQuestion?: string) {

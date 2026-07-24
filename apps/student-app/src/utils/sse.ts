@@ -16,7 +16,8 @@ export async function fetchSSE(
   url: string,
   body: object,
   token: string,
-  callbacks: SSECallbacks
+  callbacks: SSECallbacks,
+  signal?: AbortSignal,
 ): Promise<void> {
   const resp = await fetch(url, {
     method: 'POST',
@@ -25,6 +26,7 @@ export async function fetchSSE(
       'Authorization': `Bearer ${token}`,
     },
     body: JSON.stringify(body),
+    signal,
   })
 
   if (!resp.ok) {

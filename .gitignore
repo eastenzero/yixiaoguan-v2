@@ -39,6 +39,13 @@ bailian.txt
 .tasks/e2e-pilot-smoke/*-storage-state.json
 .tasks/e2e-pilot-smoke/trace-*.zip
 
+# Playwright CLI 会话快照与控制台日志（可能包含 token / cookie）
+.playwright-cli/
+**/.playwright-cli/
+
+# ESP / IoT 本地实验资料（包含设备密钥、云端凭据）
+/esp/
+
 # Mutagen / 其他同步工具
 mutagen.yml.lock
 

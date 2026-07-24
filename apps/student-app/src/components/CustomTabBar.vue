@@ -18,7 +18,7 @@ defineProps<{ current: string }>()
 const tabs = [
   { key: 'home', icon: 'home', label: '首页', path: '/pages/home/index' },
   { key: 'assistant', icon: 'chat_bubble', label: '智能问答', path: '/pages/chat/index' },
-  { key: 'services', icon: 'business_center', label: '事务导办', path: '/pages/services/index' },
+  { key: 'services', icon: 'business_center', label: '服务大厅', path: '/pages/services/index' },
   { key: 'profile', icon: 'person', label: '我的', path: '/pages/profile/index' },
 ]
 
@@ -36,8 +36,10 @@ function switchTab(tab: { path: string; key: string }) {
 .tab-bar {
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: 50%;
+  right: auto;
+  width: min(100%, 390px);
+  transform: translateX(-50%);
   z-index: 50;
   box-sizing: border-box;
   height: var(--tabbar-safe);                         // 76px + safe-area
