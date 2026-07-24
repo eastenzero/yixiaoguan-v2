@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#faf5fb",
+                    "on-secondary-container": "#612c90",
+                    "inverse-primary": "#a476ff",
+                    "on-secondary": "#fbefff",
+                    "on-surface": "#2f2e32",
+                    "secondary-container": "#e6c5ff",
+                    "primary": "#702ae1",
+                    "secondary-fixed-dim": "#ddb3ff",
+                    "inverse-surface": "#0e0e11",
+                    "error-dim": "#a70138",
+                    "background": "#faf5fb",
+                    "error-container": "#f74b6d",
+                    "on-primary-fixed": "#000000",
+                    "surface-container-high": "#e5e1e8",
+                    "tertiary-dim": "#8e294c",
+                    "on-error": "#ffefef",
+                    "surface-variant": "#e0dbe3",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-dim": "#6411d5",
+                    "inverse-on-surface": "#9f9ca1",
+                    "on-background": "#2f2e32",
+                    "primary-fixed-dim": "#a67aff",
+                    "tertiary-fixed": "#ff8eac",
+                    "on-error-container": "#510017",
+                    "outline-variant": "#afacb1",
+                    "tertiary-fixed-dim": "#f77c9e",
+                    "primary-container": "#b28cff",
+                    "surface-dim": "#d7d3db",
+                    "on-tertiary": "#ffeff1",
+                    "secondary": "#7742a6",
+                    "surface-container-highest": "#e0dbe3",
+                    "on-tertiary-fixed-variant": "#711036",
+                    "on-tertiary-fixed": "#380016",
+                    "on-secondary-fixed-variant": "#6b369a",
+                    "primary-fixed": "#b28cff",
+                    "error": "#b41340",
+                    "tertiary": "#9e3657",
+                    "on-tertiary-container": "#64042d",
+                    "on-primary-container": "#2e006c",
+                    "outline": "#78767b",
+                    "surface-container": "#ebe7ed",
+                    "secondary-fixed": "#e6c5ff",
+                    "tertiary-container": "#ff8eac",
+                    "on-secondary-fixed": "#4d137b",
+                    "surface-container-low": "#f4eff5",
+                    "surface-bright": "#faf5fb",
+                    "surface-tint": "#702ae1",
+                    "secondary-dim": "#6a3599",
+                    "on-primary": "#f8f0ff",
+                    "on-primary-fixed-variant": "#390083",
+                    "on-surface-variant": "#5d5b5f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope", "PingFang SC"],
+                    "body": ["Manrope", "PingFang SC"],
+                    "label": ["Manrope", "PingFang SC"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .stagger-1 { animation-delay: 0.1s; opacity: 0; }
+        .stagger-2 { animation-delay: 0.2s; opacity: 0; }
+        .stagger-3 { animation-delay: 0.3s; opacity: 0; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 h-14 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl flex items-center px-5 w-full">
+<div class="flex items-center justify-between w-full">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-[#630ED4] scale-95 active:scale-90 transition-transform">arrow_back</button>
+<h1 class="font-manrope title-lg text-on-surface font-bold">我的</h1>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full">settings</button>
+</div>
+</header>
+<main class="pt-20 pb-32 px-5 max-w-2xl mx-auto space-y-8 animate-fade-up">
+<!-- Profile Header -->
+<section class="stagger-1 animate-fade-up">
+<div class="relative overflow-hidden rounded-xl p-8 bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-xl">
+<!-- Abstract Texture Decor -->
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+<div class="absolute -left-10 -bottom-10 w-48 h-48 bg-on-primary-container/10 rounded-full blur-3xl"></div>
+<div class="relative flex flex-col items-center text-center">
+<div class="w-24 h-24 rounded-full border-4 border-white/20 p-1 mb-4">
+<img alt="Profile Avatar" class="w-full h-full object-cover rounded-full" data-alt="professional portrait of a middle-aged academic woman with glasses and a warm smile, soft natural library lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQb58lOu_wsY2JmewJzS7V0__ndWTwPanXqQqYfpxYG9DamX_BFzrG5VW02icPEJP3mTWGkdD75vpwRUW8oODaiMQtVITNHEAhnGIPn98qjgnkkbwuO6m3Vq-gHqnKIaK9RUdg4iR0CHTqNWdWkB8B80Sd0R1V_D9a5bbceJ1Prp4W_bUtx0sztWPm_ICGn_Z1aNm40emXEaoVKBxKHzpYtcXMq4FD-sRN71URwOtK6PGIOFzhnWPgSeZl9FZRkuxIcEzB8-vh-g"/>
+</div>
+<h2 class="text-2xl font-bold tracking-tight mb-1">梁老师</h2>
+<p class="text-sm opacity-90 font-medium mb-3">高级讲师 / 临床医学院</p>
+<div class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] tracking-widest font-bold">
+                        ID: EDU-2024-0892
+                    </div>
+</div>
+</div>
+</section>
+<!-- Stats Grid -->
+<section class="stagger-2 animate-fade-up">
+<div class="grid grid-cols-3 gap-3">
+<div class="bg-surface-container-low p-4 rounded-lg flex flex-col items-center justify-center text-center transition-transform active:scale-95">
+<span class="text-xl font-extrabold text-primary mb-1">156</span>
+<span class="text-[10px] text-on-surface-variant font-medium">累计处理</span>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg flex flex-col items-center justify-center text-center transition-transform active:scale-95">
+<span class="text-xl font-extrabold text-primary mb-1">42</span>
+<span class="text-[10px] text-on-surface-variant font-medium">本月审批</span>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg flex flex-col items-center justify-center text-center transition-transform active:scale-95">
+<span class="text-xl font-extrabold text-primary mb-1">28</span>
+<span class="text-[10px] text-on-surface-variant font-medium">知识入库</span>
+</div>
+</div>
+</section>
+<!-- Settings List -->
+<section class="stagger-3 animate-fade-up space-y-4">
+<h3 class="px-2 text-xs font-bold text-on-surface-variant uppercase tracking-widest">系统设置</h3>
+<div class="bg-surface-container-low rounded-lg overflow-hidden">
+<!-- Toggle Item -->
+<div class="flex items-center justify-between p-4 hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</div>
+<span class="font-medium text-sm">通知提醒</span>
+</div>
+<div class="w-12 h-6 bg-primary rounded-full relative p-1 flex items-center justify-end">
+<div class="w-4 h-4 bg-white rounded-full shadow-sm"></div>
+</div>
+</div>
+<!-- Toggle Item -->
+<div class="flex items-center justify-between p-4 hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">volume_up</span>
+</div>
+<span class="font-medium text-sm">声音提示</span>
+</div>
+<div class="w-12 h-6 bg-primary rounded-full relative p-1 flex items-center justify-end">
+<div class="w-4 h-4 bg-white rounded-full shadow-sm"></div>
+</div>
+</div>
+<!-- Toggle Item -->
+<div class="flex items-center justify-between p-4 hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">smart_toy</span>
+</div>
+<span class="font-medium text-sm">AI 自动回复</span>
+</div>
+<div class="w-12 h-6 bg-surface-container-highest rounded-full relative p-1 flex items-center justify-start">
+<div class="w-4 h-4 bg-white rounded-full shadow-sm"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg overflow-hidden">
+<!-- Nav Item -->
+<div class="flex items-center justify-between p-4 hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<span class="font-medium text-sm">修改密码</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-40">chevron_right</span>
+</div>
+<!-- Nav Item -->
+<div class="flex items-center justify-between p-4 hover:bg-surface-container transition-colors cursor-pointer border-t border-white/40">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">info</span>
+</div>
+<span class="font-medium text-sm">关于我们</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-40">chevron_right</span>
+</div>
+</div>
+<button class="w-full bg-error-container/10 text-error font-bold p-5 rounded-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">logout</span>
+<span>退出登录</span>
+</button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-5 pb-safe bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl z-50 h-[calc(4rem+env(safe-area-inset-bottom))] rounded-t-3xl shadow-[0_-4px_20px_rgba(99,14,212,0.05)]">
+<div class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-manrope label-md font-medium">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+<span class="font-manrope label-md font-medium">Questions</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-manrope label-md font-medium">Knowledge</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#630ED4] relative after:content-[''] after:w-1 after:h-1 after:bg-[#630ED4] after:rounded-full after:mt-1 scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-manrope label-md font-medium">Profile</span>
+</div>
+</nav>
+</body></html>

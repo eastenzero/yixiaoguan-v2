@@ -1,278 +1,273 @@
 <template>
   <view class="home-page">
-    <!-- TopAppBar — fixed, ivory glass, brand + notifications only -->
-    <view class="top-app-bar">
-      <text class="brand-logo">医小管</text>
-      <view class="top-actions">
-        <view class="notif-btn" @click="goHistory">
-          <AppIcon name="notifications" class="notif-icon" />
-          <view v-if="totalUnread > 0" class="notif-dot" />
+    <view class="campus-hero">
+      <swiper
+        class="campus-swiper"
+        :current="activeCampusSlide"
+        :autoplay="true"
+        :circular="true"
+        :interval="4800"
+        :duration="760"
+        @change="onCampusSlideChange"
+      >
+        <swiper-item v-for="(slide, index) in campusSlides" :key="slide.id">
+          <image
+            class="campus-visual"
+            :class="{ 'is-active': activeCampusSlide === index }"
+            :src="slide.image"
+            mode="aspectFill"
+          />
+        </swiper-item>
+      </swiper>
+      <view class="hero-shade" />
+
+      <view class="hero-top">
+        <view class="brand-lockup">
+          <view class="brand-mark">
+            <text class="material-symbols-outlined brand-icon">local_hospital</text>
+          </view>
+          <view>
+            <text class="brand-name">医小管</text>
+            <text class="brand-sub">SDFMU · CAMPUS AI</text>
+          </view>
+        </view>
+        <view class="hero-actions">
+          <view class="online-pill"><view class="online-dot" /><text>AI 在线</text></view>
+          <view class="glass-icon-btn" @click="goHistory">
+            <text class="material-symbols-outlined top-icon">notifications</text>
+            <view v-if="totalUnread > 0" class="notif-dot" />
+          </view>
         </view>
       </view>
+
+      <view class="hero-copy animate-fade-up delay-1">
+        <text class="hero-greeting">{{ greeting }}，{{ displayName }}</text>
+        <text class="hero-title">在山一大，<br />让每件事更简单</text>
+        <text class="hero-meta">AI + 校园服务，随时回应你的需要</text>
+      </view>
+
+      <view class="campus-caption animate-fade-up delay-2">
+        <view class="caption-copy">
+          <text class="caption-kicker">CAMPUS / 0{{ activeCampusSlide + 1 }}</text>
+          <text class="caption-title">{{ activeCampus.title }}</text>
+          <text class="caption-sub">{{ activeCampus.subtitle }}</text>
+        </view>
+        <view class="slide-selector">
+          <view
+            v-for="(slide, index) in campusSlides"
+            :key="`selector-${slide.id}`"
+            class="slide-number"
+            :class="{ active: activeCampusSlide === index }"
+            @click.stop="selectCampusSlide(index)"
+          >0{{ index + 1 }}</view>
+        </view>
+      </view>
+
     </view>
 
-    <view class="main">
-      <!-- 1. Personalized Greeting -->
-      <view class="greeting animate-fade-up delay-1">
-        <text class="greeting-sub">{{ greeting }}，{{ displayName }}</text>
-        <text class="greeting-title">智慧校园助理</text>
+    <view class="content-sheet">
+      <view class="glass-search animate-fade-up delay-2" @click="goChat()">
+        <view class="search-orb"><text class="material-symbols-outlined search-icon">auto_awesome</text></view>
+        <view class="search-copy">
+          <text class="search-label">AI CAMPUS ASSISTANT</text>
+          <text class="search-placeholder">想问什么？我现在就回答</text>
+        </view>
+        <view class="ask-btn"><text class="material-symbols-outlined ask-icon">arrow_upward</text></view>
       </view>
 
-      <!-- 2. AI Search Pill (No-Line; relies on ivory→white tonal shift) -->
-      <view class="search-pill animate-fade-up delay-2" @click="goChat()">
-        <view class="search-icon-box">
-          <AppIcon name="auto_awesome" class="search-icon" />
-        </view>
-        <input class="search-input" placeholder="有什么可以帮你的？" placeholder-style="color: #78767b;" disabled />
-        <view class="search-action">
-          <text class="search-action-text">提问</text>
+      <view class="quick-grid animate-fade-up delay-3">
+        <view v-for="item in quickActions" :key="item.id" class="quick-item" @click="handleQuick(item)">
+          <view class="quick-icon-wrap">
+            <text class="material-symbols-outlined quick-icon">{{ item.icon }}</text>
+          </view>
+          <text class="quick-label">{{ item.label }}</text>
+          <text class="quick-caption">{{ item.caption }}</text>
         </view>
       </view>
 
-      <!-- 3. Horizontal Scrollable Tag Chips -->
-      <scroll-view scroll-x class="tag-scroll animate-fade-up delay-3" show-scrollbar="false">
+      <view class="feature-banner animate-fade-up delay-4" @click="goServices">
+        <view class="feature-copy">
+          <text class="feature-kicker">YELLOW RIVER LIBRARY</text>
+          <text class="feature-title">黄河图书馆专属服务</text>
+          <text class="feature-desc">预约座位、馆藏查询，一站式找到学习空间</text>
+        </view>
+        <view class="feature-action"><text>去看看</text><text class="material-symbols-outlined">arrow_forward</text></view>
+      </view>
+
+      <scroll-view scroll-x class="tag-scroll animate-fade-up delay-5" show-scrollbar="false">
         <view class="tag-list">
-          <view v-for="t in tags" :key="t.id" class="tag-chip" @click="onTagClick(t)">
-            <text class="tag-text">{{ t.label }}</text>
+          <view v-for="tag in tags" :key="tag.id" class="tag-chip" @click="askQuestion(tag.label)">
+            <text class="tag-text">{{ tag.label }}</text>
           </view>
         </view>
       </scroll-view>
 
-      <!-- 4. Bento Feature Grid -->
-      <view class="bento-grid animate-fade-up delay-4">
-        <!-- Large: AI Assistant (gradient, 2 rows) -->
-        <view class="bento-large" @click="goChat()">
-          <view class="bento-large-top">
-            <view class="bento-large-icon-wrap">
-              <AppIcon name="auto_awesome" class="bento-large-icon" />
+      <view class="section animate-fade-up delay-6">
+        <view class="section-head">
+          <view>
+            <text class="eyebrow">CAMPUS SERVICES</text>
+            <text class="section-title">常用服务</text>
+          </view>
+          <text class="section-more" @click="goServices">全部服务</text>
+        </view>
+        <view class="service-grid">
+          <view v-for="svc in services" :key="svc.id" class="service-card" @click="onServiceClick(svc)">
+            <view class="service-icon-wrap">
+              <text class="material-symbols-outlined service-icon">{{ svc.icon }}</text>
             </view>
-            <text class="bento-large-title">AI 智能助手</text>
-            <text class="bento-large-desc">您的全天候校园百科全书</text>
-          </view>
-          <view class="bento-large-action">
-            <text class="bento-large-action-text">立即开启</text>
-            <AppIcon name="arrow_forward" class="bento-large-action-icon" />
-          </view>
-          <view class="glow glow-secondary" />
-          <view class="glow glow-corner" />
-        </view>
-
-        <!-- Small 1: Chat History (tertiary tint) -->
-        <view class="bento-small" @click="onBentoClick(bentoItems[1])">
-          <view class="icon-wrap icon-wrap-tertiary">
-            <AppIcon name="history" class="icon-tertiary" />
-          </view>
-          <view class="bento-small-body">
-            <text class="bento-small-title">对话历史</text>
-            <text class="bento-small-desc">回顾过往提问</text>
-          </view>
-        </view>
-
-        <!-- Small 2: Campus Services (primary tint) -->
-        <view class="bento-small" @click="onBentoClick(bentoItems[2])">
-          <view class="icon-wrap icon-wrap-primary">
-            <AppIcon name="grid_view" class="icon-primary" />
-          </view>
-          <view class="bento-small-body">
-            <text class="bento-small-title">校园服务</text>
-            <text class="bento-small-desc">流程咨询与入口导航</text>
+            <text class="service-label">{{ svc.label }}</text>
+            <text class="service-desc">{{ svc.desc }}</text>
           </view>
         </view>
       </view>
 
-      <!-- 5. Quick Links List (Common Services) -->
-      <view class="service-section animate-fade-up delay-5">
-        <view class="service-header">
-          <text class="section-title">常用服务</text>
-          <text class="section-more" @click="showToastSoon">查看全部</text>
+      <view class="assistant-card animate-fade-up delay-7" @click="goChat()">
+        <view class="assistant-orb">
+          <text class="material-symbols-outlined assistant-icon">graphic_eq</text>
         </view>
-        <view class="service-list">
-          <view
-            v-for="svc in services"
-            :key="svc.id"
-            class="service-row"
-            @click="onServiceClick(svc)"
-          >
-            <view class="service-row-left">
-              <AppIcon :name="svc.icon" class="service-icon" />
-              <text class="service-label">{{ svc.label }}</text>
-            </view>
-            <AppIcon v-if="svc.url" name="open_in_new" class="service-external" />
-            <AppIcon v-else name="chevron_right" class="service-arrow" />
-          </view>
+        <view class="assistant-copy">
+          <text class="assistant-title">AI 小管随时在线</text>
+          <text class="assistant-desc">答案会边生成边呈现，你也可以随时停止。</text>
         </view>
+        <text class="material-symbols-outlined assistant-arrow">arrow_forward</text>
       </view>
 
-      <!-- 6. 最近咨询 -->
-      <view v-if="recentConversations.length" class="service-section animate-fade-up delay-6">
-        <view class="service-header">
-          <text class="section-title">最近咨询</text>
+      <view v-if="recentConversations.length" class="section animate-fade-up delay-8">
+        <view class="section-head">
+          <text class="section-title">继续咨询</text>
           <text class="section-more" @click="goHistory">全部记录</text>
         </view>
-        <view class="service-list">
-          <view
-            v-for="conv in recentConversations"
-            :key="conv.id"
-            class="service-row"
-            @click="goConversation(conv.id)"
-          >
-            <view class="service-row-left">
-              <AppIcon :name="getConvIcon(conv.status)" class="service-icon" />
-              <view class="conv-info">
-                <text class="service-label">{{ conv.title || '未命名对话' }}</text>
-                <text class="conv-status">{{ getStatusLabel(conv.status) }}</text>
-              </view>
+        <view class="recent-list">
+          <view v-for="conv in recentConversations" :key="conv.id" class="recent-row" @click="goConversation(conv.id)">
+            <view class="recent-icon-wrap">
+              <text class="material-symbols-outlined recent-icon">{{ getConvIcon(conv.status) }}</text>
             </view>
-            <AppIcon name="chevron_right" class="service-arrow" />
+            <view class="recent-copy">
+              <text class="recent-title">{{ conv.title || '未命名对话' }}</text>
+              <text class="recent-status">{{ getStatusLabel(conv.status) }}</text>
+            </view>
+            <text class="material-symbols-outlined recent-arrow">chevron_right</text>
           </view>
         </view>
-      </view>
-
-      <!-- 7. Notification Banner -->
-      <view v-if="totalUnread > 0" class="notice-banner animate-fade-up delay-6" @click="goHistory">
-        <view class="notice-left">
-          <view class="notice-icon-wrap">
-            <AppIcon name="campaign" class="notice-icon" />
-          </view>
-          <text class="notice-text">你有 {{ totalUnread }} 条未读消息</text>
-        </view>
-        <AppIcon name="arrow_forward" class="notice-arrow" />
       </view>
     </view>
 
-    <view class="bottom-spacer" />
     <CustomTabBar current="home" />
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import { getUnreadSummary } from '@/api/notification'
 import { listConversations } from '@/api/chat'
 import { openExternal } from '@/composables/useServiceNavigation'
 import CustomTabBar from '@/components/CustomTabBar.vue'
-import AppIcon from '@/components/AppIcon.vue'
 import { trackEvent } from '@/utils/track'
 import type { ConversationResponse } from '@/types/chat'
 
 const userStore = useUserStore()
-
-const displayName = computed(() => userStore.userInfo?.name || userStore.userInfo?.staff_id || '同学')
-
-const greeting = computed(() => {
-  const h = new Date().getHours()
-  if (h < 6) return '夜深了'
-  if (h < 9) return '早上好'
-  if (h < 12) return '上午好'
-  if (h < 14) return '中午好'
-  if (h < 18) return '下午好'
-  if (h < 22) return '晚上好'
-  return '夜深了'
-})
 const totalUnread = ref(0)
 const recentConversations = ref<ConversationResponse[]>([])
+const activeCampusSlide = ref(0)
 
-const tags = ref([
+const campusSlides = [
+  { id: 'library', title: '黄河图书馆', subtitle: '书香与科技，在这里相遇', image: '/static/images/sdfmu-campus-library.jpg' },
+  { id: 'avenue', title: '校园主轴', subtitle: '从这里走向每一种可能', image: '/static/images/sdfmu-campus-avenue.jpg' },
+  { id: 'activity', title: '大学生活动中心', subtitle: '让热爱在校园真实发生', image: '/static/images/sdfmu-campus-activity-center.jpg' },
+  { id: 'lake', title: '湖畔校园', subtitle: '一座会呼吸的医学学府', image: '/static/images/sdfmu-campus-lake.jpg' },
+]
+
+const activeCampus = computed(() => campusSlides[activeCampusSlide.value] || campusSlides[0])
+
+const displayName = computed(() => {
+  const name = userStore.userInfo?.name
+  const pilot = (userStore.userInfo?.staff_id || '').startsWith('pilot:')
+  return name && !pilot ? name : '林小依'
+})
+const greeting = computed(() => {
+  const hour = new Date().getHours()
+  if (hour < 6) return '夜深了'
+  if (hour < 9) return '早上好'
+  if (hour < 12) return '上午好'
+  if (hour < 14) return '中午好'
+  if (hour < 18) return '下午好'
+  if (hour < 22) return '晚上好'
+  return '夜深了'
+})
+
+const quickActions = [
+  { id: 'q1', label: '找服务', caption: '校园入口', icon: 'grid_view', action: 'services' },
+  { id: 'q2', label: '问小管', caption: '流式问答', icon: 'auto_awesome', action: 'chat' },
+  { id: 'q3', label: '扫一扫', caption: '识别办理', icon: 'qr_code_scanner', action: 'scan' },
+  { id: 'q4', label: '校园卡', caption: '卡务服务', icon: 'credit_card', action: 'card' },
+]
+
+const tags = [
   { id: 't1', label: '宿舍电费怎么交？' },
   { id: 't2', label: '奖学金怎么评？' },
   { id: 't3', label: '图书馆几点开？' },
   { id: 't4', label: '校园网怎么连？' },
-  { id: 't5', label: '报修在哪里办？' },
-  { id: 't6', label: '成绩怎么查？' },
-  { id: 't7', label: '请假流程是什么？' },
-  { id: 't8', label: '怎么联系辅导员？' },
-])
+]
 
-const bentoItems = ref([
-  { id: 'b1', label: 'AI 问答', icon: 'auto_awesome', route: '/pages/chat/index' },
-  { id: 'b2', label: '对话历史', icon: 'history', route: '/pages/chat/history' },
-  { id: 'b3', label: '校园服务', icon: 'grid_view', route: '/pages/services/index' },
-  { id: 'b4', label: '个人中心', icon: 'person', route: '/pages/profile/index' },
-])
-
-const services = ref([
-  { id: 's1', label: '教务管理系统', icon: 'school', url: 'http://jwc.sdfmu.edu.cn' },
-  { id: 's2', label: '图书馆', icon: 'library_books', url: 'http://202.194.232.127/index.html' },
-  { id: 's3', label: '学生邮箱', icon: 'mail', url: 'https://mail.sdfmu.edu.cn/' },
-  { id: 's4', label: '学校官网', icon: 'language', url: 'https://www.sdfmu.edu.cn' },
-])
+const services = [
+  { id: 's1', label: '教务系统', desc: '课表与成绩', icon: 'school', url: 'http://jwc.sdfmu.edu.cn' },
+  { id: 's2', label: '黄河图书馆', desc: '馆藏与空间', icon: 'local_library', url: 'http://202.194.232.127/index.html' },
+  { id: 's3', label: '校园邮箱', desc: '学生邮件', icon: 'mail', url: 'https://mail.sdfmu.edu.cn/' },
+  { id: 's4', label: '信息门户', desc: '统一身份入口', icon: 'account_balance', url: 'https://www.sdfmu.edu.cn/xxmh.htm' },
+]
 
 onShow(() => {
+  void refreshData()
   trackEvent('page_view', { path: '/pages/home/index' })
-  if (!userStore.isLoggedIn) {
-    totalUnread.value = 0
-    recentConversations.value = []
-    return
-  }
-  refreshUnreadSummary()
-  loadRecentConversations()
 })
 
-async function refreshUnreadSummary() {
-  if (!userStore.isLoggedIn) {
-    totalUnread.value = 0
-    return
-  }
+async function refreshData() {
   try {
-    const response = await getUnreadSummary()
-    totalUnread.value = response.total_unread || 0
-  } catch {
-    totalUnread.value = 0
-  }
+    const unread = await getUnreadSummary()
+    totalUnread.value = unread.total_unread || 0
+  } catch { totalUnread.value = 0 }
+  try {
+    const conversations = await listConversations(1, 3)
+    recentConversations.value = conversations.items || []
+  } catch { recentConversations.value = [] }
 }
 
 function goChat(query?: string) {
-  if (query) {
-    uni.setStorageSync('chat_init_query', query)
-  }
+  if (query) uni.setStorageSync('chat_init_query', query)
   uni.switchTab({ url: '/pages/chat/index' })
 }
 
-function onTagClick(tag: { id: string; label: string }) {
-  trackEvent('quick_question_click', { label: tag.label })
-  uni.setStorageSync('chat_init_query', tag.label)
-  uni.switchTab({ url: '/pages/chat/index' })
+function askQuestion(question: string) {
+  trackEvent('quick_question_click', { label: question })
+  goChat(question)
 }
 
-function onBentoClick(item: { id: string; label: string; icon: string; route: string }) {
-  if (!item.route) {
-    uni.showToast({ title: '即将上线', icon: 'none' })
+function handleQuick(item: { action: string; label: string }) {
+  if (item.action === 'services') return goServices()
+  if (item.action === 'chat') return goChat()
+  if (item.action === 'scan') {
+    uni.scanCode({ success: () => undefined, fail: () => undefined })
     return
   }
-  const tabBarPaths = ['/pages/home/index', '/pages/chat/index', '/pages/services/index', '/pages/profile/index']
-  if (tabBarPaths.includes(item.route)) {
-    uni.switchTab({ url: item.route })
-  } else {
-    uni.navigateTo({ url: item.route })
-  }
+  uni.showToast({ title: `${item.label}即将开放`, icon: 'none' })
 }
 
-function onServiceClick(svc: { id: string; label: string; icon: string; url?: string }) {
-  trackEvent('service_card_click', { card: svc.label, source: 'home' })
-  if (svc.url) {
-    openExternal(svc.url)
-  } else {
-    uni.showToast({ title: '功能开发中', icon: 'none' })
-  }
+function goServices() { uni.switchTab({ url: '/pages/services/index' }) }
+function goHistory() { uni.navigateTo({ url: '/pages/chat/history' }) }
+
+function onCampusSlideChange(event: { detail?: { current?: number } }) {
+  activeCampusSlide.value = Number(event.detail?.current || 0)
 }
 
-async function loadRecentConversations() {
-  if (!userStore.isLoggedIn) {
-    recentConversations.value = []
-    return
-  }
-  try {
-    const res = await listConversations(1, 3)
-    recentConversations.value = res.items || []
-  } catch {
-    recentConversations.value = []
-  }
+function selectCampusSlide(index: number) {
+  activeCampusSlide.value = index
 }
 
-function goHistory() {
-  uni.navigateTo({ url: '/pages/chat/history' })
+function onServiceClick(service: { label: string; url: string }) {
+  trackEvent('service_card_click', { card: service.label, source: 'home' })
+  openExternal(service.url)
 }
 
 function goConversation(id: number) {
@@ -281,574 +276,255 @@ function goConversation(id: number) {
 }
 
 function getConvIcon(status: string): string {
-  const map: Record<string, string> = {
+  const icons: Record<string, string> = {
     ai_serving: 'auto_awesome',
     pending_teacher: 'hourglass_top',
     teacher_serving: 'support_agent',
     resolved: 'check_circle',
     closed: 'cancel',
   }
-  return map[status] || 'chat'
+  return icons[status] || 'chat'
 }
 
 function getStatusLabel(status: string): string {
-  const map: Record<string, string> = {
+  const labels: Record<string, string> = {
     ai_serving: 'AI 解答中',
     pending_teacher: '等待老师接入',
     teacher_serving: '老师服务中',
     resolved: '已解决',
     closed: '已关闭',
   }
-  return map[status] || status
-}
-
-function showToastSoon() {
-  uni.switchTab({ url: '/pages/services/index' })
+  return labels[status] || status
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 @import '@/styles/tokens.scss';
 
-// ─────────────────────────────────────────────────────────
-// Aether Academic Home — 1:1 per docs/design/ui-references/
-//   student-app-stitch/stitch_yixiaoguan_campus_assistant/
-//   home_page/code.html
-// 严守: No-Line · No-Shadow-as-default · wght 300 · 大半径
-// ─────────────────────────────────────────────────────────
-
 .home-page {
-  min-height: 100vh;
-  background: $surface;           // #faf5fb ivory canvas (L0)
+  min-height: 100dvh;
+  width: min(100%, 390px);
+  margin: 0 auto;
+  overflow-x: hidden;
   color: $on-surface;
-  font-family: $font-body;
-  padding-bottom: calc(var(--tabbar-safe) + $space-8);  /* tab bar + breathing room */
+  background: #f3efe9;
+  padding-bottom: calc(var(--tabbar-safe) + 24px);
 }
 
-// ── TopAppBar (fixed glass; No-Line) ──
-.top-app-bar {
-  position: fixed;
-  top: 0;
-  left: var(--student-fixed-left, 0);
-  right: var(--student-fixed-right, 0);
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: calc(env(safe-area-inset-top) + $space-4) $space-6 $space-4;
-  background: rgba(250, 245, 251, 0.80);   // ivory/80
-  backdrop-filter: $backdrop-bar;
-  -webkit-backdrop-filter: $backdrop-bar;
-}
-
-.brand-logo {
-  font-family: $font-headline;
-  font-size: 20px;
-  font-weight: 900;               // stitch: font-black
-  letter-spacing: -0.01em;
-  color: $primary;
-}
-
-.top-actions {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-}
-
-.notif-btn {
+.campus-hero {
   position: relative;
-  width: 40px;
-  height: 40px;
-  border-radius: $radius-full;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s ease, transform 0.2s ease;
-
-  &:active {
-    background: rgba($primary, 0.08);
-    transform: scale(0.95);
-  }
-}
-
-.notif-icon {
-  font-size: 24px;
-  color: $on-surface-variant;
-}
-
-.notif-dot {
-  position: absolute;
-  top: 9px;
-  right: 9px;
-  width: 8px;
-  height: 8px;
-  border-radius: $radius-full;
-  background: $error;
-  box-shadow: 0 0 0 2px $surface;  // ring-2 ring-background
-}
-
-// ── Main canvas ──
-.main {
-  padding: calc(env(safe-area-inset-top) + 72px) $space-6 0;
-  display: flex;
-  flex-direction: column;
-  gap: $space-8;                  // space-y-8
-}
-
-// 1. Greeting
-.greeting {
-  display: flex;
-  flex-direction: column;
-  gap: $space-1;
-}
-
-.greeting-sub {
-  font-size: $body-md-size;
-  font-weight: $font-weight-medium;
-  color: $on-surface-variant;
-  letter-spacing: -0.01em;
-}
-
-.greeting-title {
-  font-family: $font-headline;
-  font-size: 1.875rem;            // text-3xl = 30px
-  font-weight: $font-weight-bold;
-  color: $on-surface;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-
-// 2. AI Search Pill
-.search-pill {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  background: $surface-container-lowest;     // pure white on ivory — tonal lift
-  border-radius: $radius-full;
-  padding: 6px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);  // very subtle ambient
-}
-
-.search-icon-box {
-  width: 40px;
-  height: 40px;
-  border-radius: $radius-full;
-  background: $primary-container;     // pastel lavender (stitch: bg-primary-container)
-  color: $on-primary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.search-icon {
-  font-size: 20px;
-  color: $on-primary;
-  font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-}
-
-.search-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  font-size: $body-md-size;
-  font-weight: $font-weight-medium;
-  color: $on-surface-variant;
-  padding: 0 $space-4;
-
-
-}
-
-.search-action {
-  flex-shrink: 0;
-  background: $surface-container-high;
-  border-radius: $radius-full;
-  padding: $space-2 $space-4;
-  transition: transform 0.2s ease;
-
-  &:active {
-    transform: scale(0.95);
-  }
-}
-
-.search-action-text {
-  font-size: $label-md-size;
-  font-weight: $font-weight-bold;
-  color: $on-surface-variant;
-}
-
-// 3. Horizontal tag chips
-.tag-scroll {
-  margin: 0 (-$space-6);
-  padding: 0 $space-6;
-  white-space: nowrap;
-
-  /* #ifdef H5 */
-  &::-webkit-scrollbar,
-  :deep(::-webkit-scrollbar) {
-    display: none;
-  }
-  /* #endif */
-}
-
-.tag-list {
-  display: inline-flex;
-  gap: $space-3;
-}
-
-.tag-chip {
-  flex-shrink: 0;
-  background: $surface-container-low;
-  border-radius: $radius-full;
-  padding: 10px $space-5;
-  transition: background 0.2s ease, color 0.2s ease;
-
-  &:active {
-    background: $primary-container;
-    .tag-text { color: $on-primary; }
-  }
-}
-
-.tag-text {
-  font-size: $body-md-size;
-  font-weight: $font-weight-bold;
-  color: $on-surface-variant;
-}
-
-// 4. Bento grid
-.bento-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: $space-4;
-  height: 280px;
-}
-
-.bento-large {
-  grid-row: span 2;
-  position: relative;
+  height: 366px;
   overflow: hidden;
-  background: linear-gradient(135deg, $primary 0%, $secondary 100%);  // stitch: from-primary to-secondary
-  border-radius: $radius-lg;        // 2rem per MD3 DEFAULT lg
-  padding: $space-6;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.2s ease;
-
-  &:active {
-    transform: scale(0.98);
-  }
+  background: #24103f;
+  border-radius: 0 0 32px 32px;
+  box-shadow: 0 22px 48px rgba(42,18,74,.22);
 }
 
-.bento-large-top {
-  position: relative;
-  z-index: 2;
-}
-
-.bento-large-icon-wrap {
-  width: 48px;
-  height: 48px;
-  border-radius: $radius-md;        // rounded-2xl (1rem)
-  background: rgba(255, 255, 255, 0.20);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: $space-4;
-}
-
-.bento-large-icon {
-  font-size: 24px;
-  color: #ffffff;
-  font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-}
-
-.bento-large-title {
-  display: block;
-  font-family: $font-headline;
-  font-size: $font-size-xl;         // 20px
-  font-weight: $font-weight-bold;
-  color: #ffffff;
-  margin-bottom: $space-2;
-}
-
-.bento-large-desc {
-  display: block;
-  font-size: $body-md-size;
-  color: $primary-fixed;            // stitch: text-primary-fixed
-  opacity: 0.90;
-  line-height: 1.6;
-}
-
-.bento-large-action {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  font-size: $label-md-size;
-  font-weight: $font-weight-bold;
-  color: #ffffff;
-}
-
-.bento-large-action-icon {
-  font-size: 14px;
-}
-
-.glow {
+.campus-swiper,
+.hero-shade {
   position: absolute;
-  border-radius: $radius-full;
-  pointer-events: none;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.glow-secondary {
-  right: -16px;
-  bottom: -16px;
-  width: 96px;
-  height: 96px;
-  background: rgba(255, 255, 255, 0.10);
-  filter: blur(32px);
-}
+.campus-swiper { z-index: 0; }
+.campus-visual { width: 100%; height: 100%; opacity: .68; transform: scale(1.08); object-position: center center; transition: opacity .75s ease, transform 1.2s cubic-bezier(.2,.75,.2,1); }
+.campus-visual.is-active { opacity: .94; transform: scale(1.01); }
+.hero-shade { z-index: 1; background: rgba(27,9,51,.34); box-shadow: inset 0 120px 90px rgba(22,6,43,.4), inset 0 -140px 100px rgba(18,5,36,.68); pointer-events: none; }
 
-.glow-corner {
-  top: 0;
-  right: 0;
-  width: 128px;
-  height: 128px;
-  background: rgba($secondary-container, 0.20);
-  filter: blur(48px);
-}
+.hero-top,
+.hero-copy,
+.glass-search { position: relative; z-index: 2; }
 
-.bento-small {
-  position: relative;
-  background: $surface-container-lowest;
-  border-radius: $radius-lg;
-  padding: $space-5;
+.hero-top {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: space-between;
-  transition: background 0.2s ease, transform 0.2s ease;
-
-  &:active {
-    background: $surface-container-high;
-    transform: scale(0.98);
-  }
+  padding: calc(env(safe-area-inset-top) + 18px) 20px 0;
 }
 
-.bento-small-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.icon-wrap {
+.brand-lockup { display: flex; align-items: center; gap: 10px; }
+.brand-mark {
   width: 40px;
   height: 40px;
-  border-radius: $radius-md;        // rounded-xl (1rem)
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 14px;
+  background: rgba(255,255,255,.14);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.42);
 }
-
-.icon-wrap-tertiary {
-  background: rgba($tertiary, 0.10);
-}
-
-.icon-tertiary {
-  font-size: 20px;
-  color: $tertiary;
-}
-
-.icon-wrap-primary {
-  background: rgba($primary, 0.10);
-}
-
-.icon-primary {
-  font-size: 20px;
-  color: $primary;
-}
-
-.badge-hot {
-  font-size: 10px;
-  font-weight: $font-weight-bold;
-  color: $tertiary;
-  background: rgba($tertiary, 0.10);
-  padding: 2px 8px;
-  border-radius: $radius-full;
-}
-
-.bento-small-body {
+.brand-icon { color: #fff; font-size: 21px; font-variation-settings: 'FILL' 1; }
+.brand-name { display: block; color: #fff; font-size: 16px; font-weight: 850; letter-spacing: .08em; }
+.brand-sub { display: block; margin-top: 3px; color: rgba(255,255,255,.58); font-size: 7px; font-weight: 700; letter-spacing: .12em; }
+.hero-actions { display: flex; align-items: center; gap: 8px; }
+.online-pill { height: 38px; padding: 0 12px; display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,.16); border-radius: 14px; color: rgba(255,255,255,.84); background: rgba(31,10,57,.22); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); font-size: 9px; font-weight: 750; }
+.online-dot { width: 6px; height: 6px; border-radius: 50%; background: #d8ff9f; box-shadow: 0 0 12px rgba(216,255,159,.9); }
+.glass-icon-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: rgba(255,255,255,.13);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4);
 }
+.top-icon { color: #fff; font-size: 21px; }
+.notif-dot { position: absolute; top: 9px; right: 9px; width: 7px; height: 7px; border-radius: 50%; background: #ffcf70; }
 
-.bento-small-title {
-  font-size: $body-md-size;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
-}
+.hero-copy { padding: 42px 22px 0; }
+.hero-greeting { display: block; color: rgba(255,255,255,.76); font-size: 12px; font-weight: 720; letter-spacing: .02em; }
+.hero-title { display: block; margin-top: 9px; color: #fff; font-size: 27px; line-height: 1.18; font-weight: 830; letter-spacing: -.045em; text-shadow: 0 8px 30px rgba(20,4,42,.34); }
+.hero-meta { display: block; margin-top: 9px; color: rgba(255,255,255,.66); font-size: 9px; letter-spacing: .03em; }
 
-.bento-small-desc {
-  font-size: 11px;
-  color: $on-surface-variant;
-}
-
-.bento-small-desc-active {
-  font-size: 11px;
-  font-weight: $font-weight-bold;
-  color: $primary;
-}
-
-// 5. Quick links list (nested tonal tiers)
-.service-section {
+.campus-caption {
+  position: absolute;
+  z-index: 2;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  min-height: 62px;
+  padding: 10px 13px;
   display: flex;
-  flex-direction: column;
-  gap: $space-4;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 20px;
+  background: rgba(24,7,46,.34);
+  backdrop-filter: blur(22px) saturate(135%);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 14px 32px rgba(20,4,40,.18);
+}
+.caption-copy { flex: 1; min-width: 0; }
+.caption-kicker { display: block; color: rgba(255,255,255,.48); font-size: 7px; font-weight: 800; letter-spacing: .14em; }
+.caption-title { display: block; color: #fff; font-size: 13px; font-weight: 800; letter-spacing: .04em; }
+.caption-kicker + .caption-title { margin-top: 4px; }
+.caption-sub { display: block; margin-top: 3px; color: rgba(255,255,255,.58); font-size: 8px; }
+.slide-selector { display: flex; align-items: center; flex-shrink: 0; gap: 4px; }
+.slide-number { min-width: 23px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 9px; color: rgba(255,255,255,.42); font-size: 7px; font-weight: 800; transition: color .25s ease, background .25s ease, transform .25s ease; }
+.slide-number.active { color: #32104f; background: rgba(255,255,255,.92); transform: translateY(-2px); }
+
+.glass-search {
+  min-height: 72px;
+  padding: 8px 8px 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border: 1px solid rgba(255,255,255,.82);
+  border-radius: 24px;
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: inset 0 1px 0 #fff, 0 18px 42px rgba(49,22,83,.16);
+}
+.search-orb { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 17px; background: #efe5f8; box-shadow: inset 0 1px 0 #fff; }
+.search-icon { color: #5b2b8f; font-size: 22px; font-variation-settings: 'FILL' 1; }
+.search-copy { flex: 1; min-width: 0; }
+.search-label { display: block; color: #9a82ad; font-size: 7px; font-weight: 850; letter-spacing: .14em; }
+.search-placeholder { display: block; margin-top: 5px; color: #33273c; font-size: 13px; font-weight: 750; }
+.ask-btn { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 17px; background: #4c217e; box-shadow: 0 9px 18px rgba(76,33,126,.26); }
+.ask-icon { color: #fff; font-size: 20px; }
+
+.content-sheet {
+  position: relative;
+  z-index: 3;
+  margin-top: -1px;
+  padding: 18px 18px 16px;
+  border-radius: 0;
+  background: #f3efe9;
 }
 
-.service-header {
+.quick-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; margin-top: 22px; }
+.quick-item { min-width: 0; text-align: center; }
+.quick-icon-wrap {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  color: #5b2b8f;
+  background: rgba(255,255,255,.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: inset 0 1px 0 #fff, 0 8px 18px rgba(91,43,143,.08);
+}
+.quick-icon { font-size: 23px; color: #5b2b8f; }
+.quick-label { display: block; margin-top: 8px; font-size: 12px; font-weight: 800; color: #342d35; }
+.quick-caption { display: block; margin-top: 2px; font-size: 9px; color: #978c98; }
+
+.feature-banner {
+  min-height: 88px;
+  margin-top: 20px;
+  padding: 16px 15px;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
+  overflow: hidden;
+  border-radius: 18px;
+  color: #fff;
+  background: #5b2b8f;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 14px 28px rgba(91,43,143,.16);
 }
+.feature-copy { min-width: 0; }
+.feature-kicker { display: block; color: rgba(255,255,255,.58); font-size: 8px; font-weight: 800; letter-spacing: .14em; }
+.feature-title { display: block; margin-top: 6px; color: #fff; font-size: 16px; font-weight: 800; }
+.feature-desc { display: block; margin-top: 4px; color: rgba(255,255,255,.68); font-size: 9px; }
+.feature-action { display: flex; align-items: center; gap: 3px; flex-shrink: 0; padding: 8px 10px; border-radius: 999px; background: rgba(255,255,255,.18); font-size: 10px; font-weight: 800; }
+.feature-action .material-symbols-outlined { font-size: 14px; }
 
-.section-title {
-  font-family: $font-headline;
-  font-size: $font-size-lg;         // 18px
-  font-weight: $font-weight-bold;
-  color: $on-surface;
-  letter-spacing: -0.01em;
-}
+.tag-scroll { margin: 22px -18px 0; white-space: nowrap; }
+.tag-list { display: inline-flex; gap: 8px; padding: 0 18px; }
+.tag-chip { padding: 9px 13px; border-radius: 999px; background: #e9e0d9; }
+.tag-text { color: #675a68; font-size: 11px; font-weight: 650; }
 
-.section-more {
-  font-size: $label-md-size;
-  font-weight: $font-weight-bold;
-  color: $primary;
-}
+.section { margin-top: 28px; }
+.section-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 14px; }
+.eyebrow { display: block; color: #aa76a5; font-size: 8px; font-weight: 800; letter-spacing: .16em; }
+.section-title { display: block; margin-top: 3px; color: #2e282f; font-size: 19px; font-weight: 800; }
+.section-more { color: #5b2b8f; font-size: 11px; font-weight: 750; }
+.service-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.service-card { min-width: 0; padding: 15px; border-radius: 18px; background: rgba(255,255,255,.82); box-shadow: inset 0 1px 0 #fff; }
+.service-card:active { transform: scale(.98); }
+.service-icon-wrap { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 14px; background: #f2dcef; }
+.service-icon { color: #5b2b8f; font-size: 20px; }
+.service-label { display: block; margin-top: 12px; color: #332c34; font-size: 13px; font-weight: 800; }
+.service-desc { display: block; margin-top: 3px; color: #958a96; font-size: 10px; }
 
-.service-list {
-  background: $surface-container-low;   // L1 tonal nesting
-  border-radius: $radius-lg;            // 2rem
-  padding: $space-2;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.service-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: $surface-container-lowest; // white on L1 ivory
-  border-radius: $radius-md;             // 1rem rounded-md
-  padding: $space-4;
-  transition: background 0.2s ease;
-
-  &:active {
-    background: rgba($primary-fixed, 0.30);
-    .service-icon,
-    .service-arrow,
-    .service-label { color: $primary; }
-    .service-arrow { transform: translateX(4px); }
-  }
-}
-
-.service-row-left {
+.assistant-card {
+  margin-top: 24px;
+  padding: 18px;
   display: flex;
   align-items: center;
-  gap: $space-4;
+  gap: 13px;
+  border-radius: 25px;
+  color: #fff;
+  background: #5b2b8f;
+  box-shadow: 0 18px 42px rgba(91,43,143,.20), inset 0 1px 0 rgba(255,255,255,.2);
 }
+.assistant-orb { width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 17px; background: rgba(255,255,255,.17); }
+.assistant-icon { color: #fff; font-size: 23px; }
+.assistant-copy { flex: 1; min-width: 0; }
+.assistant-title { display: block; color: #fff; font-size: 14px; font-weight: 800; }
+.assistant-desc { display: block; margin-top: 4px; color: rgba(255,255,255,.68); font-size: 10px; line-height: 1.5; }
+.assistant-arrow { color: rgba(255,255,255,.82); font-size: 20px; }
 
-.service-icon {
-  font-size: 22px;
-  color: $on-surface-variant;
-  transition: color 0.2s ease;
-}
-
-.service-label {
-  font-size: $body-md-size;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
-}
-
-.service-arrow {
-  font-size: 20px;
-  color: #cbd5e1;                        // slate-300 等价
-  transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.service-external {
-  font-size: 16px;
-  color: $outline;
-  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
-}
-
-// 6. Notification banner
-.notice-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba($primary, 0.05);
-  border-radius: $radius-lg;             // 2rem; No-Line (ghost border removed)
-  padding: $space-4;
-  transition: transform 0.2s ease;
-
-  &:active {
-    transform: scale(0.99);
-  }
-}
-
-.notice-left {
-  display: flex;
-  align-items: center;
-  gap: $space-3;
-}
-
-.notice-icon-wrap {
-  width: 32px;
-  height: 32px;
-  border-radius: $radius-full;
-  background: rgba($primary-container, 0.20);  // stitch: bg-primary-container/20
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.notice-icon {
-  font-size: 18px;
-  color: $primary;
-}
-
-.notice-text {
-  font-size: $body-md-size;
-  font-weight: $font-weight-bold;
-  color: $primary;
-}
-
-.notice-arrow {
-  font-size: 14px;
-  color: $primary;
-}
-
-// Recent conversations
-.conv-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.conv-status {
-  font-size: 11px;
-  font-weight: $font-weight-bold;
-  color: $on-surface-variant;
-}
-
-.bottom-spacer {
-  height: 2rem;
-}
+.recent-list { overflow: hidden; border-radius: 22px; background: rgba(255,255,255,.76); }
+.recent-row { display: flex; align-items: center; gap: 12px; min-height: 68px; padding: 0 15px; }
+.recent-row + .recent-row { box-shadow: inset 0 1px 0 rgba(91,43,143,.06); }
+.recent-icon-wrap { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 13px; background: #f2dcef; }
+.recent-icon { color: #5b2b8f; font-size: 18px; }
+.recent-copy { flex: 1; min-width: 0; }
+.recent-title { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #342d35; font-size: 12px; font-weight: 750; }
+.recent-status { display: block; margin-top: 4px; color: #9b909c; font-size: 9px; }
+.recent-arrow { color: #b7abb7; font-size: 19px; }
 </style>

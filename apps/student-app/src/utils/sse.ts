@@ -69,7 +69,13 @@ function consumeSSEText(text: string, callbacks: SSECallbacks): void {
   }
 }
 
-async function fetchStream(url: string, body: object, token: string, callbacks: SSECallbacks): Promise<void> {
+async function fetchStream(
+  url: string,
+  body: object,
+  token: string,
+  callbacks: SSECallbacks,
+  signal?: AbortSignal,
+): Promise<void> {
   const resp = await fetch(url, {
     method: 'POST',
     headers: {
@@ -78,6 +84,7 @@ async function fetchStream(url: string, body: object, token: string, callbacks: 
       'Accept': 'text/event-stream',
     },
     body: JSON.stringify(body),
+    signal,
   })
 
   if (!resp.ok) {
@@ -152,13 +159,14 @@ export async function fetchSSE(
   url: string,
   body: object,
   token: string,
-  callbacks: SSECallbacks
+  callbacks: SSECallbacks,
+  signal?: AbortSignal,
 ): Promise<void> {
   const requestUrl = toApiUrl(url)
 
   if (typeof fetch === 'function' && typeof TextDecoder !== 'undefined') {
     try {
-      await fetchStream(requestUrl, body, token, callbacks)
+      await fetchStream(requestUrl, body, token, callbacks, signal)
       return
     } catch (error) {
       // H5 can fail on CORS/proxy mismatch; fall through to uni.request when available.

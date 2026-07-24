@@ -24,6 +24,10 @@ function wrapSsoUrl(service: string, noAutoRedirect?: string): string {
   return `${SSO_LOGIN_URL}?${params.toString()}`
 }
 
+export function buildSsoServiceUrl(url: string): string {
+  return wrapSsoUrl(url, 'true')
+}
+
 function getEhallSsoService(target: string): string {
   return `https://ehall.sdfmu.edu.cn/site/login/cas-login?redirect_url=${encodeURIComponent(target)}`
 }
@@ -105,6 +109,10 @@ export function openExternal(url: string, options: ExternalOptions = {}) {
   const embeddedUrl = options.useSso ? ssoUrl : getWechatSafeUrl(target)
   uni.navigateTo({ url: `/pages/services/webview?url=${encodeURIComponent(embeddedUrl)}` })
   // #endif
+}
+
+export function openSsoExternal(url: string) {
+  openExternal(url, { useSso: true, ssoNoAutoRedirect: true })
 }
 
 export function showComingSoon(featureName: string, suggestedQuestion?: string) {

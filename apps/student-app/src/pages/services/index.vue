@@ -1,337 +1,228 @@
 <template>
   <view class="services-page">
-    <view class="top-app-bar">
-      <view class="bar-left">
-        <text class="bar-title">服务指南</text>
+    <view class="services-shell">
+      <view class="services-topbar">
+        <view class="topbar-brand">
+          <view class="topbar-mark"><text class="material-symbols-outlined">school</text></view>
+          <view>
+            <text class="topbar-title">服务大厅</text>
+            <text class="topbar-subtitle">山一大 · Campus Desk</text>
+          </view>
+        </view>
+        <view class="topbar-action" @click="showAiGuide">
+          <text class="material-symbols-outlined">auto_awesome</text>
+        </view>
       </view>
+
+      <scroll-view class="services-scroll" scroll-y>
+        <view class="services-intro animate-fade-up delay-1">
+          <text class="intro-kicker">YOUR CAMPUS, ORGANIZED</text>
+          <text class="intro-title">一站式校园服务</text>
+          <text class="intro-copy">从课程、证件到校园生活，找到下一步该做什么。</text>
+          <view class="service-search">
+            <text class="material-symbols-outlined search-icon">search</text>
+            <input v-model="serviceQuery" class="search-input" placeholder="搜索服务或关键词" />
+            <text v-if="serviceQuery" class="material-symbols-outlined clear-icon" @click="serviceQuery = ''">close</text>
+          </view>
+        </view>
+
+        <scroll-view scroll-x class="category-scroll" show-scrollbar="false">
+          <view class="category-list">
+            <view
+              v-for="category in categories"
+              :key="category.id"
+              :class="['category-pill', { active: activeCategory === category.id }]"
+              @click="activeCategory = category.id"
+            >
+              <text>{{ category.label }}</text>
+            </view>
+          </view>
+        </scroll-view>
+
+        <view class="library-spotlight animate-fade-up delay-2" @click="openExternal('http://202.194.232.127/index.html')">
+          <image class="spotlight-image" src="/static/images/yellow-river-library-hero.jpg" mode="aspectFill" />
+          <view class="spotlight-shade" />
+          <view class="spotlight-copy">
+            <text class="spotlight-kicker">CROWN OF MEDICINE · LIBRARY</text>
+            <text class="spotlight-title">黄河图书馆</text>
+            <text class="spotlight-desc">馆藏查询 · 空间预约 · 学习服务</text>
+          </view>
+          <view class="spotlight-arrow"><text class="material-symbols-outlined">arrow_forward</text></view>
+        </view>
+
+        <view v-if="filteredServices.length" class="service-section animate-fade-up delay-3">
+          <view class="section-heading">
+            <view>
+              <text class="section-kicker">SERVICES</text>
+              <text class="section-title">{{ activeCategory === 'all' ? '校园事务' : categoryLabel }}</text>
+            </view>
+            <text class="section-count">{{ filteredServices.length }} 项</text>
+          </view>
+          <view class="service-grid">
+            <view v-for="item in filteredServices" :key="item.label" class="service-card" @click="handleServiceClick(item)">
+              <view class="service-card-top">
+                <view class="service-icon-box"><text class="material-symbols-outlined">{{ item.icon }}</text></view>
+                <text v-if="item.sso" class="service-tag">统一认证</text>
+                <text v-else class="material-symbols-outlined service-external">open_in_new</text>
+              </view>
+              <text class="service-name">{{ item.label }}</text>
+              <text class="service-caption">{{ item.caption }}</text>
+            </view>
+          </view>
+        </view>
+
+        <view v-else class="empty-state">
+          <text class="material-symbols-outlined empty-icon">search_off</text>
+          <text class="empty-title">没有找到相关服务</text>
+          <text class="empty-copy">试试搜索“成绩”“校园卡”或“报修”</text>
+        </view>
+
+        <view class="ai-help-card animate-fade-up delay-4" @click="showAiGuide">
+          <view class="ai-help-icon"><text class="material-symbols-outlined">auto_awesome</text></view>
+          <view class="ai-help-copy">
+            <text class="ai-help-title">不知道从哪里开始？</text>
+            <text class="ai-help-desc">让 AI 小管帮你找到办理路径</text>
+          </view>
+          <text class="material-symbols-outlined ai-help-arrow">arrow_forward</text>
+        </view>
+
+        <view class="bottom-safe" />
+      </scroll-view>
     </view>
-
-    <scroll-view class="main-content" scroll-y>
-      <view class="hero-card">
-        <view class="hero-inner">
-          <text class="hero-label">CAMPUS SERVICES</text>
-          <text class="hero-title">校园服务指南</text>
-          <text class="hero-subtitle">常见事务 · 流程咨询 · 入口导航</text>
-        </view>
-        <view class="hero-blur" />
-        <view class="hero-bg-icon">
-          <AppIcon name="school" class="hero-icon-bg" />
-        </view>
-      </view>
-
-      <view class="section">
-        <view class="section-header">
-          <text class="section-title">快捷入口</text>
-          <text class="section-badge">QUICK LINKS</text>
-        </view>
-        <view class="quick-grid">
-          <view class="quick-large" @click="openExternal('https://www.sdfmu.edu.cn')">
-            <AppIcon name="home" class="quick-icon text-primary" />
-            <view class="quick-label-row">
-              <text class="quick-label">校主页</text>
-              <AppIcon name="open_in_new" class="meta-external" />
-            </view>
-          </view>
-          <view class="quick-stack">
-            <view class="quick-row" @click="openExternal('http://portal.sdfmu.edu.cn', { useSso: true, ssoNoAutoRedirect: true })">
-              <AppIcon name="gate" class="quick-icon text-secondary" />
-              <text class="quick-label">信息门户</text>
-              <AppIcon name="open_in_new" class="meta-external" />
-            </view>
-            <view class="quick-row" @click="openExternal('https://ehall.sdfmu.edu.cn/v2/site/index', { useSso: true, ssoNoAutoRedirect: true })">
-              <AppIcon name="cloud_done" class="quick-icon text-tertiary" />
-              <text class="quick-label">服务大厅</text>
-              <AppIcon name="open_in_new" class="meta-external" />
-            </view>
-          </view>
-        </view>
-        <!-- 统一消息平台: 企业微信原生应用，暂无 Web URL，暂时隐藏 -->
-        <view v-if="false" class="quick-wide" @click="handleComingSoon('统一消息平台', '我在哪里查看学校通知和老师回复？')">
-          <view class="quick-wide-left">
-            <AppIcon name="message" class="quick-icon text-primary" />
-            <text class="quick-label">统一消息平台</text>
-          </view>
-          <AppIcon name="chevron_right" class="text-outline-variant" />
-        </view>
-      </view>
-
-      <view class="section">
-        <text class="section-title">校园服务</text>
-        <view class="campus-grid">
-          <view
-            v-for="(item, idx) in campusServices"
-            :key="idx"
-            class="campus-item"
-            @click="handleServiceClick(item)"
-          >
-            <view class="campus-icon-box">
-              <AppIcon :name="item.icon" class="campus-icon" />
-              <AppIcon v-if="item.url" name="open_in_new" class="badge-external" />
-            </view>
-            <text class="campus-label">{{ item.label }}</text>
-          </view>
-        </view>
-      </view>
-
-      <view class="section">
-        <text class="section-title">学业</text>
-        <view class="query-grid">
-          <view class="query-card" @click="openExternal('https://app.sdfmu.edu.cn/site/schedule/index', { useSso: true })">
-            <view class="query-icon-box bg-secondary-light">
-              <AppIcon name="calendar_month" class="text-secondary" />
-            </view>
-            <view class="query-info">
-              <text class="query-name">学生课表</text>
-              <view class="query-meta">课表查询 <AppIcon name="open_in_new" class="meta-external" /></view>
-            </view>
-          </view>
-          <view class="query-card" @click="openExternal('http://jwc.sdfmu.edu.cn', { useSso: true })">
-            <view class="query-icon-box bg-tertiary-light">
-              <AppIcon name="grade" class="text-tertiary" />
-            </view>
-            <view class="query-info">
-              <text class="query-name">成绩查询</text>
-              <view class="query-meta">教务系统 <AppIcon name="open_in_new" class="meta-external" /></view>
-            </view>
-          </view>
-          <view class="query-card" @click="openExternal('http://202.194.232.127/index.html')">
-            <view class="query-icon-box bg-primary-light">
-              <AppIcon name="library_books" class="text-primary" />
-            </view>
-            <view class="query-info">
-              <text class="query-name">图书馆</text>
-              <view class="query-meta">借阅状态 <AppIcon name="open_in_new" class="meta-external" /></view>
-            </view>
-          </view>
-          <view class="query-card" @click="openExternal('https://mail.sdfmu.edu.cn/', { useSso: true })">
-            <view class="query-icon-box bg-error-light">
-              <AppIcon name="mail" class="text-error" />
-            </view>
-            <view class="query-info">
-              <text class="query-name">学生邮箱</text>
-              <view class="query-meta">收件箱 <AppIcon name="open_in_new" class="meta-external" /></view>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <view class="section">
-        <text class="section-title">个人</text>
-        <view class="personal-list">
-          <view class="personal-item" @click="openExternal('https://app.sdfmu.edu.cn/site/agenda/index', { useSso: true })">
-            <view class="personal-left">
-              <AppIcon name="event_note" class="text-primary" />
-              <text class="personal-name">个人日程</text>
-            </view>
-            <AppIcon name="open_in_new" class="meta-external" />
-          </view>
-          <view class="personal-item" @click="goChatHistory">
-            <view class="personal-left">
-              <AppIcon name="help_center" class="text-primary" />
-              <text class="personal-name">我的提问</text>
-            </view>
-            <view class="personal-right">
-              <AppIcon name="chevron_right" class="text-outline-variant" />
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <view class="bottom-safe" />
-    </scroll-view>
-
     <CustomTabBar current="services" />
     <FeatureNoticeSheet />
   </view>
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
+import { computed, ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import CustomTabBar from '@/components/CustomTabBar.vue'
 import FeatureNoticeSheet from '@/components/FeatureNoticeSheet.vue'
-import { openExternal, showComingSoon } from '@/composables/useServiceNavigation'
+import { openAiQuestion, openExternal, openSsoExternal, showComingSoon } from '@/composables/useServiceNavigation'
 import { trackEvent } from '@/utils/track'
 
 interface ServiceItem {
   icon: string
   label: string
+  caption: string
+  category: string
   url?: string
-  useSso?: boolean
-  ssoNoAutoRedirect?: boolean
+  sso?: boolean
+  aiQuestion?: string
   comingSoon?: boolean
 }
 
-const campusServices: ServiceItem[] = [
-  // 行 1：高频办理入口
-  { icon: 'meeting_room', label: '空教室申请', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=383', useSso: true, ssoNoAutoRedirect: true },
-  { icon: 'handyman', label: '网上报修', url: 'https://metc.sdfmu.edu.cn/info/1073/1954.htm' },
-  { icon: 'school', label: '学籍办理', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=369', useSso: true, ssoNoAutoRedirect: true },
-  { icon: 'credit_card', label: '校园卡服务', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=443', useSso: true, ssoNoAutoRedirect: true },
-  // 行 2：学工与生活咨询
-  { icon: 'home_work', label: '校外住宿', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=394', useSso: true, ssoNoAutoRedirect: true },
-  { icon: 'volunteer_activism', label: '困难补助', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=417', useSso: true, ssoNoAutoRedirect: true },
-  // 行 3：教务与图书馆
-  { icon: 'grade', label: '成绩查询', url: 'http://jwc.sdfmu.edu.cn', useSso: true },
-  { icon: 'calendar_month', label: '学生课表', url: 'https://app.sdfmu.edu.cn/site/schedule/index', useSso: true },
-  { icon: 'library_books', label: '图书馆预约', url: 'http://202.194.232.127/index.html' },
-  // 行 4：公共资源与预约
-  { icon: 'podium', label: '学术讲座', url: 'http://academic.sdfmu.edu.cn/index.php?redirect=apply/showlist', useSso: true },
-  { icon: 'event_available', label: '预约中心', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=3', useSso: true, ssoNoAutoRedirect: true },
-  { icon: 'qr_code', label: '访客预约', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=2', useSso: true, ssoNoAutoRedirect: true },
-  // 行 5：健康体育 + 应用中心兜底
-  { icon: 'badge', label: '体育保健课', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=368', useSso: true, ssoNoAutoRedirect: true },
-  { icon: 'book', label: '校史馆预约', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=407', useSso: true, ssoNoAutoRedirect: true },
-  { icon: 'history', label: '我的申请', url: 'https://ehall.sdfmu.edu.cn/v2/matter/launch', useSso: true, ssoNoAutoRedirect: true },
-  { icon: 'apps', label: '更多服务', url: 'https://ehall.sdfmu.edu.cn/v2/site/serviceList', useSso: true, ssoNoAutoRedirect: true },
+const serviceQuery = ref('')
+const activeCategory = ref('all')
+const categories = [
+  { id: 'all', label: '全部服务' },
+  { id: 'affairs', label: '校园事务' },
+  { id: 'study', label: '学业资源' },
+  { id: 'life', label: '校园生活' },
 ]
 
-onShow(() => {
-  trackEvent('page_view', { path: '/pages/services/index' })
+const campusServices: ServiceItem[] = [
+  { icon: 'meeting_room', label: '空教室申请', caption: '申请与查看开放教室', category: 'affairs', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=383', sso: true },
+  { icon: 'feedback', label: '接诉即办', caption: '校园问题快速反馈', category: 'affairs', url: 'https://ehall.sdfmu.edu.cn/v2/matter/start?id=378', sso: true },
+  { icon: 'handyman', label: '网上报修', caption: '宿舍与公共设施报修', category: 'life', url: 'https://metc.sdfmu.edu.cn/info/1073/1954.htm' },
+  { icon: 'school', label: '学籍办理', caption: '证明与学籍事务', category: 'study', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=369', sso: true },
+  { icon: 'home_work', label: '校外住宿', caption: '住宿申请与备案', category: 'life', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=394', sso: true },
+  { icon: 'volunteer_activism', label: '困难补助', caption: '学生资助申请', category: 'affairs', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=417', sso: true },
+  { icon: 'groups', label: '活动室预约', caption: '场地预约与管理', category: 'life', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=445', sso: true },
+  { icon: 'credit_card', label: '校园卡服务', caption: '卡务、充值与挂失', category: 'life', url: 'https://ehall.sdfmu.edu.cn/v2/matter/detail?id=443', sso: true },
+  { icon: 'wifi', label: '校园网', caption: '网络连接与服务', category: 'life', url: 'http://vpnportal.sdfmu.edu.cn' },
+  { icon: 'podium', label: '学术讲座', caption: '讲座报名与日程', category: 'study', url: 'http://academic.sdfmu.edu.cn/index.php?redirect=apply/showlist' },
+  { icon: 'event_available', label: '预约中心', caption: '场地与资源预约', category: 'life', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=3', sso: true },
+  { icon: 'qr_code', label: '访客预约', caption: '访客入校申请', category: 'life', url: 'https://ehall.sdfmu.edu.cn/v2/reserve/special_info?id=2', sso: true },
+  { icon: 'face_retouching_natural', label: '人脸采集', caption: '身份信息采集', category: 'affairs', url: 'https://fpc.sdfmu.edu.cn/#/home', sso: true },
+  { icon: 'photo_camera', label: '证件照采集', caption: '在线采集证件照', category: 'affairs', url: 'https://ppu.sdfmu.edu.cn', sso: true },
+  { icon: 'live_tv', label: '直播山一大', caption: '校园活动直播', category: 'life', url: 'https://qjjern.vnet.weizan.cn/live/channelpage-253967?v=1764637917204' },
+  { icon: 'apps', label: '更多服务', caption: '查看全部校园应用', category: 'all', url: 'https://ehall.sdfmu.edu.cn/v2/site/serviceList', sso: true },
+]
+
+const categoryLabel = computed(() => categories.find(item => item.id === activeCategory.value)?.label || '校园事务')
+const filteredServices = computed(() => {
+  const query = serviceQuery.value.trim().toLowerCase()
+  return campusServices.filter(item => {
+    const categoryMatch = activeCategory.value === 'all' || item.category === activeCategory.value
+    const queryMatch = !query || `${item.label}${item.caption}`.toLowerCase().includes(query)
+    return categoryMatch && queryMatch
+  })
 })
+
+onShow(() => trackEvent('page_view', { path: '/pages/services/index' }))
 
 function handleServiceClick(item: ServiceItem) {
   trackEvent('service_card_click', { card: item.label, source: 'services' })
-  if (item.url) {
-    openExternal(item.url, { useSso: item.useSso, ssoNoAutoRedirect: item.ssoNoAutoRedirect })
-  } else if (item.comingSoon) {
-    showComingSoon(item.label)
-  }
+  if (item.url) item.sso ? openSsoExternal(item.url) : openExternal(item.url)
+  else if (item.comingSoon) showComingSoon(item.label, item.aiQuestion)
+  else if (item.aiQuestion) openAiQuestion(item.aiQuestion)
 }
 
-function handleComingSoon(name: string, question?: string) {
-  showComingSoon(name, question)
-}
-
-function goChatHistory() {
-  uni.navigateTo({ url: '/pages/chat/history' })
-}
+function showAiGuide() { openAiQuestion('我不知道应该办理哪项校园服务，可以帮我判断吗？') }
 </script>
 
 <style scoped lang="scss">
 @import '@/styles/tokens.scss';
 
-.services-page {
-  min-height: 100vh;
-  background: $surface;
-  display: flex;
-  flex-direction: column;
-}
-
-.top-app-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1.5rem;
-  position: fixed;
-  top: 0;
-  left: var(--student-fixed-left, 0);
-  right: var(--student-fixed-right, 0);
-  z-index: 100;
-  background: rgba(250, 245, 251, 0.90);    /* ivory/90 跟着 $surface */
-  backdrop-filter: $backdrop-bar;
-  -webkit-backdrop-filter: $backdrop-bar;
-  box-sizing: border-box;
-}
-.bar-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #5b21b6;
-  letter-spacing: -0.01563rem;
-}
-
-.main-content {
-  height: 100vh;
-  padding: calc(var(--status-bar-height, 44px) + 3rem) 1.5rem 0;
-  /* 底部空间由 .bottom-safe spacer 通过 var(--tabbar-safe) 提供 */
-  box-sizing: border-box;
-}
-
-.hero-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: $radius-lg;
-  background: linear-gradient(135deg, $primary, $secondary);
-  padding: 2rem;
-  color: #fff;
-  margin-bottom: 2rem;
-  box-shadow: $shadow-fab;
-}
-.hero-inner { position: relative; z-index: 10; }
-.hero-label { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.2em; opacity: 0.8; margin-bottom: 0.5rem; display: block; }
-.hero-title { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.375rem; letter-spacing: -0.03125rem; display: block; }
-.hero-subtitle { font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.8); display: block; }
-.hero-blur { position: absolute; right: -2.5rem; bottom: -2.5rem; width: 12rem; height: 12rem; background: rgba(255, 255, 255, 0.1); border-radius: 50%; filter: blur(1.875rem); }
-.hero-bg-icon { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); }
-.hero-icon-bg { font-size: 4.375rem; opacity: 0.2; color: #fff; }
-
-.section { margin-bottom: 2rem; }
-.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-.section-title { font-size: 1.125rem; font-weight: 700; color: $on-surface; letter-spacing: -0.01563rem; display: block; margin-bottom: 1rem; }
-.section-header .section-title { margin-bottom: 0; }
-.section-badge { font-size: 0.625rem; font-weight: 700; color: $primary; padding: 0.25rem 0.75rem; background: rgba($primary, 0.10); border-radius: 31.21875rem; }
-
-.quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
-.quick-large { background: #fff; padding: 1.25rem; border-radius: 0.75rem; display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 1; }
-.quick-large:active { transform: scale(0.98); }
-.quick-stack { display: flex; flex-direction: column; gap: 0.75rem; }
-.quick-row { flex: 1; background: #fff; padding: 1rem; border-radius: 0.75rem; display: flex; align-items: center; gap: 0.75rem; }
-.quick-row:active { transform: scale(0.98); }
-.quick-icon { font-size: 1.5rem; }
-.quick-label { font-size: 0.875rem; font-weight: 700; color: $on-surface; }
-.quick-label-row { display: flex; align-items: center; gap: 4px; }
-.quick-wide { background: #fff; padding: 1.25rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: space-between; }
-.quick-wide:active { transform: scale(0.98); }
-.quick-wide-left { display: flex; align-items: center; gap: 1rem; }
-
-.campus-grid { background: $surface-container-low; border-radius: $radius-md; padding: 1.5rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem 0.5rem; }
-.campus-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-.campus-item:active .campus-icon-box { transform: scale(0.9); }
-.campus-icon-box { position: relative; width: 3rem; height: 3rem; border-radius: 1rem; background: #fff; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
-
-.badge-external {
-  position: absolute;
-  top: -2px;
-  right: -6px;
-  font-size: 12px;
-  color: $outline;
-  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
-}
-
-.meta-external {
-  font-size: 10px;
-  color: $outline;
-  vertical-align: middle;
-  margin-left: 2px;
-  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
-}
-.campus-icon { font-size: 1.5rem; color: $primary; }
-.campus-label { font-size: 0.6875rem; font-weight: 700; color: $on-surface; text-align: center; line-height: 1.3; }
-
-.query-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-.query-card { background: #fff; padding: 1rem; border-radius: 0.75rem; display: flex; align-items: center; gap: 0.75rem; }
-.query-card:active { transform: scale(0.95); }
-.query-icon-box { width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; }
-.query-info { display: flex; flex-direction: column; gap: 0.125rem; }
-.query-name { font-size: 0.875rem; font-weight: 700; color: $on-surface; }
-.query-meta { font-size: 0.625rem; color: $on-surface; }
-
-.personal-list { background: #fff; border-radius: 0.75rem; overflow: hidden; }
-.personal-item { padding: 1.25rem; display: flex; justify-content: space-between; align-items: center; }
-.personal-item:active { background: $surface; }
-.personal-left { display: flex; align-items: center; gap: 1rem; }
-.personal-name { font-size: 0.875rem; font-weight: 700; color: $on-surface; }
-.personal-right { display: flex; align-items: center; gap: 0.5rem; }
-
-.text-primary         { color: $primary; }
-.text-secondary       { color: $secondary; }
-.text-tertiary        { color: $tertiary; }
-.text-error           { color: $error; }
-.text-outline-variant { color: $outline-variant; }
-.bg-primary-light     { background: rgba($primary, 0.10); }
-.bg-secondary-light   { background: rgba($secondary, 0.10); }
-.bg-tertiary-light    { background: rgba($tertiary, 0.10); }
-.bg-error-light       { background: rgba($error, 0.10); }
-
-.bottom-safe { height: calc(var(--tabbar-safe) + $space-2); }  /* tab bar + 8px breathing room */
+.services-page { min-height: 100dvh; width: min(100%, 390px); margin: 0 auto; background: #f4efe9; color: #302937; }
+.services-shell { min-height: 100dvh; display: flex; flex-direction: column; }
+.services-topbar { padding: calc(env(safe-area-inset-top) + 16px) 20px 14px; display: flex; align-items: center; justify-content: space-between; background: #f4efe9; }
+.topbar-brand { display: flex; align-items: center; gap: 10px; }
+.topbar-mark { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: #5b2b8f; color: #fff; }
+.topbar-mark .material-symbols-outlined { font-size: 18px; }
+.topbar-title { display: block; color: #302937; font-size: 17px; font-weight: 850; }
+.topbar-subtitle { display: block; margin-top: 2px; color: #9c909d; font-size: 8px; letter-spacing: .08em; }
+.topbar-action { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 13px; color: #5b2b8f; background: #e9deeb; }
+.topbar-action .material-symbols-outlined { font-size: 19px; }
+.services-scroll { flex: 1; height: 0; padding: 0 18px; box-sizing: border-box; }
+.services-intro { padding: 15px 2px 0; }
+.intro-kicker, .section-kicker { display: block; color: #9b7bb7; font-size: 8px; font-weight: 850; letter-spacing: .16em; }
+.intro-title { display: block; margin-top: 8px; color: #302937; font-size: 27px; line-height: 1.15; font-weight: 850; letter-spacing: -.05em; }
+.intro-copy { display: block; margin-top: 7px; color: #857888; font-size: 11px; }
+.service-search { height: 50px; margin-top: 18px; padding: 0 14px; display: flex; align-items: center; gap: 9px; border-radius: 16px; background: rgba(255,255,255,.90); box-shadow: inset 0 1px 0 #fff, 0 8px 22px rgba(68,42,84,.06); }
+.search-icon { color: #5b2b8f; font-size: 20px; }
+.search-input { flex: 1; height: 100%; color: #302937; font-size: 12px; }
+.clear-icon { color: #b7abb9; font-size: 17px; }
+.category-scroll { margin: 19px -18px 0; white-space: nowrap; }
+.category-list { display: inline-flex; gap: 8px; padding: 0 18px; }
+.category-pill { padding: 9px 14px; border-radius: 999px; color: #8e8190; background: #e9e0d9; font-size: 10px; font-weight: 800; }
+.category-pill.active { color: #fff; background: #5b2b8f; box-shadow: 0 7px 16px rgba(91,43,143,.18); }
+.library-spotlight { position: relative; min-height: 132px; margin-top: 20px; overflow: hidden; border-radius: 20px; background: #3e236d; box-shadow: 0 16px 32px rgba(62,35,109,.17); }
+.spotlight-image, .spotlight-shade { position: absolute; inset: 0; width: 100%; height: 100%; }
+.spotlight-image { opacity: .50; object-position: center 45%; }
+.spotlight-shade { background: rgba(62,35,109,.40); }
+.spotlight-copy { position: relative; z-index: 2; padding: 19px; color: #fff; }
+.spotlight-kicker { display: block; color: rgba(255,255,255,.58); font-size: 8px; font-weight: 800; letter-spacing: .13em; }
+.spotlight-title { display: block; margin-top: 9px; font-size: 22px; font-weight: 850; }
+.spotlight-desc { display: block; margin-top: 5px; color: rgba(255,255,255,.72); font-size: 10px; }
+.spotlight-arrow { position: absolute; right: 16px; bottom: 16px; z-index: 2; width: 31px; height: 31px; display: flex; align-items: center; justify-content: center; border-radius: 11px; color: #fff; background: rgba(255,255,255,.17); }
+.spotlight-arrow .material-symbols-outlined { font-size: 17px; }
+.service-section { margin-top: 28px; }
+.section-heading { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 13px; }
+.section-title { display: block; margin-top: 4px; color: #302937; font-size: 19px; font-weight: 850; }
+.section-count { color: #a99ca9; font-size: 10px; font-weight: 700; }
+.service-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.service-card { min-height: 122px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; border-radius: 18px; background: rgba(255,255,255,.82); box-shadow: inset 0 1px 0 #fff; }
+.service-card:active { transform: scale(.98); }
+.service-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
+.service-icon-box { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #5b2b8f; background: #e9ddf0; }
+.service-icon-box .material-symbols-outlined { font-size: 19px; }
+.service-tag { padding: 4px 6px; border-radius: 6px; color: #8f78a0; background: #f0eaf4; font-size: 7px; font-weight: 800; }
+.service-external { color: #b2a6b4; font-size: 16px; }
+.service-name { display: block; margin-top: 14px; color: #393040; font-size: 13px; font-weight: 800; }
+.service-caption { display: block; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #a095a1; font-size: 9px; }
+.empty-state { padding: 48px 20px; text-align: center; }
+.empty-icon { color: #b0a0b4; font-size: 32px; }
+.empty-title { display: block; margin-top: 12px; color: #5d5160; font-size: 14px; font-weight: 800; }
+.empty-copy { display: block; margin-top: 5px; color: #a59aa5; font-size: 10px; }
+.ai-help-card { margin: 25px 0 0; padding: 15px; display: flex; align-items: center; gap: 11px; border-radius: 18px; color: #fff; background: #5b2b8f; box-shadow: 0 14px 28px rgba(91,43,143,.16); }
+.ai-help-icon { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: rgba(255,255,255,.16); }
+.ai-help-icon .material-symbols-outlined { font-size: 19px; }
+.ai-help-copy { flex: 1; min-width: 0; }
+.ai-help-title { display: block; font-size: 12px; font-weight: 800; }
+.ai-help-desc { display: block; margin-top: 3px; color: rgba(255,255,255,.65); font-size: 9px; }
+.ai-help-arrow { color: rgba(255,255,255,.8); font-size: 19px; }
+.bottom-safe { height: calc(var(--tabbar-safe) + 18px); }
 </style>

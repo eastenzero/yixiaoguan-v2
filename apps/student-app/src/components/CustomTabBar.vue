@@ -19,7 +19,7 @@ defineProps<{ current: string }>()
 const tabs = [
   { key: 'home', icon: 'home', label: '首页', path: '/pages/home/index' },
   { key: 'assistant', icon: 'chat_bubble', label: '智能问答', path: '/pages/chat/index' },
-  { key: 'services', icon: 'business_center', label: '事务导办', path: '/pages/services/index' },
+  { key: 'services', icon: 'business_center', label: '服务大厅', path: '/pages/services/index' },
   { key: 'profile', icon: 'person', label: '我的', path: '/pages/profile/index' },
 ]
 
