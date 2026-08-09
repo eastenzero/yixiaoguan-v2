@@ -1,0 +1,9 @@
+active_key=trigger_refresh_publisher
+quarantine_key=trigger_refresh_publisher:kbfix-quarantine:20260809-1642
+before_count=133298
+final_archived_count=133298
+before_key_memory=115204761
+active_after=0
+redis_used_memory_after=100883168
+worker_queue_enabled=true
+restore_test=PASS

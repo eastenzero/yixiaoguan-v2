@@ -1,0 +1,8 @@
+/home/easten/backups/yixiaoguan-v2/backup-cron.log {
+    daily
+    rotate 14
+    compress
+    missingok
+    notifempty
+    copytruncate
+}

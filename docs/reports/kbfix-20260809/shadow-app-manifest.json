@@ -1,0 +1,23 @@
+{
+  "created": true,
+  "formal_app_unchanged": "8cfaee92-f95c-4316-80a4-ab5d93614772",
+  "shadow_app_id": "76f7ba2c-5c61-47cb-a257-5800cf185e21",
+  "shadow_workflow_id": "882b1331-6721-4dbe-acca-9d630d0cad37",
+  "main_dataset_id": "a5732fe1-a85c-42a8-962c-2a4d8015b56a",
+  "academic_dataset_id": "6f8c8f85-9893-4036-b327-15c34ccb9aa5",
+  "enable_site": false,
+  "enable_api": true,
+  "status": "GREEN_ONLY_WAITING_SWITCH_CONFIRMATION",
+  "shadow_workflow_history": [
+    "577e0e0d-c6b5-4cfa-9cd1-ed42cf0d88b8",
+    "856531a2-ebad-41ce-8113-1e3a158b292f",
+    "bb6eef05-e3c4-4afd-b6fc-23813ffe2ef3",
+    "1da872d8-81fa-4603-8aac-bc90cad0e713",
+    "6f2b9a22-8a53-4e68-926c-901fdacac6af",
+    "327dc945-1d05-493a-ace8-38f96c6463d0",
+    "882b1331-6721-4dbe-acca-9d630d0cad37"
+  ],
+  "previous_shadow_workflow_id": "327dc945-1d05-493a-ace8-38f96c6463d0",
+  "shadow_workflow_revision": "kbfix-green-shadow-r7-20260809",
+  "formal_workflow_unchanged": "f98baa82-d73f-44b0-aec5-de83078e8b37"
+}

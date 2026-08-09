@@ -2,6 +2,20 @@ export interface Source {
   title: string
   score?: number
   content?: string
+  document_id?: string | null
+  dataset_id?: string | null
+  source_url?: string | null
+  source_label?: string
+  source_type?: string
+  verified?: boolean
+  published_at?: string | null
+  last_verified?: string | null
+  academic_year?: string | null
+  effective_status?: string | null
+  freshness?: string | null
+  policy_level?: string | null
+  source_paths?: string[]
+  review_required?: boolean
 }
 
 export interface Message {
@@ -12,6 +26,7 @@ export interface Message {
   timestamp: number
   isStreaming?: boolean
   refusal?: boolean
+  answer_notice?: string
 }
 
 export interface UnansweredInviteState {
@@ -26,7 +41,7 @@ export type ChatMessage = Message & {
 
 export type ChatStreamEvent =
   | { event: 'message'; token: string }
-  | { event: 'message_end'; full_content: string; sources: Source[]; message_id: number }
+  | { event: 'message_end'; full_content: string; sources: Source[]; message_id: number; answer_notice?: string }
   | { event: 'suggestions'; questions: string[] }
   | { event: 'unanswered_invite'; message_id: number; conv_id: number }
   | { event: 'error'; message: string }

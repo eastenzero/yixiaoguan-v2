@@ -1,0 +1,15 @@
+{"id":"A01","category":"入党","query":"挂科一门是不是就不能入党","expected_any":["挂科对党员发展的上级规则边界","party-development-current-rule"]}
+{"id":"A02","category":"入党","query":"学院没有公开党员发展细则时怎么回答","expected_any":["学院党员发展细则缺失时的回答规则","party-development-college-gap"]}
+{"id":"A03","category":"分流","query":"挂科影响入党奖学金和评优怎么分别判断","expected_any":["挂科影响问题应如何拆分","academic-impact-router"]}
+{"id":"A04","category":"评优","query":"综合素质测评和评优有什么关系","expected_any":["综合素质测评与评优的关系","comprehensive-assessment-policy","本科生综合素质测评办法"]}
+{"id":"A05","category":"励志奖学金","query":"2023—2024励志奖学金允许有不及格吗","expected_any":["2023—2024学年励志奖学金的不及格限制","2023—2024学年本科生励志奖学金评审通知","inspirational-failed-course","04-inspirational-scholarship"]}
+{"id":"A06","category":"弘毅奖学金","query":"2024—2025弘毅奖学金有挂科或补考能申请吗","expected_any":["2024—2025学年弘毅奖学金的不及格限制","2024-2025学年弘毅奖学金申请细则","hongyi-failed-course","05-hongyi"]}
+{"id":"A07","category":"分流","query":"挂科影响不同事项的标准回答是什么","expected_any":["挂科影响问题的标准回答矩阵","academic-impact-answer-matrix","06-answer-matrix"]}
+{"id":"A08","category":"校级荣誉","query":"2024—2025校级优秀学生允许挂科吗","expected_any":["2024—2025学年校级优秀学生等荣誉称号评选条件","校级优秀学生（非弘毅奖学金）","07-school-honors"]}
+{"id":"A09","category":"校级荣誉","query":"校级优秀学生和优秀学生干部排名要求","expected_any":["2024—2025学年校级优秀学生等荣誉称号评选条件","校级优秀学生（非弘毅奖学金）","07-school-honors"]}
+{"id":"A10","category":"综合奖学金","query":"补考通过还能评2024—2025校级综合奖学金吗","expected_any":["2024—2025学年校级综合奖学金评选条件","校级综合奖学金：2024—2025学年","08-comprehensive-scholarship"]}
+{"id":"A11","category":"综合奖学金","query":"2024—2025校级综合奖学金一二三等奖多少钱","expected_any":["2024—2025学年校级综合奖学金评选条件","校级综合奖学金：2024—2025学年","08-comprehensive-scholarship"]}
+{"id":"A12","category":"综合奖学金","query":"校级综合奖学金学习成绩和综测排名要求","expected_any":["2024—2025学年校级综合奖学金评选条件","校级综合奖学金：2024—2025学年","08-comprehensive-scholarship"]}
+{"id":"A13","category":"重修补修","query":"医药管理学院2025—2026第二学期重修什么时候报名","expected_any":["医药管理学院转发的2025—2026学年第二学期重修补修报名通知","medical-management-retake-registration","09-medical-management-retake"]}
+{"id":"A14","category":"重修补修","query":"重修只适用于哪些课程","expected_any":["医药管理学院转发的2025—2026学年第二学期重修补修报名通知","medical-management-retake-registration","09-medical-management-retake"]}
+{"id":"A15","category":"重修补修","query":"补修和重修是不是一回事","expected_any":["医药管理学院转发的2025—2026学年第二学期重修补修报名通知","medical-management-retake-registration","09-medical-management-retake"]}

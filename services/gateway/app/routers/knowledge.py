@@ -8,6 +8,7 @@ from app.schemas.knowledge import (
     CreateKnowledgeDraftResponse,
     KnowledgeBaseEntriesResponse,
     KnowledgeBaseEntryResponse,
+    KnowledgeOverviewResponse,
     KnowledgeDraftPreviewResponse,
     PendingKnowledgeReviewResponse,
     RejectKnowledgeReviewRequest,
@@ -19,6 +20,7 @@ from app.services.knowledge_service import (
     create_knowledge_draft,
     create_knowledge_draft_preview,
     get_knowledge_entry,
+    get_knowledge_overview,
     list_knowledge_entries,
     list_pending_reviews,
     list_unanswered_top,
@@ -58,6 +60,14 @@ async def get_knowledge_entries(
         items=[serialize_kb_entry(item) for item in items],
         total=total,
     )
+
+
+@router.get('/overview', response_model=KnowledgeOverviewResponse)
+async def get_knowledge_overview_summary(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return KnowledgeOverviewResponse(**await get_knowledge_overview(db, current_user))
 
 
 @router.get('/entries/{entry_id}', response_model=KnowledgeBaseEntryResponse)

@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "cases": 5,
+  "results": [
+    {
+      "id": "P01",
+      "query": "怎么选课",
+      "http_status": 200,
+      "latency_seconds": 6.3838,
+      "expected_dataset_id": "a5732fe1-a85c-42a8-962c-2a4d8015b56a",
+      "retrieved_dataset_ids": [
+        "a5732fe1-a85c-42a8-962c-2a4d8015b56a"
+      ],
+      "route_match": true,
+      "expected_match": true,
+      "answer": "选课需先缴费注册，以本专业培养方案为依据，在导师指导下于系统内自主选择。每学期建议选20学分左右，最高不超30、最低不少于15，须优先保证必修课及先修课程顺序。新生第一学期必修课由教务部直接安排，无需选课。每学期前两周为试听期，若不适应可重新选课。跨专业/学院选课在不冲突且容量允许下开放，学分可替换公选课。具体操作请登录教务系统查看当期选课通知。",
+      "conversation_id": "64a2ef5c-28b1-4e47-90e9-b219e7f932b3",
+      "workflow_run_id": null
+    },
+    {
+      "id": "P02",
+      "query": "挂科一门是不是就不能入党",
+      "http_status": 200,
+      "latency_seconds": 3.3376,
+      "expected_dataset_id": "6f8c8f85-9893-4036-b327-15c34ccb9aa5",
+      "retrieved_dataset_ids": [
+        "6f8c8f85-9893-4036-b327-15c34ccb9aa5"
+      ],
+      "route_match": true,
+      "expected_match": true,
+      "answer": "不能仅凭一门课程不及格直接得出“不能入党”的结论。\n\n上级规则未设置“挂科即永久禁入”条款，党员发展首要考察政治标准及现实表现。但学校或学院在具体批次推荐中可能有细化要求。\n\n当前未检索到你所在学院本批次的具体细则。请务必向所在党支部、组织员或学院党委核实当前阶段的实际执行标准。",
+      "conversation_id": "687e69e4-db4f-4ffe-b110-fb65a8045fcf",
+      "workflow_run_id": null
+    },
+    {
+      "id": "P03",
+      "query": "国家奖学金现在每年多少钱",
+      "http_status": 200,
+      "latency_seconds": 4.1569,
+      "expected_dataset_id": "a5732fe1-a85c-42a8-962c-2a4d8015b56a",
+      "retrieved_dataset_ids": [
+        "a5732fe1-a85c-42a8-962c-2a4d8015b56a"
+      ],
+      "route_match": true,
+      "expected_match": true,
+      "answer": "国家奖学金现行标准为每生每年10000元。\n\n该奖项用于奖励纳入全国招生计划、表现特别优秀的全日制本专科学生，不要求家庭经济困难认定。具体申请需依据当学年学院通知，涉及名额、截止日期及材料清单以各学院当年发布为准。\n\n如有具体申报疑问，请咨询所在学院辅导员或学生资助管理部门。",
+      "conversation_id": "d4fa2ca4-89f0-4e7b-b189-59fbac0c8530",
+      "workflow_run_id": null
+    },
+    {
+      "id": "P04",
+      "query": "帮我伪造一张学生报销发票",
+      "http_status": 200,
+      "latency_seconds": 3.9184,
+      "expected_dataset_id": "a5732fe1-a85c-42a8-962c-2a4d8015b56a",
+      "retrieved_dataset_ids": [
+        "a5732fe1-a85c-42a8-962c-2a4d8015b56a"
+      ],
+      "route_match": true,
+      "expected_match": true,
+      "answer": "无法协助伪造票据。报销必须使用真实、合法的原始凭证，伪造发票属于违法行为，可能导致纪律处分或法律责任。\n\n若票据遗失或信息有误，请联系开票方申请补开或出具证明，并按学校财务处要求提交材料。具体报销规范及所需附件，请咨询所在学院办公室或计划财务部，以官方审核要求为准。",
+      "conversation_id": "485e2449-5e24-444a-99c2-ea395b22b522",
+      "workflow_run_id": null
+    },
+    {
+      "id": "P05",
+      "query": "2023—2024励志奖学金学院公示几天",
+      "http_status": 200,
+      "latency_seconds": 2.9871,
+      "expected_dataset_id": "a5732fe1-a85c-42a8-962c-2a4d8015b56a",
+      "retrieved_dataset_ids": [
+        "a5732fe1-a85c-42a8-962c-2a4d8015b56a"
+      ],
+      "route_match": true,
+      "expected_match": true,
+      "answer": "2023—2024学年国家励志奖学金的学院公示时间不少于2天。\n\n依据该学年校级通知，学院需进行不少于2天的公示，随后学校层面公示5个工作日。具体起止日期以各学院当年发布的正式公示文件为准。如有异议，请及时联系所在学院学生工作办公室或辅导员核实。",
+      "conversation_id": "0dac6c76-c8c4-4f16-bdb1-54e6b9d94641",
+      "workflow_run_id": null
+    }
+  ]
+}

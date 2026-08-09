@@ -1,0 +1,74 @@
+{
+  "status": "PRODUCTION_ACTIVE",
+  "prepared_at": "2026-08-09T18:38:00+08:00",
+  "activated_at": "2026-08-09T21:23:32+08:00",
+  "formal": {
+    "app_id": "8cfaee92-f95c-4316-80a4-ab5d93614772",
+    "workflow_id": "bd5b740d-1302-49fc-83b5-4a521f83dd5e",
+    "rollback_workflow_id": "f98baa82-d73f-44b0-aec5-de83078e8b37",
+    "main_dataset_id": "a5732fe1-a85c-42a8-962c-2a4d8015b56a",
+    "changed": true
+  },
+  "green": {
+    "main_dataset_id": "a5732fe1-a85c-42a8-962c-2a4d8015b56a",
+    "academic_dataset_id": "6f8c8f85-9893-4036-b327-15c34ccb9aa5",
+    "scholarship_standby_dataset_id": "5a3c8e8f-b2b5-46b3-b350-f63c086c62de",
+    "shadow_app_id": "76f7ba2c-5c61-47cb-a257-5800cf185e21",
+    "shadow_workflow_id": "882b1331-6721-4dbe-acca-9d630d0cad37",
+    "shadow_graph_sha256": "464556fc7eb94c60aa366131ecb00099d6c01308de643f125b6309de70681baa"
+  },
+  "image": {
+    "tag": "yixiaoguan/dify-api:1.13.3-kbfix-20260809",
+    "id": "sha256:fe3dc3d5e946b42eaa2ab4fbc56ba83ff1b0cee8bd92e49dc4a08e7317c4a141",
+    "base_id": "sha256:d1c73b3be4ba3212d4119c77e15230215e8bcf760ed64f80cfea121c277e1108",
+    "patch_sha256": "90e7fed837a2b63db89067bab6640a0f9cfd694b335764e60fb72fef87305bbf",
+    "active": true
+  },
+  "retrieval": {
+    "main_golden_top1": 1.0,
+    "main_golden_top3": 1.0,
+    "main_scholarship_top1": 0.95,
+    "main_scholarship_top3": 1.0,
+    "main_combined_top1": 0.9787234042553191,
+    "main_combined_top3": 1.0,
+    "academic_top1": 1.0,
+    "academic_top3": 1.0
+  },
+  "shadow_acceptance": {
+    "cases": 120,
+    "workers": 2,
+    "availability": 1.0,
+    "error_rate": 0.0,
+    "strict_precision": 0.9916666666666667,
+    "semantic_adjudicated_precision": 1.0,
+    "safety_pass_rate": 1.0,
+    "latency_p95_seconds": 5.991835,
+    "latency_max_seconds": 6.693
+  },
+  "backup": {
+    "initial": "/home/easten/backups/yixiaoguan-v2/kbfix-20260809-162508",
+    "daily_example": "/home/easten/backups/yixiaoguan-v2/daily-20260809-163729",
+    "retention_days": 14,
+    "restore_drill": "PASS"
+  },
+  "queue": {
+    "archived_tasks": 133298,
+    "archive": "/home/easten/backups/yixiaoguan-v2/queue-archive-20260809-1642",
+    "active_queue": 0,
+    "worker_errors_during_observation": 0
+  },
+  "teacher_mapping": {
+    "mapped_entries": 319,
+    "unmatched_frozen_entries": 949,
+    "state": "NEW_IDS_ACTIVE"
+  },
+  "cutover": {
+    "state_directory": "/home/easten/backups/yixiaoguan-v2/switch-20260809-212238",
+    "gateway_health": "PASS",
+    "production_smoke": "5/5 PASS",
+    "conversation_count_before_after": "1122/1122",
+    "post_switch_observation_samples": 7,
+    "post_switch_errors": 0,
+    "rollback_command": "/home/easten/dev/dify-deploy/kbfix-run-20260809/rollback_kbfix_remote.sh --confirm ROLLBACK_KBFIX_20260809"
+  }
+}

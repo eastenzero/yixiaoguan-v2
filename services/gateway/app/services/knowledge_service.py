@@ -351,18 +351,68 @@ def _build_kb_entry_content(entry: KbEntry) -> str:
     return "\n".join(lines)
 
 
+def _governance_metadata(entry: KbEntry) -> dict:
+    value = getattr(entry, "governance_metadata", None)
+    return value if isinstance(value, dict) else {}
+
+
+def _iso_value(value) -> str | None:
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if value in (None, ""):
+        return None
+    return str(value)
+
+
+def _source_paths(entry: KbEntry, metadata: dict) -> list[str]:
+    direct = getattr(entry, "source_paths", None)
+    if isinstance(direct, list) and direct:
+        return [str(value) for value in direct if value]
+    sources = metadata.get("sources")
+    if not isinstance(sources, list):
+        return []
+    return [str(item.get("path")) for item in sources if isinstance(item, dict) and item.get("path")]
+
+
+def _policy_level(entry: KbEntry, metadata: dict) -> str | None:
+    explicit = metadata.get("authority_level") or metadata.get("policy_level")
+    if explicit:
+        return str(explicit)
+    scope = str(getattr(entry, "governance_scope", None) or "")
+    return {"global": "school", "college": "college"}.get(scope)
+
+
+def _effective_status(entry: KbEntry, metadata: dict) -> str:
+    explicit = metadata.get("effective_status")
+    if explicit:
+        return str(explicit)
+    return {
+        "current-year": "current",
+        "stable": "stable",
+        "time-bound": "time-sensitive",
+        "expired": "historical",
+    }.get(str(getattr(entry, "freshness", None) or ""), "unknown")
+
+
 def serialize_kb_entry(entry: KbEntry) -> dict:
     scope = "global" if entry.dify_dataset_id == settings.dify_global_dataset_id else "college"
+    metadata = _governance_metadata(entry)
+    source_types = metadata.get("source_types")
+    if not isinstance(source_types, list):
+        source_types = []
+    verified_at = metadata.get("last_verified") or getattr(entry, "reviewed_at", None)
+    source_published_at = metadata.get("source_published_at") or metadata.get("published_at")
+    governed_content = getattr(entry, "content", None)
     return {
         "id": entry.id,
         "title": entry.title,
-        "content": _build_kb_entry_content(entry),
-        "raw_content": None,
+        "content": governed_content or _build_kb_entry_content(entry),
+        "raw_content": getattr(entry, "raw_content", None),
         "scope": scope,
         "scope_value": None,
         "representative_query": entry.original_source or entry.category or entry.original_filename or "真实知识库条目",
         "status": "published",
-        "college_id": None,
+        "college_id": getattr(entry, "college_id", None),
         "submitted_by": 0,
         "reject_reason": None,
         "dify_document_id": entry.dify_document_id,
@@ -376,8 +426,17 @@ def serialize_kb_entry(entry: KbEntry) -> dict:
         "campus": entry.campus,
         "original_filename": entry.original_filename,
         "created_at": entry.created_at,
-        "published_at": entry.created_at,
-        "reviewed_at": None,
+        "published_at": getattr(entry, "published_at", None) or entry.created_at,
+        "reviewed_at": getattr(entry, "reviewed_at", None),
+        "verified_at": _iso_value(verified_at),
+        "source_published_at": _iso_value(source_published_at),
+        "freshness": str(getattr(entry, "freshness", None) or "unclassified"),
+        "effective_status": _effective_status(entry, metadata),
+        "policy_level": _policy_level(entry, metadata),
+        "audience": list(getattr(entry, "audience", None) or []),
+        "source_paths": _source_paths(entry, metadata),
+        "source_types": [str(value) for value in source_types if value],
+        "review_required": bool(metadata.get("policy_review_required", False)),
     }
 
 
@@ -402,6 +461,51 @@ async def _visible_kb_dataset_ids(db: AsyncSession, current_user: User) -> set[s
         if college_dataset_id:
             dataset_ids.add(college_dataset_id)
     return dataset_ids
+
+
+def summarize_knowledge_overview(entries: list[KbEntry]) -> dict:
+    freshness_counts: dict[str, int] = {}
+    verified_values: list[str] = []
+    source_traceable_count = 0
+    review_required_count = 0
+    student_visible_count = 0
+
+    for entry in entries:
+        metadata = _governance_metadata(entry)
+        freshness = str(getattr(entry, "freshness", None) or "unclassified")
+        freshness_counts[freshness] = freshness_counts.get(freshness, 0) + 1
+
+        verified_at = _iso_value(metadata.get("last_verified") or getattr(entry, "reviewed_at", None))
+        if verified_at:
+            verified_values.append(verified_at)
+        if entry.source_url or _source_paths(entry, metadata):
+            source_traceable_count += 1
+        if metadata.get("policy_review_required") is True:
+            review_required_count += 1
+        if bool(getattr(entry, "student_rag_visible", False)):
+            student_visible_count += 1
+
+    return {
+        "total": len(entries),
+        "verified_count": len(verified_values),
+        "latest_verified_at": max(verified_values) if verified_values else None,
+        "student_visible_count": student_visible_count,
+        "source_traceable_count": source_traceable_count,
+        "review_required_count": review_required_count,
+        "freshness_counts": freshness_counts,
+        "notice": "核验日期来自知识治理清单；具体政策以学校、学院当年度正式通知及负责部门答复为准。",
+    }
+
+
+async def get_knowledge_overview(db: AsyncSession, current_user: User) -> dict:
+    visible_dataset_ids = await _visible_kb_dataset_ids(db, current_user)
+    stmt = select(KbEntry)
+    if visible_dataset_ids is not None:
+        if not visible_dataset_ids:
+            return summarize_knowledge_overview([])
+        stmt = stmt.where(KbEntry.dify_dataset_id.in_(visible_dataset_ids))
+    result = await db.execute(stmt)
+    return summarize_knowledge_overview(list(result.scalars().all()))
 
 
 async def list_knowledge_entries(

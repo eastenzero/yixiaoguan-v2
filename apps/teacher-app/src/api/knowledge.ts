@@ -5,6 +5,7 @@ import type {
   FallbackPageResult,
   KnowledgeDraftPreviewResponse,
   KnowledgeEntry,
+  KnowledgeOverview,
   PageResult,
   UnansweredTopResponse
 } from '@/types/api'
@@ -63,8 +64,39 @@ function normalizeEntry(input: any): KnowledgeEntry {
     original_filename: input?.original_filename ?? input?.originalFilename ?? null,
     created_at: String(input?.created_at || input?.createdAt || new Date().toISOString()),
     published_at: input?.published_at ?? input?.publishedAt ?? null,
-    reviewed_at: input?.reviewed_at ?? input?.reviewedAt ?? null
+    reviewed_at: input?.reviewed_at ?? input?.reviewedAt ?? null,
+    verified_at: input?.verified_at ?? input?.verifiedAt ?? null,
+    source_published_at: input?.source_published_at ?? input?.sourcePublishedAt ?? null,
+    freshness: input?.freshness || 'unclassified',
+    effective_status: input?.effective_status ?? input?.effectiveStatus ?? 'unknown',
+    policy_level: input?.policy_level ?? input?.policyLevel ?? null,
+    audience: Array.isArray(input?.audience) ? input.audience : [],
+    source_paths: Array.isArray(input?.source_paths) ? input.source_paths : [],
+    source_types: Array.isArray(input?.source_types) ? input.source_types : [],
+    review_required: Boolean(input?.review_required ?? input?.reviewRequired ?? false)
   }
+}
+
+export function getKnowledgeOverview(): Promise<KnowledgeOverview> {
+  return get<KnowledgeOverview>('/api/v1/knowledge/overview').catch(() => {
+    const entries = readKnowledgeCache()
+    const verified = entries.map(item => item.verified_at).filter(Boolean) as string[]
+    const freshnessCounts = entries.reduce<Record<string, number>>((counts, item) => {
+      const key = item.freshness || 'unclassified'
+      counts[key] = (counts[key] || 0) + 1
+      return counts
+    }, {})
+    return {
+      total: entries.length,
+      verified_count: verified.length,
+      latest_verified_at: verified.sort()[verified.length - 1] || null,
+      student_visible_count: 0,
+      source_traceable_count: entries.filter(item => item.source_url || item.source_paths?.length).length,
+      review_required_count: entries.filter(item => item.review_required).length,
+      freshness_counts: freshnessCounts,
+      notice: '当前显示本地缓存；核验状态请以联网后的知识治理清单为准。'
+    }
+  })
 }
 
 function upsertKnowledgeEntry(entry: KnowledgeEntry) {

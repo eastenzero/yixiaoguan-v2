@@ -1,0 +1,24 @@
+{
+  "result": "PASS",
+  "datasets": {
+    "academic_final_rc6": {
+      "db_documents": 13,
+      "db_segments": 55,
+      "vector_objects": 55,
+      "missing_object_uuid": 0,
+      "missing_doc_id_property": 0,
+      "stale_vectors": 0,
+      "identity_mismatches": 0,
+      "wrong_dataset_metadata": 0,
+      "vectorless": 0,
+      "duplicate_bodies": 0,
+      "pending_markers": 0,
+      "unauthorized_sources": 0,
+      "reused_document_ids": 0,
+      "reused_segment_ids": 0,
+      "reused_index_node_ids": 0,
+      "result": "PASS",
+      "failures": {}
+    }
+  }
+}
