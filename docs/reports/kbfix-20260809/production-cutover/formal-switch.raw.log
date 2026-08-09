@@ -1,0 +1,3 @@
+Warning! You didn't set docs_url, redoc_url or openapi_url.
+API Documentation will be skipped.
+{"academic_dataset_id": "6f8c8f85-9893-4036-b327-15c34ccb9aa5", "formal_app_id": "8cfaee92-f95c-4316-80a4-ab5d93614772", "formal_uses_kbfix": true, "formal_uses_original": false, "formal_workflow_id": "bd5b740d-1302-49fc-83b5-4a521f83dd5e", "main_dataset_id": "a5732fe1-a85c-42a8-962c-2a4d8015b56a", "original_workflow_id": "f98baa82-d73f-44b0-aec5-de83078e8b37", "prepared_graph_sha256": "464556fc7eb94c60aa366131ecb00099d6c01308de643f125b6309de70681baa", "prepared_shadow_workflow_id": "882b1331-6721-4dbe-acca-9d630d0cad37", "production_version": "kbfix-production-r7-20260809", "production_workflow_id": "bd5b740d-1302-49fc-83b5-4a521f83dd5e"}
