@@ -40,11 +40,15 @@
               class="cit-item"
               @click="$emit('source-click', source)"
             >
-              <text class="cit-text">{{ index + 1 }}. {{ source.title }}</text>
+              <view class="cit-copy">
+                <text class="cit-text">{{ index + 1 }}. {{ source.title }}</text>
+                <text class="cit-meta">{{ formatSourceMeta(source) }}</text>
+              </view>
               <AppIcon name="chevron_right" class="cit-arrow" />
             </view>
           </view>
         </view>
+        <text v-if="message.answer_notice && !message.isStreaming" class="answer-notice">{{ message.answer_notice }}</text>
       </view>
 
       <text class="msg-time">{{ formatTime(message.timestamp) }}</text>
@@ -95,6 +99,29 @@ defineEmits<{
 }>()
 
 const isRefusal = computed(() => props.isRefusalMsg(props.message))
+
+function formatSourceDate(value?: string | null) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value.slice(0, 10)
+  return date.toLocaleDateString('zh-CN')
+}
+
+function formatSourceMeta(source: Source) {
+  const parts = [source.source_label || '校园知识库']
+  const policyLevel = {
+    national: '国家级',
+    provincial: '省级',
+    school: '校级',
+    college: '学院级',
+  }[source.policy_level || '']
+  if (policyLevel) parts.push(policyLevel)
+  if (source.effective_status === 'historical') parts.push('历史资料')
+  if (source.last_verified) parts.push(`核验于 ${formatSourceDate(source.last_verified)}`)
+  else if (source.published_at) parts.push(`发布于 ${formatSourceDate(source.published_at)}`)
+  else parts.push('日期待补')
+  return parts.join(' · ')
+}
 </script>
 
 <style scoped lang="scss">
@@ -282,13 +309,35 @@ const isRefusal = computed(() => props.isRefusalMsg(props.message))
 }
 
 .cit-text {
-  flex: 1;
   overflow: hidden;
   color: $secondary;
   font-size: 12px;
   line-height: 1.4;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.cit-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.cit-meta,
+.answer-notice {
+  display: block;
+  color: $on-surface-variant;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.cit-meta {
+  margin-top: 3px;
+  padding-right: 8px;
+}
+
+.answer-notice {
+  margin-top: 10px;
+  opacity: 0.82;
 }
 
 .cit-arrow {

@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import re
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,6 +27,7 @@ from app.services.announcement_service import (
     get_active_announcements_for_user,
     mark_announcement_read,
 )
+from app.services.source_evidence import ANSWER_DISCLAIMER, build_source_evidence
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -138,6 +140,46 @@ def build_dify_inputs(user: User) -> dict[str, str]:
     }
 
 
+def _entry_cohort(text: str) -> int | None:
+    match = re.search(r"(?<!\d)(20)?(\d{2})\s*级", text)
+    if not match:
+        return None
+    return 2000 + int(match.group(2))
+
+
+def build_dify_query(query: str, class_name: str = "") -> str:
+    """Inject the confirmed cohort split only for make-up/retake questions."""
+    if not any(term in query for term in ("补考", "重修", "挂科", "不及格")):
+        return query
+
+    cohort = _entry_cohort(query) or _entry_cohort(class_name)
+    if cohort is None:
+        route = (
+            "用户入学年级尚不明确。先追问入学年级；如需在本轮给出帮助，"
+            "可并列说明2023级及以前与2024级及以后的两种规则，禁止统一回答。"
+        )
+    elif cohort <= 2023:
+        route = (
+            f"已识别为{cohort}级：正常课程考核不及格后原则上仍有一次补考机会；"
+            "补考仍不合格再按规定重修。"
+        )
+    else:
+        route = (
+            f"已识别为{cohort}级：常规课程考核不及格后不再安排补考，直接按规定重修。"
+        )
+
+    return (
+        f"{query}\n\n"
+        "【系统补充的校内规则上下文】\n"
+        "普通本科生按入学年级分流：2023级及以前原则上保留一次补考机会；"
+        "2024级及以后常规挂科后不安排补考，直接重修。\n"
+        f"{route}\n"
+        "旷考、作弊、取消考试资格、缓考、实践课程、研究生、继续教育和其他特殊培养类型另行核验。"
+        "公开网页暂未找到明确写出2024级切换点的正式文件，回答须标注这是当前校内执行口径，"
+        "并提示以教务部、学院最新通知及负责部门答复为准。"
+    )
+
+
 async def _stream_ai_response(db, conv, user, query: str):
     """
     内部生成器：调 Dify → 逐 token 发 SSE → 最后保存 AI 消息。
@@ -167,7 +209,10 @@ async def _stream_ai_response(db, conv, user, query: str):
             # do NOT block chat — announcement delivery is best-effort
 
         async for event in dify_client.chat_stream(
-            query=query,
+            query=build_dify_query(
+                query,
+                user.class_.name if user.class_ else "",
+            ),
             user_id=str(user.id),
             conversation_id=conv.dify_conversation_id,
             inputs=build_dify_inputs(user),
@@ -187,12 +232,28 @@ async def _stream_ai_response(db, conv, user, query: str):
                 metadata = event.get("metadata", {})
                 message_end_metadata = metadata if isinstance(metadata, dict) else None
                 retriever_resources = metadata.get("retriever_resources", [])
-                sources = [
-                    {"title": r.get("document_name", ""),
-                     "score": r.get("score", 0),
-                     "content": r.get("content", "")[:200]}
-                    for r in retriever_resources
-                ]
+                try:
+                    sources = await build_source_evidence(
+                        db,
+                        retriever_resources,
+                        user_college=user.college.name if user.college else None,
+                        query=query,
+                    )
+                except Exception as exc:
+                    logger.warning("source evidence enrichment failed: %s", exc)
+                    sources = [
+                        {
+                            "title": r.get("document_name", ""),
+                            "score": r.get("score", 0),
+                            "content": r.get("content", "")[:600],
+                            "document_id": r.get("document_id"),
+                            "dataset_id": r.get("dataset_id"),
+                            "source_label": "校园知识库",
+                            "source_type": "knowledge_base",
+                            "verified": False,
+                        }
+                        for r in retriever_resources
+                    ]
                 # 不在这里 yield message_end，等保存完再发
 
             elif event_type == "error":
@@ -208,7 +269,11 @@ async def _stream_ai_response(db, conv, user, query: str):
     # 保存 AI 消息到 DB
     ai_msg = await add_message(
         db, conv.id, SenderType.ai, full_answer,
-        metadata={"sources": sources, "dify_conversation_id": new_dify_conv_id},
+        metadata={
+            "sources": sources,
+            "dify_conversation_id": new_dify_conv_id,
+            "answer_notice": ANSWER_DISCLAIMER,
+        },
     )
 
     # 更新 Dify conversation_id（首次对话时）
@@ -223,12 +288,19 @@ async def _stream_ai_response(db, conv, user, query: str):
         await db.commit()
 
     # WS 广播 AI 消息
-    _ai_event = build_message_broadcast_event(ai_msg, conv_id=conv.id, metadata={"sources": sources})
+    _ai_event = build_message_broadcast_event(
+        ai_msg,
+        conv_id=conv.id,
+        metadata={
+            "sources": sources,
+            "answer_notice": ANSWER_DISCLAIMER,
+        },
+    )
     await centrifugo.publish(f"conv:{conv.id}", _ai_event)
     await manager.broadcast_to_room(f"conv:{conv.id}", _ai_event)
 
     # 发送 message_end
-    yield f"event: message_end\ndata: {json.dumps({'full_content': full_answer, 'sources': sources, 'message_id': ai_msg.id}, ensure_ascii=False)}\n\n"
+    yield f"event: message_end\ndata: {json.dumps({'full_content': full_answer, 'sources': sources, 'message_id': ai_msg.id, 'answer_notice': ANSWER_DISCLAIMER}, ensure_ascii=False)}\n\n"
 
     is_answered = True
     try:

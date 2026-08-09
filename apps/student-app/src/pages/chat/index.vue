@@ -131,12 +131,13 @@
                     <view class="cit-index">0{{ si + 1 }}</view>
                     <view class="cit-copy">
                       <text class="cit-text">{{ source.title }}</text>
-                      <text class="cit-meta">校园知识库 · 已核验</text>
+                      <text class="cit-meta">{{ formatSourceMeta(source) }}</text>
                     </view>
                     <text class="material-symbols-outlined ext-link-icon">open_in_new</text>
                   </view>
                 </view>
               </view>
+              <text v-if="msg.answer_notice && !msg.isStreaming" class="answer-notice">{{ msg.answer_notice }}</text>
             </view>
             <view v-if="msg.isStreaming" class="streaming-state">
               <view class="streaming-wave"><view /><view /><view /><view /></view>
@@ -269,6 +270,15 @@
           </view>
         </view>
         <scroll-view class="source-popup-body" scroll-y>
+          <view class="source-popup-evidence">
+            <text class="source-popup-meta">{{ sourcePopup.meta }}</text>
+            <view v-if="sourcePopup.url" class="source-popup-url" @click="copySourceUrl(sourcePopup.url)">
+              <text class="material-symbols-outlined source-popup-link-icon">link</text>
+              <text class="source-popup-url-text">{{ sourcePopup.url }}</text>
+              <text class="source-popup-copy">复制</text>
+            </view>
+            <text v-else class="source-popup-pending">公开来源链接待补充</text>
+          </view>
           <view class="markdown-body source-markdown" v-html="renderMarkdown(sourcePopup.content)" />
         </scroll-view>
       </view>
@@ -321,7 +331,7 @@ const suggestedQuestions = ref<string[]>([])
 const showCallMenu = ref(false)
 const welcomePrompts = ['查今天课表', '图书馆几点开？', '校园卡怎么用？', '宿舍电费怎么交？']
 let activeController: AbortController | null = null
-const sourcePopup = reactive({ visible: false, title: '', content: '' })
+const sourcePopup = reactive({ visible: false, title: '', content: '', meta: '', url: '' })
 const sourceSheetHeight = ref(50)
 const DISMISSED_KEY = 'dismissed_unanswered_msg_ids'
 let sheetTouchStartY = 0
@@ -487,6 +497,7 @@ function mapServerMessage(m: MessageResponse): ChatMessage {
     role: roleMap[m.sender_type] || 'system',
     content: m.content || '',
     sources: m.metadata_?.sources || [],
+    answer_notice: m.metadata_?.answer_notice || '',
     timestamp: m.created_at ? new Date(m.created_at).getTime() : Date.now(),
   }
 }
@@ -605,6 +616,7 @@ async function streamResponse(userContent: string) {
           }
           msg.content = data.full_content || msg.content
           msg.sources = data.sources || []
+          msg.answer_notice = data.answer_notice || ''
           msg.isStreaming = false
           trackEvent('chat_response_ok', {
             conv_id: conversationId.value,
@@ -690,12 +702,45 @@ function stopStreaming() {
 function handleSourceClick(source: Source) {
   sourcePopup.title = source.title || '参考资料'
   sourcePopup.content = source.content || '暂无详细内容'
+  sourcePopup.meta = formatSourceMeta(source)
+  sourcePopup.url = source.source_url || ''
   sourceSheetHeight.value = 50
   trackEvent('kb_doc_clicked', {
     conv_id: conversationId.value,
     source_title: source.title || '',
   })
   sourcePopup.visible = true
+}
+
+function formatSourceDate(value?: string | null) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value.slice(0, 10)
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'numeric', day: 'numeric' })
+}
+
+function formatSourceMeta(source: Source) {
+  const parts = [source.source_label || '校园知识库']
+  const policyLevel = {
+    national: '国家级',
+    provincial: '省级',
+    school: '校级',
+    college: '学院级',
+  }[source.policy_level || '']
+  if (policyLevel) parts.push(policyLevel)
+  if (source.effective_status === 'historical') parts.push('历史资料')
+  if (source.academic_year) parts.push(source.academic_year)
+  if (source.last_verified) parts.push(`核验于 ${formatSourceDate(source.last_verified)}`)
+  else if (source.published_at) parts.push(`发布于 ${formatSourceDate(source.published_at)}`)
+  else parts.push('日期待补')
+  return parts.join(' · ')
+}
+
+function copySourceUrl(url: string) {
+  uni.setClipboardData({
+    data: url,
+    success: () => uni.showToast({ title: '来源链接已复制', icon: 'success' }),
+  })
 }
 function closeSourcePopup() {
   sourcePopup.visible = false
@@ -877,6 +922,7 @@ function scrollToBottom() {
 .cit-text { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #4b3a52; font-size: .68rem; font-weight: 760; }
 .cit-meta { display: block; margin-top: .22rem; color: #a598aa; font-size: .5rem; }
 .ext-link-icon { flex-shrink: 0; font-size: .8rem; color: #8e6fa1; }
+.answer-notice { display: block; margin-top: .7rem; color: #9b8f9e; font-size: .52rem; line-height: 1.55; }
 @keyframes sourceReveal { from { opacity: 0; transform: translateY(.5rem); } to { opacity: 1; transform: translateY(0); } }
 
 .typing-animation { display: flex; gap: 0.25rem; padding: 0.25rem 0; }
@@ -966,6 +1012,13 @@ function scrollToBottom() {
 .source-expand { font-size: 1.125rem; color: #94a3b8; }
 .source-close { font-size: 1.25rem; color: #94a3b8; }
 .source-popup-body { padding: 1.25rem; flex: 1; overflow: hidden; }
+.source-popup-evidence { margin-bottom: .9rem; padding: .75rem; border-radius: .8rem; background: #f4eff7; }
+.source-popup-meta { display: block; color: #654875; font-size: .68rem; font-weight: 750; line-height: 1.5; }
+.source-popup-url { display: flex; align-items: center; gap: .45rem; margin-top: .55rem; padding: .55rem; border-radius: .65rem; background: rgba(255,255,255,.78); }
+.source-popup-link-icon { flex-shrink: 0; color: #5b2b8f; font-size: .9rem; }
+.source-popup-url-text { flex: 1; min-width: 0; overflow: hidden; color: #75647c; font-size: .58rem; text-overflow: ellipsis; white-space: nowrap; }
+.source-popup-copy { flex-shrink: 0; color: #5b2b8f; font-size: .58rem; font-weight: 800; }
+.source-popup-pending { display: block; margin-top: .5rem; color: #a98457; font-size: .58rem; }
 .source-markdown { font-size: 0.875rem; color: #475569; line-height: 1.8; }
 .source-markdown :deep(p) { margin-bottom: 0.5rem; }
 .source-markdown :deep(ul) { padding-left: 1rem; margin-bottom: 0.5rem; list-style-type: disc; }

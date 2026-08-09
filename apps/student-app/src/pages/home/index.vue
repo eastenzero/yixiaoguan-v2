@@ -206,7 +206,7 @@ const quickActions = [
 
 const tags = [
   { id: 't1', label: '宿舍电费怎么交？' },
-  { id: 't2', label: '奖学金怎么评？' },
+  { id: 't2', label: '补考重修怎么办？' },
   { id: 't3', label: '图书馆几点开？' },
   { id: 't4', label: '校园网怎么连？' },
 ]

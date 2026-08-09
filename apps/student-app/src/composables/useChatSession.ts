@@ -56,6 +56,7 @@ function mapServerMessage(m: MessageResponse): ChatMessage {
     role: roleMap[m.sender_type] || 'system',
     content: m.content || '',
     sources: m.metadata_?.sources || [],
+    answer_notice: m.metadata_?.answer_notice || '',
     timestamp: m.created_at ? new Date(m.created_at).getTime() : Date.now(),
   }
 }
@@ -258,6 +259,7 @@ export function useChatSession() {
             }
             msg.content = data.full_content || msg.content
             msg.sources = data.sources || []
+            msg.answer_notice = data.answer_notice || ''
             msg.isStreaming = false
             trackEvent('chat_response_ok', {
               conv_id: conversationId.value,
@@ -363,13 +365,32 @@ export function useChatSession() {
 
   function handleSourceClick(source: Source) {
     sourcePopup.title = source.title || '参考资料'
-    sourcePopup.content = source.content || '暂无详细内容'
+    const sourceMeta = formatSourceMeta(source)
+    const sourceUrl = source.source_url ? `\n\n来源链接：${source.source_url}` : '\n\n公开来源链接待补充'
+    sourcePopup.content = `> ${sourceMeta}${sourceUrl}\n\n${source.content || '暂无详细内容'}`
     sourceSheetHeight.value = 50
     trackEvent('kb_doc_clicked', {
       conv_id: conversationId.value,
       source_title: source.title || '',
     })
     sourcePopup.visible = true
+  }
+
+  function formatSourceMeta(source: Source) {
+    const parts = [source.source_label || '校园知识库']
+    const policyLevel = {
+      national: '国家级',
+      provincial: '省级',
+      school: '校级',
+      college: '学院级',
+    }[source.policy_level || '']
+    if (policyLevel) parts.push(policyLevel)
+    if (source.effective_status === 'historical') parts.push('历史资料')
+    if (source.academic_year) parts.push(source.academic_year)
+    if (source.last_verified) parts.push(`核验于 ${source.last_verified.slice(0, 10)}`)
+    else if (source.published_at) parts.push(`发布于 ${source.published_at.slice(0, 10)}`)
+    else parts.push('日期待补')
+    return parts.join(' · ')
   }
 
   function closeSourcePopup() {

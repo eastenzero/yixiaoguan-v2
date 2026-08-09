@@ -1,14 +1,9 @@
 import { REQUEST_TIMEOUT_MS, toApiUrl } from '@/utils/runtime'
-
-export interface Source {
-  title: string
-  score?: number
-  content?: string
-}
+import type { Source } from '@/types/chat'
 
 export interface SSECallbacks {
   onToken: (token: string) => void
-  onEnd: (data: { full_content: string; sources: Source[]; message_id: number }) => void
+  onEnd: (data: { full_content: string; sources: Source[]; message_id: number; answer_notice?: string }) => void
   onError: (msg: string) => void
   onSuggestions?: (questions: string[]) => void
   onUnansweredInvite?: (data: { message_id: number; conv_id: number }) => void
@@ -24,6 +19,7 @@ function dispatchEvent(eventName: string, data: SSEEventData, callbacks: SSECall
       full_content: data.full_content || '',
       sources: data.sources || [],
       message_id: data.message_id || 0,
+      answer_notice: data.answer_notice || '',
     })
   } else if (eventName === 'unanswered_invite') {
     callbacks.onUnansweredInvite?.({
@@ -146,6 +142,7 @@ function bufferedRequest(url: string, body: object, token: string, callbacks: SS
             full_content: data.full_content || data.content || '',
             sources: data.sources || [],
             message_id: data.message_id || 0,
+            answer_notice: data.answer_notice || '',
           })
         }
         resolve()
