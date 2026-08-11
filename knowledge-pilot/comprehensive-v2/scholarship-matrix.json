@@ -1,0 +1,117 @@
+{
+  "version": "scholarship-layering-v2-20260810",
+  "supersession": {
+    "national_scholarship_amount": "The 2024 national adjustment supersedes the 8000 yuan amount in Shandong's 2022 regulation; use 10000 yuan for current answers.",
+    "national_inspirational_amount": "The 2024 national adjustment supersedes the 5000 yuan amount in Shandong's 2022 regulation; use 6000 yuan for current answers.",
+    "other_shandong_rules": "Use the 2022 Shandong regulation for provincial awards, ranking, mutual exclusion and process unless a newer official rule changes the same field."
+  },
+  "awards": [
+    {
+      "id": "undergrad-national-scholarship",
+      "name": "本专科生国家奖学金",
+      "level": "national",
+      "student_scope": "full_time_undergraduate_year_2_plus",
+      "amount_yuan_current": 10000,
+      "purpose": "奖励特别优秀的全日制本专科生",
+      "difficulty_recognition_required": false,
+      "ranking_reference": "山东省2022实施细则：学习成绩与综合考评排名均位于前10%；某一方面表现非常突出时，两项可放宽至前30%并提交证明",
+      "conflicts": ["同学年不能同时获得省政府奖学金", "不能同时获得国家或省政府励志奖学金"],
+      "compatible": ["家庭经济困难学生可同时获得国家助学金"],
+      "sdfmu_examples": ["药学院2024—2025学年国家奖学金推荐名单公示"],
+      "source_urls": ["https://www.gov.cn/zhengce/202507/content_7032288.htm", "https://www.mof.gov.cn/gkml/caizhengwengao/wg2024/wg202410/202501/P020250109539041693223.pdf", "https://www.yantai.gov.cn/cms_files/jcms1/web1/site/attach/0/b367d29f251242bb9a74c18eaf5ae817.pdf", "https://sps.sdfmu.edu.cn/info/1049/17764.htm"]
+    },
+    {
+      "id": "undergrad-shandong-government-scholarship",
+      "name": "山东省政府奖学金",
+      "level": "provincial",
+      "student_scope": "full_time_undergraduate_year_2_plus",
+      "amount_yuan_current": 6000,
+      "purpose": "奖励特别优秀的全日制本专科生",
+      "difficulty_recognition_required": false,
+      "ranking_reference": "山东省2022实施细则：学习成绩与综合考评排名均位于前15%；某一方面表现非常突出时可放宽至前30%并提交证明",
+      "conflicts": ["同学年不能同时获得国家奖学金", "不能同时获得国家或省政府励志奖学金"],
+      "compatible": ["家庭经济困难学生可同时获得国家助学金"],
+      "sdfmu_examples": ["生物医学科学学院2024—2025学年本科生省政府奖学金答辩评审"],
+      "source_urls": ["https://www.yantai.gov.cn/cms_files/jcms1/web1/site/attach/0/b367d29f251242bb9a74c18eaf5ae817.pdf", "https://bms.sdfmu.edu.cn/info/1009/7532.htm"]
+    },
+    {
+      "id": "undergrad-national-inspirational",
+      "name": "本专科生国家励志奖学金",
+      "level": "national",
+      "student_scope": "full_time_undergraduate_year_2_plus",
+      "amount_yuan_current": 6000,
+      "purpose": "奖励资助品学兼优的家庭经济困难学生",
+      "difficulty_recognition_required": true,
+      "ranking_reference": "无不及格科目；学习成绩或综合考评一项前30%，另一项前50%；特殊困难学生两项可均放宽至前50%",
+      "conflicts": ["同学年只能获得一项励志奖学金", "不能同时获得国家奖学金或省政府奖学金"],
+      "compatible": ["可同时获得国家助学金"],
+      "sdfmu_examples": ["山一大2023—2024学年评审通知，金额已被2024年国家调整替代，其他条件仅作当学年办理证据"],
+      "source_urls": ["https://www.gov.cn/zhengce/202507/content_7032288.htm", "https://www.mof.gov.cn/gkml/caizhengwengao/wg2024/wg202410/202501/P020250109539041693223.pdf", "https://www.yantai.gov.cn/cms_files/jcms1/web1/site/attach/0/b367d29f251242bb9a74c18eaf5ae817.pdf", "https://sa.sdfmu.edu.cn/info/1341/18991.htm"]
+    },
+    {
+      "id": "undergrad-shandong-inspirational",
+      "name": "山东省政府励志奖学金",
+      "level": "provincial",
+      "student_scope": "full_time_undergraduate_year_2_plus",
+      "amount_yuan_current": 5000,
+      "purpose": "奖励资助品学兼优的家庭经济困难学生",
+      "difficulty_recognition_required": true,
+      "ranking_reference": "无不及格科目；学习成绩或综合考评一项前30%，另一项前50%；特殊困难学生两项可均放宽至前50%",
+      "conflicts": ["同学年只能获得一项励志奖学金", "不能同时获得国家奖学金或省政府奖学金"],
+      "compatible": ["可同时获得国家助学金"],
+      "source_urls": ["https://www.yantai.gov.cn/cms_files/jcms1/web1/site/attach/0/b367d29f251242bb9a74c18eaf5ae817.pdf", "https://sa.sdfmu.edu.cn/info/1341/18991.htm"]
+    },
+    {
+      "id": "undergrad-shandong-minority-inspirational",
+      "name": "新疆西藏和青海海北籍少数民族大学生省政府励志奖学金",
+      "level": "provincial",
+      "student_scope": "full_time_undergraduate_year_2_plus_with_required_origin_and_ethnicity",
+      "amount_yuan_current": 5000,
+      "purpose": "奖励资助品学兼优、家庭经济困难，且符合特定户籍与民族条件的学生",
+      "difficulty_recognition_required": true,
+      "ranking_reference": "须根据当学年学校通知核对；不直接套用普通励志奖学金的所有排名结论",
+      "extra_conditions": ["入学前户籍所在地为新疆维吾尔自治区、西藏自治区或青海省海北藏族自治州", "民族为少数民族"],
+      "conflicts": ["同学年只能获得一项励志奖学金"],
+      "compatible": ["可同时获得国家助学金"],
+      "source_urls": ["https://www.yantai.gov.cn/cms_files/jcms1/web1/site/attach/0/b367d29f251242bb9a74c18eaf5ae817.pdf"]
+    },
+    {
+      "id": "sdfmu-comprehensive-scholarship-2024-2025",
+      "name": "山一大校级综合奖学金",
+      "level": "school",
+      "student_scope": "full_time_undergraduate_year_2_plus",
+      "academic_year": "2024-2025",
+      "amounts": [{"grade":"一等","yuan":1500,"ratio":"4%"},{"grade":"二等","yuan":1000,"ratio":"4%"},{"grade":"三等","yuan":800,"ratio":"10%"}],
+      "requirements": ["学习成绩在自然班前30%", "综合测评在自然班前40%", "2024—2025学年无不及格科目（含V类课程）、无补考、无过程性考核不达标", "无违纪现象"],
+      "process": ["个人申请", "班级评议", "学院审核", "学院公示不少于2个工作日", "学校复核"],
+      "effective_status": "historical_academic_year_do_not_auto_extend",
+      "source_urls": ["https://sa.sdfmu.edu.cn/info/1341/21131.htm"]
+    },
+    {
+      "id": "sdfmu-hongyi-2024-2025",
+      "name": "山一大“弘毅”奖学金",
+      "level": "school",
+      "student_scope": "full_time_undergraduate_year_2_plus",
+      "academic_year": "2024-2025",
+      "amount_yuan": 4000,
+      "quota": "全校每学年不超过50名",
+      "requirements": ["学习成绩和综合测评排名均位于评选范围前50%", "无不及格科目（含V类课程）、无补考、无过程性考核不达标", "在道德风尚、学术研究、学科竞赛、创新发明、社会实践、体育或文艺等方面有特别突出表现并提交证明"],
+      "conflicts": ["已获得同学年国家奖学金、省政府奖学金、国家励志奖学金、省政府励志奖学金或济南奖学金者不能同时申请并获得"],
+      "materials": ["弘毅奖学金审批表", "带教务部公章的成绩单", "学院党政主要负责人联名实名推荐信", "获奖、论文、成果或专利等支撑材料"],
+      "process": ["个人申请与班级评议", "辅导员推荐", "学院资助工作小组审核", "学院公示不少于2个工作日", "学校奖学金评审委员会和领导小组审定"],
+      "effective_status": "historical_academic_year_do_not_auto_extend",
+      "source_urls": ["https://sa.sdfmu.edu.cn/info/1341/21411.htm"]
+    },
+    {
+      "id": "college-and-social-scholarships",
+      "name": "学院与社会力量专项奖学金",
+      "level": "college_or_social",
+      "student_scope": "award_specific",
+      "amount_yuan_current": null,
+      "purpose": "按学院、专业、科研竞赛或企业设奖要求评选",
+      "examples": ["化学与制药工程学院“爱博科研之星”", "实验动物学院企业专项奖助学金", "生物医学优秀本科生奖学金"],
+      "answer_boundary": "只有用户所在学院、当学年、同名奖项的通知能用于判断资格；其他学院只能作为可能存在的奖项示例",
+      "source_urls": ["https://cpe.sdfmu.edu.cn/info/1113/5684.htm", "https://sydw.sdfmu.edu.cn/info/1002/8944.htm", "https://bms.sdfmu.edu.cn/info/1009/1953.htm"]
+    }
+  ]
+}

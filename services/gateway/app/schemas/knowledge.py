@@ -83,6 +83,26 @@ class KnowledgeBaseEntryResponse(BaseModel):
     created_at: datetime
     published_at: datetime | None = None
     reviewed_at: datetime | None = None
+    verified_at: str | None = None
+    source_published_at: str | None = None
+    freshness: str = "unclassified"
+    effective_status: str = "unknown"
+    policy_level: str | None = None
+    audience: list[str] = Field(default_factory=list)
+    source_paths: list[str] = Field(default_factory=list)
+    source_types: list[str] = Field(default_factory=list)
+    review_required: bool = False
+
+
+class KnowledgeOverviewResponse(BaseModel):
+    total: int
+    verified_count: int
+    latest_verified_at: str | None = None
+    student_visible_count: int
+    source_traceable_count: int
+    review_required_count: int
+    freshness_counts: dict[str, int] = Field(default_factory=dict)
+    notice: str
 
 
 class KnowledgeBaseEntriesResponse(BaseModel):

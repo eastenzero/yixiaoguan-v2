@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "医小管知识卡",
+  "type": "object",
+  "required": ["id", "title", "topic", "source_owner", "source_url", "published_at", "material_type", "evidence_role", "answer_status", "temporal_status"],
+  "properties": {
+    "id": {"type": "string"},
+    "title": {"type": "string"},
+    "topic": {"type": "string"},
+    "subtopics": {"type": "array", "items": {"type": "string"}},
+    "user_intents": {"type": "array", "items": {"type": "string"}},
+    "student_scope": {"type": "array", "items": {"type": "string"}},
+    "college": {"type": "string"},
+    "campus": {"type": "array", "items": {"type": "string"}},
+    "source_owner": {"type": "string"},
+    "source_url": {"type": "string", "format": "uri"},
+    "published_at": {"type": "string"},
+    "material_type": {"type": "string"},
+    "authority_level": {"type": "string"},
+    "evidence_role": {"enum": ["rule_evidence", "process_evidence", "result_context", "background_context"]},
+    "answer_status": {"enum": ["answer_ready", "review_required", "context_only", "archive_only"]},
+    "temporal_status": {"enum": ["current_window", "recent_reference", "historical_reference", "date_unknown"]},
+    "content_quality": {"enum": ["usable_excerpt", "page_chrome_polluted", "too_short"]},
+    "effective_scope_note": {"type": "string"},
+    "content_excerpt": {"type": "string"},
+    "content_sha256": {"type": "string"}
+  }
+}

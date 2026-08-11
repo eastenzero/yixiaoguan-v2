@@ -102,7 +102,27 @@ export interface KnowledgeEntry {
   created_at: string
   published_at: string | null
   reviewed_at: string | null
+  verified_at?: string | null
+  source_published_at?: string | null
+  freshness?: 'stable' | 'current-year' | 'time-bound' | 'expired' | 'unclassified' | string
+  effective_status?: 'current' | 'stable' | 'time-sensitive' | 'historical' | 'unknown' | string
+  policy_level?: 'national' | 'provincial' | 'school' | 'college' | string | null
+  audience?: string[]
+  source_paths?: string[]
+  source_types?: string[]
+  review_required?: boolean
   fallback?: ApiFallbackMeta
+}
+
+export interface KnowledgeOverview {
+  total: number
+  verified_count: number
+  latest_verified_at: string | null
+  student_visible_count: number
+  source_traceable_count: number
+  review_required_count: number
+  freshness_counts: Record<string, number>
+  notice: string
 }
 
 export interface CreateKnowledgeDraftPayload {

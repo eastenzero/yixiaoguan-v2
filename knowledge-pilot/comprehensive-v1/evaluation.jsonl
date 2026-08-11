@@ -1,0 +1,25 @@
+{"id":"scholarship-overview","query":"我们学校都有哪些奖学金？","must_cover":["国家层面","山东省层面","学校层面","学院专项"],"must_not":["只说以通知为准"]}
+{"id":"national-scholarship-amount","query":"国家奖学金现在一年多少钱？","must_cover":["10000元","本专科","现行国家政策"],"must_not":["8000元"]}
+{"id":"national-inspirational-amount","query":"国家励志奖学金多少钱？","must_cover":["6000元","家庭经济困难"],"must_not":["现行5000元"]}
+{"id":"provincial-options","query":"山东省有哪些省级奖学金？","must_cover":["省政府奖学金","省政府励志奖学金","少数民族"],"must_not":["为未核实的当年标准编数字"]}
+{"id":"failed-course-inspirational","query":"我挂过科，还能评国家励志奖学金吗？","must_cover":["2023—2024学年山一大通知","无不及格科目","新学年需核对"],"must_not":["所有年份永久不允许"]}
+{"id":"rank-inspirational","query":"励志奖学金要排名前多少？","must_cover":["2023—2024学年","前30%","前50%","特殊困难"],"must_not":["把往年门槛说成当年必然规则"]}
+{"id":"scholarship-exclusion","query":"国家奖学金和国家励志奖学金能一起拿吗？","must_cover":["区分奖项","当学年通知","互斥或兼得依据"],"must_not":["无来源绝对化"]}
+{"id":"college-specific-awards","query":"化学与制药工程学院有什么特色奖学金？","must_cover":["爱博科研之星","发布学年或年份","原文链接"],"must_not":["说成全校奖项"]}
+{"id":"college-unknown","query":"医药管理学院今年国家奖学金前多少名能报？","must_cover":["国家基础政策","学院当年门槛待核对","询问辅导员或学院通知"],"must_not":["借用药学院排名线"]}
+{"id":"graduate-scholarship","query":"研究生可以申请什么奖助学金？","must_cover":["研究生范围","研究生院奖助管理入口"],"must_not":["直接套用本科生门槛"]}
+{"id":"international-scholarship","query":"留学生奖学金去哪里看？","must_cover":["国际教育学院","奖学金入口"],"must_not":["直接套用中国本科生项目"]}
+{"id":"national-grant","query":"山一大国家助学金有几档，多少钱？","must_cover":["2600", "3700", "4800", "2024—2025学年"],"must_not":["把历史通知说成今年必然标准"]}
+{"id":"apply-materials","query":"申请励志奖学金要准备什么？","must_cover":["当年通知","成绩或综测","家庭经济困难认定","辅导员"],"must_not":["编造表格名称"]}
+{"id":"party-failed-course","query":"挂科影响入党吗？","must_cover":["上级党员发展基础规则","学院培养考察","不把奖学金规则当入党规则"],"must_not":["挂一科永久不能入党"]}
+{"id":"failed-course-honors","query":"挂科对评优有什么影响？","must_cover":["按具体荣誉名称区分","当学年评选通知","综测"],"must_not":["奖学金条件直接代替评优条件"]}
+{"id":"retake-policy","query":"挂科以后是补考还是重修？","must_cover":["入学年级或适用办法","教务部或学院当期通知"],"must_not":["对所有年级给同一结论"]}
+{"id":"library-hours","query":"两个校区图书馆几点开门，几点关门？","must_cover":["校区","周一至周日","约7点至22点","节假日通知"],"must_not":["下午不开放"]}
+{"id":"dorm-electricity","query":"宿舍电费怎么充？","must_cover":["校区或宿舍区","官方办理入口","异常联系路径"],"must_not":["编造小程序名或支付步骤"]}
+{"id":"campus-email","query":"校园邮箱怎么开通？","must_cover":["身份范围","官方入口","忘记密码或故障路径"],"must_not":["索要用户密码"]}
+{"id":"student-card","query":"校园卡丢了怎么办？","must_cover":["先挂失","补办入口或窗口","校区差异"],"must_not":["编造窗口地址"]}
+{"id":"course-selection","query":"选课错过时间了怎么办？","must_cover":["当学期选课通知","学院教务科","补选或申请可能性"],"must_not":["保证一定能补选"]}
+{"id":"graduation-impact","query":"挂科会不会影响毕业和学位证？","must_cover":["毕业条件","学位授予条件","学分或成绩是否补齐","适用年级规章"],"must_not":["挂过科就永久不发证"]}
+{"id":"change-major","query":"我想转专业，需要什么条件？","must_cover":["适用年级","当年通知","可接收专业与名额","教务路径"],"must_not":["将往年名额当今年名额"]}
+{"id":"broad-answer-style","query":"给我讲讲大学期间怎么尽量拿到奖学金","must_cover":["奖项分类","成绩与综测","困难认定","关注通知","学院专项"],"must_not":["只回答查看官网"]}
+{"id":"source-quality","query":"你这个答案是从哪里来的？","must_cover":["正式中文标题","发布单位","可打开原文链接"],"must_not":["文档哈希","向量库ID"]}

@@ -1,0 +1,18 @@
+{
+  "release_name": "医小管知识库·全面回答版 v1",
+  "mode": "shadow_only",
+  "created_at": "2026-08-10",
+  "production_unchanged": true,
+  "production_workflow": {
+    "name": "医小管-主对话流",
+    "workflow_id": "bd5b740d-1302-49fc-83b5-4a521f83dd5e",
+    "version": "kbfix-production-r7-20260809"
+  },
+  "candidate": {
+    "version": "comprehensive-balanced-v1",
+    "workflow_id": null,
+    "status": "pack_validated_not_deployed",
+    "switch_requires_user_selection": true
+  },
+  "rollback": "Keep the production workflow ID and dataset IDs unchanged until the candidate passes evaluation and is explicitly selected."
+}

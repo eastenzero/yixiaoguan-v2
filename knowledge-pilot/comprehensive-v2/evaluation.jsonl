@@ -1,0 +1,20 @@
+{"id":"v2-overview-structure","query":"山一大都有哪些奖学金？","must_cover":["直接总览","国家和省政府奖学金","励志奖学金","校级","学院专项","怎么选"],"min_chars":800,"min_paragraphs":6}
+{"id":"v2-national-vs-provincial","query":"国家奖学金和省政府奖学金有什么区别？","must_cover":["10000", "6000", "前10%", "前15%", "不能同时获得", "特别突出可放宽至前30%"],"min_chars":500,"min_paragraphs":4}
+{"id":"v2-inspirational-compare","query":"国家励志和省励志奖学金怎么选？","must_cover":["6000", "5000", "困难认定", "无不及格", "只能获得一项", "可同时获得国家助学金"],"min_chars":500,"min_paragraphs":4}
+{"id":"v2-national-current-amount","query":"国家奖学金现在多少钱？","must_cover":["10000", "2024年调整", "山东2022文件中8000已被替代"],"min_chars":200,"min_paragraphs":2}
+{"id":"v2-inspirational-current-amount","query":"国家励志奖学金是5000还6000？","must_cover":["现行6000", "2024年调整", "往年5000"],"min_chars":220,"min_paragraphs":2}
+{"id":"v2-provincial-amounts","query":"山东省政府奖学金和励志奖学金分别多少？","must_cover":["省政府奖学金6000", "省政府励志奖学金5000", "适用对象不同"],"min_chars":300,"min_paragraphs":3}
+{"id":"v2-minority-award","query":"青海海北籍少数民族学生有专门奖学金吗？","must_cover":["青海省海北藏族自治州", "少数民族", "5000", "家庭经济困难"],"min_chars":300,"min_paragraphs":3}
+{"id":"v2-failed-course-map","query":"我挂过科，奖学金都会受影响吗？","must_cover":["按奖项分开", "励志奖无不及格要求", "校级综合奖", "弘毅", "当学年通知"],"min_chars":650,"min_paragraphs":5}
+{"id":"v2-retake-map","query":"我原来挂科但补考过了，能评奖学金吗？","must_cover":["原始不及格", "补考口径", "校级综合奖2024—2025明确排除补考", "按奖项核对"],"min_chars":500,"min_paragraphs":4}
+{"id":"v2-comprehensive-detail","query":"校级综合奖学金怎么评？","must_cover":["2024—2025学年", "1500", "1000", "800", "4%", "10%", "成绩前30%", "综测前40%", "公示不少于2个工作日"],"min_chars":600,"min_paragraphs":5}
+{"id":"v2-hongyi-detail","query":"弘毅奖学金具体有什么要求？","must_cover":["4000", "不超过50名", "两项前50%", "无补考", "突出成果", "推荐信", "互斥奖项"],"min_chars":700,"min_paragraphs":5}
+{"id":"v2-hongyi-materials","query":"弘毅奖学金要准备哪些材料？","must_cover":["审批表", "带教务部公章的成绩单", "联名实名推荐信", "支撑材料", "当学年截止日需查新通知"],"min_chars":450,"min_paragraphs":4}
+{"id":"v2-mutual-exclusion","query":"国奖、省奖、励志奖和弘毅能一起拿吗？","must_cover":["国奖与省奖互斥", "奖学金与励志奖互斥", "弘毅互斥列表", "国家助学金可兼得"],"min_chars":550,"min_paragraphs":4}
+{"id":"v2-choose-by-profile","query":"我成绩前12%，综测前14%，不是困难生，适合看什么奖学金？","must_cover":["省政府奖学金可重点对照", "国家奖学金常规排名线未满足", "不需困难认定", "校级综合奖", "学院当年名额"],"min_chars":550,"min_paragraphs":4}
+{"id":"v2-choose-difficulty-profile","query":"我是困难生，成绩前25%、综测前45%，没挂科，能看哪个？","must_cover":["国家/省政府励志奖学金", "一项前30%另一项前50%", "困难认定有效", "同学年只能一项", "学院审核"],"min_chars":500,"min_paragraphs":4}
+{"id":"v2-college-boundary","query":"药学院的奖学金规则医药管理学院也一样吗？","must_cover":["不跨学院套用", "上位政策可共用", "学院名额和材料需分开", "药学院只作流程示例"],"min_chars":400,"min_paragraphs":3}
+{"id":"v2-action-steps","query":"我现在想申请奖学金，第一步干什么？","must_cover":["确认奖项和学年", "自查成绩综测挂科和困难认定", "学院通知", "材料", "辅导员或班级申报"],"min_chars":450,"min_paragraphs":4}
+{"id":"v2-follow-up","query":"我就问奖学金，你还需要知道什么？","must_cover":["学生类型", "学院", "入学年级", "学年", "成绩与综测", "挂科补考", "困难认定"],"min_chars":350,"min_paragraphs":3}
+{"id":"v2-source-presentation","query":"这些奖学金规则你是从哪查的？","must_cover":["现行国家政策", "山东省实施细则", "山一大当学年通知", "学院实际评审记录", "原文链接"],"min_chars":350,"min_paragraphs":3}
+{"id":"v2-not-wall-of-text","query":"详细给我讲讲奖学金","must_cover":["小标题", "分段", "你现在怎么选", "继续追问"],"min_chars":900,"min_paragraphs":7,"max_list_items_per_section":5}

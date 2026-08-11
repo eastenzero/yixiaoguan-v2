@@ -1,0 +1,49 @@
+{
+  "version": "2026-08-10",
+  "source_priority": [
+    "current_government_policy",
+    "current_school_policy_or_notice",
+    "current_matching_college_notice",
+    "official_service_entry",
+    "historical_same_subject_notice",
+    "verified_official_account_article"
+  ],
+  "official_account_policy": {
+    "enabled": true,
+    "required_fields": ["account_name", "account_owner", "article_title", "published_at", "source_url"],
+    "allowed_usage": "Confirmed official accounts may supplement procedures, reminders and event information. They must not override a newer government, school or college web notice.",
+    "unverified_usage": "discovery_only"
+  },
+  "sources": [
+    {"id":"national-student-aid-2025","name":"2025年高等教育学生资助政策","owner":"中国政府网","url":"https://www.gov.cn/zhengce/202507/content_7032288.htm","scope":"national","authority":5,"topics":["scholarship","student_aid"],"status":"current"},
+    {"id":"national-award-adjustment-2024","name":"调整高等教育阶段国家奖助学金政策的通知","owner":"财政部、教育部","url":"https://www.mof.gov.cn/gkml/caizhengwengao/wg2024/wg202410/202501/P020250109539041693223.pdf","scope":"national","authority":5,"topics":["scholarship","student_aid"],"status":"current"},
+    {"id":"moe-award-results","name":"国家奖学金评审及资助公告入口","owner":"教育部","url":"https://www.moe.gov.cn/jyb_xxgk/xxgk/neirong/fenlei/sxml_cwysj/cwysj_xszz/xszz_zzbg/","scope":"national","authority":5,"topics":["scholarship"],"status":"current_entry"},
+    {"id":"shandong-student-aid","name":"山东省学生资助资金管理办法及本专科生励志奖学金实施细则","owner":"山东省财政厅、山东省教育厅等部门","url":"https://www.yantai.gov.cn/cms_files/jcms1/web1/site/attach/0/b367d29f251242bb9a74c18eaf5ae817.pdf","scope":"provincial","authority":5,"topics":["scholarship","student_aid"],"status":"official_government_mirror_current_amounts_require_annual_notice"},
+    {"id":"sdfmu-main","name":"山东第一医科大学主站","owner":"山东第一医科大学","url":"https://www.sdfmu.edu.cn/","scope":"school","authority":5,"topics":["all"],"status":"current_entry"},
+    {"id":"sdfmu-student-affairs","name":"学生工作部","owner":"山东第一医科大学学生工作部","url":"https://sa.sdfmu.edu.cn/","scope":"school","authority":5,"topics":["scholarship","student_aid","honors","military"],"status":"current_entry"},
+    {"id":"sdfmu-student-rules","name":"学生工作规章制度","owner":"学生工作部","url":"https://sa.sdfmu.edu.cn/gzzd.htm","scope":"school","authority":5,"topics":["scholarship","student_management"],"status":"current_entry"},
+    {"id":"sdfmu-student-notices","name":"学生工作通知公告","owner":"学生工作部","url":"https://sa.sdfmu.edu.cn/index/tzgg.htm","scope":"school","authority":5,"topics":["scholarship","student_aid","honors"],"status":"current_entry"},
+    {"id":"sdfmu-academic-affairs","name":"教务部","owner":"山东第一医科大学教务部","url":"https://jwc.sdfmu.edu.cn/","scope":"school","authority":5,"topics":["academic_status","exams","retake","graduation"],"status":"current_entry"},
+    {"id":"sdfmu-graduate","name":"研究生院","owner":"山东第一医科大学研究生院","url":"https://graduate.sdfmu.edu.cn/","scope":"school","authority":5,"topics":["graduate","scholarship","degree","employment"],"status":"current_entry"},
+    {"id":"sdfmu-graduate-aid","name":"研究生奖助管理入口","owner":"研究生院","url":"https://graduate.sdfmu.edu.cn/xsgz/zzgl.htm","scope":"school","authority":5,"topics":["graduate","scholarship","student_aid"],"status":"current_entry"},
+    {"id":"sdfmu-youth","name":"团委","owner":"共青团山东第一医科大学委员会","url":"https://ylc.sdfmu.edu.cn/index.htm","scope":"school","authority":5,"topics":["youth_league","volunteer","innovation","honors"],"status":"current_entry"},
+    {"id":"sdfmu-international","name":"国际教育学院","owner":"国际教育学院","url":"https://ie.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["international_student","scholarship"],"status":"current_entry"},
+    {"id":"sdfmu-college-index","name":"山一大教学机构索引","owner":"山东第一医科大学","url":"https://www.sdfmu.edu.cn/jgsz1/jxjg.htm","scope":"school","authority":5,"topics":["college_routing"],"status":"current_entry"},
+    {"id":"college-pharmacy","name":"药学院（药物研究所）","owner":"药学院","url":"https://sps.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["college_policy","scholarship"],"status":"current_entry"},
+    {"id":"college-biomedical","name":"生物医学科学学院","owner":"生物医学科学学院","url":"https://bms.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["college_policy","scholarship"],"status":"current_entry"},
+    {"id":"college-sports-rehab","name":"运动医学与康复学院","owner":"运动医学与康复学院","url":"https://ykxy.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["college_policy","scholarship"],"status":"current_entry"},
+    {"id":"college-medical-management","name":"医药管理学院","owner":"医药管理学院","url":"https://mm.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["college_policy","scholarship","student_management"],"status":"current_entry"},
+    {"id":"college-medical-security","name":"医疗保障学院","owner":"医疗保障学院","url":"https://ylbz.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["college_policy","scholarship"],"status":"current_entry"},
+    {"id":"college-foreign-language","name":"外国语学院","owner":"外国语学院","url":"https://language.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["college_policy","scholarship"],"status":"current_entry"},
+    {"id":"college-experimental-animal","name":"实验动物学院","owner":"实验动物学院","url":"https://sydw.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["college_policy","scholarship"],"status":"current_entry"},
+    {"id":"college-chemistry-pharmacy","name":"化学与制药工程学院","owner":"化学与制药工程学院","url":"https://cpe.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["college_policy","scholarship"],"status":"current_entry"},
+    {"id":"college-nursing","name":"护理学院","owner":"护理学院","url":"https://nursing.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["college_policy","scholarship","admissions"],"status":"current_entry"},
+    {"id":"college-public-health","name":"公共卫生与健康管理学院","owner":"公共卫生与健康管理学院","url":"https://ph.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["college_policy","scholarship"],"status":"current_entry"},
+    {"id":"college-radiology","name":"放射学院","owner":"放射学院","url":"https://rad.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["college_policy","scholarship"],"status":"current_entry"},
+    {"id":"college-stomatology","name":"口腔医学院","owner":"口腔医学院","url":"https://stomatology.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["college_policy","scholarship"],"status":"current_entry"},
+    {"id":"college-life-sciences","name":"生命科学学院","owner":"生命科学学院","url":"https://ls.sdfmu.edu.cn/","scope":"college","authority":4,"topics":["college_policy","scholarship"],"status":"current_entry"},
+    {"id":"college-public-management","name":"医药管理学院学生规章示例","owner":"医药管理学院","url":"https://mm.sdfmu.edu.cn/info/1083/2218.htm","scope":"college","authority":4,"topics":["student_management"],"status":"historical_or_current_confirmation_required"},
+    {"id":"party-12371","name":"共产党员网","owner":"中央组织部党员教育中心","url":"https://www.12371.cn/","scope":"national","authority":5,"topics":["party_development"],"status":"current_entry"},
+    {"id":"sdfmu-wechat-main-20260708","name":"喜报！史伟云教授牵头项目荣获2025年度国家技术发明奖二等奖！","owner":"山东第一医科大学 山东省医科院","account_name":"山东第一医科大学 山东省医科院","published_at":"2026-07-08","url":"https://mp.weixin.qq.com/s/hZURjNn1J-gL7lPvAVnjAw","scope":"school","authority":4,"topics":["school_news","research_achievement"],"status":"verified_from_school_homepage"}
+  ]
+}

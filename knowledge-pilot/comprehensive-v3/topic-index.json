@@ -1,0 +1,86 @@
+{
+  "version": "2026-08-10",
+  "total": 990,
+  "topics": [
+    {
+      "topic": "academic_affairs",
+      "total": 111,
+      "answer_ready": 0,
+      "review_required": 41,
+      "context_only": 15,
+      "archive_only": 55
+    },
+    {
+      "topic": "admissions_and_international",
+      "total": 8,
+      "answer_ready": 0,
+      "review_required": 0,
+      "context_only": 0,
+      "archive_only": 8
+    },
+    {
+      "topic": "awards_and_aid",
+      "total": 119,
+      "answer_ready": 5,
+      "review_required": 78,
+      "context_only": 16,
+      "archive_only": 20
+    },
+    {
+      "topic": "campus_life",
+      "total": 25,
+      "answer_ready": 0,
+      "review_required": 4,
+      "context_only": 3,
+      "archive_only": 18
+    },
+    {
+      "topic": "digital_services",
+      "total": 20,
+      "answer_ready": 0,
+      "review_required": 0,
+      "context_only": 0,
+      "archive_only": 20
+    },
+    {
+      "topic": "employment_and_career",
+      "total": 235,
+      "answer_ready": 0,
+      "review_required": 28,
+      "context_only": 69,
+      "archive_only": 138
+    },
+    {
+      "topic": "finance_and_services",
+      "total": 7,
+      "answer_ready": 0,
+      "review_required": 7,
+      "context_only": 0,
+      "archive_only": 0
+    },
+    {
+      "topic": "health_and_safety",
+      "total": 31,
+      "answer_ready": 0,
+      "review_required": 11,
+      "context_only": 3,
+      "archive_only": 17
+    },
+    {
+      "topic": "party_and_honors",
+      "total": 263,
+      "answer_ready": 0,
+      "review_required": 22,
+      "context_only": 108,
+      "archive_only": 133
+    },
+    {
+      "topic": "postgraduate",
+      "total": 171,
+      "answer_ready": 0,
+      "review_required": 69,
+      "context_only": 39,
+      "archive_only": 63
+    }
+  ]
+}

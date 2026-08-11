@@ -1,0 +1,7 @@
+services:
+  api:
+    image: yixiaoguan/dify-api:1.13.3-kbfix-20260809
+  worker:
+    image: yixiaoguan/dify-api:1.13.3-kbfix-20260809
+  worker_beat:
+    image: yixiaoguan/dify-api:1.13.3-kbfix-20260809
