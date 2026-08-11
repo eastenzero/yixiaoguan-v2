@@ -1,0 +1,20 @@
+{
+  "release": "comprehensive-v3-shadow",
+  "production_dataset_unchanged": true,
+  "candidate_inputs": ["catalog.jsonl", "../comprehensive-v2/scholarship-matrix.json", "../comprehensive-v1/source_registry.json"],
+  "stages": [
+    {"name": "offline_validation", "required": true, "checks": ["validate_v3.py", "student-app type-check", "student-app h5 build"]},
+    {"name": "manual_source_review", "required": true, "scope": "review_required 条目中的高频主题优先"},
+    {"name": "shadow_dataset", "required": true, "traffic": "internal_eval_only"},
+    {"name": "sample_release", "required": true, "traffic_percent": 10},
+    {"name": "full_release", "required": true, "traffic_percent": 100}
+  ],
+  "gates": {
+    "evaluation_pass_rate_min": 0.9,
+    "unsupported_numeric_claim_rate_max": 0.01,
+    "official_link_open_rate_min": 0.98,
+    "outdated_as_current_rate": 0,
+    "generic_answer_rate_max": 0.08
+  },
+  "rollback": "保留当前生产 workflow ID 与 dataset IDs；如门禁失败，只停用候选数据集并恢复旧路由，不回退同事的后端治理变更。"
+}

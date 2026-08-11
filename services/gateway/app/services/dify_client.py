@@ -7,6 +7,27 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+PROFILE_REQUEST_TERMS = ("请提供", "请告诉", "告诉我你的", "请补充", "补充你的", "请填写", "请选择")
+PROFILE_FIELD_TERMS = ("学院", "年级", "专业", "班级", "身份", "职位", "学生类型")
+
+
+def filter_actionable_suggestions(questions: list[object]) -> list[str]:
+    """Keep only prompts that the assistant can answer when clicked immediately."""
+    result = []
+    for raw in questions:
+        question = str(raw).strip()
+        if not question or question in result:
+            continue
+        requests_profile = any(term in question for term in PROFILE_REQUEST_TERMS) and any(
+            field in question for field in PROFILE_FIELD_TERMS
+        )
+        if requests_profile:
+            continue
+        result.append(question)
+        if len(result) == 3:
+            break
+    return result
+
 
 class DifyClient:
     """封装 Dify API 调用"""
@@ -117,7 +138,11 @@ class DifyClient:
         prompt = (
             f"用户问：\"{query}\"\n"
             f"AI 答（摘要）：\"{answer_summary[:300]}\"\n\n"
-            "请基于以上对话，生成3个用户可能接着问的简短问题。\n"
+            "请基于以上对话，生成3个可直接推进办事的简短追问。"
+            "优先覆盖申请条件、所需材料、办理流程/时间节点、负责部门中的三个不同方面；"
+            "不要生成空泛问题，也不要虚构答案中未出现的学院、金额或日期。"
+            "每一条都必须是点击后 AI 能立即继续回答的问题；"
+            "禁止生成‘请提供/告诉我/请补充学院、年级、专业、班级、职位或身份’这类要求用户填资料的句子。\n"
             "仅输出 JSON 数组，如 [\"问题1\",\"问题2\",\"问题3\"]，不要其他内容。"
         )
         headers = {
@@ -146,7 +171,7 @@ class DifyClient:
                 if match:
                     questions = json.loads(match.group())
                     if isinstance(questions, list):
-                        return [str(q).strip() for q in questions[:3] if str(q).strip()]
+                        return filter_actionable_suggestions(questions)
         except Exception as e:
             logger.warning(f"generate_suggestions failed: {e}")
         return []

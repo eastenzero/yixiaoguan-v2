@@ -1,0 +1,16 @@
+{
+  "release_name": "医小管知识库·全面回答版 v2",
+  "created_at": "2026-08-10",
+  "mode": "shadow_only",
+  "production_unchanged": true,
+  "inherits_sources_from": "../comprehensive-v1/source_registry.json",
+  "replaces_candidate": "comprehensive-balanced-v1",
+  "candidate_version": "comprehensive-balanced-v2",
+  "status": "pack_ready_for_shadow_ingestion",
+  "rollback_points": {
+    "production_workflow_id": "bd5b740d-1302-49fc-83b5-4a521f83dd5e",
+    "production_version": "kbfix-production-r7-20260809",
+    "v1_git_commit": "2ffe379"
+  },
+  "deployment_requires_user_selection": true
+}

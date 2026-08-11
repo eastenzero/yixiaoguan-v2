@@ -1,0 +1,4 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+20 3 * * * root /usr/bin/flock -n /home/easten/backups/yixiaoguan-v2/.cron.lock /home/easten/bin/yixiaoguan-kb-backup.sh >>/home/easten/backups/yixiaoguan-v2/backup-cron.log 2>&1

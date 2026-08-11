@@ -1,0 +1,25 @@
+{
+  "status": "GREEN_ONLY_WAITING_SWITCH_CONFIRMATION",
+  "selected_at": "2026-08-09T17:44:00+08:00",
+  "datasets": {
+    "main_final": {
+      "id": "a5732fe1-a85c-42a8-962c-2a4d8015b56a",
+      "name": "医小管-GREEN-RC3-主库最终候选-20260809",
+      "embedding_model": "text-embedding-v4",
+      "segments": 740
+    },
+    "academic_final": {
+      "id": "6f8c8f85-9893-4036-b327-15c34ccb9aa5",
+      "name": "医小管-GREEN-RC6-学业影响最终候选-20260809",
+      "embedding_model": "text-embedding-v4",
+      "segments": 55
+    },
+    "scholarship_standby_final": {
+      "id": "5a3c8e8f-b2b5-46b3-b350-f63c086c62de",
+      "name": "医小管-GREEN-RC3-奖学金备库最终候选-20260809",
+      "embedding_model": "text-embedding-v4",
+      "segments": 145,
+      "connected_to_shadow": false
+    }
+  }
+}

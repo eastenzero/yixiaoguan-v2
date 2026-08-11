@@ -1,0 +1,31 @@
+{
+  "id": "sdfmu-library-hours-both-campuses",
+  "title": "山东第一医科大学两校区图书馆日常开放时间",
+  "topic": "campus_life",
+  "subtopic": "图书馆开放时间",
+  "scope": {
+    "campuses": ["济南校区", "泰安校区"],
+    "weekdays": ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+  },
+  "facts": {
+    "opens_at": "07:00",
+    "closes_at": "22:00",
+    "afternoon_open": true,
+    "summary": "两校区图书馆周一至周日均为早上7点开放，晚上10点闭馆，中午、下午和周末正常开放。"
+  },
+  "common_questions": [
+    {"question": "图书馆几点开门？", "answer": "济南校区和泰安校区均为07:00开馆。"},
+    {"question": "图书馆几点关门？", "answer": "济南校区和泰安校区均为22:00闭馆。"},
+    {"question": "图书馆周末开放吗？", "answer": "开放，周六、周日执行07:00—22:00日常开放时间。"},
+    {"question": "图书馆下午能进吗？", "answer": "可以，中午和下午正常开放，不在午间闭馆。"},
+    {"question": "两个校区时间一样吗？", "answer": "日常口径一致，均为周一至周日07:00—22:00。"}
+  ],
+  "reference_materials": [
+    {"title": "黄河图书馆开馆与场馆介绍", "url": "https://www.sdfmu.edu.cn/info/1076/12216.htm", "role": "场馆官方背景资料"},
+    {"title": "山东第一医科大学全景校园", "url": "https://www.sdfmu.edu.cn/index/xysh/qjxy.htm", "role": "两校区官方实景资料"}
+  ],
+  "exceptions": ["法定节假日", "寒暑假", "考试周专项安排", "临时闭馆或场馆维护"],
+  "answer_rule": "先直接回答07:00—22:00，以及中午、下午、周末正常开放，再说明特殊日期以图书馆当日通知为准；不得回答‘下午不开放’或‘周末闭馆’。",
+  "evidence_status": "user_confirmed_operational_fact_pending_public_notice_link",
+  "updated_at": "2026-08-10"
+}

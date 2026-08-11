@@ -1,0 +1,58 @@
+{
+  "status": "PASS",
+  "checks": {
+    "formal_workflow_unchanged": true,
+    "formal_updated_at_unchanged": true,
+    "shadow_points_to_r7": true,
+    "shadow_api_only": true,
+    "formal_api_token_present": true,
+    "qwen36_plus_everywhere": true,
+    "top6_rerank_everywhere": true,
+    "selected_datasets_only": true,
+    "answer_limits_320": true,
+    "deterministic_routes_present": true,
+    "r5_r7_diff_is_routing_only": true,
+    "shadow_dataset_joins_exact": true,
+    "main_database_shape": true,
+    "academic_database_shape": true,
+    "scholarship_standby_database_shape": true
+  },
+  "evidence": {
+    "formal": {
+      "app_id": "8cfaee92-f95c-4316-80a4-ab5d93614772",
+      "workflow_id": "f98baa82-d73f-44b0-aec5-de83078e8b37",
+      "updated_at": "2026-08-04 15:13:01.412709"
+    },
+    "shadow": {
+      "app_id": "76f7ba2c-5c61-47cb-a257-5800cf185e21",
+      "workflow_id": "882b1331-6721-4dbe-acca-9d630d0cad37",
+      "graph_sha256": "464556fc7eb94c60aa366131ecb00099d6c01308de643f125b6309de70681baa"
+    },
+    "datasets": {
+      "main": {
+        "id": "a5732fe1-a85c-42a8-962c-2a4d8015b56a",
+        "name": "医小管-GREEN-RC3-主库最终候选-20260809",
+        "documents": 350,
+        "segments": 740,
+        "pending": 0,
+        "duplicate_normalized_content": 0
+      },
+      "academic": {
+        "id": "6f8c8f85-9893-4036-b327-15c34ccb9aa5",
+        "name": "医小管-GREEN-RC6-学业影响最终候选-20260809",
+        "documents": 13,
+        "segments": 55,
+        "pending": 0,
+        "duplicate_normalized_content": 0
+      },
+      "scholarship_standby": {
+        "id": "5a3c8e8f-b2b5-46b3-b350-f63c086c62de",
+        "name": "医小管-GREEN-RC3-奖学金备库最终候选-20260809",
+        "documents": 21,
+        "segments": 145,
+        "pending": 0,
+        "duplicate_normalized_content": 0
+      }
+    }
+  }
+}

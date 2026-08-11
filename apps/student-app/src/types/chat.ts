@@ -2,6 +2,21 @@ export interface Source {
   title: string
   score?: number
   content?: string
+  document_id?: string
+  dataset_id?: string
+  source_url?: string
+  original_source?: string
+  category?: string
+  campus?: string
+  college?: string
+  published_at?: string
+  academic_year?: string
+  effective_status?: string
+  screenshot_url?: string
+  attachment_url?: string
+  source_type?: 'official_web' | 'official_wechat' | 'wechat_pending' | 'knowledge_base'
+  source_label?: string
+  verified?: boolean
 }
 
 export interface Message {
@@ -9,6 +24,8 @@ export interface Message {
   role: 'user' | 'assistant' | 'system' | 'teacher'
   content: string
   sources?: Source[]
+  answer_notice?: string
+  knowledge_updated_at?: string
   timestamp: number
   isStreaming?: boolean
   refusal?: boolean
@@ -26,7 +43,7 @@ export type ChatMessage = Message & {
 
 export type ChatStreamEvent =
   | { event: 'message'; token: string }
-  | { event: 'message_end'; full_content: string; sources: Source[]; message_id: number }
+  | { event: 'message_end'; full_content: string; sources: Source[]; message_id: number; answer_notice?: string; knowledge_updated_at?: string }
   | { event: 'suggestions'; questions: string[] }
   | { event: 'unanswered_invite'; message_id: number; conv_id: number }
   | { event: 'error'; message: string }

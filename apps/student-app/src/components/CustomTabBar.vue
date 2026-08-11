@@ -4,6 +4,9 @@
       v-for="tab in tabs"
       :key="tab.key"
       :class="['tab-item', { active: current === tab.key }]"
+      hover-class="tab-item--pressed"
+      :hover-start-time="0"
+      :hover-stay-time="80"
       @click="switchTab(tab)"
     >
       <AppIcon :name="tab.icon" :class="['tab-icon', { active: current === tab.key }]" />
@@ -46,14 +49,44 @@ function switchTab(tab: { path: string; key: string }) {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background: $glass-bg;                              // white/80
-  backdrop-filter: $backdrop-bar;                     // blur(20px) saturate(180%)
-  -webkit-backdrop-filter: $backdrop-bar;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.72));
+  backdrop-filter: blur(26px) saturate(165%);
+  -webkit-backdrop-filter: blur(26px) saturate(165%);
+  border-top: 1px solid rgba(255,255,255,.9);
   border-radius: $radius-lg $radius-lg 0 0;           // rounded-t-[2rem]
-  box-shadow: 0 -10px 40px rgba(124, 58, 237, 0.08);  // 紫色折射 glow
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 -12px 42px rgba(91,43,143,.09);
+}
+
+.tab-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0 8% auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,1), rgba(199,158,226,.72), transparent);
+  opacity: .9;
+}
+
+.tab-bar::after {
+  content: '';
+  position: absolute;
+  top: -70%;
+  left: -18%;
+  width: 36%;
+  height: 150%;
+  pointer-events: none;
+  filter: blur(10px);
+  transform: skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.74), transparent);
+  animation: tabMirrorSweep 12s cubic-bezier(.3,.02,.2,1) infinite;
 }
 
 .tab-item {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -61,7 +94,11 @@ function switchTab(tab: { path: string; key: string }) {
   gap: 4px;
   padding: $space-2 $space-3;
   border-radius: $radius-full;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition:
+    background var(--yxg-touch-out) var(--yxg-spring-out),
+    color .24s ease,
+    transform var(--yxg-touch-out) var(--yxg-spring-out),
+    box-shadow var(--yxg-touch-out) var(--yxg-spring-out);
 
   .tab-icon {
     font-size: 24px;
@@ -77,14 +114,20 @@ function switchTab(tab: { path: string; key: string }) {
     transition: color 0.2s ease;
   }
 
-  &:active {
-    transform: scale(0.90);
+  &:active,
+  &.tab-item--pressed {
+    transform: translateY(1px) scale(.965);
+    transition-duration: var(--yxg-touch-in);
   }
 
   &.active {
-    background: rgba($primary, 0.10);                 // primary/10 tint
+    background:
+      linear-gradient(145deg, rgba(255,255,255,.58), rgba(91,43,143,.10));
     padding: $space-2 $space-5;                       // px-5 py-2
     border-radius: 24px;                              // rounded-[24px] per stitch
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.78),
+      inset 0 -1px 0 rgba(91,43,143,.08);
 
     .tab-icon {
       color: $primary;
@@ -94,5 +137,16 @@ function switchTab(tab: { path: string; key: string }) {
       color: $primary;
     }
   }
+}
+
+@keyframes tabMirrorSweep {
+  0%, 52% { opacity: 0; transform: translateX(0) skewX(-18deg); }
+  58% { opacity: .75; }
+  72% { opacity: 0; transform: translateX(360%) skewX(-18deg); }
+  100% { opacity: 0; transform: translateX(360%) skewX(-18deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-bar::after { animation: none; }
 }
 </style>

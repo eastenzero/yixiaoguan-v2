@@ -1,0 +1,33 @@
+{
+  "generated_from": "/Users/gongzhen/Documents/医小管/yixiaoguan-v2/knowledge-pilot/campus/candidate-triage-20260809.json",
+  "source_count": 990,
+  "deduplicated_count": 990,
+  "duplicate_count": 0,
+  "answer_status": {
+    "answer_ready": 5,
+    "archive_only": 472,
+    "context_only": 253,
+    "review_required": 260
+  },
+  "evidence_roles": {
+    "background_context": 672,
+    "process_evidence": 222,
+    "result_context": 53,
+    "rule_evidence": 43
+  },
+  "temporal_status": {
+    "current_window": 188,
+    "date_unknown": 431,
+    "historical_reference": 232,
+    "recent_reference": 139
+  },
+  "content_quality": {
+    "page_chrome_polluted": 694,
+    "too_short": 2,
+    "usable_excerpt": 294
+  },
+  "topic_count": 10,
+  "missing_source_url_count": 0,
+  "missing_source_url_ids": [],
+  "release_note": "answer_ready 可进入影子评测；review_required 需人工核对原文；context_only/archive_only 不可单独支撑现行规则。"
+}

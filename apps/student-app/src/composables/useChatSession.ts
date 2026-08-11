@@ -7,6 +7,7 @@ import { request } from '@/utils/request'
 import { wsManager } from '@/utils/websocket'
 import { centrifugeManager } from '@/utils/centrifuge'
 import { trackEvent } from '@/utils/track'
+import { presentSources } from '@/utils/sourcePresentation'
 import type {
   ChatMessage,
   ConversationStatus,
@@ -55,7 +56,8 @@ function mapServerMessage(m: MessageResponse): ChatMessage {
     id: String(m.id),
     role: roleMap[m.sender_type] || 'system',
     content: m.content || '',
-    sources: m.metadata_?.sources || [],
+    sources: presentSources(m.metadata_?.sources),
+    answer_notice: m.metadata_?.answer_notice || undefined,
     timestamp: m.created_at ? new Date(m.created_at).getTime() : Date.now(),
   }
 }
@@ -257,7 +259,8 @@ export function useChatSession() {
               msg.id = String(data.message_id)
             }
             msg.content = data.full_content || msg.content
-            msg.sources = data.sources || []
+            msg.sources = presentSources(data.sources)
+            msg.answer_notice = data.answer_notice
             msg.isStreaming = false
             trackEvent('chat_response_ok', {
               conv_id: conversationId.value,

@@ -1,0 +1,44 @@
+{
+  "version": "comprehensive-balanced-v1",
+  "retrieval": {
+    "candidate_top_k": 18,
+    "rerank": true,
+    "answer_top_k": 8,
+    "similarity_floor": 0.35,
+    "query_rewrite": ["student_scope", "college", "topic", "award_type", "academic_year"]
+  },
+  "metadata": [
+    "topic",
+    "award_type",
+    "policy_level",
+    "college",
+    "student_scope",
+    "academic_year",
+    "published_at",
+    "effective_status",
+    "authority_level",
+    "source_url"
+  ],
+  "source_mix": {
+    "direct_answer_min": 1,
+    "current_policy_min": 1,
+    "school_or_college_min": 1,
+    "historical_example_max": 2,
+    "display_max": 8
+  },
+  "ranking": [
+    "direct_subject_match",
+    "college_and_student_scope_match",
+    "effective_current",
+    "academic_year_desc",
+    "authority_desc",
+    "semantic_relevance"
+  ],
+  "fallback": {
+    "allow_upstream_policy": true,
+    "allow_historical_process_example": true,
+    "allow_other_college_as_example_only": true,
+    "require_scope_label": true,
+    "never_invent_deadline_quota_or_threshold": true
+  }
+}

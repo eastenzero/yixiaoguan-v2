@@ -1,0 +1,6 @@
+sha256=PASS
+dify_counts(datasets,documents,segments,workflows)=10,1763,4063,15
+yx_kb_entries=1268
+weaviate_schema_classes=10
+weaviate_objects=4192
+result=PASS

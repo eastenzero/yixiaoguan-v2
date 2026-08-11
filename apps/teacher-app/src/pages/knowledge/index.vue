@@ -3,8 +3,29 @@
     <TopAppBar title="知识库" :showBack="true" action="add" />
 
     <view class="main-content">
+      <view class="freshness-panel animate-fade-up delay-1">
+        <view class="freshness-heading">
+          <view class="freshness-icon"><AppIcon name="verified" /></view>
+          <view class="freshness-copy">
+            <text class="freshness-title">
+              {{ overview?.latest_verified_at ? `资料核验至 ${formatCalendarDate(overview.latest_verified_at)}` : '资料核验日期待补充' }}
+            </text>
+            <text class="freshness-meta">
+              已登记 {{ overview?.total || 0 }} 条 · {{ overview?.verified_count || 0 }} 条有核验记录
+            </text>
+          </view>
+        </view>
+        <view v-if="overview" class="freshness-chips">
+          <text class="freshness-chip">当年政策 {{ overview.freshness_counts['current-year'] || 0 }}</text>
+          <text class="freshness-chip">长期有效 {{ overview.freshness_counts.stable || 0 }}</text>
+          <text class="freshness-chip freshness-chip--warning">时效敏感 {{ overview.freshness_counts['time-bound'] || 0 }}</text>
+          <text class="freshness-chip freshness-chip--history">历史/过期 {{ overview.freshness_counts.expired || 0 }}</text>
+        </view>
+        <text class="freshness-notice">{{ overview?.notice || '正在读取知识治理清单…' }}</text>
+      </view>
+
       <!-- Search Bar Section -->
-      <view class="section animate-fade-up delay-1">
+      <view class="section animate-fade-up delay-2">
         <view class="search-wrapper">
           <view class="search-icon">
             <AppIcon name="search" class="search-symbol" />
@@ -206,9 +227,9 @@ import { computed, ref, onMounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopAppBar from '../../components/TopAppBar.vue'
 import BottomNavBar from '../../components/BottomNavBar.vue'
-import { approveKnowledge, createKnowledgeDraft, getKnowledgeEntries, getPendingReviews, getUnansweredTop, previewKnowledgeDraft, rejectKnowledge } from '@/api/knowledge'
+import { approveKnowledge, createKnowledgeDraft, getKnowledgeEntries, getKnowledgeOverview, getPendingReviews, getUnansweredTop, previewKnowledgeDraft, rejectKnowledge } from '@/api/knowledge'
 import { useUserStore } from '@/stores/user'
-import type { KnowledgeDraftPreviewResponse, KnowledgeEntry, KnowledgeScope, UnansweredTopItem } from '@/types/api'
+import type { KnowledgeDraftPreviewResponse, KnowledgeEntry, KnowledgeOverview, KnowledgeScope, UnansweredTopItem } from '@/types/api'
 
 const userStore = useUserStore()
 
@@ -228,6 +249,7 @@ const selectedScope = ref<KnowledgeScope>('college')
 const selectedReviewId = ref<number | null>(null)
 const reviewRejectReason = ref('')
 const apiFallbackMessage = ref('')
+const overview = ref<KnowledgeOverview | null>(null)
 
 const isAdmin = computed(() => userStore.isAdmin)
 const categories = computed(() => isAdmin.value
@@ -318,6 +340,14 @@ const loadData = async () => {
     else entries.value = []
   } finally {
     loading.value = false
+  }
+}
+
+const loadOverview = async () => {
+  try {
+    overview.value = await getKnowledgeOverview()
+  } catch {
+    overview.value = null
   }
 }
 
@@ -597,8 +627,21 @@ const formatTime = (time?: string) => {
   return date.toLocaleDateString('zh-CN')
 }
 
-onMounted(() => loadData())
-onShow(() => loadData())
+const formatCalendarDate = (time?: string | null) => {
+  if (!time) return '待补充'
+  const date = new Date(time)
+  if (Number.isNaN(date.getTime())) return time.slice(0, 10)
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
+}
+
+onMounted(() => {
+  void loadData()
+  void loadOverview()
+})
+onShow(() => {
+  void loadData()
+  void loadOverview()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -618,6 +661,89 @@ onShow(() => loadData())
 
 .section {
   margin-bottom: 24px;
+}
+
+.freshness-panel {
+  margin-bottom: 18px;
+  padding: 16px;
+  border: 1px solid rgba($primary, 0.12);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba($primary-container, 0.78), $surface-container-lowest);
+  box-shadow: $elevation-1;
+}
+
+.freshness-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.freshness-icon {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 13px;
+  color: $primary;
+  background: rgba($surface-container-lowest, 0.78);
+}
+
+.freshness-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.freshness-title,
+.freshness-meta,
+.freshness-notice {
+  display: block;
+}
+
+.freshness-title {
+  color: $on-surface;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.freshness-meta {
+  margin-top: 4px;
+  color: $on-surface-variant;
+  font-size: 11px;
+}
+
+.freshness-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 13px;
+}
+
+.freshness-chip {
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: $primary;
+  background: rgba($primary, 0.09);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.freshness-chip--warning {
+  color: $warning;
+  background: rgba($warning, 0.10);
+}
+
+.freshness-chip--history {
+  color: $on-surface-variant;
+  background: $surface-container;
+}
+
+.freshness-notice {
+  margin-top: 11px;
+  color: $on-surface-variant;
+  font-size: 10px;
+  line-height: 1.55;
 }
 
 
