@@ -1,0 +1,8 @@
+interface:
+  display_name: "医小管前端优化"
+  short_description: "将医小管紫色玻璃交互安全复用到教师端前端"
+  brand_color: "#5b2b8f"
+  default_prompt: "Use $yixiaoguan-frontend-optimization to align the teacher frontend with YiXiaoGuan's reusable purple glass interaction system."
+
+policy:
+  allow_implicit_invocation: true
